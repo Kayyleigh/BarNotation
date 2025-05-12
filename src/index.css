@@ -1,0 +1,286 @@
+@import "tailwindcss";
+
+body {
+  font-family: "DIN Alternate", sans-serif;
+  font-size: 16px;
+}
+
+.math-input {
+  text-transform: math-auto;
+  line-height: normal;
+  field-sizing: content;
+  width: 1em;
+  /*width: 1em;
+  border: none;
+  /*background-color: #FFFF88;*/
+  border: 1px solid rgba(60, 60, 255, .5);
+  text-align: center;
+}
+
+.math-power {
+  display: inline-flex;
+  align-items: baseline;
+}
+
+.math-subscript {
+  display: inline-flex;
+  align-items: baseline;
+}
+
+.math-frac {
+  font-size: 50%;
+  display: inline-block;
+  text-align: center;
+}
+
+.math-frac hr {
+  margin: 0;
+  border: 1px solid black;
+}
+
+/* RootNode */
+
+.root-node {
+  display: inline-flex;
+  align-items: center;
+}
+
+.root-index {
+  font-size: 0.7em;
+  margin-right: 0.1em;
+}
+
+.radical-symbol {
+  font-size: 1.2em;
+  margin-right: 0.1em;
+}
+
+.radicand {
+  display: inline-block;
+}
+
+
+/* BigOperatorNode (Summation, Integral, ...) */
+
+.big-operator-node {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  font-size: 1.2em;
+  position: relative;
+  text-align: center;
+}
+
+.operator-symbol {
+  font-size: 2em;
+  line-height: 1;
+}
+
+.limits {
+  display: flex;
+  flex-direction: column; /* lower on bottom, upper on top */
+  align-items: center;
+  font-size: 0.6em;
+  line-height: 1;
+  margin-top: 0.1em;
+}
+
+.upper-limit {
+  margin-bottom: 0.1em;
+}
+
+.lower-limit {
+  margin-top: 0.1em;
+}
+
+.operator-body {
+  margin-top: 0.2em;
+}
+
+/* MatrixNode */
+.matrix-node {
+  display: inline-block;
+  padding: 0.2em;
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+}
+
+.matrix-table {
+  border-collapse: collapse;
+}
+
+.matrix-table td {
+  border: 1px solid #ccc;
+  padding: 0.2em 0.4em;
+  text-align: center;
+}
+
+
+/* VectorNode */
+
+.vector-node {
+  display: inline-block;
+  padding: 0.2em;
+}
+
+.vector-table td {
+  padding: 0.1em 0.3em;
+  text-align: center;
+}
+
+
+/* DecoratedNode */
+
+.decorated-node {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.decoration {
+  font-size: 0.8em;
+  margin-bottom: 0.1em;
+}
+
+.decoration-angl {
+  position: absolute;
+  width: 0.7em;
+  height: 1em;
+  top: 0.5em;
+  border-top: 2px solid;
+  border-right: 2px solid;
+  pointer-events: none;
+}
+
+.decoration-bar {
+  position: absolute;
+  width: 0.7em;
+  height: 1em;
+  top: 0.5em;
+  border-top: 2px solid;
+  pointer-events: none;
+}
+
+/* JOINT: horizontal line above */
+.decoration-joint {
+  top: -6px;
+  width: 100%;
+  height: 2px;
+  background-color: black;
+  transform: none;
+  left: 0;
+}
+
+/* HAT / TILDE */
+.decoration-hat,
+.decoration-tilde {
+  position: absolute;
+  translate: 0 -0.2em;
+}
+
+/* Numeric decorators above */
+.decoration-top-number {
+  top: -1em;
+  position: absolute;
+}
+
+/* Numeric decorators below */
+.decoration-bottom-number {
+  bottom: -1em;
+  position: absolute;
+}
+
+
+/* MultiCharacterNode */
+
+.multi-char-node {
+  margin: 0.1em;
+  text-wrap-mode: nowrap;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* CharacterNode */
+
+.char-node {
+  font-family: 'Times New Roman', serif;
+  font-size: 1em;
+}
+
+
+/* GroupNode */
+
+.group-node {
+  display: inline-flex;
+  align-items: center;
+}
+
+.group-left,
+.group-right {
+  font-weight: bold;
+  margin: 0 0.1em;
+}
+
+.group-content {
+  display: inline-flex;
+  align-items: center;
+}
+
+
+/* FractionNode */
+
+.math-frac {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.frac-num, .frac-den {
+  padding: 0.1em 0.3em;
+  text-align: center;
+}
+
+.math-frac hr {
+  width: 100%;
+  border: none;
+  border-top: 1px solid black;
+  margin: 0;
+}
+
+/* SubSupScriptedNode (i.e., Actuarial; 4 children)*/
+
+.actuarial-node {
+  position: relative;
+  display: inline-block;
+}
+
+.corner-wrapper {
+  position: absolute;
+  font-size: 0.7em;
+}
+
+.corner-wrapper.top-left {
+  top: -0.35em;
+  left: -0.35em;
+}
+
+.corner-wrapper.top-right {
+  top: -0.35em;
+  right: -0.35em;
+}
+
+.corner-wrapper.bottom-left {
+  bottom: -0.35em;
+  left: -0.35em;
+}
+
+.corner-wrapper.bottom-right {
+  bottom: -0.35em;
+  /* right: -0.8em; */
+  translate: 1.6em;
+}
+
+.base {
+  padding: 0 0.2em;
+}
+

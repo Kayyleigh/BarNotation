@@ -1,0 +1,63 @@
+/* ActuarialNode.css
+
+/* Wrapper for the entire Actuarial Node */
+.actuarial-node {
+    display: inline-flex; /* Inline-flex allows it to adjust based on content */
+    align-items: center; /* Vertically align the content */
+    position: relative;
+    min-width: 0; /* Prevent clipping */
+    font-size: 1em; /* Base font size for the main content */
+  }
+  
+  /* For wrapping each corner's subscript and superscript */
+  .corner-wrapper {
+    position: absolute; /* Position each corner element absolutely */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  /* For the base content */
+  .actuarial-node .base {
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+    white-space: nowrap; /* Prevent wrapping */
+    padding: 0 0.5em; /* Space around the base for better visibility */
+  }
+  
+  /* Top-left corner superscript */
+  .top-left {
+    top: -0.7em; /* Adjust the positioning of the top-left superscript */
+    left: -0.7em; /* Move it slightly left */
+    font-size: 0.6em; /* Smaller font for superscript */
+  }
+  
+  /* Top-right corner superscript */
+  .top-right {
+    top: -0.7em; /* Adjust the positioning of the top-right superscript */
+    right: -0.7em; /* Move it slightly right */
+    font-size: 0.6em; /* Smaller font for superscript */
+  }
+  
+  /* Bottom-left corner subscript */
+  .bottom-left {
+    bottom: -0.7em; /* Adjust the positioning of the bottom-left subscript */
+    left: -0.7em; /* Move it slightly left */
+    font-size: 0.6em; /* Smaller font for subscript */
+  }
+  
+  /* Bottom-right corner subscript */
+  .bottom-right {
+    bottom: -0.7em; /* Adjust the positioning of the bottom-right subscript */
+    right: -0.7em; /* Move it slightly right */
+    font-size: 0.6em; /* Smaller font for subscript */
+  }
+  
+  /* Ensure dynamic sizing for content */
+  .actuarial-node .content-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
