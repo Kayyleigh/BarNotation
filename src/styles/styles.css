@@ -1,0 +1,22 @@
+body {
+    font-family: sans-serif;
+  }
+  
+  .editor-container {
+    padding: 1rem;
+    max-width: 800px;
+    margin: auto;
+  }
+  
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 1rem;
+  }
+  
+  .toolbar button {
+    padding: 0.5rem;
+    cursor: pointer;
+  }
+  

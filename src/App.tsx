@@ -1,13 +1,13 @@
 import React from "react";
-import { MathCanvas } from "./components/MathCanvas";
+import MathEditor from "./components/MathEditor";
+import "./styles/math.css";
+import "./styles/styles.css";
 
-const App: React.FC = () => {
-  return (
-    <div className="App">
-      <h1>Actuarial Math Editor</h1>
-      <MathCanvas />
-    </div>
-  );
-};
+const App: React.FC = () => (
+  <div>
+    <h1>Math Notation Editor</h1>
+    <MathEditor />
+  </div>
+);
 
 export default App;

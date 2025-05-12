@@ -1,0 +1,47 @@
+.math-node {
+    cursor: pointer;
+    padding: 2px;
+    display: inline-block;
+    text-transform: math-auto;
+  }
+  
+  .math-node.selected {
+    background: rgba(0, 123, 255, 0.2);
+    border-radius: 3px;
+  }
+  
+  .fraction {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .numerator,
+  .denominator {
+    padding: 2px;
+  }
+  
+  .root {
+    display: inline-flex;
+    align-items: center;
+  }
+  
+  .big-op {
+    font-size: 1.2em;
+    margin: 0 4px;
+  }
+  
+  .sub,
+  .sup,
+  .sub-left,
+  .sup-left,
+  .sub-right,
+  .sup-right {
+    font-size: 0.75em;
+  }
+  
+  .bracket {
+    font-weight: bold;
+    padding: 0 2px;
+  }
+  
