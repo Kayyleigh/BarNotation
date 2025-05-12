@@ -103,42 +103,64 @@ const MathEditor: React.FC = () => {
       );
     };
 
-    const deleteLastChar = () => {
-      setRootNode(prev =>
-        findAndUpdate(prev, selectedId, node => {
-          if (node.type === 'text') {
-            return { ...node, content: node.content.slice(0, -1) };
-          }
-          return node;
-        })
-      );
-    };
-
     switch (e.key) {
       case '/':
         e.preventDefault();
         setRootNode(prev => {
-          const transformed = transformToFraction(prev);
+          const pos = findParentAndIndex(prev, selectedId);
+          if (!pos || !pos.parent) return prev;
+      
+          const parent = pos.parent;
+          const children = getLogicalChildren(parent);
+          const currentIndex = pos.index;
+
+          const currentNode = children[currentIndex]
+
+          const transformed = transformToFraction(currentNode);
           setSelectedId(transformed.denominator.id);
-          return transformed;
+
+          const updatedRoot = findAndUpdate(prev, currentNode.id, () => transformed);
+          return updatedRoot;
         });
         break;
 
       case '_':
         e.preventDefault();
         setRootNode(prev => {
-          const transformed = transformToSubscript(prev);
+          const pos = findParentAndIndex(prev, selectedId);
+          if (!pos || !pos.parent) return prev;
+      
+          const parent = pos.parent;
+          const children = getLogicalChildren(parent);
+          const currentIndex = pos.index;
+
+          const currentNode = children[currentIndex]
+
+          const transformed = transformToSuperscript(currentNode);
           setSelectedId(transformed.subRight?.id ?? null);
-          return transformed;
+
+          const updatedRoot = findAndUpdate(prev, currentNode.id, () => transformed);
+          return updatedRoot;
         });
         break;
 
       case '^':
         e.preventDefault();
         setRootNode(prev => {
-          const transformed = transformToSuperscript(prev);
+          const pos = findParentAndIndex(prev, selectedId);
+          if (!pos || !pos.parent) return prev;
+      
+          const parent = pos.parent;
+          const children = getLogicalChildren(parent);
+          const currentIndex = pos.index;
+
+          const currentNode = children[currentIndex]
+
+          const transformed = transformToSuperscript(currentNode);
           setSelectedId(transformed.supRight?.id ?? null);
-          return transformed;
+
+          const updatedRoot = findAndUpdate(prev, currentNode.id, () => transformed);
+          return updatedRoot;
         });
         break;
 
@@ -146,6 +168,7 @@ const MathEditor: React.FC = () => {
         e.preventDefault();
         setRootNode(prev => {
           const pos = findParentAndIndex(prev, selectedId);
+          console.log(pos)
           if (!pos || !pos.parent) return prev;
       
           const parent = pos.parent;
@@ -161,12 +184,12 @@ const MathEditor: React.FC = () => {
               setSelectedId(nextId);
               return prev;
             }
-      
-            // If nowhere to go, maybe create new node at top level
+            console.log("THis is weird?")
+            // If nowhere to go, create new node at top level
             const newNode = createTextNode();
             const updatedRoot = {
               ...prev,
-              children: [...('children' in prev ? prev.children : []), newNode],
+              children: [...(getLogicalChildren(prev)), newNode],
             };
             setSelectedId(newNode.id);
             return updatedRoot;
@@ -220,41 +243,35 @@ const MathEditor: React.FC = () => {
       case 'Backspace':
         e.preventDefault();
         setRootNode(prev => {
-          const selectedPath = findParentAndIndex(prev, selectedId);
-          if (!selectedPath) return prev;
+          const pos = findParentAndIndex(prev, selectedId);
+          if (!pos || !pos.parent) return prev;
       
-          const { parent, index } = selectedPath;
-      
-          // Find selected node
-          let selected: MathNode;
-          if ('children' in parent) {
-            selected = parent.children[index];
-          } else if ('numerator' in parent && 'denominator' in parent) {
-            selected = [parent.numerator, parent.denominator][index];
-          } else if ('base' in parent) {
-            const subsupChildren = [parent.base, parent.subLeft, parent.subRight, parent.supLeft, parent.supRight].filter(Boolean);
-            selected = subsupChildren[index];
-          } else if ('radicand' in parent) {
-            selected = parent.degree ? [parent.degree, parent.radicand][index] : [parent.radicand][index];
-          } else {
-            console.log("reached the else :(")
-            return prev; // Still unsupported, e.g., text node
-          }
-      
+          const parent = pos.parent;
+          const children = getLogicalChildren(parent);
+          const currentIndex = pos.index;
+
+          const currentNode = children[currentIndex]
+
           // If it's a text node and not empty: delete character
-          if (selected.type === 'text' && selected.content.length > 0) {
+          if (currentNode.type === 'text' && currentNode.content.length > 0) {
             return findAndUpdate(prev, selectedId, node => ({
               ...node,
               content: (node as TextNode).content.slice(0, -1),
             }));
           }
+
+          // Check if we are at very root of whole program
+          const grandparent = findParentAndIndex(prev, parent.id)
+          if (grandparent === null && currentIndex <1) {
+            return prev;
+          }
       
           // Otherwise: remove node and select previous
           if ('children' in parent) {
             const newChildren = [...parent.children];
-            newChildren.splice(index, 1);
+            newChildren.splice(currentIndex, 1);
       
-            const newSelected = newChildren[index - 1] ?? parent;
+            const newSelected = newChildren[currentIndex - 1] ?? parent;
             setSelectedId(newSelected.id);
       
             return findAndUpdate(prev, parent.id, node => ({
@@ -262,11 +279,10 @@ const MathEditor: React.FC = () => {
               children: newChildren,
             }));
           } else if ('numerator' in parent && 'denominator' in parent) {
-            console.log(`todo deal w sit of ${parent.numerator.type}/${parent.denominator.type}`)
-            if (selected.id === parent.denominator.id) {
+            if (currentNode.id === parent.denominator.id) {
               setSelectedId(parent.numerator.id)
               return findAndUpdate(prev, parent.id, () => parent.numerator);
-            } else if (selected.id === parent.numerator.id) {
+            } else if (currentNode.id === parent.numerator.id) {
               setSelectedId(parent.denominator.id)
               return findAndUpdate(prev, parent.id, () => parent.denominator);
             }

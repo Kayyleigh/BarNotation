@@ -54,10 +54,10 @@ export interface BigOperatorNode extends BaseNode {
 export interface SubSuperscriptNode extends BaseNode {
   type: "subsup";
   base: MathNode;
-  subLeft?: MathNode;
-  supLeft?: MathNode;
-  subRight?: MathNode;
-  supRight?: MathNode;
+  subLeft: MathNode;
+  supLeft: MathNode;
+  subRight: MathNode;
+  supRight: MathNode;
 }
 
 export interface DecoratedNode extends BaseNode {

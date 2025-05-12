@@ -56,8 +56,7 @@ export const findParentAndIndex = (
       case "fraction":
         return [node.numerator, node.denominator];
       case "subsup":
-        return [node.base, node.subLeft, node.supLeft, node.subRight, node.supRight]
-        .filter((child): child is MathNode => child !== undefined);
+        return [node.base, node.subLeft, node.supLeft, node.subRight, node.supRight];
       default:
         return [];
     }

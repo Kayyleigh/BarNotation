@@ -18,13 +18,19 @@ export const transformToSubscript = (node: MathNode): SubSuperscriptNode => ({
   id: generateId(),
   type: 'subsup',
   base: node,
+  subLeft: createTextNode(),
+  supLeft: createTextNode(),
   subRight: createTextNode(),
+  supRight: createTextNode(),
 });
 
 export const transformToSuperscript = (node: MathNode): SubSuperscriptNode => ({
   id: generateId(),
   type: 'subsup',
   base: node,
+  subLeft: createTextNode(),
+  supLeft: createTextNode(),
+  subRight: createTextNode(),
   supRight: createTextNode(),
 });
 
