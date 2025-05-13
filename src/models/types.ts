@@ -88,3 +88,60 @@ export type MathNode =
   | DecoratedNode
   | MatrixNode
   | VectorNode;
+
+
+// Helper function for stringifying MathNode
+export const nodeToString = (node: MathNode): string => {
+  switch (node.type) {
+    case "text":
+      return `TextNode(id: ${node.id}, content: "${node.content}")`;
+    case "inline-container":
+      return `InlineContainerNode(id: ${node.id}, childrenCount: ${node.children.length})`;
+    case "group":
+      return `GroupNode(id: ${node.id}, childrenCount: ${node.children.length})`;
+    case "fraction":
+      return `FractionNode(id: ${node.id}, numerator: ${node.numerator.id}, denominator: ${node.denominator.id})`;
+    case "root":
+      return `RootNode(id: ${node.id}, radicand: ${node.radicand.id}, degree: ${node.degree?.id})`;
+    case "big-operator":
+      return `BigOperatorNode(id: ${node.id}, operator: ${node.operator})`;
+    case "subsup":
+      return `SubSuperscriptNode(id: ${node.id}, base: ${node.base.id}, subLeft: ${node.subLeft.id}, supLeft: ${node.supLeft.id}, subRight: ${node.subRight.id}, supRight: ${node.supRight.id})`;
+    case "decorated":
+      return `DecoratedNode(id: ${node.id}, base: ${node.base.id}, decoration: ${node.decoration})`;
+    case "matrix":
+      return `MatrixNode(id: ${node.id}, rowsCount: ${node.rows.length})`;
+    case "vector":
+      return `VectorNode(id: ${node.id}, itemsCount: ${node.items.length}, orientation: ${node.orientation})`;
+    default:
+      return `UnknownNode`;
+  }
+};
+
+// Helper function for stringifying MathNode
+export const nodeToMathText = (node: MathNode): string => {
+  switch (node.type) {
+    case "text":
+      return `${node.content}`;
+    case "inline-container":
+      return `${node.children.map(nodeToMathText).join(" ")}`;
+    case "group":
+      return `(${node.children.map(nodeToMathText).join(" ")})`;
+    case "fraction":
+      return `(${nodeToMathText(node.numerator)}/${nodeToMathText(node.denominator)})`;
+    case "root":
+      return `RootNode(id: ${node.id}, radicand: ${node.radicand.id}, degree: ${node.degree?.id})`;
+    case "big-operator":
+      return `BigOperatorNode(id: ${node.id}, operator: ${node.operator})`;
+    case "subsup":
+      return `_{${node.subLeft.id}}^{${node.supLeft.id}}_${node.base.id}_{${node.subRight.id}}^{${node.supRight.id}}`;
+    case "decorated":
+      return `DecoratedNode(id: ${node.id}, base: ${node.base.id}, decoration: ${node.decoration})`;
+    case "matrix":
+      return `MatrixNode(id: ${node.id}, rowsCount: ${node.rows.length})`;
+    case "vector":
+      return `VectorNode(id: ${node.id}, itemsCount: ${node.items.length}, orientation: ${node.orientation})`;
+    default:
+      return `UnknownNode`;
+  }
+};
