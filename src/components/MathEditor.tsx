@@ -1,7 +1,7 @@
 // components/MathEditor.tsx
 import React, { useEffect, useRef, useState } from 'react';
 import { MathRenderer } from './MathRenderer';
-import type { MathNode, TextNode } from '../models/types';
+import { nodeToMathText, nodeToString, type MathNode, type TextNode } from '../models/types';
 import { generateId, createTextNode, createInlineContainer } from '../models/nodeFactories';
 import {
   transformToFraction,
@@ -9,7 +9,8 @@ import {
   transformToSuperscript,
 } from '../models/transformations';
 import Toolbar from './Toolbar';
-import { findParentAndIndex, getLogicalChildren, findNextPositionUp } from '../utils/treeUtils';
+import { findParentAndIndex, getLogicalChildren, findPathToNode, getAllNodesInPreOrder, getLeafNodesInPreOrder, getPreviousLeaf, isEmptyNode } from '../utils/treeUtils';
+import { nodeToLatex } from '../models/latexParser';
 
 const initialNode: TextNode = {
   id: generateId(),
@@ -86,6 +87,108 @@ const MathEditor: React.FC = () => {
     return node;
   };
 
+  // Helper function for arrow navigation
+  const handleArrowNavigation = (e: React.KeyboardEvent, direction: 'left' | 'right') => {
+    if (!selectedId) {
+      console.log("Oh no")
+      return;
+    }
+  
+    // Choose pre-order traversal type based on whether shift key is pressed
+    // TODO: probably make shift exclude all leaves? Or do not use shift cuz shift seems nice for grouping
+    const traversal = e.shiftKey ? getAllNodesInPreOrder(rootNode) : getLeafNodesInPreOrder(rootNode);
+
+    const index = traversal.findIndex(n => n.id === selectedId);
+    const nextIndex =
+      direction === 'right' ? index + 1 :
+      direction === 'left' ? index - 1 :
+      index;
+  
+    if (nextIndex >= 0 && nextIndex < traversal.length) {
+      console.log(`nextIndex >= 0 && nextIndex < traversal.length`)
+      setSelectedId(traversal[nextIndex].id);
+    } 
+    else {
+      console.log(`edge case? in arrows`)
+
+      // Edge case: find insertable ancestor
+      const newNode = createTextNode();
+
+      setRootNode(prev => {
+        const pathInfo = findParentAndIndex(prev, selectedId!);
+
+        if (!pathInfo) {
+          console.log(`no pathToInfo. returning prev`)
+          return prev;
+        }
+
+        let insertionTarget = [...pathInfo.path].reverse().find(
+          node => node.type === 'inline-container'
+        ) as MathNode | undefined;
+
+        if (!insertionTarget) {
+          console.log(`no insertiontarget. returning prev`)
+
+          return prev;
+        }
+
+        let containerChildren = getLogicalChildren(insertionTarget);
+        let selectedIndex = containerChildren.findIndex(c => c.id === selectedId);
+
+        const edgeIndex = direction === 'right' ? containerChildren.length - 1 : 0;
+        const edgeNode = containerChildren[edgeIndex];
+
+        const isEmptyText = edgeNode?.type === 'text' && edgeNode.content.trim() === '';
+
+        if (isEmptyText) {
+          const parent = findParentAndIndex(prev, edgeNode.id)
+          console.log(`${edgeNode.type} has ${edgeNode.id}, and parent is ${parent?.parent.id}`)
+          console.log(`${parent?.path.map(nodeToString).join(", ")}`);
+          //setSelectedId(parent?.path[parent.path.length - 3].id);
+
+          const pathToNode = findPathToNode(prev, edgeNode.id)
+
+          if (!pathToNode) { 
+            console.log(`path to node ${nodeToString(edgeNode)} is null`)
+            return prev;
+          }
+
+          //selectedIndex = pathToNode.findIndex(n => n.id === parent?.path[parent.path.length - 2].id);
+
+
+          const reversed = [...pathToNode].reverse();
+          const inlineContainers = reversed.filter(node => node.type === 'inline-container');
+
+          if (inlineContainers.length <= 1) {
+            console.log(`there are no inlinecontainers to jump up to`)
+            return prev
+          }
+          insertionTarget = inlineContainers[1]; // Second match, if it exists
+          containerChildren = getLogicalChildren(insertionTarget);
+
+          
+          selectedIndex = direction === 'right' ? containerChildren.length - 1 : 0
+
+          // TODO FIX IT; IT IS DELETING PART OF MY FRACTION WTF
+          console.log(`${selectedIndex} target ${nodeToString(insertionTarget)} in ${pathToNode.map(nodeToString).join(", ")}`)
+
+          //return prev;
+        }
+
+        const insertAt = direction === 'right' ? selectedIndex + 1 : 0;
+
+        const newChildren = [...containerChildren];
+        newChildren.splice(insertAt, 0, newNode);
+
+        const updatedContainer = { ...insertionTarget, children: newChildren };
+
+        const updatedRoot = findAndUpdate(prev, insertionTarget.id, () => updatedContainer);
+        setSelectedId(newNode.id);
+        return updatedRoot;
+      });
+    }
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (!selectedId) return;
 
@@ -95,6 +198,24 @@ const MathEditor: React.FC = () => {
           if (node.type === 'text') {
             return { ...node, content: node.content + append };
           }
+          else if (node.type === 'inline-container') {
+            const lastChild = node.children[node.children.length - 1];
+  
+            // Immediately update the last child
+            const updatedContainer = {
+              ...node,
+              children: node.children.map(child =>
+                child.id === lastChild.id && child.type === 'text'
+                  ? { ...child, content: child.content + append }
+                  : child
+              ),
+            };
+  
+            // Update selection to point to that child moving forward
+            setSelectedId(lastChild.id);
+  
+            return updatedContainer;
+          }
           else {
             console.log(`Woahh ${node.type} gets key ${append}`)
           }
@@ -103,7 +224,96 @@ const MathEditor: React.FC = () => {
       );
     };
 
+
+    // --- Handle modifier combos first ---
+    if (e.ctrlKey && e.key === '-') {
+      console.log(`This should work`)
+      e.preventDefault();
+      setRootNode(prev => {
+        const pos = findParentAndIndex(prev, selectedId);
+        if (!pos || !pos.parent) return prev;
+
+        const parent = pos.parent;
+        const children = getLogicalChildren(parent);
+        const currentIndex = pos.index;
+        const currentNode = children[currentIndex];
+
+        const transformed = transformToSuperscript(currentNode);
+        setSelectedId(transformed.subLeft?.id ?? null);
+
+        const updatedRoot = findAndUpdate(prev, currentNode.id, () => transformed);
+        return updatedRoot;
+      });
+      return;
+    }
+
+    if (e.ctrlKey && e.key === '6') {
+      e.preventDefault();
+      setRootNode(prev => {
+        const pos = findParentAndIndex(prev, selectedId);
+        if (!pos || !pos.parent) return prev;
+
+        const parent = pos.parent;
+        const children = getLogicalChildren(parent);
+        const currentIndex = pos.index;
+        const currentNode = children[currentIndex];
+
+        const transformed = transformToSuperscript(currentNode);
+        setSelectedId(transformed.supLeft?.id ?? null);
+
+        const updatedRoot = findAndUpdate(prev, currentNode.id, () => transformed);
+        return updatedRoot;
+      });
+      return;
+    }
+
+
+    // --- Handle modifier combos first ---
+    if (e.shiftKey && e.key === '_') { //_ cuz - doesnt work but I still want shift for consistency across the 4 chidlren
+      console.log(`yay`)
+      e.preventDefault();
+      setRootNode(prev => {
+        const pos = findParentAndIndex(prev, selectedId);
+        if (!pos || !pos.parent) return prev;
+
+        const parent = pos.parent;
+        const children = getLogicalChildren(parent);
+        const currentIndex = pos.index;
+        const currentNode = children[currentIndex];
+
+        const transformed = transformToSuperscript(currentNode);
+        setSelectedId(transformed.subRight?.id ?? null);
+
+        const updatedRoot = findAndUpdate(prev, currentNode.id, () => transformed);
+        return updatedRoot;
+      });
+      return;
+    }
+
+    if (e.shiftKey && e.code === 'Digit6') {
+      e.preventDefault();
+      setRootNode(prev => {
+        const pos = findParentAndIndex(prev, selectedId);
+        if (!pos || !pos.parent) return prev;
+
+        const parent = pos.parent;
+        const children = getLogicalChildren(parent);
+        const currentIndex = pos.index;
+        const currentNode = children[currentIndex];
+
+        const transformed = transformToSuperscript(currentNode);
+        setSelectedId(transformed.supRight?.id ?? null);
+
+        const updatedRoot = findAndUpdate(prev, currentNode.id, () => transformed);
+        return updatedRoot;
+      });
+      return;
+    }
+
     switch (e.key) {
+      case '@': //TODO remove at the end
+        console.log(nodeToLatex(rootNode));
+        break;
       case '/':
         e.preventDefault();
         setRootNode(prev => {
@@ -124,173 +334,154 @@ const MathEditor: React.FC = () => {
         });
         break;
 
-      case '_':
-        e.preventDefault();
-        setRootNode(prev => {
-          const pos = findParentAndIndex(prev, selectedId);
-          if (!pos || !pos.parent) return prev;
-      
-          const parent = pos.parent;
-          const children = getLogicalChildren(parent);
-          const currentIndex = pos.index;
-
-          const currentNode = children[currentIndex]
-
-          const transformed = transformToSuperscript(currentNode);
-          setSelectedId(transformed.subRight?.id ?? null);
-
-          const updatedRoot = findAndUpdate(prev, currentNode.id, () => transformed);
-          return updatedRoot;
-        });
-        break;
-
-      case '^':
-        e.preventDefault();
-        setRootNode(prev => {
-          const pos = findParentAndIndex(prev, selectedId);
-          if (!pos || !pos.parent) return prev;
-      
-          const parent = pos.parent;
-          const children = getLogicalChildren(parent);
-          const currentIndex = pos.index;
-
-          const currentNode = children[currentIndex]
-
-          const transformed = transformToSuperscript(currentNode);
-          setSelectedId(transformed.supRight?.id ?? null);
-
-          const updatedRoot = findAndUpdate(prev, currentNode.id, () => transformed);
-          return updatedRoot;
-        });
-        break;
-
       case 'ArrowRight': {
         e.preventDefault();
-        setRootNode(prev => {
-          const pos = findParentAndIndex(prev, selectedId);
-          console.log(pos)
-          if (!pos || !pos.parent) return prev;
-      
-          const parent = pos.parent;
-          const children = getLogicalChildren(parent);
-          const currentIndex = pos.index;
-          const currentNode = children[currentIndex];
-      
-          const isEmptyText = currentNode.type === 'text' && currentNode.content.trim() === '';
-      
-          if (isEmptyText) {
-            const nextId = findNextPositionUp(prev, selectedId);
-            if (nextId) {
-              setSelectedId(nextId);
-              return prev;
-            }
-            console.log("THis is weird?")
-            // If nowhere to go, create new node at top level
-            const newNode = createTextNode();
-            const updatedRoot = {
-              ...prev,
-              children: [...(getLogicalChildren(prev)), newNode],
-            };
-            setSelectedId(newNode.id);
-            return updatedRoot;
-          }
-      
-          // Regular arrow right logic
-          if (currentIndex + 1 < children.length) {
-            setSelectedId(children[currentIndex + 1].id);
-            return prev;
-          } else {
-            const newNode = createTextNode();
-            const updatedChildren = [...children, newNode];
-            const updatedParent = updatedChildren.reduce(
-              (acc, child, i) => replaceChildInNode(acc, i, child),
-              parent
-            );
-            const updatedRoot = findAndUpdate(prev, parent.id, () => updatedParent);
-            setSelectedId(newNode.id);
-            return updatedRoot;
-          }
-        });
+        handleArrowNavigation(e, 'right');
         break;
       }
 
       case 'ArrowLeft': {
         e.preventDefault();
-        setRootNode(prev => {
-          const pos = findParentAndIndex(prev, selectedId);
-          if (!pos || !pos.parent) return prev;
-      
-          const parent = pos.parent;
-          const children = getLogicalChildren(parent);
-          const currentIndex = pos.index;
-      
-          if (currentIndex > 0) {
-            // Move to the previous sibling
-            setSelectedId(children[currentIndex - 1].id);
-            return prev;
-          } else {
-            // If there's no previous sibling, move to the parent node
-            const updatedRoot = findAndUpdate(prev, parent.id, updatedParent => {
-              setSelectedId(updatedParent.id);
-              return updatedParent;
-            });
-            return updatedRoot;
-          }
-        });
+        handleArrowNavigation(e, 'left');
         break;
       }
 
-      case 'Backspace':
+      case 'Backspace': {
         e.preventDefault();
         setRootNode(prev => {
-          const pos = findParentAndIndex(prev, selectedId);
-          if (!pos || !pos.parent) return prev;
+          if (!selectedId) return prev;
       
-          const parent = pos.parent;
-          const children = getLogicalChildren(parent);
-          const currentIndex = pos.index;
+          const nodeInfo = findParentAndIndex(prev, selectedId);
+          if (!nodeInfo) return prev;
+      
+          const parent = nodeInfo.parent;
+          const siblings = getLogicalChildren(parent);
+          const currentNode = siblings[nodeInfo.index];
 
-          const currentNode = children[currentIndex]
-
-          // If it's a text node and not empty: delete character
-          if (currentNode.type === 'text' && currentNode.content.length > 0) {
-            return findAndUpdate(prev, selectedId, node => ({
-              ...node,
-              content: (node as TextNode).content.slice(0, -1),
-            }));
+          if (parent.type === "fraction") {
+            console.log(`IN FRACTION DEL`)
+            const { numerator, denominator } = parent;
+          
+            let replacement: MathNode | null = null;
+          
+            if (currentNode.id === denominator.id) {
+              replacement = numerator;
+            } else if (currentNode.id === numerator.id) {
+              replacement = denominator
+              //TODO: change this to just keeping numerator empty cuz hard to come back from if mistake from user, atm
+            }
+          
+            if (replacement) {
+              setSelectedId(replacement.id);
+              return findAndUpdate(prev, parent.id, () => replacement);
+            }
           }
 
-          // Check if we are at very root of whole program
-          const grandparent = findParentAndIndex(prev, parent.id)
-          if (grandparent === null && currentIndex <1) {
-            return prev;
+          if (parent.type === "subsup") {
+            console.log(`IN SUBSUP BACKSPACE HANDLER`)
+            const { subLeft, subRight, supLeft, supRight, base } = parent;
+            console.log(nodeToLatex(parent.base))
+            console.log(nodeToLatex(base))
+          
+          
+            const allAttachmentsEmpty = [subLeft, subRight, supLeft, supRight].every(isEmptyNode)
+            console.log(allAttachmentsEmpty)
+          
+            // If currentNode is one of the attachments and they're all empty:
+            const isCurrentAttachment =
+              currentNode.id === subLeft?.id ||
+              currentNode.id === subRight?.id ||
+              currentNode.id === supLeft?.id ||
+              currentNode.id === supRight?.id;
+          
+            if (allAttachmentsEmpty) { // used to be this && isCurrentAttachment
+              const newBase =
+                base.type === "text"
+                  ? base
+                  : createTextNode();
+          
+              setSelectedId(newBase.id);
+
+              console.log(`Hey you did something?`)
+          
+              return findAndUpdate(prev, parent.id, () => newBase);
+            } else if (allAttachmentsEmpty) {
+              // This is reached when all empty but no child selected
+              console.log(nodeToLatex(parent)) 
+
+            }
           }
-      
-          // Otherwise: remove node and select previous
-          if ('children' in parent) {
-            const newChildren = [...parent.children];
-            newChildren.splice(currentIndex, 1);
-      
-            const newSelected = newChildren[currentIndex - 1] ?? parent;
-            setSelectedId(newSelected.id);
-      
-            return findAndUpdate(prev, parent.id, node => ({
-              ...node,
-              children: newChildren,
-            }));
-          } else if ('numerator' in parent && 'denominator' in parent) {
-            if (currentNode.id === parent.denominator.id) {
-              setSelectedId(parent.numerator.id)
-              return findAndUpdate(prev, parent.id, () => parent.numerator);
-            } else if (currentNode.id === parent.numerator.id) {
-              setSelectedId(parent.denominator.id)
-              return findAndUpdate(prev, parent.id, () => parent.denominator);
+
+          if (!currentNode) return prev;
+
+          if (currentNode.type === "inline-container") {
+            console.log(`IN CURRENTNODE=IC BACKSPACE HANDLER`)
+
+            if (currentNode.children.every(isEmptyNode)) {
+              console.log(`YES it is all empty`)
+              // Delete this child
+              return findAndUpdate(prev, currentNode.id, () => currentNode); 
+            }
+            else {
+              console.log(`NO NOT ALL EMPTY: ${currentNode.children}`)
+              return prev
             }
           }
       
+          // Case 1: Delete last char of text
+          if (currentNode.type === 'text') {
+            console.log(`if this is not working then wtf`)
+            const content = currentNode.content;
+
+            if (content.length > 0) {
+              console.log(`Long??!`)
+
+              return findAndUpdate(prev, currentNode.id, node => ({
+                ...node,
+                content: content.slice(0, -1),
+              }));
+            }
+            else { // Check if empty string
+              console.log(`I know the current node is empty...`)
+            }
+      
+            // Don't delete if it's the only node in root container
+            const isRootContainer = prev.id === parent.id && siblings.length === 1;
+            if (isRootContainer) {
+              console.log(`tryna delete the root container`)
+              return prev;
+            }
+      
+            const index = nodeInfo.index;
+            const updatedSiblings = [...siblings];
+            updatedSiblings.splice(index, 1);
+      
+            const newSelectedLeaf = getPreviousLeaf(prev, currentNode.id);
+            if (newSelectedLeaf) {
+              console.log(`Ya got here?`)
+              setSelectedId(newSelectedLeaf.id);
+            } else {
+              console.log(`Ya got here in else?`)
+              setSelectedId(parent.id); // fallback
+            }
+      
+            const updatedParent = {
+              ...parent,
+              children: updatedSiblings,
+            };
+      
+            return findAndUpdate(prev, parent.id, () => updatedParent);
+          }
+      
+          // If non-text leaf selected, move left
+          const previousLeaf = getPreviousLeaf(prev, selectedId);
+          if (previousLeaf) {
+            setSelectedId(previousLeaf.id);
+          }
           return prev;
         });
         break;
+      }
 
       default:
         if (/^[a-zA-Z0-9=:;\'\"\`~|?.,<>?+!@#$%&*()\[\]\{\}\-]$/.test(e.key)) {

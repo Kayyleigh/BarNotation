@@ -5,38 +5,38 @@ import type {
   RootNode, 
   SubSuperscriptNode 
 } from './types';
-import { generateId, createTextNode } from './nodeFactories';
+import { generateId, createTextNode, createInlineContainer } from './nodeFactories';
 
 export const transformToFraction = (node: MathNode): FractionNode => ({
   id: generateId(),
   type: 'fraction',
   numerator: node,
-  denominator: createTextNode(),
+  denominator: createInlineContainer(),
 });
 
 export const transformToSubscript = (node: MathNode): SubSuperscriptNode => ({
   id: generateId(),
   type: 'subsup',
   base: node,
-  subLeft: createTextNode(),
-  supLeft: createTextNode(),
-  subRight: createTextNode(),
-  supRight: createTextNode(),
+  subLeft: createInlineContainer(),
+  supLeft: createInlineContainer(),
+  subRight: createInlineContainer(),
+  supRight: createInlineContainer(),
 });
 
 export const transformToSuperscript = (node: MathNode): SubSuperscriptNode => ({
   id: generateId(),
   type: 'subsup',
   base: node,
-  subLeft: createTextNode(),
-  supLeft: createTextNode(),
-  subRight: createTextNode(),
-  supRight: createTextNode(),
+  subLeft: createInlineContainer(),
+  supLeft: createInlineContainer(),
+  subRight: createInlineContainer(),
+  supRight: createInlineContainer(),
 });
 
 export const transformToRoot = (degree: MathNode | undefined): RootNode => ({
   id: generateId(),
   type: 'root',
-  radicand: createTextNode(),
+  radicand: createInlineContainer(),
   degree: degree,
 });
