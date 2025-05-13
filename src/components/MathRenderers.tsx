@@ -118,6 +118,7 @@ export const renderFractionNode = (node: FractionNode, selectedId: string | null
           onRootChange={onRootChange} 
         />
       </div>
+      <hr />
       <div className="denominator">
         <MathRenderer 
           node={node.denominator} 
