@@ -461,3 +461,40 @@ Did some stuff related to decorations. There are now decorations for i,ii,iiitop
 
 ![alt text](image-10.png)
 So now Actuarial does not have UR child :)
+
+### 12/05/2025
+I have a working editor that is not even that fucked, like omg it actually enables typing with some perceived affordance and feeling like a text editor even though I do not use input fields. 
+
+![alt text](image-11.png)
+
+Next steps:
+- fix that problem w right arrow on non-text
+- do not wait for Dead+^, but rather shift plus 6?
+- enable deletion of subsup "wrap" on backspace when all are empty (but maybe only on the "first" child and have the others be like leftarrow cuz all 4 children always exist if 1 exists, but it shouold not feel that way for the user)
+- make text size fit the node type
+- put line betw fraction
+- fix positioning, esp of 4 children
+- re-implement drag functionality 
+- allow grouping and un-grouping/spplitting of nodes
+- enable decorations
+- enable bigoperator 
+- ...
+- nice UI esp for toolbar plz
+
+### 13/05/2025
+CSS is now pretty for fractions and subsup
+
+![alt text](image-13.png)
+
+fixed some navigational issues
+![alt text](image-14.png)
+
+Must fix the nesting of IC. Like, gotta really think of when to use IC and when to use textNode. 
+
+Must add spatial intuition to fractions and subsup
+
+dirty-fixed shift+6 by doing Shift + e.code=Digit6, so now it does not make sense for people with keyboards that are different than mine in the way that "^" is reached. But it was a good way imo to match how underscore reacts. These are used for subsup, left and right dep on if control or shift
+
+I think I fixed the deletion of subsup by not checking if we are currently in a child
+
+If ever need to change arrownav order of 4 children. need to change in more than 1 place. omg idk even where. keeping it for now cuz too much drama
