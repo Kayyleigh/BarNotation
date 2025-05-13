@@ -18,5 +18,11 @@ body {
   .toolbar button {
     padding: 0.5rem;
     cursor: pointer;
+    border: 1px solid;
+  }
+
+  .math-editor {
+    height: 10em;
+    padding: 1em;
   }
   

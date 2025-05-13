@@ -1,8 +1,31 @@
-.math-node {
+:root {
+  /* Theming variables (light mode default) */
+  --math-font-size-base: 1em;
+  --math-font-size-sub: 0.5em;
+  --math-color-background-subsup: transparent;
+  --math-color-highlight: hotpink; /* For debug/preview only */
+
+  --math-sub-overlap-x: 0.2em;
+  --math-sub-overlap-y: 1.5em;
+}
+
+/* Optional dark mode setup (can be enabled via class or media query) */
+.dark {
+  --math-color-background-subsup: transparent;
+  --math-color-highlight: deeppink; /* Slightly different for dark mode */
+}
+
+  .math-node {
     cursor: pointer;
     padding: 2px;
     display: inline-block;
     text-transform: math-auto;
+    align-self: center;
+  }
+
+  .type-inline-container {
+    display: flex;
+    align-items: baseline;
   }
   
   .math-node.selected {
@@ -10,36 +33,109 @@
     border-radius: 3px;
   }
   
+
+  /* Fraction Node */
+
+  .type-fraction {
+    font-size: 50%;
+    line-height: 0.5;
+    background-color: aqua;
+  }
+
   .fraction {
-    display: inline-flex;
+    /* display: inline-flex; */
     flex-direction: column;
     align-items: center;
+  }
+
+  /* Line between numerator and denominator */
+  .fraction hr {
+    margin: 0;
+    border-color: black;
   }
   
   .numerator,
   .denominator {
-    padding: 2px;
+    justify-self: center;
   }
   
+  /* nth Root Node */
   .root {
     display: inline-flex;
     align-items: center;
   }
-  
+
+  /* Big Operator (e.g. summation, integral) */
   .big-op {
     font-size: 1.2em;
     margin: 0 4px;
   }
   
-  .sub,
-  .sup,
+
+  /* Sup- & SuperScripted Node */
+  .type-subsuperscript {
+    display: inline-grid;
+    grid-template-columns: auto auto auto;
+    grid-template-rows: auto auto auto;
+    justify-items: center;
+    align-items: center;
+    font-size: var(--math-font-size-base);
+    background-color: var(--math-color-background-subsup);
+    line-height: 1;
+  }
+  
+  .base {
+    grid-column: 2;
+    grid-row: 2;
+    z-index: 1;
+  }
+  
   .sub-left,
   .sup-left,
   .sub-right,
   .sup-right {
-    font-size: 0.75em;
+    font-size: var(--math-font-size-sub);
+    line-height: 1;
+    white-space: nowrap; /* Prevent break in longer sub/sup */
+    position: relative;
+    z-index: 0;
+
   }
   
+  /* Left side alignment */
+  .sub-left {
+    grid-column: 1;
+    grid-row: 3;
+    justify-self: end;
+    align-self: start;
+    transform: translate(var(--math-sub-overlap-x), calc(-1 * var(--math-sub-overlap-y)));
+  }
+  
+  .sup-left {
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: end;
+    align-self: end;
+    transform: translate(var(--math-sub-overlap-x), var(--math-sub-overlap-y));
+  }
+  
+  /* Right side alignment */
+  .sub-right {
+    grid-column: 3;
+    grid-row: 3;
+    justify-self: start;
+    align-self: start;
+    transform: translate(calc(-1 * var(--math-sub-overlap-x)), calc(-1 * var(--math-sub-overlap-y)));
+  }
+  
+  .sup-right {
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: start;
+    align-self: end;
+    transform: translate(calc(-1 * var(--math-sub-overlap-x)), var(--math-sub-overlap-y));
+  }
+
   .bracket {
     font-weight: bold;
     padding: 0 2px;
