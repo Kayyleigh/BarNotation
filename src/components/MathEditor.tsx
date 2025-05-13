@@ -10,7 +10,7 @@ import {
 } from '../models/transformations';
 import Toolbar from './Toolbar';
 import { findParentAndIndex, getLogicalChildren, findPathToNode, getAllNodesInPreOrder, getLeafNodesInPreOrder, getPreviousLeaf, isEmptyNode } from '../utils/treeUtils';
-import { nodeToLatex } from '../models/latexParser';
+import { latexToMathNode, nodeToLatex } from '../models/latexParser';
 
 const initialNode: TextNode = {
   id: generateId(),
@@ -313,6 +313,12 @@ const MathEditor: React.FC = () => {
     switch (e.key) {
       case '@': //TODO remove at the end
         console.log(nodeToLatex(rootNode));
+        break;
+      case '#': { //TODO remove later
+          const latex_yay = latexToMathNode("\\frac{1}{3}+4={_{2}^{7}{c}_{5}^{4}}")
+          console.log(nodeToString(latex_yay))
+          setRootNode(latexToMathNode("\\frac{1}{3}+4={_{2}^{7}{c}_{5}^{4}}"))
+        }
         break;
       case '/':
         e.preventDefault();

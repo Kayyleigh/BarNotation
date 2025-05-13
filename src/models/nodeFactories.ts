@@ -13,7 +13,6 @@ import type {
   VectorNode
 } from "./types";
 
-
 export const generateId = () => uuidv4();
 
 export const createTextNode = (content: string = ""): TextNode => ({
@@ -22,66 +21,93 @@ export const createTextNode = (content: string = ""): TextNode => ({
   content
 });
 
-// export const createInlineContainer = (): InlineContainerNode => ({
-//   id: uuidv4(),
-//   type: "inline-container",
-//   children: []
-// });
 export const createInlineContainer = (children: MathNode[] = []): InlineContainerNode => ({
   id: uuidv4(),
   type: 'inline-container',
-  children,
+  children: children.length > 0 ? children : [createTextNode()],
 });
 
-export const createGroupNode = (): GroupNode => ({
+export const createGroupNode = (children: MathNode[] = []): GroupNode => ({
   id: uuidv4(),
   type: "group",
-  children: [],
+  children: children,
   showBrackets: true
 });
 
-export const createFraction = (): FractionNode => ({
+export const createFraction = (
+  numerator: MathNode = createTextNode(""),
+  denominator: MathNode = createTextNode("")
+): FractionNode => ({
   id: uuidv4(),
   type: "fraction",
-  numerator: createTextNode(""),
-  denominator: createTextNode("")
+  numerator: numerator,
+  denominator: denominator
 });
 
-export const createRoot = (): RootNode => ({
+export const createRootNode = (
+  radicand: MathNode = createTextNode(""),
+  degree?: MathNode
+): RootNode => ({
   id: uuidv4(),
   type: "root",
-  radicand: createTextNode(""),
+  radicand: radicand,
+  degree
 });
 
-export const createBigOperator = (): BigOperatorNode => ({
+export const createBigOperator = (
+  operator: string = "∑",
+  lowerLimit: MathNode = createTextNode("n=1"),
+  upperLimit: MathNode = createTextNode("i"),
+  body: MathNode = createTextNode("")
+): BigOperatorNode => ({
   id: uuidv4(),
   type: "big-operator",
-  operator: "∑",
-  body: createTextNode("")
+  lowerLimit: lowerLimit,
+  upperLimit: upperLimit,
+  operator: operator,
+  body: body
 });
 
-export const createSubSup = (): SubSuperscriptNode => ({
+export const createSubSup = (
+  base: MathNode = createTextNode(""),
+  subLeft: MathNode = createTextNode(""),
+  subRight: MathNode = createTextNode(""),
+  supLeft: MathNode = createTextNode(""),
+  supRight: MathNode = createTextNode("")
+): SubSuperscriptNode => ({
   id: uuidv4(),
   type: "subsup",
-  base: createTextNode("")
+  base: base,
+  subLeft: subLeft, //TODO think abt whether I need text or IC nodes (in this file, not only this line)
+  supLeft: supLeft,
+  subRight: subRight,
+  supRight: supRight,
 });
 
-export const createDecorated = (decoration: "hat" | "bar" | "angl"): DecoratedNode => ({
+export const createDecorated = (
+  decoration: "hat" | "bar" | "angl",
+  base: MathNode = createTextNode("")
+): DecoratedNode => ({
   id: uuidv4(),
   type: "decorated",
-  base: createTextNode(""),
+  base: base,
   decoration
 });
 
-export const createMatrix = (): MatrixNode => ({
+export const createMatrix = (
+  rows: MathNode[][] = [[createTextNode("")]]
+): MatrixNode => ({
   id: uuidv4(),
   type: "matrix",
-  rows: [[createTextNode("")]]
+  rows: rows
 });
 
-export const createVector = (orientation: "horizontal" | "vertical"): VectorNode => ({
+export const createVector = (
+  orientation: "horizontal" | "vertical",
+  items: MathNode[] = [createTextNode("")]
+): VectorNode => ({
   id: uuidv4(),
   type: "vector",
-  items: [createTextNode("")],
+  items: items,
   orientation
 });

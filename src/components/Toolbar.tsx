@@ -2,7 +2,7 @@ import React from "react";
 import {
   createTextNode,
   createFraction,
-  createRoot,
+  createRootNode,
   createBigOperator,
   createSubSup,
   createDecorated,
@@ -20,7 +20,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ onAddNode }) => (
   <div className="toolbar">
     <button onClick={() => onAddNode(createTextNode("x"))}>Text</button>
     <button onClick={() => onAddNode(createFraction())}>Fraction</button>
-    <button onClick={() => onAddNode(createRoot())}>Root</button>
+    <button onClick={() => onAddNode(createRootNode())}>Root</button>
     <button onClick={() => onAddNode(createBigOperator())}>BigOp</button>
     <button onClick={() => onAddNode(createSubSup())}>Sub/Sup</button>
     <button onClick={() => onAddNode(createGroupNode())}>Group</button>
