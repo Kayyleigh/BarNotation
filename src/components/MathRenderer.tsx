@@ -1,74 +1,78 @@
 import React from "react";
 import clsx from "clsx";
 import type { MathNode } from "../models/types";
+import type { CursorPosition } from "../logic/cursor";
 
 import {
   renderTextNode,
   renderInlineContainerNode,
-  renderGroupNode,
+  //renderGroupNode,
   renderFractionNode,
-  renderRootNode,
-  renderBigOperatorNode,
-  renderSubSuperscriptNode,
-  renderDecoratedNode,
-  renderMatrixNode,
-  renderVectorNode,
+  //renderRootNode,
+  //renderBigOperatorNode,
+  //renderSubSuperscriptNode,
+  //renderDecoratedNode,
+  //renderMatrixNode,
+  //renderVectorNode,
 } from "./MathRenderers";
 
 export type MathRendererProps = {
   node: MathNode;
-  selectedId: string | null;
-  onSelect: (id: string) => void;
+  cursor: CursorPosition;
+  onCursorChange: (cursor: CursorPosition) => void;
   onRootChange: (newRoot: MathNode) => void;
+  parentContainerId?: string;
+  index?: number;
 };
 
 export const MathRenderer: React.FC<MathRendererProps> = ({
   node,
-  selectedId,
-  onSelect,
+  cursor,
+  onCursorChange,
   onRootChange,
+  parentContainerId,
+  index,
 }) => {
-  const props = { selectedId, onSelect, onRootChange };
+  const props = { cursor, onCursorChange, onRootChange, parentContainerId, index };
 
   switch (node.type) {
     case "text":
-      return renderTextNode(node, selectedId, onSelect, onRootChange);
+      return renderTextNode(node, props);
 
     case "inline-container":
-      return renderInlineContainerNode(node, selectedId, onSelect, onRootChange);
+      return renderInlineContainerNode(node, props);
 
     case "group":
-      return renderGroupNode(node, selectedId, onSelect, onRootChange);
+      return renderGroupNode(node, props);
 
     case "fraction":
-      return renderFractionNode(node, selectedId, onSelect, onRootChange);
+      return renderFractionNode(node, props);
 
     case "root":
-      return renderRootNode(node, selectedId, onSelect, onRootChange);
+      return renderRootNode(node, props);
 
     case "big-operator":
-      return renderBigOperatorNode(node, selectedId, onSelect, onRootChange);
+      return renderBigOperatorNode(node, props);
 
     case "subsup":
-      return renderSubSuperscriptNode(node, selectedId, onSelect, onRootChange);
+      return renderSubSuperscriptNode(node, props);
 
     case "decorated":
-      return renderDecoratedNode(node, selectedId, onSelect, onRootChange);
+      return renderDecoratedNode(node, props);
 
     case "matrix":
-      return renderMatrixNode(node, selectedId, onSelect, onRootChange);
+      return renderMatrixNode(node, props);
 
     case "vector":
-      return renderVectorNode(node, selectedId, onSelect, onRootChange);
+      return renderVectorNode(node, props);
 
     default:
-      console.log(`sucks to be you`)
+      console.log(`No case match`)
       return (
         <span
           className={clsx("math-node", {
-            selected: selectedId === node.id,
+            selected: cursor.containerId === node.id,
           })}
-          onClick={() => onSelect(node.id)}
         >
           Unsupported node: {node.type}
         </span>

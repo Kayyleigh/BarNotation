@@ -27,10 +27,10 @@ export const createInlineContainer = (children: MathNode[] = []): InlineContaine
   children: children.length > 0 ? children : [createTextNode()],
 });
 
-export const createGroupNode = (children: MathNode[] = []): GroupNode => ({
+export const createGroupNode = (child: MathNode = createInlineContainer()): GroupNode => ({
   id: uuidv4(),
   type: "group",
-  children: children,
+  child: child,
   showBrackets: true
 });
 

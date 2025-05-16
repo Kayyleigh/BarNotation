@@ -498,3 +498,182 @@ dirty-fixed shift+6 by doing Shift + e.code=Digit6, so now it does not make sens
 I think I fixed the deletion of subsup by not checking if we are currently in a child
 
 If ever need to change arrownav order of 4 children. need to change in more than 1 place. omg idk even where. keeping it for now cuz too much drama
+
+First version of parser to/from Latex !!!
+Maybe good way to identify flaws in my data model is by perfecting the from-latex parser and keep trying examples from my playground overleaf doc until I have successfully parsed them all into my app
+But that way my app assumes latex === math 
+What I want is not only latex, also some of the stuff in actuarialsymbol 
+Either way I have to rigorously define the scope of (visual) math in terms of latex-completeness I guess?
+Makes sense cuz the examples I have in playground are based on the branches of math that I mention in the requirements of the application (calc, linalg, etc). So the examples are some test cases for the requirements. Passing all test cases does not guarantee that I can indeed represent all math!!
+
+### 14/05/2025
+
+It still breaks when I try to type sth after deleting everything
+At least after deleting fraction
+latex to mathnode is scuffed cuz of things like ordering and I fogot how to deal with brackets maybe?
+
+It should be keeping track of open bracket pairs 
+like `\frac{{4}+3}...` should have {4}+3 rather than  everything until the final bracket of the expression
+
+SOme important next steps for usability:
+- hover should change bg of nodes that can be edited
+- delete numerator should just be empty numerator (until 2nd press?)
+- up/down arrow keys should work on subsup children to navigate 
+- drag-and-drop yay
+- toolbar finally
+- for debugging/testing (esp video), could print current pressed key in some other UI element
+
+
+Re-evaluating all math structures based on the latex examples I am using to guide the testing. I will now look over all of them to decide whether subsup is enough for all special cases like that, or if I should split into diff types. Also will note on the ways to parse.
+
+- `a_x` should parse even though it is not `_{}^{}{a}_{x}^{}`
+- `f^{-1}` should put -1 as "exponent" of f
+
+\actsymb should not be the same as subsup if parsing to valid latex with actuarialsymbol package enabled. Two reasons:
+1. The left-side subscrips don't anchor to the base symbol
+2. subsup allows right-side superscript (UR). So does \actsymb, but in a situation where the user wants to do \itop they might use UR, and get confused if they want to move it to the next char in LR. However, a disadvantage of removing UR is that `\actsymb[n][2]{A}{x}[(m)]` (apart from needing special parsing logic) will be rendered above "x", not necessarily anchored to the principal symbol if the precedence number (which in my design is allowed to be any string, not only "1", "2" or "3") is longer than the first character of the lower-right child. That is, assuming I will have precedence numbers and their corresponding parent centered.
+
+The actsymb doc actually mentions the clash betw RU and precedences: 
+> In such rare circumstances, one needs to insert a strut (an invisible vertical rule) in the subscript to push it downward as needed
+
+Therefore I think my final decision is:
+- actsymb should have 4 children
+- actsymb is not subsup UNLESS THERE IS A GOOD REASON WHY subsup DOES NOT NEED TO EXIST ANYMORE. I think the main reason would be the alignment on the left, visualization-wise. I think that is a bad reason to keep it. However, it is a good idea maybe to think about the consequences of forcing the user to use \actuarialsymbol. If I have a notation that is just "x^2", it's a little strange to parse it to an actuarialsymbol. Thus, tradeoff between: (1) having 1:n mapping from visual representation to valid latex; and (2) following the simplest (built-in) latex conventions whenever possible.
+
+Things to still consider:
+- should precedence numbers only be allowed inside of actsymb? Not even sure if that is possible when I start allowing drag functionality. Prioritize user freedom over semantic validity?
+- actsymb (if not same type as subsup) should intuitively not have navigation say that arrow up on LR jumps to UR. Instead, need to have up-arrow and down-arrow jump to add precedence numbers (or rather, precedence MathNode? again, freedom-validity tradeoff). In fact, if precedences are allowed anywhere then up and down should always lead to that (but do require a non-empty parent!).
+
+Potential ways to decrease confusion caused by 1:n mapping of visualizations to valid semantics of subsup-like MathNodes (use at least 1 in final app, preferable more?):
+1. Different shortcuts/actions needed to generate the MathNode
+2. On hover, show button (or tooltip + some shortcut) to transform subsup to actsymb and vice versa
+3. When user tries arrow-up (or whatever else is going to normally lead to precedence number) on subsup, show a warning to the user that they are not inside an actsymb (and instructions on how to fix it).
+
+Whether precedences should be allowed outside of actsymb? Depends if it is ever needed elsewhere. Also before I forget again and ponder this yet again: this approach does not have 1:n mapping from visualisation to valid syntax. If it did, I would have thought precedence + its parent, versus Vector. But I think vector would center vertically while precedences look kinda like accents (location-wise).
+
+In the previous iteration of the design of this application, I assumed that \itop, \iitop, ... \iiibottom would all be accent options. Instead, I will assume that something like PrecedencedNode could exist and have it somehow check if it is inside of actsymb before allowing its creation?
+
+So my current preferred idea (personally) is:
+- actsymb gets own MathNode type
+- actsymb gets 4 children (just like subsup)
+- precedence gets own MathNode type (similar to accent (or deco - do check if ever on >1 symbol!))
+- actsymb's LR child is by default a precedence node
+- precedence nodes are not allowed anywhere else
+- actsymb gets own creation shortcut
+- subsup can be converted to actsymb at any time by pressing a button that appears on hover
+- actsymb can be converted to subsup if no node in LR has a precedence. Else it should warn, and allow forceful conversion that would throw away the precedences.
+
+Note to self: before precedences can be implemented (assuming they are like accents, not deco), I need accents to exist. Need to strictly define accent vs deco! That in turn requires re-consideration of my way of dealing with IC vs TextNode...
+
+Before thinking more deeply this is my thought: everything should always become separate TextNodes inside an IC. When brackets are inserted, it should make a group with TextNodes inside (or wrap in IC but atm implementation has just TextNode list). When a transformation is called, the node it will apply it on will be either the previous TextNode, or the previous GroupNode if the prev node is a GroupNode. 
+It should be possible to create new groups by bulk-selecting sibling nodes and then pressing "(". 
+Accents can go on TextNode
+Deco can go on IC (or the fake-or-maybe-soon-literal IC inside of GroupNode)
+
+Maybe the IC -> TextNodes mechanism, instead of simple max-1 length, should detect at least that numbers next to each other should stay together (so a TextNode is a unit holding a letter, a number, or a special symbol of any kind). Implication: cannot use bar notation on numbers.
+
+Enable group explosion and multi-select grouping of siblings. Possible? I'll think about it soon.
+
+Why Group and IC should both exist: if only IC, then would need to teach the user an action that they would need to apply to make the nested IC. Since current plan would split into TextNode as the user types. Advantage of that approach would be that 1+((2+3)/4) would be representable without brackets, just like in physical writing. But the action required for nesting would be essentially a hidden bracket, which may decrease usability of the app due to the allowed actions of groups being more strict than in physical writing (because the latter is complete freedom), and which groups exist would be visible on e.g. hover. Instead, brackets can show possibilities much better as it already follows conventions used in calculators and other online tools.
+Why not only Group? Well I think anyway group is a wrapper around IC, meaning IC also exists. But why not only define group with a list of nodes, and have no IC? Because implicitly that is just IC with brackets all over the place. When does it make a difference? When a new node layer is made, i.e., the root (so the first state that the user experiences) and the children of subsup-like nodes.
+
+Is it safe to keep both? When drag-and-drop is enabled, and you have e.g. (1+2)/3, the app allows the replacement of (1+2) with e.g. 1+2. I may be wrong but I think that is harmless because the brackets serve as a way to notify the transformation logic which node to take to the new MathNode. In drag-and-drop logic, the MathNode is already there. Therefore, such behavior will lead to safe deletion of brackets, which may even be nice for the user to clean up unwanted brackets after the expression tree is already in shape.
+
+Why not merge Group into IC and have it render brackets only when the parent is also an IC? Or perhaps better: only when the user was the one to type the bracket? For the latter: not sure yet, sounds like a decent option but might get messy especially in parsers. For the former: would not allow (1+2)^3, because the parent is a subsup. Brackets make sense to render in any visual math structure where the size and alignment match its parent's. That is: IC in IC, IC in subsup-like node, ...?
+
+No brackets needed around:
+- IC in RootNode (assuming root will be rendered with a line above)
+- IC in subsup's child
+- IC in fraction
+- IC in decorated (assuming the decoration already covers the group visually)
+
+Still have to think about BigOperator. I think I need to re-define that one to not have a "body" or whatever. Better to just treat it as a special symbol with 2 children: lower and upper. Use it inside an IC. If you want to make it look semantically valid, explicitly use brackets. But my app does not need to know what to "apply" the operator to, since it's purely visual and latex does not care either.
+
+I have not yet thought about Vector and Matrix.
+Also I still need to add support for multi-line things, like cases?
+Also lim(...)
+
+Trying to think of a logical IC vs Group ruleset:
+- IC on start
+- IC on children of nodes created by shortcuts
+- Group (wrapping an IC) on manually defined bracket
+
+(1+2)/3 can only be made using brackets because else the system does not know that 1+2 is supposed to be a group. Thus, (1+2)/3 will be shown with brackets even though the system could be aware that this is redundant. For the first version of the app I will keep it simple (i.e. keep brackets) but later on I can look into automatic bracket removal on transform, or some cleanup button that allows the user to choose to remove all redundant brackets at once.
+
+What about when the user types "1a"? "1" and "a" are separate TextNodes.
+At least one potential issue with all this: operators would be allowed to have accents. I think that is ok; latex may also allow it?
+
+Summary:
+- **ActSymbNode**: actsymb gets own MathNode type
+- actsymb gets 4 children (just like subsup)
+- precedence gets own MathNode type **PrecedenceNode** (similar to accent (or deco - do check if ever on >1 symbol!))
+- ActSymbNode's LR child is by default a PrecedenceNode
+- precedence nodes are not allowed anywhere else
+- actsymb gets own creation shortcut
+- subsup can be converted to actsymb at any time by pressing a button that appears on hover
+- actsymb can be converted to subsup if no node in LR has a precedence. Else it should warn, and allow forceful conversion that would throw away the precedences.
+- **GroupNode** created when user puts brackets. Is just wrap around InlineContainerNode
+- **BigOperatorNode** should not have a body
+
+Afterwards, rough idea:
+LimNode should have only 1 child. It should be either created by always checking if the text "lim" is there, or by some safer combination like \lim. Latter is cleaner but requires new functionality regarding parsing of the input (in latex-like way).
+Accent vs Deco: DecoratedNode should wrap an InlineContainer
+
+Accents/Decorations:
+- tilde `\tilde{}`
+- hat `\hat{}`
+- widehat `\widehat{}`
+- bar `\bar{}`
+- double dots `\ddot{}`
+- circle `\mathring{}`
+- angl `\angl{}` -> requires actuarial angle
+- underline `\underline{}`
+- overline/joint `\joint{}` -> looks a lot like \bar{} tbh but still good to have both supported
+
+I think AccentNode does not have to exist at all! Latex allows decoration on anything
+
+Next steps: 
+Go over all the points in my recent summary and implement all the changes on parts that currently will break the system 
+
+Definitely first step is whatever I need to do to ensure that everything is always a separate TextNode 
+
+### 15/05/2025
+
+I will not be working on this in the morning and afternoon due to actual responsibilities piling up.
+I did play around in the train for a few seconds and noticed that subsup still does not get reverted to textnode on deletion of all children.
+
+Did some writing in the train :)
+
+### 16/05/2025
+
+At some point should send sth like this to the potential client:
+> Some time ago there was a conversation here about your struggles with chronic pain and taking lecture notes on paper due to the lack of actuarial notation in existing software. I really enjoy and miss software engineering, so I started working on a tool that might help. It's very early in implementation, but the design is ready. So this is where I believe that the whole thing is achievable, but it's early enough for any feedback to be properly taken into account. If you are interested, I'd like to involve you in further development so it can actually become a custom solution for your exact situation (e.g. most comfortable keyboard/mouse usage for less pain, but also finding the right balance between visual expressiveness versus semantic validity). "Involvement" here just means: I write stuff about assumptions -> you correct me if I am wrong; I mention alternative design choices -> you pick your preference or give your opinion. (I write the whole design rationale in a technical report anyway so all I have to do is say which paragraphs are relevant) If you'd rather not, that's totally fine of course, I might continue making it anyway because it's really fun and existing tools do indeed suck for no good reason. Either way I will slow down until the end of June because I have been neglecting uni.
+
+I think ctrl+- and control+6 should lead to Actuarial instead of subsup left (and for both, if +shift then left side), because realistically you would never have to use those slots in subsup without also using right-hand sides. OR maybe even ever. Except in chemistry. In actuarial, it is used, and while it is not the main one to start with semantically (cuz the lower right should be the most important?), in math note taking one might read left-to-right and want to start the note-taking on the left. 
+
+Now looking into how to make textnodes appear in a good way instead of always having the user choose when to end the textnode
+
+These are all characters that are sent to the adder:
+```a-zA-Z0-9=:;\'\"\`~|?.,<>?+!@#$%&*()\[\]\{\}\-```
+Note: brackets are wrong, at least opening brackets don't count here and closing maybe.
+I think GroupNode maker will have to know when it is unclosed and look for the next matching closing bracket. So for now I will assume I have to turn them into separate textnodes.
+
+Cases:
+1. if current node's (old) content contains "\", check if match with any specialSequence. If so, transform to the result of said sequence. Otherwise, append to the same TextNode.
+2. `0-9` -> check if curr content also 0-9 and if so, append. Else new textnode
+3. `a-zA-Z` -> gets own new TextNode
+4. other -> new TextNode
+
+Idea: if typed shortcuts (with '\') will have 1 child, allow wraparound on select of a node when typing '\'? Still need to think about how to deal with invalid ones
+
+Damnit I just realised that even though my "keep digits together" is important for transformations, it disables the cursor-like functionality so if you type a long number and want to change the first digit, you have to remove all the others first. I want to fix it, but I think it's something to add later rather than change the whole approach
+
+chatgpt fucked up so bad, todo ask it to take into acc editorstate and cursor in all the /logic/ files
+
+ok I fixed it kinda but still big problem w anything mroe than just 1st level inline 
+but 1st lvl inline has: 
+- cursor
+- move cursor on click (but should still change the cursor type to caret)
+- move cursor on arrows
+- backspace
+

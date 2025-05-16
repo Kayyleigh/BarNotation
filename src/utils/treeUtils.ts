@@ -1,11 +1,23 @@
 // utils/treeUtils.ts
-import type { MathNode } from "../models/types";
+import type { InlineContainerNode, MathNode } from "../models/types";
 
 export type TreePath = {
   parent: MathNode;
   index: number;
   path: MathNode[];
 };
+
+export const findNodeById = (node: MathNode, targetId: string): MathNode | null => {
+    if (node.id === targetId) return node;
+  
+    const children = getLogicalChildren(node);
+    for (const child of children) {
+      const found = findNodeById(child, targetId);
+      if (found) return found;
+    }
+  
+    return null;
+  };
 
 export const findParentAndIndex = (
     root: MathNode,
@@ -52,8 +64,9 @@ export const findParentAndIndex = (
   export const getLogicalChildren = (node: MathNode): MathNode[] => {
     switch (node.type) {
       case "inline-container":
-      case "group":
         return node.children;
+      case "group":
+        return [node.child];
       case "fraction":
         return [node.numerator, node.denominator];
       case "subsup":
@@ -130,3 +143,101 @@ export const findParentAndIndex = (
   
     return null;
   };
+
+  export function updateNodeById(
+    node: MathNode,
+    targetId: string,
+    replacement: MathNode
+  ): MathNode {
+    if (node.id === targetId) {
+        console.log(`Yay, ${node.type} found match id ${targetId}`)
+
+      return replacement;
+    }
+
+    const children = getLogicalChildren(node)
+  
+    if (node.type === 'inline-container' && Array.isArray(children)) {
+        console.log(`Yes, I am in if because I am a ${node.type} with children ${children}`)
+
+      const newChildren = children.map(child =>
+        updateNodeById(child, targetId, replacement)
+      );
+  
+      return {
+        ...node,
+        children: newChildren,
+      };
+    }
+    else if (Array.isArray(children) && children.length > 0) {
+        console.log(`Yes, I am in elseif because I am a ${node.type} with children ${children}`)
+      children.map(child =>
+        updateNodeById(child, targetId, replacement)
+      )
+    };
+  
+    return node;
+  }
+
+  export function findParentContainerAndIndex(
+    root: MathNode,
+    childId: string
+  ): { container: InlineContainerNode; indexInParent: number } | null {
+    if (root.type === "inline-container") {
+      for (let i = 0; i < root.children.length; i++) {
+        const child = root.children[i];
+        if (child.id === childId) {
+          return { container: root, indexInParent: i };
+        }
+        const result = findParentContainerAndIndex(child, childId);
+        if (result) return result;
+      }
+    }
+  
+    // For all other container nodes
+    const containerChildren = getChildContainers(root);
+    for (const container of containerChildren) {
+      const result = findParentContainerAndIndex(container, childId);
+      if (result) return result;
+    }
+  
+    return null;
+  }
+  
+  // Optional helper to explore embedded container children
+  function getChildContainers(node: MathNode): InlineContainerNode[] {
+    const containers: InlineContainerNode[] = [];
+  
+    switch (node.type) {
+      case "fraction":
+        containers.push(
+          ...(node.numerator.type === "inline-container" ? [node.numerator] : []),
+          ...(node.denominator.type === "inline-container" ? [node.denominator] : [])
+        );
+        break;
+      case "group":
+        containers.push(...[node.child] as InlineContainerNode[]);
+        break;
+      case "root":
+        if (node.degree?.type === "inline-container") containers.push(node.degree);
+        if (node.radicand.type === "inline-container") containers.push(node.radicand);
+        break;
+      case "subsuperscript":
+        if (node.base.type === "inline-container") containers.push(node.base);
+        for (const sub of ["subLeft", "subRight", "supLeft", "supRight"] as const) {
+          const val = node[sub];
+          if (val?.type === "inline-container") containers.push(val);
+        }
+        break;
+      case "vector":
+        containers.push(...node.items.filter(n => n.type === "inline-container") as InlineContainerNode[]);
+        break;
+      case "matrix":
+        for (const row of node.rows) {
+          containers.push(...row.filter(n => n.type === "inline-container") as InlineContainerNode[]);
+        }
+        break;
+    }
+  
+    return containers;
+  }

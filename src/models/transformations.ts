@@ -1,42 +1,46 @@
 // models/transformations.ts
 import type { 
   FractionNode, 
+  InlineContainerNode, 
   MathNode, 
   RootNode, 
   SubSuperscriptNode 
 } from './types';
-import { generateId, createTextNode, createInlineContainer } from './nodeFactories';
+import { generateId, createInlineContainer } from './nodeFactories';
 
-export const transformToFraction = (node: MathNode): FractionNode => ({
+export const transformToFractionNode = (node: MathNode): FractionNode => ({
   id: generateId(),
   type: 'fraction',
-  numerator: node,
+  numerator: ensureInContainerNode(node),
   denominator: createInlineContainer(),
 });
 
-export const transformToSubscript = (node: MathNode): SubSuperscriptNode => ({
+export const transformToSubscriptNode = (node: MathNode): SubSuperscriptNode => ({
   id: generateId(),
   type: 'subsup',
-  base: node,
+  base: ensureInContainerNode(node),
   subLeft: createInlineContainer(),
   supLeft: createInlineContainer(),
   subRight: createInlineContainer(),
   supRight: createInlineContainer(),
 });
 
-export const transformToSuperscript = (node: MathNode): SubSuperscriptNode => ({
+export const transformToSuperscriptNode = (node: MathNode): SubSuperscriptNode => ({
   id: generateId(),
   type: 'subsup',
-  base: node,
+  base: ensureInContainerNode(node),
   subLeft: createInlineContainer(),
   supLeft: createInlineContainer(),
   subRight: createInlineContainer(),
   supRight: createInlineContainer(),
 });
 
-export const transformToRoot = (degree: MathNode | undefined): RootNode => ({
+export const transformToNthRootNode = (degree: MathNode | undefined): RootNode => ({
   id: generateId(),
   type: 'root',
   radicand: createInlineContainer(),
   degree: degree,
 });
+
+const ensureInContainerNode = (node: MathNode): InlineContainerNode =>
+  node.type === 'inline-container' ? node : createInlineContainer([node]);

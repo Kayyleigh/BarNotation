@@ -78,6 +78,23 @@ export const latexToMathNode = (latex: string): MathNode => {
   const stripBraces = (str: string): string =>
     str.startsWith("{") && str.endsWith("}") ? str.slice(1, -1) : str;
 
+  // Handle sub/sup combinations (can be expanded for full control)
+  const subsupMatch = latex.match(/^\{_\{(.*?)\}^\{(.*?)\}\{(.*?)\}_\{(.*?)\}^\{(.*?)\}\}$/);
+  console.log(subsupMatch ? "subsup" : "")
+  if (subsupMatch) {
+    const [, subLeft, supLeft, base, subRight, supRight] = subsupMatch.map(x =>
+      x ? stripBraces(x) : undefined
+    );
+
+    return createSubSup(
+      latexToMathNode(base!),
+      subLeft ? latexToMathNode(subLeft) : undefined,
+      supLeft ? latexToMathNode(supLeft) : undefined,
+      subRight ? latexToMathNode(subRight) : undefined,
+      supRight ? latexToMathNode(supRight) : undefined
+    );
+  }
+
   // Handle fractions
   const fracMatch = latex.match(/^\\frac\{(.+?)\}\{(.+?)\}$/);
   if (fracMatch) {
@@ -103,22 +120,6 @@ export const latexToMathNode = (latex: string): MathNode => {
     return createDecorated(
       decoMatch[1] as "hat" | "bar" | "angl",
       latexToMathNode(decoMatch[2])
-    );
-  }
-
-  // Handle sub/sup combinations (can be expanded for full control)
-  const subsupMatch = latex.match(/^\{(?:_(\{.*?\}))?(?:\^(\{.*?\}))?\{(.*?)\}(?:_(\{.*?\}))?(?:\^(\{.*?\}))?\}$/);
-  if (subsupMatch) {
-    const [, subLeft, supLeft, base, subRight, supRight] = subsupMatch.map(x =>
-      x ? stripBraces(x) : undefined
-    );
-
-    return createSubSup(
-      latexToMathNode(base!),
-      subLeft ? latexToMathNode(subLeft) : undefined,
-      supLeft ? latexToMathNode(supLeft) : undefined,
-      subRight ? latexToMathNode(subRight) : undefined,
-      supRight ? latexToMathNode(supRight) : undefined
     );
   }
 

@@ -6,7 +6,9 @@ export type NodeType =
   | "root"
   | "big-operator"
   | "subsup"
+  | "actsymb"
   | "decorated"
+  | "precedence"
   | "matrix"
   | "vector";
 
@@ -27,8 +29,8 @@ export interface InlineContainerNode extends BaseNode {
 
 export interface GroupNode extends BaseNode {
   type: "group";
-  children: MathNode[];
-  showBrackets: boolean;
+  child: MathNode;
+  showBrackets: boolean; //TODO maybe dont have this but do have a field for which bracket type: {[()]}
 }
 
 export interface FractionNode extends BaseNode {
@@ -48,7 +50,6 @@ export interface BigOperatorNode extends BaseNode {
   operator: string;
   lowerLimit?: MathNode;
   upperLimit?: MathNode;
-  body: MathNode;
 }
 
 export interface SubSuperscriptNode extends BaseNode {
@@ -60,10 +61,26 @@ export interface SubSuperscriptNode extends BaseNode {
   supRight: MathNode;
 }
 
+export interface ActuarialSymbolNode extends BaseNode {
+  type: "actsymb";
+  base: MathNode;
+  subLeft: MathNode;
+  supLeft: MathNode;
+  subRight: MathNode;
+  supRight: MathNode;
+}
+
 export interface DecoratedNode extends BaseNode {
   type: "decorated";
   base: MathNode;
-  decoration: "hat" | "bar" | "angl";
+  decoration: "tilde" | "hat" | "widehat" | "bar" | "ddot" | "mathring" | "angl" | "underline" | "joint";
+}
+
+export interface PrecedenceNode extends BaseNode {
+  type: "precedence";
+  base: MathNode;
+  //precedence: MathNode; // Could change to "1" | "2" | "3"; but this is better for freedom? Or not cuz I need to parse to latex
+  precedence: "1" | "2" | "3"; 
 }
 
 export interface MatrixNode extends BaseNode {
@@ -84,8 +101,10 @@ export type MathNode =
   | FractionNode
   | RootNode
   | BigOperatorNode
+  | ActuarialSymbolNode
   | SubSuperscriptNode
   | DecoratedNode
+  | PrecedenceNode
   | MatrixNode
   | VectorNode;
 
@@ -98,7 +117,7 @@ export const nodeToString = (node: MathNode): string => {
     case "inline-container":
       return `InlineContainerNode(id: ${node.id}, childrenCount: ${node.children.length})`;
     case "group":
-      return `GroupNode(id: ${node.id}, childrenCount: ${node.children.length})`;
+      return `GroupNode(id: ${node.id})`;
     case "fraction":
       return `FractionNode(id: ${node.id}, numerator: ${node.numerator.id}, denominator: ${node.denominator.id})`;
     case "root":
@@ -126,7 +145,7 @@ export const nodeToMathText = (node: MathNode): string => {
     case "inline-container":
       return `${node.children.map(nodeToMathText).join(" ")}`;
     case "group":
-      return `(${node.children.map(nodeToMathText).join(" ")})`;
+      return `(${nodeToMathText(node.child)})`;
     case "fraction":
       return `(${nodeToMathText(node.numerator)}/${nodeToMathText(node.denominator)})`;
     case "root":
