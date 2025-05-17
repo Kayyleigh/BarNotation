@@ -1,5 +1,6 @@
 // utils/treeUtils.ts
-import type { InlineContainerNode, MathNode } from "../models/types";
+import { nodeToLatex } from "../models/latexParser";
+import { nodeToString, type InlineContainerNode, type MathNode } from "../models/types";
 
 export type TreePath = {
   parent: MathNode;
@@ -151,6 +152,8 @@ export const findParentAndIndex = (
   ): MathNode {
     if (node.id === targetId) {
         console.log(`Yay, ${node.type} found match id ${targetId}`)
+        console.log(`will replace ${nodeToString(node)} with ${nodeToString(replacement)}`)
+        console.log(`returning ${nodeToLatex(replacement)}`)
 
       return replacement;
     }
@@ -170,12 +173,23 @@ export const findParentAndIndex = (
       };
     }
     else if (Array.isArray(children) && children.length > 0) {
-        console.log(`Yes, I am in elseif because I am a ${node.type} with children ${children}`)
-      children.map(child =>
+      console.log(`Yes, I am in elseif because I am a ${node.type} with children ${children}`)
+      const newChildren = children.map(child =>
         updateNodeById(child, targetId, replacement)
       )
+
+      if (node.type === 'fraction') {
+        return {
+          ...node,
+          numerator: newChildren[0],
+          denominator: newChildren[1]
+        }
+      }
+
+      console.warn(`${node.type} is missing a case in updateNodeById (in treeUtils)`)
     };
   
+    console.log(`returning ${nodeToLatex(node)}`)
     return node;
   }
 

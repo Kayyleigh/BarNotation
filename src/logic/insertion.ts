@@ -1,6 +1,7 @@
 import type { EditorState } from "./editor-state";
 import { createTextNode } from "../models/nodeFactories";
 import { findNodeById, updateNodeById } from "../utils/treeUtils";
+import { nodeToLatex } from "../models/latexParser";
 
 export const handleCharacterInsert = (state: EditorState, char: string): EditorState => {
   const container = findNodeById(state.rootNode, state.cursor.containerId);
@@ -18,6 +19,8 @@ export const handleCharacterInsert = (state: EditorState, char: string): EditorS
     ...container,
     children: updatedChildren,
   });
+
+  console.log(`updated root to ${nodeToLatex(updatedRoot)}`)
 
   return {
     rootNode: updatedRoot,

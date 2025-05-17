@@ -676,4 +676,7 @@ but 1st lvl inline has:
 - move cursor on click (but should still change the cursor type to caret)
 - move cursor on arrows
 - backspace
+And apparently even selecting mult w mouse (but no copy paste stuff, but that feels like it should so now I have to implement that as well at some point!)
 
+### 17/05/2025
+Fixed the fraction problem w ability to type!! it is awesome now :DD just no deletion yet 
