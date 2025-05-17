@@ -8,6 +8,7 @@ import type {
   RootNode,
   BigOperatorNode,
   SubSuperscriptNode,
+  ActuarialSymbolNode,
   DecoratedNode,
   MatrixNode,
   VectorNode
@@ -29,7 +30,7 @@ export const createInlineContainer = (children: MathNode[] = []): InlineContaine
 });
 
 export const createGroupNode = (
-  child: MathNode = createInlineContainer(), 
+  child: InlineContainerNode = createInlineContainer(), 
   bracketStyle: BracketStyle,
 ): GroupNode => ({
   id: uuidv4(),
@@ -63,27 +64,41 @@ export const createBigOperator = (
   operator: string = "∑",
   lowerLimit: MathNode = createTextNode("n=1"),
   upperLimit: MathNode = createTextNode("i"),
-  body: MathNode = createTextNode("")
 ): BigOperatorNode => ({
   id: uuidv4(),
   type: "big-operator",
   lowerLimit: lowerLimit,
   upperLimit: upperLimit,
   operator: operator,
-  body: body
 });
 
 export const createSubSup = (
-  base: MathNode = createTextNode(""),
-  subLeft: MathNode = createTextNode(""),
-  subRight: MathNode = createTextNode(""),
-  supLeft: MathNode = createTextNode(""),
-  supRight: MathNode = createTextNode("")
+  base: InlineContainerNode = createInlineContainer(), 
+  subLeft: InlineContainerNode = createInlineContainer(), 
+  subRight: InlineContainerNode = createInlineContainer(), 
+  supLeft: InlineContainerNode = createInlineContainer(), 
+  supRight: InlineContainerNode = createInlineContainer(), 
 ): SubSuperscriptNode => ({
   id: uuidv4(),
   type: "subsup",
   base: base,
-  subLeft: subLeft, //TODO think abt whether I need text or IC nodes (in this file, not only this line)
+  subLeft: subLeft,
+  supLeft: supLeft,
+  subRight: subRight,
+  supRight: supRight,
+});
+
+export const createActSymb = (
+  base: InlineContainerNode = createInlineContainer(), 
+  subLeft: InlineContainerNode = createInlineContainer(), 
+  subRight: InlineContainerNode = createInlineContainer(), 
+  supLeft: InlineContainerNode = createInlineContainer(), 
+  supRight: InlineContainerNode = createInlineContainer(), 
+): ActuarialSymbolNode => ({
+  id: uuidv4(),
+  type: "actsymb",
+  base: base,
+  subLeft: subLeft,
   supLeft: supLeft,
   subRight: subRight,
   supRight: supRight,

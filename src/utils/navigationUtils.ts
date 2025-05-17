@@ -8,7 +8,8 @@ export const directionalChildOrder: Record<
 > = {
   "fraction": ["numerator", "denominator"],
   "root": ["degree", "radicand"], // if degree exists
-  "subsup": ["base", "subscript", "superscript"],
+  "subsup": ["base", "subLeft", "supLeft", "subRight", "supRight"],
+  "actsymb": ["base", "subLeft", "supLeft", "subRight", "supRight"],
   "big-operator": ["operator", "lowerLimit", "upperLimit", "body"],
   "decorated": ["base", "decoration"],
   "group": ["child"],

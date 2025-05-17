@@ -72,6 +72,8 @@ export const findParentAndIndex = (
         return [node.numerator, node.denominator];
       case "subsup":
         return [node.base, node.subLeft, node.supLeft, node.subRight, node.supRight];
+      case "actsymb":
+        return [node.base, node.subLeft, node.supLeft, node.subRight, node.supRight];
       default:
         return [];
     }
@@ -84,7 +86,9 @@ export const findParentAndIndex = (
       case "root":
         return ["base", "index"];
       case "subsup":
-        return ["base", "subscript", "superscript"];
+        return ["base", "subLeft", "supLeft", "subRight", "supRight"];
+      case "actsymb":
+        return ["base", "subLeft", "supLeft", "subRight", "supRight"];
       case "big-operator":
         return ["body", "subscript", "superscript"];
       case "decorated":
@@ -217,6 +221,26 @@ export const findParentAndIndex = (
           denominator: newChildren[1]
         }
       }
+      if (node.type === 'subsup') {
+        return {
+          ...node,
+          base: newChildren[0],
+          subLeft: newChildren[1],
+          supLeft: newChildren[2],
+          subRight: newChildren[3],
+          supRight: newChildren[4],
+        }
+      }
+      if (node.type === 'actsymb') {
+        return {
+          ...node,
+          base: newChildren[0],
+          subLeft: newChildren[1],
+          supLeft: newChildren[2],
+          subRight: newChildren[3],
+          supRight: newChildren[4],
+        }
+      }
 
       console.warn(`${node.type} is missing a case in updateNodeById (in treeUtils)`)
     };
@@ -259,12 +283,15 @@ export const findParentAndIndex = (
       if (root.numerator.id === inlineContainerId) return { parent: root, key: "numerator" };
       if (root.denominator.id === inlineContainerId) return { parent: root, key: "denominator" };
     }
-    else if (root.type === 'subsup' ) {
+    else if (root.type === 'subsup') {
       if (root.base.id === inlineContainerId) return { parent: root, key: "base" };
       if (root.subLeft.id === inlineContainerId) return { parent: root, key: "subleft" };
       if (root.supLeft.id === inlineContainerId) return { parent: root, key: "supleft" };
       if (root.subRight.id === inlineContainerId) return { parent: root, key: "subright" };
       if (root.supRight.id === inlineContainerId) return { parent: root, key: "supright" };
+    }
+    else if (root.type === 'group') {
+      if (root.child.id === inlineContainerId) return { parent: root, key: "child" };
     }
     else {
       console.log(`${root.type} but no child matches the id`)

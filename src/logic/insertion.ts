@@ -146,9 +146,6 @@ export const handleBracketInsert = (
   const container = findNodeById(state.rootNode, state.cursor.containerId) as InlineContainerNode | undefined;
   if (!container || container.type !== "inline-container") return state;
 
-  const cursorIndex = state.cursor.index;
-  const children = container.children;
-
   const openSymbol = getOpenSymbol(bracketStyle);
   const closeSymbol = getCloseSymbol(bracketStyle);
 

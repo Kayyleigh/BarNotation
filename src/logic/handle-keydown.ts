@@ -2,14 +2,50 @@ import type { EditorState } from "./editor-state";
 import { handleArrowLeft, handleArrowRight } from "./navigation";
 import { handleBracketInsert, handleCharacterInsert } from "./insertion";
 import { handleBackspace } from "./deletion";
-import { transformToFraction, transformToGroupNode } from "./transformations";
-import { createGroupNode, createInlineContainer } from "../models/nodeFactories";
+import { transformToActsymbNode, transformToFraction, transformToSubSupNode } from "./transformations";
 import { getStyleFromSymbol, isClosingBracket, isOpeningBracket } from "../utils/bracketUtils";
 
 export function handleKeyDown(
   e: React.KeyboardEvent,
   state: EditorState
 ): EditorState | null {
+
+  // === Triple-key events ===
+
+  if (e.ctrlKey && e.shiftKey && e.code === 'Digit6') {
+    e.preventDefault();
+    return transformToActsymbNode(state, "supLeft");
+  }
+
+  if (e.ctrlKey && e.shiftKey && e.key === '_') {
+    e.preventDefault();
+    return transformToActsymbNode(state, "subLeft");
+  }
+
+  // === Double-key events ===
+
+  if (e.shiftKey && e.code === 'Digit6') {
+    e.preventDefault();    
+    return transformToSubSupNode(state, "supRight");
+  }
+
+  if (e.shiftKey && e.key === '_') {
+    e.preventDefault();
+    return transformToSubSupNode(state, "subRight");
+  }
+
+  if (e.ctrlKey && e.key === '6') {
+    e.preventDefault();
+    return transformToActsymbNode(state, "supRight");
+  }
+
+  if (e.ctrlKey && e.key === '-') {
+    e.preventDefault();
+    return transformToActsymbNode(state, "subRight");
+  }
+
+  // === Single-key events ===
+
   const key = e.key;
 
   if (key === "ArrowLeft") {
@@ -33,11 +69,6 @@ export function handleKeyDown(
     return transformToFraction(state);
   }
 
-  // Opening bracket:
-  // 1. if no more non-bracket after in container -> make pair with empty containernode
-  // 2. if matching closing bracket textNode later in node -> transform all betw into GroupNode with contents wrapped in its IC
-  // 3. else only opening bracket in textnode (normal insertion behavior)
-
   if (isOpeningBracket(key)) {
     e.preventDefault();
     const style = getStyleFromSymbol(key);
@@ -47,17 +78,9 @@ export function handleKeyDown(
     }
   }
 
-  // Closing bracket:
-  // 1. if matching opening bracket textNode earlier in node -> transform all betw into GroupNode with contents wrapped in its IC
-  // 2. else only closing bracket in textNode (normal insertion behavior)
-
   if (isClosingBracket(key)) {
     e.preventDefault();
     const style = getStyleFromSymbol(key);
-
-    // check if opening bracket textNode earlier in same contaienr
-    // if so: make new groupnode (full)
-    // else insert symbol
 
     if (style) {
       return handleBracketInsert(state, style, "close");

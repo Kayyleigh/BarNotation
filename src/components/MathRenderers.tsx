@@ -10,7 +10,8 @@ import type {
     FractionNode, 
     RootNode, 
     BigOperatorNode, 
-    SubSuperscriptNode, 
+    SubSuperscriptNode,
+    ActuarialSymbolNode, 
     DecoratedNode, 
     MatrixNode, 
     VectorNode 
@@ -172,6 +173,74 @@ export const renderGroupNode = (
       </span>
 
       <span className="bracket bracket-close">{getCloseSymbol(node.bracketStyle)}</span>
+    </span>
+  );
+};
+
+export const renderSubSuperscriptNode = (
+  node: SubSuperscriptNode,
+  props: RenderProps
+) => {
+  return (
+    <span className={clsx("math-node", "type-subsup")}>
+      {/* Superscript left */}
+      <span className="sup-left">
+        <MathRenderer node={node.supLeft} {...props} />
+      </span>
+
+      {/* Subscript left */}
+      <span className="sub-left">
+        <MathRenderer node={node.subLeft} {...props} />
+      </span>
+
+      {/* Base */}
+      <span className="base">
+        <MathRenderer node={node.base} {...props} />
+      </span>
+
+      {/* Subscript right */}
+      <span className="sub-right">
+        <MathRenderer node={node.subRight} {...props} />
+      </span>
+
+      {/* Superscript right */}
+      <span className="sup-right">
+        <MathRenderer node={node.supRight} {...props} />
+      </span>
+    </span>
+  );
+};
+
+export const renderActSymbNode = (
+  node: ActuarialSymbolNode,
+  props: RenderProps
+) => {
+  return (
+    <span className={clsx("math-node", "type-subsup")}>
+      {/* Superscript left */}
+      <span className="sup-left">
+        <MathRenderer node={node.supLeft} {...props} />
+      </span>
+
+      {/* Subscript left */}
+      <span className="sub-left">
+        <MathRenderer node={node.subLeft} {...props} />
+      </span>
+
+      {/* Base */}
+      <span className="base">
+        <MathRenderer node={node.base} {...props} />
+      </span>
+
+      {/* Subscript right */}
+      <span className="sub-right">
+        <MathRenderer node={node.subRight} {...props} />
+      </span>
+
+      {/* Superscript right */}
+      <span className="sup-right">
+        <MathRenderer node={node.supRight} {...props} />
+      </span>
     </span>
   );
 };

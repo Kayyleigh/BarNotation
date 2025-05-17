@@ -732,3 +732,22 @@ Closing bracket:
 Some test cases for me to think about how to break my own idea:
 ab{cd)} -> 
 I think it will be ok, else I will fix it later
+
+OMGGGGG
+![alt text](image-16.png)
+
+I think it's actually decent omg. Just expanding and prettifying now. Until it's bit more usable to know what else to do
+
+For every node type, add in these:
+- directionalChildOrder in navigation utils
+- renderer in MathRenderers
+- case in MathRenderer
+- stuff in treeutils
+- shortcut handling in handle-keydown
+- latex parse in latexparser
+- creator in Nodefactories
+
+Next bug to fix is line 109 in the deletion, it should be poss to delete fully empty node
+but curr failsafe already exists, can go right arr and remove whole thing anyway
+
+![alt text](image-17.png)

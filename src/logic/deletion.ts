@@ -1,5 +1,5 @@
 import type { EditorState } from "./editor-state";
-import { findNodeById, findParentContainerAndIndex, findParentOfInlineContainer, updateNodeById } from "../utils/treeUtils";
+import { findNodeById, findParentContainerAndIndex, findParentOfInlineContainer, isEmptyNode, updateNodeById } from "../utils/treeUtils";
 import type {
   InlineContainerNode,
   MathNode,
@@ -20,8 +20,12 @@ export const handleBackspace = (state: EditorState): EditorState => {
   if (cursor.index === 0 && container.children.length === 0) {
     console.log(`start of empty container`)
     const parentInfo = findParentOfInlineContainer(state.rootNode, container.id);
-    if (!parentInfo) return state;
+    if (!parentInfo) {
+      console.log(`you do not have IC parent`)
 
+      return state;
+    
+    }
     const { parent, key } = parentInfo;
 
     let replacementChildren: MathNode[] = [];
@@ -37,8 +41,31 @@ export const handleBackspace = (state: EditorState): EditorState => {
         else if (key === "denominator" && numerator.type === "inline-container") {
           replacementChildren = numerator.children;
         }
+        else {
+          console.log(`Yes you are here`)
+        }
         break;
         // Add logic for root, subsup, etc.
+      }
+      case "group": {
+        console.log(`you group`)
+        const child = parent.child
+        replacementChildren = child.children
+        break;
+      }
+      case "subsup": {
+        const corners = [parent.subLeft, parent.supLeft, parent.subRight, parent.supRight];
+        if (corners.every(corner => isEmptyNode(corner))) {
+          replacementChildren = (parent.base as InlineContainerNode).children
+        }
+        break;
+      }
+      case "actsymb": {
+        const corners = [parent.subLeft, parent.supLeft, parent.subRight, parent.supRight];
+        if (corners.every(corner => isEmptyNode(corner))) {
+          replacementChildren = (parent.base as InlineContainerNode).children
+        }
+        break;
       }
     }
 
@@ -78,7 +105,8 @@ export const handleBackspace = (state: EditorState): EditorState => {
         },
       };
     }
-
+    console.log(`${replacementChildren}`)
+    // TODO I think this is where I should delete whole nodes except top root
     return state;
   }
 

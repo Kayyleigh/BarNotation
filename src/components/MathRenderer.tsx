@@ -8,6 +8,8 @@ import {
   renderInlineContainerNode,
   renderFractionNode,
   renderGroupNode,
+  renderSubSuperscriptNode,
+  renderActSymbNode,
   //renderRootNode,
   //renderBigOperatorNode,
   //renderSubSuperscriptNode,
@@ -56,6 +58,9 @@ export const MathRenderer: React.FC<MathRendererProps> = ({
 
     case "subsup":
       return renderSubSuperscriptNode(node, props);
+
+    case "actsymb":
+      return renderActSymbNode(node, props);
 
     case "decorated":
       return renderDecoratedNode(node, props);

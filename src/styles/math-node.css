@@ -1,3 +1,15 @@
+:root {
+    /* Theming variables (light mode default) */
+    --math-font-size-base: 1em;
+    --math-font-size-sub: 0.5em;
+    --math-color-background-subsup: transparent;
+    --math-color-highlight: hotpink; /* For debug/preview only */
+  
+    --math-sub-overlap-x: 0.2em;
+    --math-sub-overlap-y: 1.5em;
+  }
+
+
 .math-node {
     display: inline-block;
     padding: 2px;
@@ -63,5 +75,70 @@
     border: none;
     border-top: 1px solid black;
     margin: 0;
+  }
+  
+  /* SubSuperscript Node (e.g. tensor-style layout) */
+.math-node.type-subsup {
+    display: inline-grid;
+    grid-template-columns: auto auto auto;
+    grid-template-rows: auto auto auto;
+    justify-items: center;
+    align-items: center;
+    font-size: var(--math-font-size-base);
+    background-color: var(--math-color-background-subsup);
+    line-height: 1;
+  }
+  
+  /* Base centered */
+  .math-node.type-subsup .base {
+    grid-column: 2;
+    grid-row: 2;
+    z-index: 1;
+  }
+  
+  /* All sub/sup elements share base styles */
+  .math-node.type-subsup .sub-left,
+  .math-node.type-subsup .sup-left,
+  .math-node.type-subsup .sub-right,
+  .math-node.type-subsup .sup-right {
+    font-size: var(--math-font-size-sub);
+    line-height: 1;
+    white-space: nowrap;
+    position: relative;
+    z-index: 0;
+  }
+  
+  /* Left side alignment */
+  .math-node.type-subsup .sup-left {
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: end;
+    align-self: end;
+    transform: translate(var(--math-sub-overlap-x), var(--math-sub-overlap-y));
+  }
+  
+  .math-node.type-subsup .sub-left {
+    grid-column: 1;
+    grid-row: 3;
+    justify-self: end;
+    align-self: start;
+    transform: translate(var(--math-sub-overlap-x), calc(-1 * var(--math-sub-overlap-y)));
+  }
+  
+  /* Right side alignment */
+  .math-node.type-subsup .sup-right {
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: start;
+    align-self: end;
+    transform: translate(calc(-1 * var(--math-sub-overlap-x)), var(--math-sub-overlap-y));
+  }
+  
+  .math-node.type-subsup .sub-right {
+    grid-column: 3;
+    grid-row: 3;
+    justify-self: start;
+    align-self: start;
+    transform: translate(calc(-1 * var(--math-sub-overlap-x)), calc(-1 * var(--math-sub-overlap-y)));
   }
   

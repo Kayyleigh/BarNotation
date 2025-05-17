@@ -1,9 +1,10 @@
 import { type EditorState } from "./editor-state";
 import { findNodeById, updateNodeById } from "../utils/treeUtils";
 import { transformToFractionNode } from "../models/transformations";
-import { getCloseSymbol, getOpenSymbol, type BracketStyle } from "../utils/bracketUtils";
-import { createGroupNode, createInlineContainer } from "../models/nodeFactories";
-import type { InlineContainerNode, TextNode } from "../models/types";
+import { type BracketStyle } from "../utils/bracketUtils";
+import { createActSymb, createGroupNode, createInlineContainer, createSubSup } from "../models/nodeFactories";
+import type { InlineContainerNode } from "../models/types";
+import type { CornerPosition } from "../utils/subsupUtils";
 
 export function transformToFraction(state: EditorState): EditorState {
   const container = findNodeById(state.rootNode, state.cursor.containerId);
@@ -12,7 +13,7 @@ export function transformToFraction(state: EditorState): EditorState {
   const idx = state.cursor.index;
   if (idx === 0) return state;
 
-  const numerator = container.children[idx - 1]; //TODO or Group when that exists
+  const numerator = container.children[idx - 1];
 
   const fraction = transformToFractionNode(numerator);
 
@@ -35,6 +36,75 @@ export function transformToFraction(state: EditorState): EditorState {
     },
   };
 }
+
+export function transformToSubSupNode(
+  state: EditorState,
+  cornerPosition: CornerPosition,
+): EditorState {
+  const container = findNodeById(state.rootNode, state.cursor.containerId);
+  console.log(container)
+  if (!container || container.type !== "inline-container") return state;
+  const idx = state.cursor.index;
+  if (idx === 0) return state;
+
+  const base = container.children[idx - 1]; 
+  const subsupBase = createInlineContainer([base])
+  const subsupNode = createSubSup(subsupBase);
+
+  const newChildren = [
+    ...container.children.slice(0, idx - 1),
+    subsupNode,
+    ...container.children.slice(idx),
+  ];
+
+  const updatedRoot = updateNodeById(state.rootNode, container.id, {
+    ...container,
+    children: newChildren,
+  });
+
+  return {
+    rootNode: updatedRoot,
+    cursor: {
+      containerId: subsupNode[cornerPosition].id,
+      index: 0,
+    },
+  };
+}
+
+export function transformToActsymbNode(
+  state: EditorState,
+  cornerPosition: CornerPosition,
+): EditorState {
+  const container = findNodeById(state.rootNode, state.cursor.containerId);
+  console.log(container)
+  if (!container || container.type !== "inline-container") return state;
+  const idx = state.cursor.index;
+  if (idx === 0) return state;
+
+  const base = container.children[idx - 1]; 
+  const actsymbBase = createInlineContainer([base])
+  const actsymbNode = createActSymb(actsymbBase);
+
+  const newChildren = [
+    ...container.children.slice(0, idx - 1),
+    actsymbNode,
+    ...container.children.slice(idx),
+  ];
+
+  const updatedRoot = updateNodeById(state.rootNode, container.id, {
+    ...container,
+    children: newChildren,
+  });
+
+  return {
+    rootNode: updatedRoot,
+    cursor: {
+      containerId: actsymbNode[cornerPosition].id,
+      index: 0,
+    },
+  };
+}
+
 
 export function transformToGroupNode(
   state: EditorState,
@@ -72,7 +142,7 @@ export function transformToGroupNode(
     rootNode: updatedRoot,
     cursor: {
       containerId: groupNode.child.id, // inline container inside the GroupNode
-      index: 0,
+      index: 0, //TODO: ideally know if should jump to end for after close is made
     },
   };
 }
