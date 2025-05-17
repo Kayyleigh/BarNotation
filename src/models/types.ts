@@ -1,3 +1,5 @@
+import type { BracketStyle } from "../utils/bracketUtils";
+
 export type NodeType =
   | "text"
   | "inline-container"
@@ -29,8 +31,9 @@ export interface InlineContainerNode extends BaseNode {
 
 export interface GroupNode extends BaseNode {
   type: "group";
-  child: MathNode;
+  child: InlineContainerNode;
   showBrackets: boolean; //TODO maybe dont have this but do have a field for which bracket type: {[()]}
+  bracketStyle: BracketStyle;
 }
 
 export interface FractionNode extends BaseNode {

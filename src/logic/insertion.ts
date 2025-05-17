@@ -3,7 +3,9 @@ import { createTextNode } from "../models/nodeFactories";
 import { findNodeById, updateNodeById } from "../utils/treeUtils";
 import { nodeToLatex } from "../models/latexParser";
 import { specialSequences } from "../models/specialSequences";
-import type { TextNode } from "../models/types";
+import type { InlineContainerNode, TextNode } from "../models/types";
+import { getCloseSymbol, getOpenSymbol, type BracketStyle } from "../utils/bracketUtils";
+import { transformToGroupNode } from "./transformations";
 
 export const handleCharacterInsert = (state: EditorState, char: string): EditorState => {
   const container = findNodeById(state.rootNode, state.cursor.containerId);
@@ -135,3 +137,97 @@ export const handleCharacterInsert = (state: EditorState, char: string): EditorS
     },
   };
 }
+
+export const handleBracketInsert = (
+  state: EditorState,
+  bracketStyle: BracketStyle,
+  side: "open" | "close"
+): EditorState => {
+  const container = findNodeById(state.rootNode, state.cursor.containerId) as InlineContainerNode | undefined;
+  if (!container || container.type !== "inline-container") return state;
+
+  const cursorIndex = state.cursor.index;
+  const children = container.children;
+
+  const openSymbol = getOpenSymbol(bracketStyle);
+  const closeSymbol = getCloseSymbol(bracketStyle);
+
+  if (side === "open") {
+    // Insert the open symbol normally first
+    const updatedState = handleCharacterInsert(state, openSymbol);
+
+    const updatedContainer = findNodeById(updatedState.rootNode, state.cursor.containerId) as InlineContainerNode | undefined;
+    if (!updatedContainer) return updatedState;
+
+    const updatedChildren = updatedContainer.children;
+    const newCursorIndex = updatedState.cursor.index;
+
+
+    // Find matching closing bracket after the new cursor position
+    const closeIdx = updatedChildren.findIndex(
+      (child, i) =>
+        i > newCursorIndex - 1 &&
+        child.type === "text" &&
+        (child as TextNode).content === closeSymbol
+    );
+
+    if (closeIdx !== -1) {
+      // Transform between open bracket position and close bracket position
+      return transformToGroupNode(
+        updatedState,
+        updatedContainer.id,
+        newCursorIndex - 1,
+        closeIdx,
+        bracketStyle
+      );
+    }
+    else {
+      console.log(`Maybe end of container`)
+      //return handleBracketInsert(updatedState, bracketStyle, "close")
+    }
+
+    // Otherwise, just return updated state with inserted open bracket
+    return updatedState;
+  }
+
+  if (side === "close") {
+    // Insert the close symbol normally first
+    const updatedState = handleCharacterInsert(state, closeSymbol);
+
+    const updatedContainer = findNodeById(updatedState.rootNode, state.cursor.containerId) as InlineContainerNode | undefined;
+    if (!updatedContainer) return updatedState;
+
+    const updatedChildren = updatedContainer.children;
+    const newCursorIndex = updatedState.cursor.index;
+
+    // Find matching opening bracket before the new cursor position
+    // Note: updated cursor index will have advanced by 1 after insertion
+    const openIdx = updatedChildren
+      .slice(0, newCursorIndex)
+      .reverse()
+      .findIndex(
+        (child) =>
+          child.type === "text" &&
+          (child as TextNode).content === openSymbol
+      );
+
+    if (openIdx !== -1) {
+      // Because we reversed, convert to original index:
+      const matchOpenIdx = newCursorIndex - 1 - openIdx;
+
+      // Transform between matching open and just inserted close bracket
+      return transformToGroupNode(
+        updatedState,
+        updatedContainer.id,
+        matchOpenIdx,
+        newCursorIndex - 1,
+        bracketStyle
+      );
+    }
+    else console.log(`uhm?`)
+
+    return updatedState;
+  }
+
+  return state;
+};

@@ -1,6 +1,5 @@
 import React from "react";
 import MathEditor from "./components/MathEditor";
-import "./styles/math.css";
 import "./styles/styles.css";
 
 const App: React.FC = () => (

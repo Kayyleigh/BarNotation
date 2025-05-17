@@ -695,3 +695,40 @@ I think later on I might regret the way numbers are 1 textnode. Maybe it should 
 
 Either way, Group is the next logical thing to implement
 perhaps after fixing the deletion logic of fractions
+
+
+Finding out how markdown deals with brackets:
+
+Opening:
+() - if end of container then make both
+(8 - if start of nonempty, only opening
+8(9 - if middle, only opening
+
+Closing:
+) -> if end of container, only closing
+8)9 -> if middle, only closing
+89) -> if end, only closing
+
+closing after opening:
+(8)
+
+opening after closing:
+(8) -> if at start, take existing closing
+89(w87r}) -> crap, this one can deal with intruders
+8()) -> if next to existing closing, make new pair 
+
+8)]]
+
+Reduce to clean ruleset for my app:
+Opening bracket:
+1. if no more non-bracket after in container -> make pair with empty containernode
+2. if matching closing bracket textNode later in node -> transform all betw into GroupNode with contents wrapped in its IC
+3. else only opening bracket in textnode (normal insertion behavior)
+
+Closing bracket:
+1. if matching opening bracket textNode earlier in node -> transform all betw into GroupNode with contents wrapped in its IC
+2. else only closing bracket in textNode (normal insertion behavior)
+
+Some test cases for me to think about how to break my own idea:
+ab{cd)} -> 
+I think it will be ok, else I will fix it later

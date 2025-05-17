@@ -1,12 +1,12 @@
 import React, { useRef, useState } from "react";
-import { createTextNode, createInlineContainer } from "../models/nodeFactories"
+import { createInlineContainer } from "../models/nodeFactories"
 import { createEditorState, setCursor, type EditorState } from "../logic/editor-state";
 import { handleKeyDown } from "../logic/handle-keydown";
 import Toolbar from "./Toolbar";
 import { MathRenderer } from "./MathRenderer";
 
 const initialState: EditorState = createEditorState(
-  createInlineContainer([createTextNode("")])
+  createInlineContainer()
 );
 
 export const MathEditor: React.FC = () => {

@@ -1,5 +1,4 @@
 import type { EditorState } from "./editor-state";
-import type { CursorPosition } from "./cursor";
 import { findNodeById, findParentContainerAndIndex, findParentOfInlineContainer, updateNodeById } from "../utils/treeUtils";
 import type {
   InlineContainerNode,
@@ -19,13 +18,13 @@ export const handleBackspace = (state: EditorState): EditorState => {
 
   // Case: deleting at beginning of an empty container
   if (cursor.index === 0 && container.children.length === 0) {
+    console.log(`start of empty container`)
     const parentInfo = findParentOfInlineContainer(state.rootNode, container.id);
     if (!parentInfo) return state;
 
     const { parent, key } = parentInfo;
 
     let replacementChildren: MathNode[] = [];
-    let newCursor: CursorPosition | null = null;
 
     switch (parent.type) {
       case "fraction": {
@@ -34,50 +33,60 @@ export const handleBackspace = (state: EditorState): EditorState => {
 
         if (key === "numerator" && denominator.type === "inline-container") {
           replacementChildren = denominator.children;
-          newCursor = {
-            containerId: parent.id, // we'll fix this shortly
-            index: 0,
-          };
-        } else if (key === "denominator" && numerator.type === "inline-container") {
+        } 
+        else if (key === "denominator" && numerator.type === "inline-container") {
           replacementChildren = numerator.children;
-          newCursor = {
-            containerId: parent.id, // will be adjusted
-            index: numerator.children.length,
-          };
         }
         break;
         // Add logic for root, subsup, etc.
       }
     }
 
-    if (replacementChildren.length > 0 && newCursor) {
+    if (replacementChildren.length > 0) {
       // Find grandparent inline-container to insert children into
       const grandParent = findParentContainerAndIndex(state.rootNode, parentInfo.parent.id);
       if (!grandParent || grandParent.container.type !== "inline-container") return state;
-
+    
       const grandParentContainer = grandParent.container as InlineContainerNode;
       const indexInGrandParent = grandParentContainer.children.findIndex((c) => c.id === parent.id);
       if (indexInGrandParent === -1) return state;
-
+    
       const newChildren = [
         ...grandParentContainer.children.slice(0, indexInGrandParent),
         ...replacementChildren,
         ...grandParentContainer.children.slice(indexInGrandParent + 1),
       ];
-
+    
+      const insertedCount = replacementChildren.length;
+    
+      // Decide cursor index: start or end of inserted
+      const cursorIndex =
+        key === "numerator"
+          ? indexInGrandParent + 1 // end of numerator //TODO +0 if there is no empty Textnode at start of IC
+          : indexInGrandParent + insertedCount; // start of denominator
+    
       const updatedRoot = updateNodeById(state.rootNode, grandParentContainer.id, {
         ...grandParentContainer,
         children: newChildren,
       });
-
-      // Fix container ID to the flattened grandparent container
+    
       return {
         rootNode: updatedRoot,
-        cursor: newCursor,
+        cursor: {
+          containerId: grandParentContainer.id,
+          index: cursorIndex,
+        },
       };
     }
 
     return state;
+  }
+
+  console.log(`You are deleting the normal way: ${cursor.containerId}, ${cursor.index}, ${container.type}`)
+
+  if (cursor.index === 0 && container.children.length > 0) {
+    console.log(`Trying to backspace at start of non-empty ${container.type}. I have not decided yet how to handle that`)
+    return state
   }
 
   // Standard deletion

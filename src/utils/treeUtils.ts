@@ -260,7 +260,7 @@ export const findParentAndIndex = (
     else {
       console.log(`${root.type} but no child matches the id`)
     }
-    
+
     // Recurse into children
     const childNodes = getLogicalChildren(root);
     for (const child of childNodes) {
@@ -316,3 +316,110 @@ export const findParentAndIndex = (
   
     return containers;
   }
+
+  /**
+ * Recursively finds the parent MathNode and the key under which the target inline container is stored.
+ */
+export function findParentContainerAndKey(
+  node: MathNode,
+  targetId: string
+): { parent: MathNode; key: string } | null {
+  // Iterate through all keys of the node
+  for (const [key, value] of Object.entries(node)) {
+    if (!value) continue;
+
+    // Handle single object child
+    if (typeof value === "object" && "id" in value && "type" in value) {
+      const child = value as MathNode;
+      if (child.id === targetId) {
+        return { parent: node, key };
+      }
+
+      const res = findParentContainerAndKey(child, targetId);
+      if (res) return res;
+    }
+
+    // Handle array of child nodes
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        if (item && typeof item === "object" && "id" in item && "type" in item) {
+          const child = item as MathNode;
+          if (child.id === targetId) {
+            return { parent: node, key };
+          }
+
+          const res = findParentContainerAndKey(child, targetId);
+          if (res) return res;
+        }
+      }
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Finds the nearest InlineContainerNode that contains (possibly indirectly)
+ * the node with `targetId`, and returns the child index of the top-level node
+ * (e.g. FractionNode) inside that container.
+ */
+export function findEnclosingInlineContainerAndIndex(
+  node: MathNode,
+  targetId: string
+): { container: InlineContainerNode; indexInParent: number } | null {
+  if (node.type === "inline-container") {
+    for (let i = 0; i < node.children.length; i++) {
+      const child = node.children[i];
+
+      if (containsNodeWithId(child, targetId)) {
+        return { container: node, indexInParent: i };
+      }
+    }
+
+    // Recurse into children
+    for (const child of node.children) {
+      const res = findEnclosingInlineContainerAndIndex(child, targetId);
+      if (res) return res;
+    }
+  } else {
+    // Recurse into all node fields
+    const containerFields = Object.values(node);
+    for (const field of containerFields) {
+      if (Array.isArray(field)) {
+        for (const item of field) {
+          if (item && typeof item === "object" && "type" in item) {
+            const res = findEnclosingInlineContainerAndIndex(item as MathNode, targetId);
+            if (res) return res;
+          }
+        }
+      } else if (field && typeof field === "object" && "type" in field) {
+        const res = findEnclosingInlineContainerAndIndex(field as MathNode, targetId);
+        if (res) return res;
+      }
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Returns true if the subtree rooted at `node` contains a node with `id === targetId`
+ */
+function containsNodeWithId(node: MathNode, targetId: string): boolean {
+  if (node.id === targetId) return true;
+
+  const values = Object.values(node);
+  for (const val of values) {
+    if (Array.isArray(val)) {
+      for (const child of val) {
+        if (child && typeof child === "object" && "id" in child) {
+          if (containsNodeWithId(child as MathNode, targetId)) return true;
+        }
+      }
+    } else if (val && typeof val === "object" && "id" in val) {
+      if (containsNodeWithId(val as MathNode, targetId)) return true;
+    }
+  }
+
+  return false;
+}

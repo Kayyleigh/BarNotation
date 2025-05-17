@@ -12,6 +12,7 @@ import type {
   MatrixNode,
   VectorNode
 } from "./types";
+import type { BracketStyle } from "../utils/bracketUtils";
 
 export const generateId = () => uuidv4();
 
@@ -24,14 +25,18 @@ export const createTextNode = (content: string = ""): TextNode => ({
 export const createInlineContainer = (children: MathNode[] = []): InlineContainerNode => ({
   id: uuidv4(),
   type: 'inline-container',
-  children: children.length > 0 ? children : [createTextNode()],
+  children: children.length > 0 ? children : [],
 });
 
-export const createGroupNode = (child: MathNode = createInlineContainer()): GroupNode => ({
+export const createGroupNode = (
+  child: MathNode = createInlineContainer(), 
+  bracketStyle: BracketStyle,
+): GroupNode => ({
   id: uuidv4(),
   type: "group",
   child: child,
-  showBrackets: true
+  showBrackets: true,
+  bracketStyle: bracketStyle
 });
 
 export const createFraction = (

@@ -6,8 +6,8 @@ import type { CursorPosition } from "../logic/cursor";
 import {
   renderTextNode,
   renderInlineContainerNode,
-  //renderGroupNode,
   renderFractionNode,
+  renderGroupNode,
   //renderRootNode,
   //renderBigOperatorNode,
   //renderSubSuperscriptNode,
