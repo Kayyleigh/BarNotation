@@ -8,7 +8,6 @@ import type { CornerPosition } from "../utils/subsupUtils";
 
 export function transformToFraction(state: EditorState): EditorState {
   const container = findNodeById(state.rootNode, state.cursor.containerId);
-  console.log(container)
   if (!container || container.type !== "inline-container") return state;
   const idx = state.cursor.index;
   if (idx === 0) return state;
@@ -42,7 +41,6 @@ export function transformToSubSupNode(
   cornerPosition: CornerPosition,
 ): EditorState {
   const container = findNodeById(state.rootNode, state.cursor.containerId);
-  console.log(container)
   if (!container || container.type !== "inline-container") return state;
   const idx = state.cursor.index;
   if (idx === 0) return state;
@@ -76,7 +74,6 @@ export function transformToActsymbNode(
   cornerPosition: CornerPosition,
 ): EditorState {
   const container = findNodeById(state.rootNode, state.cursor.containerId);
-  console.log(container)
   if (!container || container.type !== "inline-container") return state;
   const idx = state.cursor.index;
   if (idx === 0) return state;

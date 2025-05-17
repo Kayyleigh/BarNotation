@@ -33,7 +33,7 @@ export const nodeToLatex = (node: MathNode): string => {
       case "big-operator": {
         const lower = node.lowerLimit ? `_{${nodeToLatex(node.lowerLimit)}}` : "";
         const upper = node.upperLimit ? `^{${nodeToLatex(node.upperLimit)}}` : "";
-        return `\\${node.operator}${lower}${upper} ${nodeToLatex(node.body)}`;
+        return `\\${node.operator}${lower}${upper}`;
       }
   
       case "subsup": {

@@ -3,13 +3,12 @@ import { createTextNode } from "../models/nodeFactories";
 import { findNodeById, updateNodeById } from "../utils/treeUtils";
 import { nodeToLatex } from "../models/latexParser";
 import { specialSequences } from "../models/specialSequences";
-import type { DecoratedNode, InlineContainerNode, TextNode } from "../models/types";
+import type { InlineContainerNode, TextNode } from "../models/types";
 import { getCloseSymbol, getOpenSymbol, type BracketStyle } from "../utils/bracketUtils";
 import { transformToGroupNode } from "./transformations";
 
 export const handleCharacterInsert = (state: EditorState, char: string): EditorState => {
   const container = findNodeById(state.rootNode, state.cursor.containerId);
-  console.log(container)
   if (!container || container.type !== "inline-container") return state;
 
   const children = container.children;

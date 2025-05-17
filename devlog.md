@@ -764,6 +764,7 @@ Next steps:
 - Toolbar
 - Saving notations
 - load from latex
+- vectors and matrices
 
 ![alt text](image-19.png)
 Good stuff

@@ -13,7 +13,6 @@ export const directionalChildOrder: Record<
   "big-operator": ["operator", "lowerLimit", "upperLimit", "body"],
   "group": ["child"],
   "decorated": ["child"],
-  // group isn't directional; single child
   // inline-container is already sequential
 };
 

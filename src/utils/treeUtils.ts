@@ -1,6 +1,6 @@
 // utils/treeUtils.ts
 import { nodeToLatex } from "../models/latexParser";
-import { nodeToString, type InlineContainerNode, type MathNode } from "../models/types";
+import { type InlineContainerNode, type MathNode } from "../models/types";
 
 export type TreePath = {
   parent: MathNode;
@@ -47,7 +47,6 @@ export const findParentAndIndex = (
 
   export const findNextPositionUp = (root: MathNode, fromId: string): string | null => {
     const pos = findParentAndIndex(root, fromId);
-    console.log(`traversing: ${root.type} ${fromId}`)
     if (!pos || !pos.parent) return null;
   
     const parent = pos.parent;
@@ -180,10 +179,6 @@ export const findParentAndIndex = (
     replacement: MathNode
   ): MathNode {
     if (node.id === targetId) {
-        console.log(`Yay, ${node.type} found match id ${targetId}`)
-        console.log(`will replace ${nodeToString(node)} with ${nodeToString(replacement)}`)
-        console.log(`returning ${nodeToLatex(replacement)}`)
-
       return replacement;
     }
 
@@ -208,8 +203,6 @@ export const findParentAndIndex = (
     }
   
     if (node.type === 'inline-container' && Array.isArray(children)) {
-        console.log(`Yes, I am in if because I am a ${node.type} with children ${children}`)
-
       const newChildren = children.map(child =>
         updateNodeById(child, targetId, replacement)
       );
@@ -220,7 +213,6 @@ export const findParentAndIndex = (
       };
     }
     else if (Array.isArray(children) && children.length > 0) {
-      console.log(`Yes, I am in elseif because I am a ${node.type} with children ${children}`)
       const newChildren = children.map(child =>
         updateNodeById(child, targetId, replacement)
       )
@@ -294,7 +286,7 @@ export const findParentAndIndex = (
       if (root.numerator.id === inlineContainerId) return { parent: root, key: "numerator" };
       if (root.denominator.id === inlineContainerId) return { parent: root, key: "denominator" };
     }
-    else if (root.type === 'subsup') {
+    else if (root.type === 'subsup' || root.type === 'actsymb') {
       if (root.base.id === inlineContainerId) return { parent: root, key: "base" };
       if (root.subLeft.id === inlineContainerId) return { parent: root, key: "subleft" };
       if (root.supLeft.id === inlineContainerId) return { parent: root, key: "supleft" };
@@ -319,9 +311,7 @@ export const findParentAndIndex = (
       }
       else {
         console.log(`child: ${child.type}`)
-
       }
-      console.log(`childNodes is looped`)
       const result = findParentOfInlineContainer(child, inlineContainerId);
       if (result) return result;
     }

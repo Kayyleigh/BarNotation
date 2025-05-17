@@ -18,13 +18,10 @@ export const handleBackspace = (state: EditorState): EditorState => {
 
   // Case: deleting at beginning of an empty container
   if (cursor.index === 0 && container.children.length === 0) {
-    console.log(`start of empty container`)
     const parentInfo = findParentOfInlineContainer(state.rootNode, container.id);
     if (!parentInfo) {
       console.log(`you do not have IC parent`)
-
       return state;
-    
     }
     const { parent, key } = parentInfo;
 
@@ -41,14 +38,10 @@ export const handleBackspace = (state: EditorState): EditorState => {
         else if (key === "denominator" && numerator.type === "inline-container") {
           replacementChildren = numerator.children;
         }
-        else {
-          console.log(`Yes you are here`)
-        }
         break;
         // Add logic for root, subsup, etc.
       }
       case "group": {
-        console.log(`you group`)
         const child = parent.child
         replacementChildren = child.children
         break;
@@ -69,7 +62,7 @@ export const handleBackspace = (state: EditorState): EditorState => {
       }
     }
 
-    if (replacementChildren.length > 0) {
+    if (replacementChildren.length >= 0) {
       // Find grandparent inline-container to insert children into
       const grandParent = findParentContainerAndIndex(state.rootNode, parentInfo.parent.id);
       if (!grandParent || grandParent.container.type !== "inline-container") return state;
@@ -105,12 +98,9 @@ export const handleBackspace = (state: EditorState): EditorState => {
         },
       };
     }
-    console.log(`${replacementChildren}`)
-    // TODO I think this is where I should delete whole nodes except top root
+    console.warn(`${replacementChildren}`)
     return state;
   }
-
-  console.log(`You are deleting the normal way: ${cursor.containerId}, ${cursor.index}, ${container.type}`)
 
   if (cursor.index === 0 && container.children.length > 0) {
     console.log(`Trying to backspace at start of non-empty ${container.type}. I have not decided yet how to handle that`)
