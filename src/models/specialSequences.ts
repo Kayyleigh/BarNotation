@@ -14,6 +14,12 @@ export const specialSequences: { sequence: string; mathNode: MathNode }[] = [
     sequence: '\\in',
     mathNode: createTextNode('∈'), // Set membership symbol
   },
+//   "\\alpha": "α",
+//   "\\beta": "β",
+//   "\\pi": "π",
+//   // ...
+
+
   // Future support:
   // {
   //   sequence: '\\hat',

@@ -30,6 +30,7 @@
   .type-text {
     font-family: 'Times New Roman', serif;
     font-size: 1em;
+    background-color: rgb(166, 255, 194);
   }
   
   .type-inline-container {

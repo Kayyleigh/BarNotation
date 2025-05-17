@@ -680,3 +680,13 @@ And apparently even selecting mult w mouse (but no copy paste stuff, but that fe
 
 ### 17/05/2025
 Fixed the fraction problem w ability to type!! it is awesome now :DD just no deletion yet 
+But when clicking back into the parent container, it will not let you back in using arrows
+Must fix deletion of inlinecontainer when textnode is last one (or rather textnode if only one in container)
+
+Now going to put back the 4 insert cases into the current insertion logic
+Note: in the future, specialSequences will contain:
+- all no-child symbols in https://www.cmor-faculty.rice.edu/~heinken/latex/symbols.pdf. These are put in TextNode
+- perhaps more, with 1 child. Must be careful not to build another latex parser (or do so but properly and on purpose)
+
+Fixed the cases I think! Current progress:
+![alt text](image-15.png)
