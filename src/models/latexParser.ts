@@ -1,12 +1,15 @@
 import { decorationToLatexCommand } from "../utils/accentUtils";
 import { getCloseSymbol, getOpenSymbol } from "../utils/bracketUtils";
+import { parseLatex } from "./mathNodeParser";
 import { createDecorated, createFraction, createInlineContainer, createRootNode, createSubSup, createTextNode } from "./nodeFactories";
+import { symbolToLatex } from "./specialSequences";
 import type { MathNode } from "./types";
 
 export const nodeToLatex = (node: MathNode): string => {
     switch (node.type) {
       case "text": {
-        return node.content;
+        const fromMap = symbolToLatex[node.content]; // Revert special char back to latex sequence
+        return fromMap ?? node.content;
       }
   
       case "inline-container": {
@@ -45,6 +48,16 @@ export const nodeToLatex = (node: MathNode): string => {
       
         return `{${subLeft}${supLeft}${base}${subRight}${supRight}}`;
       }
+
+      case "actsymb": {
+        const subLeft = `${node.subLeft ? nodeToLatex(node.subLeft) : ""}`;
+        const supLeft = `${node.supLeft ? nodeToLatex(node.supLeft) : ""}`;
+        const base = `${nodeToLatex(node.base)}`;
+        const subRight = `${node.subRight ? nodeToLatex(node.subRight) : ""}`;
+        const supRight = `${node.supRight ? nodeToLatex(node.supRight) : ""}`;
+      
+        return `\\actsymb[${subLeft}][${supLeft}]{${base}}{${subRight}}[${supRight}]`;
+      }
   
       case "decorated": {
         const latexCommand = decorationToLatexCommand[node.decoration];
@@ -71,68 +84,7 @@ export const nodeToLatex = (node: MathNode): string => {
       }
     }
   };
-
-
   
 export const latexToMathNode = (latex: string): MathNode => {
-  // Utility to trim outer braces
-  const stripBraces = (str: string): string =>
-    str.startsWith("{") && str.endsWith("}") ? str.slice(1, -1) : str;
-
-  // Handle sub/sup combinations (can be expanded for full control)
-  const subsupMatch = latex.match(/^\{_\{(.*?)\}^\{(.*?)\}\{(.*?)\}_\{(.*?)\}^\{(.*?)\}\}$/);
-  console.log(subsupMatch ? "subsup" : "")
-  if (subsupMatch) {
-    const [, subLeft, supLeft, base, subRight, supRight] = subsupMatch.map(x =>
-      x ? stripBraces(x) : undefined
-    );
-
-    return createSubSup(
-      latexToMathNode(base!),
-      subLeft ? latexToMathNode(subLeft) : undefined,
-      supLeft ? latexToMathNode(supLeft) : undefined,
-      subRight ? latexToMathNode(subRight) : undefined,
-      supRight ? latexToMathNode(supRight) : undefined
-    );
-  }
-
-  // Handle fractions
-  const fracMatch = latex.match(/^\\frac\{(.+?)\}\{(.+?)\}$/);
-  if (fracMatch) {
-    return createFraction(
-      latexToMathNode(fracMatch[1]),
-      latexToMathNode(fracMatch[2])
-    );
-  }
-
-  // Handle roots
-  const rootMatch = latex.match(/^\\sqrt(?:\[(.+?)\])?\{(.+?)\}$/);
-  if (rootMatch) {
-    const [, degree, radicand] = rootMatch;
-
-    return degree
-    ? createRootNode(latexToMathNode(radicand), latexToMathNode(degree))
-    : createRootNode(latexToMathNode(radicand));
-  }
-
-  // Handle decorated nodes like \hat{x}, \bar{x}, etc
-  const decoMatch = latex.match(/^\\(hat|bar|angle)\{(.+?)\}$/);
-  if (decoMatch) {
-    return createDecorated(
-      decoMatch[1] as "hat" | "bar" | "angl",
-      latexToMathNode(decoMatch[2])
-    );
-  }
-
-  // Fallback: inline-container if multiple children
-  if (latex.includes(" ")) {
-    return createInlineContainer(
-      latex.split(" ").map(latexToMathNode)
-    );
-  }
-
-  // Plain text fallback
-  return createTextNode(
-    latex
-  );
+  return parseLatex(latex)
 };

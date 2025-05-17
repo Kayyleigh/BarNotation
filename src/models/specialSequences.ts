@@ -1,5 +1,5 @@
 import { createDecorated, createTextNode } from '../models/nodeFactories';
-import type { MathNode } from '../models/types';
+import type { MathNode, TextNode } from '../models/types';
 import { decorationToLatexCommand, type NodeDecoration } from '../utils/accentUtils';
 
 // Build dynamic decorated nodes
@@ -23,18 +23,20 @@ export const specialSequences: { sequence: string; mathNode: MathNode }[] = [
     sequence: '\\in',
     mathNode: createTextNode('∈'), // Set membership symbol
   },
-  
+  //   "\\beta": "β",
+  //   "\\pi": "π",
+  //   ...
+
+
   ...decoratedEntries
-
-//   "\\alpha": "α",
-//   "\\beta": "β",
-//   "\\pi": "π",
-//   // ...
-
-
-  // Future support:
-  // {
-  //   sequence: '\\hat',
-  //   mathNode: createAccentNode('hat', createTextNode('')), // To be implemented
-  // },
 ];
+
+export const symbolToLatex: Record<string, string> = Object.fromEntries(
+  specialSequences
+    .filter(e => e.mathNode.type === 'text')
+    .map(e => [(e.mathNode as TextNode).content, e.sequence])
+);
+
+export const symbolToLatexInverse = Object.fromEntries(
+  Object.entries(symbolToLatex).map(([k, v]) => [v.replace(/^\\/, ""), k])
+);

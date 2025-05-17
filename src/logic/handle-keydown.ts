@@ -4,6 +4,8 @@ import { handleBracketInsert, handleCharacterInsert } from "./insertion";
 import { handleBackspace } from "./deletion";
 import { transformToActsymbNode, transformToFraction, transformToSubSupNode } from "./transformations";
 import { getStyleFromSymbol, isClosingBracket, isOpeningBracket } from "../utils/bracketUtils";
+import { latexToMathNode, nodeToLatex } from "../models/latexParser";
+import type { InlineContainerNode } from "../models/types";
 
 export function handleKeyDown(
   e: React.KeyboardEvent,
@@ -47,6 +49,17 @@ export function handleKeyDown(
   // === Single-key events ===
 
   const key = e.key;
+
+  if (key === "@") {
+    e.preventDefault();
+    console.log(nodeToLatex(state.rootNode))
+  }
+
+  if (key === "#") {
+    e.preventDefault();
+    const forcedRoot = latexToMathNode(`P(A|B) = \\frac{P(B|A) P(A)}{P(B)}`);
+    return { rootNode: forcedRoot, cursor: { containerId: forcedRoot.id, index: (forcedRoot as InlineContainerNode).children.length } };
+  }
 
   if (key === "ArrowLeft") {
     e.preventDefault();

@@ -769,3 +769,7 @@ Next steps:
 ![alt text](image-19.png)
 Good stuff
 ![alt text](image-20.png)
+
+Also things to think abt:
+- current specialSequence tries to match at any moment. Thus if two latex ones start w same substring then my curr approach only allows 1. SOlutions are: either have user do space or sth to confirm, or have small enough subset of special characters (or choose alternative sequences but that is a bad idea imo)
+- must eventually put clear overview of shortcuts and sequences on very easy to find place in main editor page

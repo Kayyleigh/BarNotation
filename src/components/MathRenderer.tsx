@@ -73,7 +73,7 @@ export const MathRenderer: React.FC<MathRendererProps> = ({
       return renderVectorNode(node, props);
 
     default:
-      console.log(`No case match`)
+      console.warn(`No case match in MathRenderer.`)
       return (
         <span
           className={clsx("math-node", {

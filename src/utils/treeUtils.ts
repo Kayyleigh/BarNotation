@@ -247,8 +247,7 @@ export const findParentAndIndex = (
 
       console.warn(`${node.type} is missing a case in updateNodeById (in treeUtils)`)
     };
-  
-    console.log(`returning ${nodeToLatex(node)}`)
+    
     return node;
   }
 

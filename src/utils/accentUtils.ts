@@ -14,3 +14,7 @@ export const decorationToLatexCommand: Record<NodeDecoration, string | undefined
     underline: "\\underline",
     joint: "\\joint" // or your custom LaTeX macro if defined
   };
+
+  export const decorationToLatexCommandInverse = Object.fromEntries(
+    Object.entries(decorationToLatexCommand).map(([k, v]) => [v.replace(/^\\/, ""), k])
+  );

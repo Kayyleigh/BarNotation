@@ -295,54 +295,8 @@ export const renderDecoratedNode = (
   );
 };
 
-
-// export const renderRootNode = (
-//   node: RootNode, 
-//   { cursor, onCursorChange, onRootChange }: RenderProps
-// ) => (
-//   <span className={`math-node type-root ${node.id === selectedId ? 'selected' : ''}`} onClick={() => onSelect(node.id)}>
-//     <span className="root">
-//       {node.degree && <MathRenderer node={node.degree} selectedId={selectedId} onSelect={onSelect} onRootChange={onRootChange} />}
-//       <span className="radical">√</span>
-//       <MathRenderer node={node.radicand} selectedId={selectedId} onSelect={onSelect} onRootChange={onRootChange} />
-//     </span>
-//   </span>
-// );
-
-// export const renderBigOperatorNode = (
-//   node: BigOperatorNode, 
-//   { cursor, onCursorChange, onRootChange }: RenderProps
-// ) => (
-//   <span className={`math-node type-bigoperator ${node.id === selectedId ? 'selected' : ''}`} onClick={() => onSelect(node.id)}>
-//     <span className="big-op">{node.operator}</span>
-//     {node.lowerLimit && <div className="sub"><MathRenderer node={node.lowerLimit} selectedId={selectedId} onSelect={onSelect} onRootChange={onRootChange} /></div>}
-//     {node.upperLimit && <div className="sup"><MathRenderer node={node.upperLimit} selectedId={selectedId} onSelect={onSelect} onRootChange={onRootChange} /></div>}
-//     {/* <MathRenderer node={node.body} selectedId={selectedId} onSelect={onSelect} onRootChange={onRootChange} /> */}
-//   </span>
-// );
-
-// export const renderSubSuperscriptNode = (
-//   node: SubSuperscriptNode, 
-//   { cursor, onCursorChange, onRootChange }: RenderProps
-// ) => (
-//   <span className={`math-node type-subsuperscript ${node.id === selectedId ? 'selected' : ''}`} onClick={() => onSelect(node.id)}>
-//     <span className="base"><MathRenderer node={node.base} selectedId={selectedId} onSelect={onSelect} onRootChange={onRootChange} /></span>
-//     {node.subLeft && <sub className="sub-left"><MathRenderer node={node.subLeft} selectedId={selectedId} onSelect={onSelect} onRootChange={onRootChange} /></sub>}
-//     {node.supLeft && <sup className="sup-left"><MathRenderer node={node.supLeft} selectedId={selectedId} onSelect={onSelect} onRootChange={onRootChange} /></sup>}
-//     {node.subRight && <sub className="sub-right"><MathRenderer node={node.subRight} selectedId={selectedId} onSelect={onSelect} onRootChange={onRootChange} /></sub>}
-//     {node.supRight && <sup className="sup-right"><MathRenderer node={node.supRight} selectedId={selectedId} onSelect={onSelect} onRootChange={onRootChange} /></sup>}
-//   </span>
-// );
-
-// export const renderDecoratedNode = (
-//   node: DecoratedNode, 
-//   { cursor, onCursorChange, onRootChange }: RenderProps
-// ) => (
-//   <span className={`math-node type-decorated ${node.id === selectedId ? 'selected' : ''}`} onClick={() => onSelect(node.id)}>
-//     <span className={`decoration ${node.decoration}`}>
-//       <MathRenderer node={node.base} selectedId={selectedId} onSelect={onSelect} onRootChange={onRootChange} />
-//     </span>
-//   </span>
-// );
-
-// Continue adding render functions for other node types (BigOperator, Vector, etc.)
+//TODO: nth root
+//TODO: BigOperator
+//TODO: vector
+//TODO: matrix
+// Maybe more (e.g. multi-line stuff like cases)
