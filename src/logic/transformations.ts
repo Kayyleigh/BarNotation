@@ -50,9 +50,10 @@ export function transformToGroupNode(
 
   // Slice out the nodes between startIndex and endIndex
   const groupMembers = children.slice(startIndex + 1, endIndex);
+  const groupChild = createInlineContainer(groupMembers)
 
   // Create the GroupNode with an inline container holding those children
-  const groupNode = createGroupNode(createInlineContainer(groupMembers), bracketStyle);
+  const groupNode = createGroupNode(groupChild, bracketStyle);
 
   // Rebuild the children, replacing the range with the new GroupNode
   const newChildren = [

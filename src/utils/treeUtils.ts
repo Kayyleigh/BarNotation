@@ -90,7 +90,7 @@ export const findParentAndIndex = (
       case "decorated":
         return ["body"];
       case "group":
-        return ["body"];
+        return ["child"];
       case "matrix":
         return ["rows"];
       case "vector":
@@ -182,6 +182,15 @@ export const findParentAndIndex = (
     }
 
     const children = getLogicalChildren(node)
+
+    if (node.type === 'group') {
+      const newChild = updateNodeById(node.child, targetId, replacement)
+      return {
+        ...node,
+        child: newChild as InlineContainerNode,
+        bracketStyle: node.bracketStyle,
+      }
+    }
   
     if (node.type === 'inline-container' && Array.isArray(children)) {
         console.log(`Yes, I am in if because I am a ${node.type} with children ${children}`)

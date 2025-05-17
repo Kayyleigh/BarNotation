@@ -11,6 +11,7 @@ export const directionalChildOrder: Record<
   "subsup": ["base", "subscript", "superscript"],
   "big-operator": ["operator", "lowerLimit", "upperLimit", "body"],
   "decorated": ["base", "decoration"],
+  "group": ["child"],
   // group isn't directional; single child
   // inline-container is already sequential
 };
