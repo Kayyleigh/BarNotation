@@ -77,6 +77,29 @@ export const findParentAndIndex = (
     }
   };
 
+  export const getChildKeys = (node: MathNode): string[] => {
+    switch (node.type) {
+      case "fraction":
+        return ["numerator", "denominator"];
+      case "root":
+        return ["base", "index"];
+      case "subsup":
+        return ["base", "subscript", "superscript"];
+      case "big-operator":
+        return ["body", "subscript", "superscript"];
+      case "decorated":
+        return ["body"];
+      case "group":
+        return ["body"];
+      case "matrix":
+        return ["rows"];
+      case "vector":
+        return ["elements"];
+      default:
+        return [];
+    }
+  };
+
   export const getPreviousLeaf = (root: MathNode, currentId: string): MathNode | null => {
     const leaves = getLeafNodesInPreOrder(root);
     const index = leaves.findIndex(n => n.id === currentId);
@@ -217,6 +240,44 @@ export const findParentAndIndex = (
   
     return null;
   }
+
+  export function findParentOfInlineContainer(
+    root: MathNode,
+    inlineContainerId: string
+  ): { parent: MathNode; key: string } | null {
+
+    if (root.type === 'fraction') {
+      if (root.numerator.id === inlineContainerId) return { parent: root, key: "numerator" };
+      if (root.denominator.id === inlineContainerId) return { parent: root, key: "denominator" };
+    }
+    else if (root.type === 'subsup' ) {
+      if (root.base.id === inlineContainerId) return { parent: root, key: "base" };
+      if (root.subLeft.id === inlineContainerId) return { parent: root, key: "subleft" };
+      if (root.supLeft.id === inlineContainerId) return { parent: root, key: "supleft" };
+      if (root.subRight.id === inlineContainerId) return { parent: root, key: "subright" };
+      if (root.supRight.id === inlineContainerId) return { parent: root, key: "supright" };
+    }
+    else {
+      console.log(`${root.type} but no child matches the id`)
+    }
+    
+    // Recurse into children
+    const childNodes = getLogicalChildren(root);
+    for (const child of childNodes) {
+      if (child.type === 'inline-container') {
+        console.log(`child: inline container`)
+      }
+      else {
+        console.log(`child: ${child.type}`)
+
+      }
+      console.log(`childNodes is looped`)
+      const result = findParentOfInlineContainer(child, inlineContainerId);
+      if (result) return result;
+    }
+  
+    return null;
+  }
   
   // Optional helper to explore embedded container children
   function getChildContainers(node: MathNode): InlineContainerNode[] {
@@ -236,7 +297,7 @@ export const findParentAndIndex = (
         if (node.degree?.type === "inline-container") containers.push(node.degree);
         if (node.radicand.type === "inline-container") containers.push(node.radicand);
         break;
-      case "subsuperscript":
+      case "subsup":
         if (node.base.type === "inline-container") containers.push(node.base);
         for (const sub of ["subLeft", "subRight", "supLeft", "supRight"] as const) {
           const val = node[sub];

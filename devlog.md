@@ -690,3 +690,8 @@ Note: in the future, specialSequences will contain:
 
 Fixed the cases I think! Current progress:
 ![alt text](image-15.png)
+
+I think later on I might regret the way numbers are 1 textnode. Maybe it should be a group somehow. But for now this is clean enough to continue I hope 
+
+Either way, Group is the next logical thing to implement
+perhaps after fixing the deletion logic of fractions
