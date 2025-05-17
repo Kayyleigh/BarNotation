@@ -68,6 +68,8 @@ export const findParentAndIndex = (
         return node.children;
       case "group":
         return [node.child];
+      case "decorated":
+        return [node.child];
       case "fraction":
         return [node.numerator, node.denominator];
       case "subsup":
@@ -92,7 +94,7 @@ export const findParentAndIndex = (
       case "big-operator":
         return ["body", "subscript", "superscript"];
       case "decorated":
-        return ["body"];
+        return ["child"];
       case "group":
         return ["child"];
       case "matrix":
@@ -195,6 +197,15 @@ export const findParentAndIndex = (
         bracketStyle: node.bracketStyle,
       }
     }
+
+    if (node.type === 'decorated') {
+      const newChild = updateNodeById(node.child, targetId, replacement)
+      return {
+        ...node,
+        child: newChild as InlineContainerNode,
+        decoration: node.decoration,
+      }
+    }
   
     if (node.type === 'inline-container' && Array.isArray(children)) {
         console.log(`Yes, I am in if because I am a ${node.type} with children ${children}`)
@@ -293,6 +304,9 @@ export const findParentAndIndex = (
     else if (root.type === 'group') {
       if (root.child.id === inlineContainerId) return { parent: root, key: "child" };
     }
+    else if (root.type === 'decorated') {
+      if (root.child.id === inlineContainerId) return { parent: root, key: "child" };
+    }
     else {
       console.log(`${root.type} but no child matches the id`)
     }
@@ -327,6 +341,9 @@ export const findParentAndIndex = (
         );
         break;
       case "group":
+        containers.push(...[node.child] as InlineContainerNode[]);
+        break;
+      case "decorated":
         containers.push(...[node.child] as InlineContainerNode[]);
         break;
       case "root":

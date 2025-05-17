@@ -10,6 +10,7 @@ import {
   renderGroupNode,
   renderSubSuperscriptNode,
   renderActSymbNode,
+  renderDecoratedNode,
   //renderRootNode,
   //renderBigOperatorNode,
   //renderSubSuperscriptNode,

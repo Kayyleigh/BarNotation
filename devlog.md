@@ -751,3 +751,6 @@ Next bug to fix is line 109 in the deletion, it should be poss to delete fully e
 but curr failsafe already exists, can go right arr and remove whole thing anyway
 
 ![alt text](image-17.png)
+
+Aw yeah baby
+![alt text](image-18.png)

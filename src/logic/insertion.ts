@@ -3,7 +3,7 @@ import { createTextNode } from "../models/nodeFactories";
 import { findNodeById, updateNodeById } from "../utils/treeUtils";
 import { nodeToLatex } from "../models/latexParser";
 import { specialSequences } from "../models/specialSequences";
-import type { InlineContainerNode, TextNode } from "../models/types";
+import type { DecoratedNode, InlineContainerNode, TextNode } from "../models/types";
 import { getCloseSymbol, getOpenSymbol, type BracketStyle } from "../utils/bracketUtils";
 import { transformToGroupNode } from "./transformations";
 
@@ -36,11 +36,19 @@ export const handleCharacterInsert = (state: EditorState, char: string): EditorS
         children: updatedChildren,
       });
 
+      let targetContainer = container
+      let targetIndex = index
+
+      if (transformedNode.type === 'decorated') {
+        targetContainer = transformedNode.child
+        targetIndex = 0
+      } 
+
       return {
         rootNode: updatedRoot,
         cursor: {
-          containerId: container.id,
-          index: index - 1 + 1, // transformed node takes place of old + current
+          containerId: targetContainer.id,
+          index: targetIndex, // transformed node takes place of old + current
         },
       };
     } 

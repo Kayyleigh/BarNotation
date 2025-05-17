@@ -1,3 +1,4 @@
+import { decorationToLatexCommand } from "../utils/accentUtils";
 import { getCloseSymbol, getOpenSymbol } from "../utils/bracketUtils";
 import { createDecorated, createFraction, createInlineContainer, createRootNode, createSubSup, createTextNode } from "./nodeFactories";
 import type { MathNode } from "./types";
@@ -46,12 +47,9 @@ export const nodeToLatex = (node: MathNode): string => {
       }
   
       case "decorated": {
-        const decoMap: Record<typeof node.decoration, string> = {
-          hat: "\\hat",
-          bar: "\\bar",
-          angl: "\\angle"
-        };
-        return `${decoMap[node.decoration]}{${nodeToLatex(node.base)}}`;
+        const latexCommand = decorationToLatexCommand[node.decoration];
+        if (!latexCommand) throw new Error(`Unknown decoration: ${node.decoration}`);
+        return `${latexCommand}{${nodeToLatex(node.child)}}`;
       }
   
       case "matrix": {

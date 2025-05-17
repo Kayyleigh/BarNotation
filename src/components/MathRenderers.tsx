@@ -19,6 +19,7 @@ import type {
 import clsx from 'clsx';
 import type { CursorPosition } from '../logic/cursor';
 import '../styles/math-node.css' 
+import '../styles/accents.css' 
 import { getCloseSymbol, getOpenSymbol } from '../utils/bracketUtils';
 
 
@@ -241,6 +242,55 @@ export const renderActSymbNode = (
       <span className="sup-right">
         <MathRenderer node={node.supRight} {...props} />
       </span>
+    </span>
+  );
+};
+
+export const renderDecoratedNode = (
+  node: DecoratedNode,
+  props: RenderProps
+) => {
+  const { cursor, onCursorChange, onRootChange } = props;
+  const isCursorInside = cursor.containerId === node.child.id;
+
+  const className = clsx(`math-node decorated-node decoration-${node.decoration}`);
+
+  return (
+    <span
+      className={className}
+      onClick={(e) => {
+        e.stopPropagation();
+        if (node.child.children.length === 0) {
+          onCursorChange({ containerId: node.child.id, index: 0 });
+        }
+      }}
+    >
+      {/* Render child inline container */}
+      {node.child.children.map((child, i) => {
+        const elements: React.ReactNode[] = [];
+
+        if (isCursorInside && cursor.index === i) {
+          elements.push(<span key={`cursor-${i}`} className="cursor" />);
+        }
+
+        elements.push(
+          <MathRenderer
+            key={child.id}
+            node={child}
+            cursor={cursor}
+            onCursorChange={onCursorChange}
+            onRootChange={onRootChange}
+            parentContainerId={node.child.id}
+            index={i + 1}
+          />
+        );
+
+        return elements;
+      })}
+
+      {isCursorInside && cursor.index === node.child.children.length && (
+        <span className="cursor" />
+      )}
     </span>
   );
 };

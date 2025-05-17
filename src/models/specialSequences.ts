@@ -1,5 +1,14 @@
-import { createTextNode } from '../models/nodeFactories';
+import { createDecorated, createTextNode } from '../models/nodeFactories';
 import type { MathNode } from '../models/types';
+import { decorationToLatexCommand, type NodeDecoration } from '../utils/accentUtils';
+
+// Build dynamic decorated nodes
+const decoratedEntries: { sequence: string; mathNode: MathNode }[] = Object.entries(decorationToLatexCommand).map(
+  ([decoration, sequence]) => ({
+    sequence,
+    mathNode: createDecorated(decoration as NodeDecoration)
+  })
+);
 
 /**
  * Define sequences like \alpha or \in and their corresponding MathNode transformations.
@@ -14,6 +23,9 @@ export const specialSequences: { sequence: string; mathNode: MathNode }[] = [
     sequence: '\\in',
     mathNode: createTextNode('∈'), // Set membership symbol
   },
+  
+  ...decoratedEntries
+
 //   "\\alpha": "α",
 //   "\\beta": "β",
 //   "\\pi": "π",

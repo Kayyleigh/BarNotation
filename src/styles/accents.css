@@ -1,0 +1,90 @@
+.decorated-node {
+    position: relative;
+    display: inline-block;
+    background-color: pink;
+  }
+
+/* Hat, bar, tilde, widehat, ddot, mathring */
+.decorated-node::before {
+    position: absolute;
+    top: -0.8em;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.7em;
+    pointer-events: none;
+  }
+  
+  .decoration-hat::before {
+    content: 'ˆ'; /* Unicode hat accent */
+  }
+  
+  .decoration-bar::before {
+    content: '‾'; /* Overline */
+  }
+  
+  .decoration-tilde::before {
+    content: '˜';
+  }
+  
+  .decoration-widehat::before {
+    content: '⌢'; /* wide hat approximation */
+  }
+  
+  .decoration-ddot::before {
+    content: '¨'; /* umlaut */
+  }
+  
+  .decoration-mathring::before {
+    content: '˚'; /* ring */
+  }
+  
+  /* Underline goes below */
+  .decoration-underline::after {
+    content: '';
+    position: absolute;
+    bottom: -0.15em;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: currentColor;
+    pointer-events: none;
+  }
+
+.decoration-joint::before {
+    content: '';
+    position: absolute;
+    top: -0.2em;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background-color: currentColor;
+    pointer-events: none;
+  }
+
+  .decoration-angl {
+    padding-top: 0.2em;
+    padding-right: 0.2em;
+  }
+  
+  .decoration-angl::before,
+  .decoration-angl::after {
+    content: '';
+    position: absolute;
+    background-color: currentColor;
+    pointer-events: none;
+  }
+
+/* Top bar */
+.decoration-angl::before {
+    top: 0;
+    width: 100%;
+    height: 1px;
+  }
+  
+  /* Right vertical bar */
+  .decoration-angl::after {
+    top: 0;
+    right: 0;
+    width: 1px;
+    height: 80%;
+  }

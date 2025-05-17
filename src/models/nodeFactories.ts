@@ -14,6 +14,7 @@ import type {
   VectorNode
 } from "./types";
 import type { BracketStyle } from "../utils/bracketUtils";
+import type { NodeDecoration } from "../utils/accentUtils";
 
 export const generateId = () => uuidv4();
 
@@ -105,12 +106,12 @@ export const createActSymb = (
 });
 
 export const createDecorated = (
-  decoration: "hat" | "bar" | "angl",
-  base: MathNode = createTextNode("")
+  decoration: NodeDecoration,
+  child: InlineContainerNode = createInlineContainer(),
 ): DecoratedNode => ({
   id: uuidv4(),
   type: "decorated",
-  base: base,
+  child: child,
   decoration
 });
 

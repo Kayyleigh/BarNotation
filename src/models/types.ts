@@ -1,3 +1,4 @@
+import type { NodeDecoration } from "../utils/accentUtils";
 import type { BracketStyle } from "../utils/bracketUtils";
 
 export type NodeType =
@@ -75,8 +76,8 @@ export interface ActuarialSymbolNode extends BaseNode {
 
 export interface DecoratedNode extends BaseNode {
   type: "decorated";
-  base: MathNode;
-  decoration: "tilde" | "hat" | "widehat" | "bar" | "ddot" | "mathring" | "angl" | "underline" | "joint";
+  child: InlineContainerNode;
+  decoration: NodeDecoration;
 }
 
 export interface PrecedenceNode extends BaseNode {
@@ -130,7 +131,7 @@ export const nodeToString = (node: MathNode): string => {
     case "subsup":
       return `SubSuperscriptNode(id: ${node.id}, base: ${node.base.id}, subLeft: ${node.subLeft.id}, supLeft: ${node.supLeft.id}, subRight: ${node.subRight.id}, supRight: ${node.supRight.id})`;
     case "decorated":
-      return `DecoratedNode(id: ${node.id}, base: ${node.base.id}, decoration: ${node.decoration})`;
+      return `DecoratedNode(id: ${node.id}, base: ${node.child.id}, decoration: ${node.decoration})`;
     case "matrix":
       return `MatrixNode(id: ${node.id}, rowsCount: ${node.rows.length})`;
     case "vector":
@@ -158,7 +159,7 @@ export const nodeToMathText = (node: MathNode): string => {
     case "subsup":
       return `_{${node.subLeft.id}}^{${node.supLeft.id}}_${node.base.id}_{${node.subRight.id}}^{${node.supRight.id}}`;
     case "decorated":
-      return `DecoratedNode(id: ${node.id}, base: ${node.base.id}, decoration: ${node.decoration})`;
+      return `DecoratedNode(id: ${node.id}, base: ${node.child.id}, decoration: ${node.decoration})`;
     case "matrix":
       return `MatrixNode(id: ${node.id}, rowsCount: ${node.rows.length})`;
     case "vector":

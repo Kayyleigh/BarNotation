@@ -1,6 +1,6 @@
 import React from "react";
 import MathEditor from "./components/MathEditor";
-import "./styles/styles.css";
+import './styles/styles.css'
 
 const App: React.FC = () => (
   <div>
