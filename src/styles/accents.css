@@ -1,7 +1,6 @@
 .decorated-node {
     position: relative;
     display: inline-block;
-    background-color: pink;
   }
 
 /* Hat, bar, tilde, widehat, ddot, mathring */
@@ -54,15 +53,14 @@
     content: '';
     position: absolute;
     top: -0.2em;
-    left: 0;
     right: 0;
     height: 1px;
+    width: 100%;
     background-color: currentColor;
     pointer-events: none;
   }
 
   .decoration-angl {
-    padding-top: 0.2em;
     padding-right: 0.2em;
   }
   
@@ -78,13 +76,13 @@
 .decoration-angl::before {
     top: 0;
     width: 100%;
-    height: 1px;
+    height: 0.02rem;
   }
   
   /* Right vertical bar */
   .decoration-angl::after {
     top: 0;
     right: 0;
-    width: 1px;
+    width: 0.02rem;
     height: 80%;
   }

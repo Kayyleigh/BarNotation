@@ -754,3 +754,17 @@ but curr failsafe already exists, can go right arr and remove whole thing anyway
 
 Aw yeah baby
 ![alt text](image-18.png)
+
+Next steps:
+- PrecedenceNode: only allow inside actuarial, work kinda like decoration
+- drag and drop
+- update parser for new nodes
+- Fix auto jump in new groupnode, must take into acc which bracket side
+- ...
+- Toolbar
+- Saving notations
+- load from latex
+
+![alt text](image-19.png)
+Good stuff
+![alt text](image-20.png)

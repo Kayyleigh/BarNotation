@@ -1,7 +1,7 @@
 :root {
     /* Typography & Layout */
     --math-font-family: 'STIX Two Math', 'Latin Modern Math', 'Cambria Math', serif;
-    --math-font-size-base: 1rem;
+    --math-font-size-base: 2.4rem;
     --math-scale-factor: 0.5; /* Each nested level shrinks by this factor */
     --math-font-size-sub: 0.6em;
   
@@ -124,7 +124,7 @@
   .type-subsup {
     display: inline-grid;
     grid-template-columns: auto auto auto;
-    grid-template-rows: auto auto auto;
+    grid-template-rows: 0 auto 0;
     justify-items: center;
     align-items: center;
     line-height: 1;
