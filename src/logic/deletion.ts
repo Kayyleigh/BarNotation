@@ -15,7 +15,7 @@ export const handleBackspace = (state: EditorState): EditorState => {
   const container = findNodeById(state.rootNode, cursor.containerId);
 
   if (!container || container.type !== "inline-container") return state;
-
+  
   // Case: deleting at beginning of an empty container
   if (cursor.index === 0 && container.children.length === 0) {
     const parentInfo = findParentOfInlineContainer(state.rootNode, container.id);
@@ -39,7 +39,6 @@ export const handleBackspace = (state: EditorState): EditorState => {
           replacementChildren = numerator.children;
         }
         break;
-        // Add logic for root, subsup, etc.
       }
       case "group": {
         const child = parent.child
@@ -108,6 +107,12 @@ export const handleBackspace = (state: EditorState): EditorState => {
   if (cursor.index === 0 && container.children.length > 0) {
     console.log(`Trying to backspace at start of non-empty ${container.type}. I have not decided yet how to handle that`)
     return state
+  }
+
+  const currentToDelete = container.children[cursor.index - 1]
+  if (currentToDelete.type === 'text') {
+    console.log(currentToDelete)
+    // Either deal with this or make implicit group
   }
 
   // Standard deletion

@@ -837,3 +837,5 @@ I added a space to all childless sequences, to:
 2. make sure LaTeX actually prints it and does not wait for a longer sequence
 
 Note: the way special chars are defined, if you know a latex sequence by heart you can still use it in my editor even if it does not exist here. Existence in my codebase only makes it render as the actual symbol. If you use \updownarrow (and space), it can still be parsed to latex and there it will display anyway (because the special sequence is kept as a normal string)
+
+Implemented undo and redo using ctrl +z and +y
