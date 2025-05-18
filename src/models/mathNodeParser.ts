@@ -1,5 +1,5 @@
 import { decorationToLatexCommandInverse } from "../utils/accentUtils";
-import { createDecorated, createFraction, createInlineContainer, createSubSup, createTextNode } from "./nodeFactories";
+import { createActSymb, createDecorated, createFraction, createInlineContainer, createSubSup, createTextNode } from "./nodeFactories";
 import { symbolToLatexInverse } from "./specialSequences";
 import type { InlineContainerNode, MathNode } from "./types";
 
@@ -26,6 +26,28 @@ export function parseLatex(input: string): MathNode {
       const token = consume();
       if (token.type !== type) throw new Error(`Expected ${type}`);
       return token;
+    }
+
+    // Helper: parse optional bracket content as a string
+    function parseOptionalBracketString(): string | undefined {
+      if (peek()?.type === "char" && peek()?.value === "[") {
+        consume(); // consume '['
+        let str = "";
+        while (peek() && !(peek()?.type === "char" && peek()?.value === "]")) {
+          const t = consume();
+          if (t.type === "char") str += t.value;
+          else if (t.type === "command") str += "\\" + t.name;
+          else if (t.type === "brace_open") str += "{";
+          else if (t.type === "brace_close") str += "}";
+        }
+        if (peek()?.type === "char" && peek()?.value === "]") {
+          consume(); // consume ']'
+        } else {
+          throw new Error("Expected closing ]");
+        }
+        return str;
+      }
+      return undefined;
     }
   
     function parseGroup(): MathNode {
@@ -67,30 +89,65 @@ export function parseLatex(input: string): MathNode {
       if (token.type === "command") {
         const { name } = consume() as { type: "command"; name: string };
     
-        if (name === "frac") {
+        if (name === "actsymb") {
+          // Parse optional left scripts bracket, e.g. [m|]
+          const subLeftStr = parseOptionalBracketString(); //TODO: if \actsymb[]{}{}[] is also valid (idk if is), then this may make wrong child?
+          const supLeftStr = parseOptionalBracketString();
+
+          // Make MathNode with valid input (empty InlineContainer if undefined)
+          const subLeft = parseLatex(subLeftStr ? subLeftStr : "{}");
+          const supLeft = parseLatex(supLeftStr ? supLeftStr : "{}");
+      
+          // Parse mandatory base group {A}
+          const base = parseGroup();
+      
+          // Parse mandatory supRight group {x:\angl{n}}
+          const subRight = parseGroup();
+      
+          // Parse optional right subscript bracket, e.g. [2]
+          const supRightStr = parseOptionalBracketString();
+          const supRight = parseLatex(supRightStr ? supRightStr : "{}");
+        
+          return createActSymb(
+            base as InlineContainerNode, 
+            subLeft as InlineContainerNode,
+            supLeft as InlineContainerNode,
+            subRight as InlineContainerNode,
+            supRight as InlineContainerNode
+          );
+
+        }
+        else if (name === "frac") {
           const numerator = parseGroup();
           const denominator = parseGroup();
           base = createFraction(numerator, denominator);
-        } else if (name === "sqrt") {
+        } 
+        else if (name === "sqrt") {
           // your sqrt parsing logic here ...
           const radicand = parseGroup();
           base = { type: "root", radicand };
-        } else if (name in decorationToLatexCommandInverse) {
+        } 
+        else if (name in decorationToLatexCommandInverse) {
           const child = parseGroup();
           base = createDecorated(
             decorationToLatexCommandInverse[name as keyof typeof decorationToLatexCommandInverse],
             child
           );
-        } else if (symbolToLatexInverse[name]) {
+        } 
+        else if (symbolToLatexInverse[name]) {
           base = createTextNode(symbolToLatexInverse[name]);
-        } else {
+        } 
+        else {
           base = createTextNode("\\" + name);
         }
-      } else if (token.type === "brace_open") {
+      } 
+      else if (token.type === "brace_open") {
         base = parseGroup();
-      } else if (token.type === "char") {
+      } 
+      else if (token.type === "char") {
         base = createTextNode(consume().value);
-      } else {
+      } 
+      else {
         throw new Error("Unexpected token");
       }
 

@@ -92,8 +92,8 @@ export const createSubSup = (
 export const createActSymb = (
   base: InlineContainerNode = createInlineContainer(), 
   subLeft: InlineContainerNode = createInlineContainer(), 
-  subRight: InlineContainerNode = createInlineContainer(), 
   supLeft: InlineContainerNode = createInlineContainer(), 
+  subRight: InlineContainerNode = createInlineContainer(), 
   supRight: InlineContainerNode = createInlineContainer(), 
 ): ActuarialSymbolNode => ({
   id: uuidv4(),
