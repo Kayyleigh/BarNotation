@@ -21,6 +21,10 @@ export const handleCharacterInsert = (state: EditorState, char: string): EditorS
     // Prepare potential updated node for pattern matching purposes
     const updatedPrev = { ...prevNode, content: prevNode.content + char };
 
+    //TODO start of WIP new completion logic
+    // Not yet implemented, needs to be properly planned first
+    //TODO end of WIP new completion logic
+
     const match = specialSequences.find(seq => seq.sequence === updatedPrev.content);
     if (match) {
       const transformedNode = match.mathNode;
@@ -51,6 +55,31 @@ export const handleCharacterInsert = (state: EditorState, char: string): EditorS
         },
       };
     } 
+    else if (prevNode.content.endsWith(' ')) {
+      // if last command ends with a space, force next node 
+
+      const newNode = createTextNode(char)
+
+      const updatedChildren = [
+        ...children.slice(0, index - 1),
+        prevNode,
+        newNode,
+        ...children.slice(index),
+      ];
+
+      const updatedRoot = updateNodeById(state.rootNode, container.id, {
+        ...container,
+        children: updatedChildren,
+      });
+
+      return {
+        rootNode: updatedRoot,
+        cursor: {
+          containerId: container.id,
+          index: index + 1,
+        },
+      };
+    }
     else {
       const updatedPrev = { ...prevNode, content: prevNode.content + char };
       const updatedChildren = [
