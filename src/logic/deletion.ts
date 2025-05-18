@@ -99,6 +99,9 @@ export const handleBackspace = (state: EditorState): EditorState => {
       };
     }
     console.warn(`${replacementChildren}`)
+    //TODO maybe here deal with:
+    // 1. revert group on deletion of either side bracket 
+    // 2. mutate textnode when content size >1 (does not solve the cursor issue for numbers, but good for easy coming brack from errors in typing specialseq)
     return state;
   }
 

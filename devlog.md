@@ -773,3 +773,67 @@ Good stuff
 Also things to think abt:
 - current specialSequence tries to match at any moment. Thus if two latex ones start w same substring then my curr approach only allows 1. SOlutions are: either have user do space or sth to confirm, or have small enough subset of special characters (or choose alternative sequences but that is a bad idea imo)
 - must eventually put clear overview of shortcuts and sequences on very easy to find place in main editor page
+
+TODO: allow node ungrouping on deletion of either bracket?
+and: make numbers (2+ digits) implicit groups?
+make shortcuts for \sum and \int to have bigop work already without drag or buttons
+must fix non-grouped brackets in tonode parseS
+
+### 18/05/2025
+
+Greek letters
+Rationale: special characters and their sequences make sense when using widely known sequences. Don't ask user to learn shit tons of sequences of course. So I use the LaTeX ones from https://www.cmor-faculty.rice.edu/~heinken/latex/symbols.pdf. Copied them into this .md file. Anything that didn't appear as the correct symbol, I went to w3schools to copy paste btter one. Cuz the actual symbol is the one that is printed in the TextNode.
+
+ℵ \aleph
+α \alpha 
+β \beta 
+ℶ \beth
+χ \chi 
+ℸ \daleth 
+δ \delta 
+ͷ \digamma
+ϵ \epsilon 
+η \eta 
+γ \gamma
+ℷ \gimel
+ι \iota 
+κ \kappa 
+λ \lambda 
+µ \mu 
+ν \nu 
+ω \omega
+φ \phi 
+π \pi 
+ψ \psi 
+ρ \rho 
+σ \sigma
+τ \tau 
+θ \theta 
+υ \upsilon 
+ε \varepsilon 
+ϰ \varkappa 
+ϕ \varphi 
+ϖ \varpi 
+ϱ \varrho 
+ς \varsigma 
+ϑ \vartheta 
+ξ \xi 
+ζ \zeta 
+
+∆ \Delta 
+Γ \Gamma 
+Λ \Lambda 
+Ω \Omega
+Φ \Phi 
+Π \Pi 
+Ψ \Psi 
+Σ \Sigma 
+Θ \Theta
+Υ \Upsilon
+Ξ \Xi
+
+I added a space to all childless sequences, to:
+1.  make sure shared starting strings are not making one unreachable
+2. make sure LaTeX actually prints it and does not wait for a longer sequence
+
+Note: the way special chars are defined, if you know a latex sequence by heart you can still use it in my editor even if it does not exist here. Existence in my codebase only makes it render as the actual symbol. If you use \updownarrow (and space), it can still be parsed to latex and there it will display anyway (because the special sequence is kept as a normal string)
