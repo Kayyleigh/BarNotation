@@ -46,7 +46,7 @@ export const nodeToLatex = (node: MathNode): string => {
         const subRight = `_{${node.subRight ? nodeToLatex(node.subRight) : ""}}`;
         const supRight = `^{${node.supRight ? nodeToLatex(node.supRight) : ""}}`;
       
-        return `{${subLeft}${supLeft}${base}${subRight}${supRight}}`;
+        return `${subLeft}${supLeft}${base}${subRight}${supRight}`;
       }
 
       case "actsymb": {

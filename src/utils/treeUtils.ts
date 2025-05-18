@@ -1,5 +1,4 @@
 // utils/treeUtils.ts
-import { nodeToLatex } from "../models/latexParser";
 import { type InlineContainerNode, type MathNode } from "../models/types";
 
 export type TreePath = {
@@ -20,47 +19,6 @@ export const findNodeById = (node: MathNode, targetId: string): MathNode | null 
     return null;
   };
 
-export const findParentAndIndex = (
-    root: MathNode,
-    targetId: string
-  ): TreePath | null => {
-    const stack: { node: MathNode; parent: MathNode | null; path: MathNode[] }[] = [
-      { node: root, parent: null, path: [root] },
-    ];
-  
-    while (stack.length > 0) {
-      const { node, parent, path } = stack.pop()!;
-  
-      const children = getLogicalChildren(node);
-  
-      for (let i = 0; i < children.length; i++) {
-        const child = children[i];
-        if (child.id === targetId) {
-          return { parent: node, index: i, path: [...path, child] };
-        }
-        stack.push({ node: child, parent: node, path: [...path, child] });
-      }
-    }
-  
-    return null;
-  };
-
-  export const findNextPositionUp = (root: MathNode, fromId: string): string | null => {
-    const pos = findParentAndIndex(root, fromId);
-    if (!pos || !pos.parent) return null;
-  
-    const parent = pos.parent;
-    const siblings = getLogicalChildren(parent);
-    const index = pos.index;
-  
-    if (index + 1 < siblings.length) {
-      return siblings[index + 1].id; // Found a next sibling
-    } else {
-      return findNextPositionUp(root, parent.id); // Recurse upward
-    }
-  };
-
-
   export const getLogicalChildren = (node: MathNode): MathNode[] => {
     switch (node.type) {
       case "inline-container":
@@ -80,71 +38,6 @@ export const findParentAndIndex = (
     }
   };
 
-  export const getChildKeys = (node: MathNode): string[] => {
-    switch (node.type) {
-      case "fraction":
-        return ["numerator", "denominator"];
-      case "root":
-        return ["base", "index"];
-      case "subsup":
-        return ["base", "subLeft", "supLeft", "subRight", "supRight"];
-      case "actsymb":
-        return ["base", "subLeft", "supLeft", "subRight", "supRight"];
-      case "big-operator":
-        return ["body", "subscript", "superscript"];
-      case "decorated":
-        return ["child"];
-      case "group":
-        return ["child"];
-      case "matrix":
-        return ["rows"];
-      case "vector":
-        return ["elements"];
-      default:
-        return [];
-    }
-  };
-
-  export const getPreviousLeaf = (root: MathNode, currentId: string): MathNode | null => {
-    const leaves = getLeafNodesInPreOrder(root);
-    const index = leaves.findIndex(n => n.id === currentId);
-    return index > 0 ? leaves[index - 1] : null;
-  };
-
-  const isLeaf = (node: MathNode): boolean => {
-    return node.type === 'text' // For now, only text nodes are leaves. Dunno if will ever change but if so, do it here
-  };
-
-  export const getLeafNodesInPreOrder = (node: MathNode): MathNode[] => {
-    const result: MathNode[] = [];
-    
-    // If this is a leaf, add it to the result
-    if (isLeaf(node)) {
-      result.push(node);
-    }
-  
-    // Otherwise, recurse into the children (only if not a leaf)
-    const children = getLogicalChildren(node);
-    for (const child of children) {
-      result.push(...getLeafNodesInPreOrder(child)); // Collect leaves recursively
-    }
-  
-    return result;
-  };
-
-  export const getAllNodesInPreOrder = (node: MathNode): MathNode[] => {
-    const result: MathNode[] = [];
-    
-    result.push(node); // Always add the current node to the result
-    
-    const children = getLogicalChildren(node);
-    for (const child of children) {
-      result.push(...getAllNodesInPreOrder(child)); // Collect all nodes recursively
-    }
-  
-    return result;
-  };
-
   export const isEmptyNode = (node: MathNode | null | undefined): boolean => {
     if (!node) return true;
   
@@ -154,23 +47,6 @@ export const findParentAndIndex = (
   
     const children = getLogicalChildren(node);
     return children.every(isEmptyNode);
-  };
-
-  export const findPathToNode = (
-    root: MathNode,
-    targetId: string
-  ): MathNode[] | null => {
-    if (root.id === targetId) return [root];
-  
-    const children = getLogicalChildren(root);
-    for (const child of children) {
-      const path = findPathToNode(child, targetId);
-      if (path) {
-        return [root, ...path];
-      }
-    }
-  
-    return null;
   };
 
   export function updateNodeById(
@@ -247,7 +123,7 @@ export const findParentAndIndex = (
 
       console.warn(`${node.type} is missing a case in updateNodeById (in treeUtils)`)
     };
-    
+
     return node;
   }
 
@@ -358,110 +234,3 @@ export const findParentAndIndex = (
   
     return containers;
   }
-
-  /**
- * Recursively finds the parent MathNode and the key under which the target inline container is stored.
- */
-export function findParentContainerAndKey(
-  node: MathNode,
-  targetId: string
-): { parent: MathNode; key: string } | null {
-  // Iterate through all keys of the node
-  for (const [key, value] of Object.entries(node)) {
-    if (!value) continue;
-
-    // Handle single object child
-    if (typeof value === "object" && "id" in value && "type" in value) {
-      const child = value as MathNode;
-      if (child.id === targetId) {
-        return { parent: node, key };
-      }
-
-      const res = findParentContainerAndKey(child, targetId);
-      if (res) return res;
-    }
-
-    // Handle array of child nodes
-    if (Array.isArray(value)) {
-      for (const item of value) {
-        if (item && typeof item === "object" && "id" in item && "type" in item) {
-          const child = item as MathNode;
-          if (child.id === targetId) {
-            return { parent: node, key };
-          }
-
-          const res = findParentContainerAndKey(child, targetId);
-          if (res) return res;
-        }
-      }
-    }
-  }
-
-  return null;
-}
-
-/**
- * Finds the nearest InlineContainerNode that contains (possibly indirectly)
- * the node with `targetId`, and returns the child index of the top-level node
- * (e.g. FractionNode) inside that container.
- */
-export function findEnclosingInlineContainerAndIndex(
-  node: MathNode,
-  targetId: string
-): { container: InlineContainerNode; indexInParent: number } | null {
-  if (node.type === "inline-container") {
-    for (let i = 0; i < node.children.length; i++) {
-      const child = node.children[i];
-
-      if (containsNodeWithId(child, targetId)) {
-        return { container: node, indexInParent: i };
-      }
-    }
-
-    // Recurse into children
-    for (const child of node.children) {
-      const res = findEnclosingInlineContainerAndIndex(child, targetId);
-      if (res) return res;
-    }
-  } else {
-    // Recurse into all node fields
-    const containerFields = Object.values(node);
-    for (const field of containerFields) {
-      if (Array.isArray(field)) {
-        for (const item of field) {
-          if (item && typeof item === "object" && "type" in item) {
-            const res = findEnclosingInlineContainerAndIndex(item as MathNode, targetId);
-            if (res) return res;
-          }
-        }
-      } else if (field && typeof field === "object" && "type" in field) {
-        const res = findEnclosingInlineContainerAndIndex(field as MathNode, targetId);
-        if (res) return res;
-      }
-    }
-  }
-
-  return null;
-}
-
-/**
- * Returns true if the subtree rooted at `node` contains a node with `id === targetId`
- */
-function containsNodeWithId(node: MathNode, targetId: string): boolean {
-  if (node.id === targetId) return true;
-
-  const values = Object.values(node);
-  for (const val of values) {
-    if (Array.isArray(val)) {
-      for (const child of val) {
-        if (child && typeof child === "object" && "id" in child) {
-          if (containsNodeWithId(child as MathNode, targetId)) return true;
-        }
-      }
-    } else if (val && typeof val === "object" && "id" in val) {
-      if (containsNodeWithId(val as MathNode, targetId)) return true;
-    }
-  }
-
-  return false;
-}

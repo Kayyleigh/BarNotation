@@ -10,6 +10,8 @@ import type {
   // GroupNode,
 } from "../models/types";
 
+//BUG: when deleting subsup that has nonempty other corners, it still deletes whole thing
+
 export const handleBackspace = (state: EditorState): EditorState => {
   const { cursor } = state;
   const container = findNodeById(state.rootNode, cursor.containerId);

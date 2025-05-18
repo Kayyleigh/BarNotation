@@ -35,75 +35,93 @@ export function parseLatex(input: string): MathNode {
         nodes.push(parseExpression());
       }
       expect("brace_close");
-      return nodes.length === 1 ? nodes[0] : createInlineContainer(nodes);
+      return createInlineContainer(nodes);
     }
   
     function parseExpression(): MathNode {
+      // 1. Parse prescripts (left subscripts/superscripts)
+      let subLeft: InlineContainerNode | undefined;
+      let supLeft: InlineContainerNode | undefined;
+    
+      while (true) {
+        const next = peek();
+        if (!next || next.type !== "char") break;
+    
+        if (next.value === "_") {
+          consume();
+          subLeft = parseGroup() as InlineContainerNode;
+        } else if (next.value === "^") {
+          consume();
+          supLeft = parseGroup() as InlineContainerNode;
+        } else {
+          break;
+        }
+      }
+    
+      // 2. Parse base
       const token = peek();
       if (!token) throw new Error("Unexpected end of input");
-  
+    
+      let base: MathNode;
+    
       if (token.type === "command") {
         const { name } = consume() as { type: "command"; name: string };
-  
+    
         if (name === "frac") {
           const numerator = parseGroup();
           const denominator = parseGroup();
-          return createFraction(numerator, denominator);
-        }
-  
-        if (name === "sqrt") { //TODO
-          let degree: MathNode | undefined = undefined;
-          if (peek()?.type === "brace_open") {
-            degree = undefined;
-            const radicand = parseGroup();
-            return { type: "root", radicand };
-          } else if (peek()?.type === "char" && peek()!.value === "[") {
-            throw new Error("Optional sqrt degree parsing not implemented here");
-          } else {
-            const radicand = parseGroup();
-            return { type: "root", radicand };
-          }
-        }
-  
-        if (name in decorationToLatexCommandInverse) {
+          base = createFraction(numerator, denominator);
+        } else if (name === "sqrt") {
+          // your sqrt parsing logic here ...
+          const radicand = parseGroup();
+          base = { type: "root", radicand };
+        } else if (name in decorationToLatexCommandInverse) {
           const child = parseGroup();
-          return createDecorated(
+          base = createDecorated(
             decorationToLatexCommandInverse[name as keyof typeof decorationToLatexCommandInverse],
             child
           );
+        } else if (symbolToLatexInverse[name]) {
+          base = createTextNode(symbolToLatexInverse[name]);
+        } else {
+          base = createTextNode("\\" + name);
         }
-  
-        if (symbolToLatexInverse[name]) {
-          return createTextNode(symbolToLatexInverse[name]);
-        }
-  
-        return createTextNode("\\" + name);
+      } else if (token.type === "brace_open") {
+        base = parseGroup();
+      } else if (token.type === "char") {
+        base = createTextNode(consume().value);
+      } else {
+        throw new Error("Unexpected token");
       }
-  
-      if (token.type === "brace_open") {
-        return parseGroup();
-      }
-  
-      if (token.type === "char") {
-        const char = (consume() as { type: "char"; value: string }).value;
-  
-        // Handle superscript or subscript //TODO maybe this does not work for pre?
-        if (char === "_") {
-          const base = parseExpression() as InlineContainerNode;
-          const subRight = parseExpression() as InlineContainerNode;
-          return createSubSup(base, undefined, undefined, subRight, undefined);
+
+      //_{}^{}{x}_{}^{3}
+      //
+      //_{_{}^{}{}_{}^{}}^{_{}^{}{}_{}^{3}}{x}_{}^{}
+    
+      // 3. Parse postscripts (right subscripts/superscripts)
+      let subRight: InlineContainerNode | undefined;
+      let supRight: InlineContainerNode | undefined;
+    
+      while (true) {
+        const next = peek();
+        if (!next || next.type !== "char") break;
+    
+        if (next.value === "_") {
+          consume();
+          subRight = parseGroup() as InlineContainerNode;
+        } else if (next.value === "^") {
+          consume();
+          supRight = parseGroup() as InlineContainerNode;
+        } else {
+          break;
         }
-  
-        if (char === "^") {
-            const base = parseExpression() as InlineContainerNode;
-            const supRight = parseExpression() as InlineContainerNode;
-            return createSubSup(base, undefined, undefined, undefined, supRight);
-        }
-  
-        return createTextNode(char);
       }
-  
-      throw new Error("Unexpected token");
+    
+      // 4. Return SubSup node if any scripts found, else just base
+      if (subLeft || supLeft || subRight || supRight) {
+        return createSubSup(base, subLeft, supLeft, subRight, supRight);
+      }
+      return base;
     }
   
     // Entry point

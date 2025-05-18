@@ -185,6 +185,15 @@ export const handleBracketInsert = (
   const openSymbol = getOpenSymbol(bracketStyle);
   const closeSymbol = getCloseSymbol(bracketStyle);
 
+  if (!openSymbol) {
+    console.warn(`${bracketStyle} has no known opening symbol.`)
+    return state
+  }
+  if (!closeSymbol) {
+    console.warn(`${bracketStyle} has no known closing symbol.`)
+    return state
+  }
+
   if (side === "open") {
     // Insert the open symbol normally first
     const updatedState = handleCharacterInsert(state, openSymbol);
