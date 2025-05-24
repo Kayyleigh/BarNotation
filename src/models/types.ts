@@ -33,7 +33,7 @@ export interface InlineContainerNode extends BaseNode {
 export interface GroupNode extends BaseNode {
   type: "group";
   child: InlineContainerNode;
-  showBrackets: boolean; //TODO maybe dont have this but do have a field for which bracket type: {[()]}
+  showBrackets: boolean; //TODO maybe dont have this
   bracketStyle: BracketStyle;
 }
 

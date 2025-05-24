@@ -1,5 +1,7 @@
 // bracketUtils.ts
 
+// TODO: ensure latex compatibility of symbols (used in latexParser). See https://tug.ctan.org/info/short-math-guide/short-math-guide.pdf
+
   export const bracketSymbols: Record<string, { open: string; close: string }> = {
     round: { open: "(", close: ")" },
     square: { open: "[", close: "]" },

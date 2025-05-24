@@ -839,3 +839,541 @@ I added a space to all childless sequences, to:
 Note: the way special chars are defined, if you know a latex sequence by heart you can still use it in my editor even if it does not exist here. Existence in my codebase only makes it render as the actual symbol. If you use \updownarrow (and space), it can still be parsed to latex and there it will display anyway (because the special sequence is kept as a normal string)
 
 Implemented undo and redo using ctrl +z and +y
+
+BUG: missing \actsymb[][][P]{\bar{A}}{x:\angln} parse - need to somehow desugar that into my logic cuz I will not be making a separate structure for it cuz it is already visually possible
+Basically desugar that entire user guide of actuarialsymbol (but remember: parsing back to latex will not make the fancy one. Not necessary)
+
+Current bugs:
+- BUG: pasting brackets does not group them
+    - Importance: meh, visually correct but extra effort needed to transform
+- BUG: pasting multi-digit numbers does not keep them in 1 text node
+    - Importance: low, visually correct but extra effort needed to transform. In fact, sometimes this version is beneficial e.g. for better cursor control inside numbers (which atm of writing is not existing)
+
+Perhaps the new manipulation stuff (for clipboard events) can be used in other /logic/ as well, cuz I have shit tons of duplication for updating the tree and finding the container
+
+### 19/05/2025
+
+I have not considered this before: https://www.overleaf.com/learn/latex/Brackets_and_Parentheses (setting some global param for (temporary) bracket sizing)
+TODO: I do not allow (1+2)/(3+4) in non-fraction-structure semantics. ensure that escaping using \/ works by checking "\" before any transformations in the keydown handler
+
+Overview of things that need to be written in the report 
+
+1.  Designing an AST for visual math. 
+    - First explain syntax vs semantics: syntax is about structure, semantics is about meaning. The goal of this tool is to allow note-taking, of lectures. Thus, focus is on syntax (i.e. copying whatever the lecturer wrote!). Syntax and semantics do not have a one-to-one mapping.
+    - Example of syntax-to-semantics being n-to-one mapped: \surd (ax+b) vs \sqrt{ax+b}. I don't have to care what it means; these have to be different anyway in the app because the way it is represented is totally up to the user. That's how it works in physical note-taking! The example I gave contains 2 widely-used and accepted ways to map identical semantics to different syntaxes. However, in physical note-taking, you could technically make up your own syntax, like if you want to write \lim_{x \to 0} to look like {\lim}^{x}_{0}\downarrow, nobody is stopping you. In this application, I have to stop you, because there are infinite possibilities to define your own syntax and the only way to enable that in a digital tool is by text fields in some canvas-based design app. That slows down note-taking and also disables the possibility to parse to known mathematical markup languages (because only you know how to interpret your invented syntax). Due to the former (fast note-taking) being the main goal of the app, a well-established syntax is necessary. Since the goal is of the app is specifically to enable copying mathematical notation from lectures, this syntax needs to align with the one used in the user's university. Due to my lack of experience in said university, I make the assumption that the lecturers follow syntax conventions that are representable in LaTeX. The remainder of the development process of this application strives for an AST that can represent any unique **visual structures** that is possible using LaTeX. This automatically leads to a possibility to parse notations in the app to and from LaTeX. 
+    >However, note that LaTeX can accept multiple strings to render identical notation: 2^3 looks the same as `_{}^{}{2}_{}^{3}`. (TODO mention that the app should have as few structures as possible defined under the hood because that opens the doors to better usability in terms of actions enabled on e.g. hover? Or just good for freedom too tbh.) For the app, this means that parsing latex into underlying data structures requires a lot of extra logic (TODO mention "desugaring"), while translating back to latex may lead to an unwanted option because which one to use depends on which is "better" to the user, which may differ per moment in time and per situation. Since LaTeX would parse them the same way anyway, I will always pick the option that is most generalizable within the app (i.e. `_{}^{}{2}_{}^{3}` because it requires the least extra logic given how I already designed the data model).
+    - Example of semantics-to-syntax being n-to-one mapped: `_{n}^{2}{A}_{x}^{(m)}` and `\actsymb[n][2]{A}{x}[(m)]` may look the same for some parameters (for longer ones there are slight mismatches). Whatever the first one may mean in other context, the second one is only rendered when allowing the \texttt{\actuarialsymbol} package. This package defines additional LaTeX commands to render semantically-loaded actuarial symbols. these symbols are sometimes not available in plain LaTeX mathematics. Since the app must support actuarial symbols, commands from the \texttt{\actuarialsymbol} package are assumed to be allowed to parse to. This means that desugaring `_{ll}^{ul}{X}_{lr}^{ur}` (in latex) into actuarial symbols at all times is the most efficient way in terms of keeping the underlying data model as small as possible. However, that would lead to 2^3 requiring \actuarialsymbol package to parse in latex, which means semantics are mismatched and simple expressions require unnecessary imports. Therefore, the application will split sub- and super-scripted expressions from actuarial symbols, despite it creating a one-to-many ("many" = 2) mapping from visual structures (in rendering) to underlying data structures (in the remainder of the logic).
+    - TODO actually identify the existing structures (i.e. my "types.ts" file's contents)
+2. Overall system architecture (incl saving of notation); mention lack of backend?
+3. Front-end design: follow conventions and always keep in mind chronic pain? Also design principles etc
+4. User input: modes (type (+shortcuts), click, drag-drop, hover, ctrl+z and y, copy-paste), exact shortcuts + rationale, etc. And for remainder of app, what?
+
+![alt text](image-21.png)
+curr design in case figma does not save
+
+TODO think more abt the structures and accents etc toolbar, it's a mess. the search bar is a good idea imo if executed more cleanly than on first design; it's good to not be overwhelmed since there are too many options in existing editors, and if used regularly then setting groups for diff courses is a good idea here?
+
+TODO: must add undo, redo to design? Betw export and delete? Also, put button to shortcuts list. Not hidden in menus or sth 
+
+Also still need a tag system? (maybe that is better to put betw export and delete).
+
+OR: maybe instead of having user make tags for diff courses, have them make "environments". Each env would be a course, likely. Envs would be a diff page? Kinda like how overleaf works, where the list of envs is the list of projects, and the page I already designed is what you get for each env. Then the toolbar should get customized by having each env allow a set of corresp structures etc. (Or at least those would be at the top, if rest still needs to be reachable)
+
+OR for the latter I could predefine categories and have those be tags within the toolbar. User can then click relevant tag(s) to filter the sybmols/accents/structures
+
+Which option is best may depend on the duration of the user's courses. Cuz one of the options requires signif more prep from the user than the other options
+
+TODO: make the text fields in the design not have so much margin, it feels like its from 20y ago. Just do what vsc and all others 
+
+![alt text](image-22.png)
+latex-inspired alternative
+
+### 20/05/2025
+
+https://math-editor.online/ this one looks similar to what I am making but very unusable due to the long animations of the toolbar. But I should totally ~~steal~~ be inspired by their templates
+
+https://www.mathcha.io/editor seems kinda similar in goal but the execution is way off for its purpose. Still seem to need lot of latex knowledge, and looks slow to use
+
+https://www.hostmath.com/ opposite of mine but kinda clean toolbar
+
+Should maybe do some kinda "card sorting" of all symbols or accents, where phase 1 is closed:
+1. "I use this symbol/accent all the time (usually at least once per lecture)."
+
+2. "I use this symbol/accent regularly (usually at least once per week)"
+
+
+3. "This symbol/accent is used a lot in very few courses. Sometimes, I need it every day, while other times I may not need it for months."
+
+4. "I use this symbol/accent occasionally."
+
+5. "I use this symbol/accent rarely, but not never."
+
+6. "I have seen this symbol/accent before. It is used in my studies, but I very rarely come across it or have not come across it yet."
+
+7. "I do not know/use this symbol/accent, but I still would like to be able to access it in a math notation tool, just in case."
+
+8. "I have never used and will never use this symbol/accent in my life. This symbol/accent means nothing to me, and I am not interested in ever seeing it again." 
+
+
+(Note: you can always change your mind about this. This activity is for me to know the scope of the problem. Results will be used to determine the order and layout of toolbars. If you say you don't use a symbol, it may still be accessed through more time-consuming interaction modes, and I can always change the code later if your situation changes a lot.)
+
+Afterwards ask participant if there are any symbols/accents they can think of that are not in the ones I provided. If so, let them provide which, and add that to the result too
+
+![alt text](image-23.png)
+Curr design. Clearly need client's input on ordering of symbols/accents (anything that can go in "textnode" that is not on a normal keyboard)
+
+#### Things that would be nice to know
+
+**Questions about your courses**:
+Q: What are all the branches of mathematics that you use in your studies? (E.g. Linear Algebra, Game Theory, Calculus, ...)
+A: [YOUR ANSWER HERE]
+
+Q: How long do courses last? (E.g. quarter (~10 weeks); semester; year?)
+A: [YOUR ANSWER HERE]
+
+**Questions about chronic pain**:
+Q: You mentioned fibromyalgia in a youtube comment at some point. I could not find much info about how fibromyalgia influences human-computer interaction, apart from people promoting Speech-to-Text (which won't be appreciated in lecture halls). I did find some reddit posts about brain fog and how that makes it hard to use apps with cluttered UI. In your geoguessr gameplay, you seem very in control of your focus so I have been assuming that hand pain is the most relevant problem when designing this tool. Is there anything else (brain fog or other) that you would like me to take into account during design? Of course do not share medical details you are not comfortable with sharing, but anything you say can be used to better customize it to your situation. 
+A: [YOUR ANSWER HERE]
+
+Q: At some point(s) you mentioned that scrolling hurts, but I don't remember any remarks about other types of keyboard/mouse events. This is also not something I could find sources on, so I would like to ask for each keyboard/mouse/trackpad event (typing, clicking, scrolling, zooming, drag-and-dropping, etc if there are more), how preferred they are for you. Is pain caused by specific movements, or is it random, or caused by (lack of) repetition? And what is the relationship between pain intensity and duration of interactions (e.g. does pain increase when dragging the mouse for longer in one go)?
+A: [YOUR ANSWER HERE]
+
+Q: How much does pain differ throughout a day/are there any factors that influence severity in such a way that user testing will not be representative of real usage during a lecture?
+A: [YOUR ANSWER HERE]
+
+**Questions about your note-taking experiences**:
+Q: What note-taking apps (not specifically math, just anything for any notes) do you currently use, if any? Preferably ordered by favorite first (nicest-feeling usability), or which one(s) you are most used to. If you order it, please mention. Feel free to explain as much as you want why certain apps are (not) nice.
+A: [YOUR ANSWER HERE]
+
+Q: What makes digital math note-taking "awkward"? (Not disagreeing with you; just asking since it refines the problem statement of the whole project, which impacts everything else.) 
+A: [YOUR ANSWER HERE]
+
+Q: Are you familiar with LaTeX?
+A: [YOUR ANSWER HERE]
+
+#### Things that would be nice to have (but you don't have to provide it if you don't want to)
+- Pictures of your handwritten mathematical lecture notes, so I know what we're digitalising.
+- Picture of your keyboard. I googled "Irish keyboard" and it's very different from mine so would like confirmation of whichever one to expect when defining hotkeys.
+
+- Describe the mathematical note-taking app of your dreams? Does not have to be detailed or complete; I already have a lot of progress done in terms of design of functionality and UI/UX. It's not your job to tell me what to do, but rather to tell me what you like, so I do not end up making you an app you will hate while I could have known all along that you would prefer something different. 
+
+### 21/05/2025
+
+Should not work much on this today, but I should note this down: maybe SubSup and Actsymb can be merged into 1 type, and same for Precedence and Accent. That would reduce code duplication. Just use extra field to show which one? Since it should be distinguishable clearly, due to them having different roles in the to-latex. But same type is good for interaction too (e.g. accent can just make menu on hover, with accents and precedences in different "sections")
+
+![alt text](image-24.png)
+Image to send into dc in case I suddenly feel confident
+
+![alt text](image-25.png)
+
+Timeline for the participant to understand what would be asked from them if accepting the offer of being my client:
+
+1. In own time, fill out questionnaire. Reason: scoping the problem. I already made the questions; this is basically ready. Estimated duration: max 1h.
+
+> Kayleigh: updates the report's background, requirements and design sections accordingly (may take 1-2 weeks if before end of June).
+
+2. Read (parts of) the report in own time, write out some feedback (e.g. confirm/correct any assumptions I made). Estimated duration: max 2h.
+
+> Kayleigh: update report again if necessary
+
+3. Repeat step 2 until the client is happy with the overall plan of the application (Not 100% detailed plan yet; just fundamental stuff like the way math is defined and an overview of how the app would be used). Estimated duration: ??.
+
+> Kayleigh: Prepare categorisation activity
+
+4. Categorise a bunch of special symbols/accents/structures into predefined categories. (In own time; I'll prepare instructions and I know a good website where this can be done). Estimated duration: max 1h.
+
+> Kayleigh: Take subset of result of step 4; prepare open card sorting activity. Not on same day as previous, to at least try to avoid some cognitive biases.
+
+5. Open card sorting of remaining subset (again in own time; same setup as previous step.). Estimated duration: max 2h.
+
+> Kayleigh: Finish working prototype of the editor, and toolbar based on card sorting outcome. Probably also already include a user guide and/or hotkey overview.
+
+6. Cooperative evaluation of working prototype. This is the first time you try the system youself. Since there is only 1 end user, this first impression is very valuable. I prepare some relevant math notations for you (or I find lectures on youtube (don't prepare for this; the evaluation should be the first time you see it)), and your task is to type them out in the editor as fast as you can (or better: as fast as the lecture requires you to). Recording your screen (and keyboard-overlay?) and all your thoughts is very useful, and best outcome is actually if this is done in a call so I can take notes on unexpected behavior & help out if necessary. But unlike what I learned in uni, my presence is not strictly required since you clearly have a lot of experience recording yourself and your thoughts. Also I suck at being an independent evaluator because I get excited about showing off my system and start yapping and influencing the user. Estimated duration: max 2h.
+
+> Kayleigh: Improve ease of use based on evaluation results. Then finally start designing the rest of the application (i.e. the note-saving, additional fields, and maybe even a home screen of notation collections).
+
+7. "Final" evaluation/confirmation of overall app design outside of the editor itself (i.e., how the app will work in terms of saving, keeping track of notations per lecture/course, settings pages, etc). Probably just by you giving feedback on a textual description of the design. Estimated duration: max 1h.
+
+> Kayleigh: Based on your feedback, I make a visual design. 
+
+> Kayleigh: Maybe I will ask my fiend(s) to do an expert heuristic evaluation on that, since they know "established usability principles (heuristics)" so that would help identify issues that the user may not notice due to usability just feeling "off" without knowing the exact reason.
+
+> Kayleigh: turn visual design into working prototype.
+
+8. Cognitive evaluation of overall app's prototype. Similar to the other evaluation: I prepare tasks (e.g. "Make a new course", "create a new notation", "import a notation from LaTeX format" (I provide necessary files), "Export all notations from course X to LaTeX", ...). Should be recorded (but no keyboard strokes necessary for this one). Estimated duration: max 1.5h.
+
+> Kayleigh: identify issues that arise from step 8. Prioritise problems using a severity matrix
+
+9. Conform/correct severity matrix. Estimated duration: max 0.5h.
+
+> Kayleigh: Keep fixing issues until ~1 week before start of academic year. Then provide "final product" with enough time left to discover and fix critical bugs before uni starts.
+
+10. Final user testing in own time. Any bugs or ideas on how to improve the app (even new functionality) can be sent to me at any time. I will try to fix bugs ASAP, while ideas will be kept as new requirements for a potential next iteration of the app. Estimated duration: ???.
+
+So like, at least 11h from user but probably more like 15 incl. iterative things. So 15h scattered over 3 months.
+
+Message:
+Some time ago you mentioned your struggles regarding actuarial sciences lecture notes with chronic pain. I looked into digital tools, and found nothing proper even though I believe it is achievable in theory. I really enjoy and miss the full software development pipeline and you clearly deserve proper software, so this is your chance to get a custom mathematical notation tool, taking into account your exact accessibility needs, developed for free by someone who has the qualifications to do this exact stuff in real companies. I already have a decent starting point to avoid making impossible promises. If you are interested in being my client, I will involve you in the development so it actually becomes a solution for you specifically. My plan would be to finish it by next academic year (01/09?) and I estimate that your involvement would cost you around ~15h scattered over these 3 months. 
+
+This project is not affiliated with or endorsed by my university. This means I have no contracts or ethical approval for anything, but I intend to uphold professional standards as I was taught in my studies. You can opt out of being my client at any time, refuse to provide answers or participate in any of the evaluations, and most can be done in your own time through text (except much later on, actually trying out the app would be best to at least record). Your unprocessed feedback and evaluation results will not be shared with anyone, and you can decide whether and when you want them deleted. The technical report and the actual codebase will protect your anonymity, and can be kept private as well if you wish. (However, I believe those may be nice to publish (on my github) eventually for anyone else who may be in your sitation.)
+
+If you are interested, I can send you more information on the exact timeline I have in mind and what I would ask from you at each step. A first set of questions to further define the scope of the problem is already prepared. Expect other steps to take some time, because my academic year ends at the end of June (and I have been neglecting my actual responsibilities for this fun stuff).
+
+---
+
+A few weeks ago, you mentioned your struggles with chronic pain and actuarial lecture notes. I looked into existing tools and found nothing proper, even though I think it's achievable. I enjoy and miss software development, and you clearly deserve proper software, so I started designing and building it myself.
+
+It could become a custom math notation tool designed around your exact accessibility needs. I would handle all the development (for free) and involve you as the client to make sure it actually solves your problems. I already have a decent starting point, so these are not impossible promises (I believe).
+
+My plan would be to finish it by September, and I estimate your involvement would cost at most 15h over the next 3 months, mostly asynchronously via text (with the only exception being actual user testing at the end).
+
+This is not linked to my university, though I will always follow professional standards. You can opt out anytime, skip questions, and all your input is kept private and deleted if and when you want. I can also keep the code and report private if you prefer that, but think it's nicer to publish it for others with similar struggles.
+
+If you're interested, I can send more info on what I would ask from you at each step. First step would be some questions to help scope the problem better. Everything else might wait until a week after EMEA because I still have uni at the moment.
+
+
+Here is sth to keep in mind when deciding to allow anything as "precedence" on any node
+https://tex.stackexchange.com/questions/123279/convergence-in-distribution
+
+![alt text](image-26.png)
+Some bug when removing accented
+
+### 22/05/2025
+Maybe stupid idea but writing it down anyway: Should there be a "find all / replace" option? Within a notation
+
+Might need to distinguish \text{} from normal because normal should be italic
+
+### 23/05/2025
+
+You mentioned struggles with chronic pain and actuarial lecture notes, so I looked into existing tools and found nothing proper even though I think it's achievable. You deserve proper software, and I enjoy (and miss) the full development pipeline, so I started working on a math editor myself. If you are interested, I would like to turn it into a custom tool designed around your exact accessibility needs. I would involve you as the client to make sure it actually solves your problems. I already have a decent starting point, so these are not impossible promises (I believe).
+
+My plan would be to finish it by the start of the academic year, and your involvement should cost you no more than 1h per week on average, mostly asynchronously via text.
+
+This is not linked to my uni, but I will always follow professional standards. I.e. you can opt out anytime, skip questions, etc, and all your input is kept private and deleted if and when you want. If you're interested, I can send more info on what I would ask from you at each step. First step would be some questions to help scope the problem better. Everything else might wait until a week after EMEA because I still have uni at the moment.
+
+--
+
+I currently use latex sequences for special sequences e.g. \alpha but that is just a choice I made assuming that it's good to sync w known other solutions. If alpha is used a lot, it may be worth it to just use \a. That's completely possible, but makes it harder to learn (mine if already knowing latex, or vice versa).
+
+Decision time abt how to do precedence
+alternative options: 
+1. allow any char above or below a base char
+2. allow only 1,2,3 above and below, as well as anything above arrows
+
+In favor of 1:
+user has freedom. Freedom supports speed (I assume) and avoids limiting the app to the point where the reqs no longer met because I missed part of the scope in terms of math notations in the user's career path
+
+In favor of 2: 
+Allows clean translation to latex. knowing that 1 above is \itop is needed anyway (?) and so far I have only seen other "char-shaped accents" on arrows for random variable stuff. 
+> These 2 types of "accents" may need diff ways of processing already to get to latex. Latter I think needs another package (which I think is already required by actuarialsymbol). Maybe I should somehow have a mapping from some internal data types or something that keeps track of the required packages. That is good to report to the user at all times when parsing to latex. ALso that is where parse to latex differs from just ctrl c, cuz ctrl c is abt the intermediate representation chosen by me for copying into the editor. It just happens to be that I chose latex for this intermediate representation. This chain of thought has nothing to do with the decision anymore.
+
+
+
+Let's actually revise the data types:
+1. text node 
+2. container node - contains a sequence of nodes
+3. childed node - a base node and up to 4 children nodes (1 per corner)
+4. accented node - a base node with some accent. These correspond to some one-childed latex commands
+5. Nth root node - could this also be an accented node wrapped in a childed node? that would lead to `^{}{[root symbol]\underline{}}` so def a bad idea for parsing
+6. BigOp node - todo check how latex deals w it
+7. Vector node - most likely different from accented
+8. Matrix node - needs to exist because latex also uses a special way?
+9. (?) find out how latex allows cases w the big bracket on the left
+
+TODO: find out if it is a good idea if:
+
+```
+MathNode = InlineContainerNode | StructureNode
+
+InlineContainerNode = { 
+    children: StructureNode[] 
+  }
+
+StructureNode = TextNode | ChildedNode | MatrixNode | ... 
+
+All of which only take InlineContainerNode as child type
+```
+
+That way, always know that it's `IC -> Struc -> IC -> Struc -> ... -> IC -> TextNode`. IC is then somewhat representing the ability to always add to an expression, while Struc is all about defining visually unique structures of sub-expressions. 
+
+For SubSup vs ActSymb as Childed: must merge (I think) and keep which one it is as a field (enum?) to deal with parsing later. can still init the diff types separate (i.e. one with ctrl and the other w shift). Make sure to render it maybe with a colored outline so user knows which one they made, and always have a clean option to convert to the other. Using the "wrong" version should not matter too much until parsing to latex. Ensure that SubSup is easier to create, because that one is more failsafe imo. Biggest actsymb problem is that children may need preferences, which concerns a different node type.
+
+Something that would be really cool: if I have some representation of a "course" or a "lecture", keep track of the special characters or \commands already used before, and have those be in some kinda dropdown to ensure it is easy for the user to re-use a variable that the system knows is already existing in the "environment" of the lecture/course. Would be extra cool if I actually keep track of variables and can highlight other occurrences of the same one. This feels like the programming language course. Gotta revisit those.
+
+Probably allow \text as command to call a new group or IC and have it have some field for the font styling to ensure that \text is normal and everything else italic. I actually think IC could have extra fields for all kinds of styling options! And have renderer adopt the deepest one (i.e. the most "specific"). Styling options could be color, text type, (size?, ) and thickness. Things like color might not even be wanted in a to_latex, but those options can be configured, and the color is still needed in the data model to ensure that loading your notes later will render the color correctly. 
+
+I really want to make a "find and replace" option. I use it all the time in my text editors. Would be so cool in math editor.
+
+Does GroupNode need to exist? It is an InlineContainer wrapped in matching delimiters. It would be possible I think to have it be an IC as long as surrounded by matching delimiters. That may feel freer but also sounds more messy. GroupNode existence allows for perfect certainty that the matching pair is there, and can trigger options on hover to change the bracket type, or maybe even to apply something to its contents.
+
+### 24/05/2025
+Questions for chatGPT
+
+Should I merge childed nodes?
+
+```
+export interface SubSuperscriptNode extends BaseNode {
+  type: "subsup";
+  base: MathNode;
+  subLeft: MathNode;
+  supLeft: MathNode;
+  subRight: MathNode;
+  supRight: MathNode;
+  variant?: "default" | "actuarial"; // default = normal sub/sup, actuarial = special \ax form
+}
+```
+
+keep DecoratedNode for accent-specific rendering with a strict set of symbols (bar, hat, tilde, dot, etc.), likely backed by an enum (NodeDecoration is perfect for this).
+
+`\overset{1}{n}` - tiny
+`\overset{\textstyle 1}{n}` - VERY similar
+`\itop{n}` - goal
+
+`\underset{2}{n}` - tiny
+`\underset{\textstyle 2}{n}` - VERY similar
+`\iibottom{n}` - goal
+
+```
+export interface AnnotatedNode extends BaseNode {
+  type: "annotated";
+  base: MathNode;
+  above?: MathNode;
+  below?: MathNode;
+  style: "generic" | "arrow" | "precedence";
+}
+```
+
+| Concept            | In UI/Editor                   | In Data Model                             | In LaTeX Export              |
+| ------------------ | ------------------------------ | ----------------------------------------- | ---------------------------- |
+| Accents            | Menu or command (`\bar`, etc.) | `DecoratedNode` or `AnnotatedNode`        | `\bar{x}`, `\tilde{x}`       |
+| Precedence         | Arrow + key-in number (1-3)    | `AnnotatedNode` with style `"precedence"` | `\itop{x}`, `\overset{4}{x}` |
+| Arrow labels       | Select arrow + add text        | `AnnotatedNode` with style `"arrow"`      | `\xrightarrow{label}`        |
+| General over/under | Menu or drag-and-drop          | `AnnotatedNode` with style `"generic"`    | `\overset`, `\underset`      |
+
+```
+export interface ArrowNode extends BaseNode {
+  type: "arrow";
+  direction: "left" | "right" | "leftright";
+  labelAbove?: MathNode;
+  labelBelow?: MathNode;
+}
+```
+
+| User types… | Insert node…                                |
+| ----------- | ------------------------------------------- |
+| `\->`       | `ArrowNode` (right arrow)                   |
+| `\<-`       | `ArrowNode` (left arrow)                    |
+| `\<->`      | `ArrowNode` (both ways)                     |
+| `\brace`    | `BraceNode` (maybe prompt "over or under?") |
+| `\widehat`  | `WideAccentNode`                            |
+
+About wide vs narrow for accents:
+```
+export interface NodeDecoration {
+  name: string; // "hat", "widehat", etc.
+  displayName: string; // For menu UI: "Hat (wide)", "Double Dot", etc.
+  latexCommand: string; // e.g., "\\hat", "\\overbrace"
+  isWide: boolean;
+  position: "above" | "below" | "both";
+  stretchBehavior: "fixed" | "stretch-child" | "stretch-decoration";
+}
+```
+```
+const NODE_DECORATIONS: NodeDecoration[] = [
+  {
+    name: "hat",
+    displayName: "Hat",
+    latexCommand: "\\hat",
+    isWide: false,
+    position: "above",
+    stretchBehavior: "fixed",
+  },
+  {
+    name: "widehat",
+    displayName: "Wide Hat",
+    latexCommand: "\\widehat",
+    isWide: true,
+    position: "above",
+    stretchBehavior: "stretch-child",
+  },
+  {
+    name: "overbrace",
+    displayName: "Overbrace",
+    latexCommand: "\\overbrace",
+    isWide: true,
+    position: "above",
+    stretchBehavior: "stretch-decoration",
+  },
+  {
+    name: "ddot",
+    displayName: "Double Dot",
+    latexCommand: "\\ddot",
+    isWide: false,
+    position: "above",
+    stretchBehavior: "fixed",
+  },
+  // etc.
+];
+```
+```
+if (!decoration.isWide && isLongExpression(child)) {
+  suggestAlternativeDecoration(decoration.name, findWideVariant(decoration));
+}
+```
+Dummy upper node:
+```
+interface RootNode { //TODO rename, not nth root
+  type: "root";
+  child: InlineContainerNode;
+}
+```
+
+Big operator: how to space for int? 
+Smart heuristic:
+```
+if (node.type === "big-operator" && node.operator === "∫") {
+  const body = node.body;
+  const rightNeighbor = getRightSibling(node); // from IC container
+
+  if (isTxtNode(rightNeighbor) && /^d[a-z]?$/.test(rightNeighbor.content)) {
+    return `\\int ${toLatex(body)}\\,${toLatex(rightNeighbor)}`;
+  }
+}
+```
+... or enable the user to insert it (just have the editor be WYSIWYG to the point where the small space would be representative?)
+
+Vector, Matrix, etc:
+>Keep:
+`GroupNode` → for bracketing scalar expressions
+`MatrixNode, VectorNode, BinomialNode` → for data structures
+
+| Action                 | Effect                             |
+| ---------------------- | ---------------------------------- |
+| Press `Enter` in Group | Add row (convert to vector/matrix) |
+| Press `Tab`            | Add column                         |
+| Hover + `+` button     | Explicit row/column insert         |
+| Type `choose` inside   | Suggest binomial conversion        |
+| Context Menu           | “Convert to Vector” / “Matrix”     |
+
+For cases (which is like Bmatrix with only the left brace, 2 columns, and left-alignment):
+```
+export interface CasesNode extends BaseNode {
+  type: "cases";
+  rows: [MathNode, MathNode][]; // each row is [value, condition]
+}
+```
+| Action                          | Result                                        |
+| ------------------------------- | --------------------------------------------- |
+| Type `{?}` or `if:` or `cases:` | Suggest inserting a `CasesNode`               |
+| Start line with `{` + Enter     | New line = new case (inside the brace)        |
+| Use arrow-down inside brace     | Moves to next row, creates new row            |
+| Tab inside row                  | Switches between value and condition          |
+| Hover on `{}`                   | Show options to convert to matrix or binomial |
+>If user deletes all conditions → convert to vector/matrix.
+If user adds if in second column → convert to CasesNode.
+
+Lim and argmax etc are kinda like normal text w under accent but the accent has to be smaller; not \textstyle. Maybe I should have it always be smaller, and put the \textstyle version in the predef accents for 1 2 3 and maybe still allow \textstyle as some command?
+
+This can be for styling:
+```
+export interface StyledNode extends BaseNode {
+  type: "styled";
+  child: MathNode;
+  style: {
+    fontStyle?: "normal" | "italic" | "bold" | "upright" | "text";
+    color?: string; // optional hex or named color
+    fontSize?: "small" | "normal" | "large";
+  };
+}
+```
+
+multi-digit numbers: keep in 1 textnode, instead update cursor to have optional extra offset for in numbers. When user inserts non-digit inside number, split into 3 textnodes
+
+Current plan of all existing MathNode types:
+
+`MultilineEquationNode` - Optionally wrap rootwrapper into this to allow multiple expressions in a vertical list
+
+`RootWrapperNode` - Dummy root wrapper to hold full expression
+`InlineContainerNode` - A flexibly-sized list of nodes
+
+`FractionNode` - numerator and denominator
+`NthRootNode`
+`BigOperatorNode` - sum, inf, etc. Big symbol, 1 child above, 1 child below
+
+`ChildedNode` - merged subsup and actsymb; this node has 4 children, 1 in each corner. Keep track of variant (subsup as default, actsymb as variant) but using default for actsymb does not break anything; it only makes the latex export less elegant
+`AccentedNode` - node with an accent (can be above or below; accent possibiliteis are predefined or can be whatever the user wants to custom put in. In latter case use \over-/underset{\textstyle }{})
+`ArrowNode` - arrow + 2 children: 1 up, 1 down. Similar to accents, but different rendering details and latex export
+
+`GroupNode` - InlineContainer wrapped in brackets. On hover (or other, hover is just rough idea), options appear to turn it into a vector or matrix (or binom or cases?)
+
+`BinomCoefficientNode` - Very similar to fraction, just no line in between and actually very different semantically and visually due to brackets
+
+`VectorNode`
+`MatrixNode` 
+`CasesNode`
+
+`TextNode` - main expected leaf node. Contains 1 character, a command starting with "\", or a (single- or multi-digit) number.
+
+`StyledNode` - Special wrapper for styling options, e.g. coloring or italic vs upright. Likely not used during fast-paced lecture notes, but may be 'suggested' occasionally when user types known sequences like sin, cos, lim. Or perhaps this wrapper is applied automatically when doing \sin or \cos or \lim.
+
+Things I am missing, which I will maybe not implement:
+- phantom node - 100% latex coverage requires spacing. I enable normal space I think. Typing "phantom" takes ages anyway
+- Multi-line equation. I think I do want MultilineEquation
+
+```
+interface MultilineEquationNode extends BaseNode {
+  type: "multiline-equation";
+  rows: RootWrapperNode[]; // Each line is its own row of math
+  alignment?: "left" | "center" | "right" | "align" | "multline"; // Optional for LaTeX export
+}
+```
+
+possible cool stuff that can be added later: 
+| Feature                      | Feasibility / Approach                                |
+| ---------------------------- | ----------------------------------------------------- |
+| Find & Replace               | Traverse `TextNode`s, split/merge as needed.          |
+| Highlight Matching Variables | Wrap matched nodes in `StyledNode` or use UI overlay. |
+| Color All Appearances        | Same as highlighting; assign consistent style.        |
+| Cursor-based Highlighting    | Track cursor position + match variables dynamically.  |
+
+TODO next steps:
+
+- Ask ChatGPT if I should have all descend from MathNode or if I should split into IC vs Struc. Also should I have all Struc's children be IC rather than MathNode just for robustness? 
+
+```
+MathNode
+├── InlineContainerNode
+│     └── children: StructureNode[]
+├── StructureNode
+│     └── children: InlineContainerNode(s)
+├── RootWrapperNode
+│     └── child: InlineContainerNode
+└── MultilineEquationNode
+      └── children: RootWrapperNode[]
+```
+
+- Create all: 
+`MultilineEquationNode`
+
+`RootWrapperNode`
+
+`InlineContainerNode`
+
+`FractionNode`
+`NthRootNode`
+`BigOperatorNode`
+`ChildedNode`
+`AccentedNode`
+`ArrowNode`
+`GroupNode`
+`BinomCoefficientNode`
+`VectorNode`
+`MatrixNode` 
+`CasesNode`
+`TextNode`
+`StyledNode`
+
+- Add textnode cursor optional position
+
+- Make renderer for all nodes 
+- make latex to/from all nodes
