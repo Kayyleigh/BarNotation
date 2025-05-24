@@ -1,7 +1,7 @@
 import { decorationToLatexCommandInverse } from "../utils/accentUtils";
-import { createActSymb, createDecorated, createFraction, createInlineContainer, createSubSup, createTextNode } from "./nodeFactories";
+import { createAccentedNode, createChildedNode, createFraction, createInlineContainer, createTextNode } from "./nodeFactories";
 import { symbolToLatexInverse } from "./specialSequences";
-import type { InlineContainerNode, MathNode } from "./types";
+import type { InlineContainerNode, MathNode, StructureNode } from "./types";
 
 type Token =
   | { type: "command", name: string }
@@ -50,11 +50,11 @@ export function parseLatex(input: string): MathNode {
       return undefined;
     }
   
-    function parseGroup(): MathNode {
+    function parseGroup(): InlineContainerNode {
       expect("brace_open");
-      const nodes: MathNode[] = [];
+      const nodes: StructureNode[] = [];
       while (peek() && peek()!.type !== "brace_close") {
-        nodes.push(parseExpression());
+        nodes.push(parseExpression() as StructureNode);
       }
       expect("brace_close");
       return createInlineContainer(nodes);
@@ -84,7 +84,7 @@ export function parseLatex(input: string): MathNode {
       const token = peek();
       if (!token) throw new Error("Unexpected end of input");
     
-      let base: MathNode;
+      let base: InlineContainerNode;
     
       if (token.type === "command") {
         const { name } = consume() as { type: "command"; name: string };
@@ -108,12 +108,13 @@ export function parseLatex(input: string): MathNode {
           const supRightStr = parseOptionalBracketString();
           const supRight = parseLatex(supRightStr ? supRightStr : "{}");
         
-          return createActSymb(
+          return createChildedNode(
             base as InlineContainerNode, 
             subLeft as InlineContainerNode,
             supLeft as InlineContainerNode,
             subRight as InlineContainerNode,
-            supRight as InlineContainerNode
+            supRight as InlineContainerNode,
+            'actsymb'
           );
 
         }
@@ -129,7 +130,7 @@ export function parseLatex(input: string): MathNode {
         } 
         else if (name in decorationToLatexCommandInverse) {
           const child = parseGroup();
-          base = createDecorated(
+          base = createAccentedNode(
             decorationToLatexCommandInverse[name as keyof typeof decorationToLatexCommandInverse],
             child
           );
@@ -176,15 +177,15 @@ export function parseLatex(input: string): MathNode {
     
       // 4. Return SubSup node if any scripts found, else just base
       if (subLeft || supLeft || subRight || supRight) {
-        return createSubSup(base, subLeft, supLeft, subRight, supRight);
+        return createChildedNode(base, subLeft, supLeft, subRight, supRight, 'subsup');
       }
       return base;
     }
   
     // Entry point
-    const children: MathNode[] = [];
+    const children: StructureNode[] = [];
     while (i < tokens.length) {
-      children.push(parseExpression());
+      children.push(parseExpression() as StructureNode);
     }
     return children.length === 1 ? children[0] : createInlineContainer(children);
   }

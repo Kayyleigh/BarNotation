@@ -1,6 +1,6 @@
 :root {
     /* Typography & Layout */
-    --math-font-family: 'STIX Two Math', 'Latin Modern Math', 'Cambria Math', serif;
+    --math-font-family: 'STIX Two Math', serif;
     --math-font-size-base: 2.4rem;
     --math-scale-factor: 0.5; /* Each nested level shrinks by this factor */
     --math-font-size-sub: 0.6em;
@@ -26,6 +26,7 @@
   /* ========== Base Math Node ========== */
   .math-node {
     font-family: var(--math-font-family);
+    text-transform: math-auto;
     line-height: 1.2;
     color: inherit;
     display: inline-block;

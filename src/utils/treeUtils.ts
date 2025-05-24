@@ -1,5 +1,5 @@
 // utils/treeUtils.ts
-import { type InlineContainerNode, type MathNode } from "../models/types";
+import { type InlineContainerNode, type MathNode, type RootWrapperNode, type StructureNode } from "../models/types";
 
 export type TreePath = {
   parent: MathNode;
@@ -25,13 +25,11 @@ export const findNodeById = (node: MathNode, targetId: string): MathNode | null 
         return node.children;
       case "group":
         return [node.child];
-      case "decorated":
-        return [node.child];
+      case "accented":
+        return [node.base];
       case "fraction":
         return [node.numerator, node.denominator];
-      case "subsup":
-        return [node.base, node.subLeft, node.supLeft, node.subRight, node.supRight];
-      case "actsymb":
+      case "childed":
         return [node.base, node.subLeft, node.supLeft, node.subRight, node.supRight];
       default:
         return [];
@@ -58,39 +56,82 @@ export const findNodeById = (node: MathNode, targetId: string): MathNode | null 
       return replacement;
     }
 
+    if (node.type === "multiline") {
+      const children = getLogicalChildren(node)
+
+      if (Array.isArray(children)) {
+        const newChildren = children.map(child =>
+          updateNodeById(child, targetId, replacement)
+        );
+    
+        return {
+          ...node,
+          children: newChildren as RootWrapperNode[],
+        };
+      }
+    } 
+    else if (node.type === "root-wrapper") {
+      const child = node.child
+
+      const newChild = updateInlineContainerNodeById(child, targetId, replacement)
+
+      return {
+        ...node,
+        child: newChild,
+      };
+    }
+    else if (node.type === "styled") {
+      const child = node.child
+
+      const newChild = updateNodeById(child, targetId, replacement)
+
+      return {
+        ...node,
+        child: newChild,
+      };   
+
+    }
+    else if (node.type === "inline-container") {
+      return updateInlineContainerNodeById(node, targetId, replacement)
+    } 
+    else {
+      return updateStructureNodeById(node, targetId, replacement)
+    } 
+
+    return node; 
+  }
+
+  export function updateStructureNodeById(
+    node: StructureNode,
+    targetId: string,
+    replacement: MathNode
+  ): StructureNode {
+    if (node.id === targetId) {
+      return replacement as StructureNode;
+    }
+
     const children = getLogicalChildren(node)
 
     if (node.type === 'group') {
-      const newChild = updateNodeById(node.child, targetId, replacement)
+      const newChild = updateInlineContainerNodeById(node.child, targetId, replacement)
       return {
         ...node,
-        child: newChild as InlineContainerNode,
+        child: newChild,
         bracketStyle: node.bracketStyle,
       }
     }
 
-    if (node.type === 'decorated') {
-      const newChild = updateNodeById(node.child, targetId, replacement)
+    if (node.type === 'accented') {
+      const newChild = updateInlineContainerNodeById(node.base, targetId, replacement)
       return {
         ...node,
-        child: newChild as InlineContainerNode,
-        decoration: node.decoration,
+        base: newChild,
+        accent: node.accent,
       }
     }
-  
-    if (node.type === 'inline-container' && Array.isArray(children)) {
+    if (Array.isArray(children) && children.length > 0) {
       const newChildren = children.map(child =>
-        updateNodeById(child, targetId, replacement)
-      );
-  
-      return {
-        ...node,
-        children: newChildren,
-      };
-    }
-    else if (Array.isArray(children) && children.length > 0) {
-      const newChildren = children.map(child =>
-        updateNodeById(child, targetId, replacement)
+        updateInlineContainerNodeById(child as InlineContainerNode, targetId, replacement)
       )
 
       if (node.type === 'fraction') {
@@ -100,7 +141,7 @@ export const findNodeById = (node: MathNode, targetId: string): MathNode | null 
           denominator: newChildren[1]
         }
       }
-      if (node.type === 'subsup') {
+      if (node.type === 'childed') {
         return {
           ...node,
           base: newChildren[0],
@@ -110,19 +151,33 @@ export const findNodeById = (node: MathNode, targetId: string): MathNode | null 
           supRight: newChildren[4],
         }
       }
-      if (node.type === 'actsymb') {
-        return {
-          ...node,
-          base: newChildren[0],
-          subLeft: newChildren[1],
-          supLeft: newChildren[2],
-          subRight: newChildren[3],
-          supRight: newChildren[4],
-        }
-      }
-
       console.warn(`${node.type} is missing a case in updateNodeById (in treeUtils)`)
     };
+
+    return node;
+  }
+
+  export function updateInlineContainerNodeById(
+    node: InlineContainerNode,
+    targetId: string,
+    replacement: MathNode
+  ): InlineContainerNode {
+    if (node.id === targetId) {
+      return replacement as InlineContainerNode;
+    }
+
+    const children = getLogicalChildren(node)
+  
+    if (Array.isArray(children)) {
+      const newChildren = children.map(child =>
+        updateStructureNodeById(child as StructureNode, targetId, replacement)
+      );
+  
+      return {
+        ...node,
+        children: newChildren,
+      };
+    }
 
     return node;
   }
@@ -161,7 +216,7 @@ export const findNodeById = (node: MathNode, targetId: string): MathNode | null 
       if (root.numerator.id === inlineContainerId) return { parent: root, key: "numerator" };
       if (root.denominator.id === inlineContainerId) return { parent: root, key: "denominator" };
     }
-    else if (root.type === 'subsup' || root.type === 'actsymb') {
+    else if (root.type === 'childed') {
       if (root.base.id === inlineContainerId) return { parent: root, key: "base" };
       if (root.subLeft.id === inlineContainerId) return { parent: root, key: "subleft" };
       if (root.supLeft.id === inlineContainerId) return { parent: root, key: "supleft" };
@@ -171,8 +226,8 @@ export const findNodeById = (node: MathNode, targetId: string): MathNode | null 
     else if (root.type === 'group') {
       if (root.child.id === inlineContainerId) return { parent: root, key: "child" };
     }
-    else if (root.type === 'decorated') {
-      if (root.child.id === inlineContainerId) return { parent: root, key: "child" };
+    else if (root.type === 'accented') {
+      if (root.base.id === inlineContainerId) return { parent: root, key: "child" };
     }
     else {
       console.log(`${root.type} but no child matches the id`)
@@ -208,14 +263,14 @@ export const findNodeById = (node: MathNode, targetId: string): MathNode | null 
       case "group":
         containers.push(...[node.child] as InlineContainerNode[]);
         break;
-      case "decorated":
-        containers.push(...[node.child] as InlineContainerNode[]);
+      case "accented":
+        containers.push(...[node.base] as InlineContainerNode[]);
         break;
-      case "root":
-        if (node.degree?.type === "inline-container") containers.push(node.degree);
-        if (node.radicand.type === "inline-container") containers.push(node.radicand);
+      case "nth-root":
+        if (node.index.type === "inline-container") containers.push(node.index);
+        if (node.base.type === "inline-container") containers.push(node.base);
         break;
-      case "subsup":
+      case "childed":
         if (node.base.type === "inline-container") containers.push(node.base);
         for (const sub of ["subLeft", "subRight", "supLeft", "supRight"] as const) {
           const val = node[sub];
@@ -223,7 +278,7 @@ export const findNodeById = (node: MathNode, targetId: string): MathNode | null 
         }
         break;
       case "vector":
-        containers.push(...node.items.filter(n => n.type === "inline-container") as InlineContainerNode[]);
+        containers.push(...node.elements.filter(n => n.type === "inline-container") as InlineContainerNode[]);
         break;
       case "matrix":
         for (const row of node.rows) {

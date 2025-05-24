@@ -1377,3 +1377,59 @@ MathNode
 
 - Make renderer for all nodes 
 - make latex to/from all nodes
+
+Switch to paste all over the codebase:
+```
+switch(node.type) {
+  case "text":
+    //TODO
+    return ``;
+  case "styled":
+    //TODO
+    return ``;
+  case "multiline":
+    //TODO
+    return ``;
+  case "root-wrapper":
+    //TODO
+    return ``;
+  case "inline-container":
+    //TODO
+    return ``;
+  case "group":
+    //TODO
+    return ``;
+  case "fraction":
+    //TODO
+    return ``;
+  case "nth-root":
+    //TODO
+    return ``;
+  case "big-operator":
+    //TODO
+    return ``;
+  case "childed":
+    //TODO
+    return ``;
+  case "accented":
+    //TODO
+    return ``;
+  case "arrow":
+    //TODO
+    return ``;
+  case "binom":
+    //TODO
+    return ``;
+  case "matrix":
+    //TODO
+    return ``;
+  case "vector":
+    //TODO
+    return ``;
+  case "cases":
+    //TODO
+    return ``;
+  default:
+    return `Unknown`;
+}
+```

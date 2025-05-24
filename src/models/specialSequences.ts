@@ -1,4 +1,4 @@
-import { createDecorated, createTextNode } from '../models/nodeFactories';
+import { createAccentedNode, createInlineContainer, createTextNode } from '../models/nodeFactories';
 import type { MathNode, TextNode } from '../models/types';
 import { decorationToLatexCommand, type NodeDecoration } from '../utils/accentUtils';
 
@@ -11,7 +11,7 @@ export interface SpecialSequence {
 export const decoratedEntries: SpecialSequence[] = Object.entries(decorationToLatexCommand).map(
   ([decoration, sequence]) => ({
     sequence,
-    mathNode: createDecorated(decoration as NodeDecoration),
+    mathNode: createAccentedNode(createInlineContainer(), { type: 'predefined', name: decoration }),
   })
 );
 

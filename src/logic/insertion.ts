@@ -42,8 +42,8 @@ export const handleCharacterInsert = (state: EditorState, char: string): EditorS
       let targetContainer = container
       let targetIndex = index
 
-      if (transformedNode.type === 'decorated') {
-        targetContainer = transformedNode.child
+      if (transformedNode.type === 'accented') {
+        targetContainer = transformedNode.base
         targetIndex = 0
       } 
 

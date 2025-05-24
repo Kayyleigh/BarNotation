@@ -2,7 +2,7 @@ import { type EditorState } from "./editor-state";
 import { findNodeById, updateNodeById } from "../utils/treeUtils";
 import { transformToFractionNode } from "../models/transformations";
 import { type BracketStyle } from "../utils/bracketUtils";
-import { createActSymb, createGroupNode, createInlineContainer, createSubSup } from "../models/nodeFactories";
+import { createChildedNode, createGroupNode, createInlineContainer } from "../models/nodeFactories";
 import type { InlineContainerNode } from "../models/types";
 import type { CornerPosition } from "../utils/subsupUtils";
 
@@ -36,9 +36,10 @@ export function transformToFraction(state: EditorState): EditorState {
   };
 }
 
-export function transformToSubSupNode(
+export function transformToChildedNode(
   state: EditorState,
   cornerPosition: CornerPosition,
+  variant: "subsup" | "actsymb" = "subsup"
 ): EditorState {
   const container = findNodeById(state.rootNode, state.cursor.containerId);
   if (!container || container.type !== "inline-container") return state;
@@ -47,7 +48,7 @@ export function transformToSubSupNode(
 
   const base = container.children[idx - 1]; 
   const subsupBase = createInlineContainer([base])
-  const subsupNode = createSubSup(subsupBase);
+  const subsupNode = createChildedNode(subsupBase, variant);
 
   const newChildren = [
     ...container.children.slice(0, idx - 1),
@@ -69,39 +70,19 @@ export function transformToSubSupNode(
   };
 }
 
+export function transformToSubSupNode(
+  state: EditorState,
+  cornerPosition: CornerPosition,
+): EditorState {
+  return transformToChildedNode(state, cornerPosition, 'subsup')
+}
+
 export function transformToActsymbNode(
   state: EditorState,
   cornerPosition: CornerPosition,
 ): EditorState {
-  const container = findNodeById(state.rootNode, state.cursor.containerId);
-  if (!container || container.type !== "inline-container") return state;
-  const idx = state.cursor.index;
-  if (idx === 0) return state;
-
-  const base = container.children[idx - 1]; 
-  const actsymbBase = createInlineContainer([base])
-  const actsymbNode = createActSymb(actsymbBase);
-
-  const newChildren = [
-    ...container.children.slice(0, idx - 1),
-    actsymbNode,
-    ...container.children.slice(idx),
-  ];
-
-  const updatedRoot = updateNodeById(state.rootNode, container.id, {
-    ...container,
-    children: newChildren,
-  });
-
-  return {
-    rootNode: updatedRoot,
-    cursor: {
-      containerId: actsymbNode[cornerPosition].id,
-      index: 0,
-    },
-  };
+  return transformToChildedNode(state, cornerPosition, 'actsymb')
 }
-
 
 export function transformToGroupNode(
   state: EditorState,

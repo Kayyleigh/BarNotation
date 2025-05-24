@@ -1,170 +1,231 @@
-import type { NodeDecoration } from "../utils/accentUtils";
-import type { BracketStyle } from "../utils/bracketUtils";
+//import type { NodeDecoration } from "../utils/accentUtils";
+//import type { BracketStyle } from "../utils/bracketUtils";
+
+export type MathNode =
+  | MultilineEquationNode
+  | RootWrapperNode
+  | InlineContainerNode
+  | StructureNode
+  | StyledNode;
+
+export type StructureNode =
+  | FractionNode
+  | NthRootNode
+  | BigOperatorNode
+  | ChildedNode
+  | AccentedNode
+  | ArrowNode
+  | GroupNode
+  | BinomCoefficientNode
+  | VectorNode
+  | MatrixNode
+  | CasesNode
+  | TextNode;
 
 export type NodeType =
   | "text"
+  | "styled"
+  | "multiline"
+  | "root-wrapper"
   | "inline-container"
   | "group"
   | "fraction"
-  | "root"
+  | "nth-root"
   | "big-operator"
-  | "subsup"
-  | "actsymb"
-  | "decorated"
-  | "precedence"
+  | "childed"
+  | "accented"
+  | "arrow"
+  | "binom"
   | "matrix"
-  | "vector";
+  | "vector"
+  | "cases";
 
 export interface BaseNode {
   id: string;
   type: NodeType;
 }
 
-export interface TextNode extends BaseNode {
-  type: "text";
-  content: string;
+export interface TextStyle {
+  fontFamily?: "normal" | "italic" | "upright";
+  color?: string;
+  fontSize?: number;
+}
+
+export interface StyledNode extends BaseNode {
+  type: "styled";
+  child: MathNode;
+  style: TextStyle;
+}
+
+export interface MultilineEquationNode extends BaseNode {
+  type: "multiline";
+  children: RootWrapperNode[];
+  alignment?: "left" | "center" | "right" | "align" | "multline"; // Optional for LaTeX export
+
+}
+
+export interface RootWrapperNode extends BaseNode {
+  type: "root-wrapper";
+  child: InlineContainerNode;
 }
 
 export interface InlineContainerNode extends BaseNode {
   type: "inline-container";
-  children: MathNode[];
+  children: StructureNode[];
+}
+
+export interface FractionNode extends BaseNode {
+  type: "fraction";
+  numerator: InlineContainerNode;
+  denominator: InlineContainerNode;
+}
+
+export interface NthRootNode extends BaseNode {
+  type: "nth-root";
+  base: InlineContainerNode;
+  index: InlineContainerNode;
+}
+
+export interface BigOperatorNode extends BaseNode {
+  type: "big-operator";
+  operator: string; // e.g. "sum", "int", "lim"
+  upper: InlineContainerNode;
+  lower: InlineContainerNode;
+}
+
+export type ChildedVariant = "subsup" | "actsymb";
+
+export interface ChildedNode extends BaseNode {
+  type: "childed";
+  variant: ChildedVariant;
+  base: InlineContainerNode;
+  subLeft: InlineContainerNode;
+  supLeft: InlineContainerNode;
+  subRight: InlineContainerNode;
+  supRight: InlineContainerNode;
+}
+
+// export interface DecoratedNode extends BaseNode {
+//   type: "decorated";
+//   child: InlineContainerNode;
+//   decoration: NodeDecoration;
+// }
+
+export type AccentKind =
+  | { type: "predefined"; name: string }     // e.g., "hat", "tilde", "overline"
+  | { type: "custom"; content: InlineContainerNode; position: "above" | "below" };
+
+export interface AccentedNode extends BaseNode {
+  type: "accented";
+  base: InlineContainerNode;
+  accent: AccentKind;
+}
+
+export interface ArrowNode extends BaseNode {
+  type: "arrow";
+  above: InlineContainerNode;
+  below: InlineContainerNode;
+  arrowStyle: string; // e.g. "->", "=>", etc.
 }
 
 export interface GroupNode extends BaseNode {
   type: "group";
   child: InlineContainerNode;
-  showBrackets: boolean; //TODO maybe dont have this
   bracketStyle: BracketStyle;
 }
 
-export interface FractionNode extends BaseNode {
-  type: "fraction";
-  numerator: MathNode;
-  denominator: MathNode;
-}
+export type BracketStyle =
+  | "none"
+  | "parentheses"
+  | "square"
+  | "curly"
+  | "angle"
+  | "vertical"
+  | "floor"
+  | "ceil";
 
-export interface RootNode extends BaseNode {
-  type: "root";
-  radicand: MathNode;
-  degree?: MathNode;
-}
-
-export interface BigOperatorNode extends BaseNode {
-  type: "big-operator";
-  operator: string;
-  lowerLimit?: MathNode;
-  upperLimit?: MathNode;
-}
-
-export interface SubSuperscriptNode extends BaseNode {
-  type: "subsup";
-  base: MathNode;
-  subLeft: MathNode;
-  supLeft: MathNode;
-  subRight: MathNode;
-  supRight: MathNode;
-}
-
-export interface ActuarialSymbolNode extends BaseNode {
-  type: "actsymb";
-  base: MathNode;
-  subLeft: MathNode;
-  supLeft: MathNode;
-  subRight: MathNode;
-  supRight: MathNode;
-}
-
-export interface DecoratedNode extends BaseNode {
-  type: "decorated";
-  child: InlineContainerNode;
-  decoration: NodeDecoration;
-}
-
-export interface PrecedenceNode extends BaseNode {
-  type: "precedence";
-  base: MathNode;
-  //precedence: MathNode; // Could change to "1" | "2" | "3"; but this is better for freedom? Or not cuz I need to parse to latex
-  precedence: "1" | "2" | "3"; 
-}
-
-export interface MatrixNode extends BaseNode {
-  type: "matrix";
-  rows: MathNode[][];
+export interface BinomCoefficientNode extends BaseNode {
+  type: "binom";
+  top: InlineContainerNode;
+  bottom: InlineContainerNode;
+  // bracket style is rounded
 }
 
 export interface VectorNode extends BaseNode {
   type: "vector";
-  items: MathNode[];
+  elements: InlineContainerNode[];
+  bracketStyle: BracketStyle;
   orientation: "horizontal" | "vertical";
+  // Maybe enable diff style for L vs R
 }
 
-export type MathNode =
-  | TextNode
-  | InlineContainerNode
-  | GroupNode
-  | FractionNode
-  | RootNode
-  | BigOperatorNode
-  | ActuarialSymbolNode
-  | SubSuperscriptNode
-  | DecoratedNode
-  | PrecedenceNode
-  | MatrixNode
-  | VectorNode;
+export interface MatrixNode extends BaseNode {
+  type: "matrix";
+  rows: InlineContainerNode[][];
+  bracketStyle: BracketStyle;
+  // Maybe enable diff style for L vs R
+}
 
+// export interface CasesNode extends BaseNode {
+//   type: "cases";
+//   rows: {
+//     condition: InlineContainerNode;
+//     result: InlineContainerNode;
+//   }[];
+// }
 
-// Helper function for stringifying MathNode
-export const nodeToString = (node: MathNode): string => {
-  switch (node.type) {
-    case "text":
-      return `TextNode(id: ${node.id}, content: "${node.content}")`;
-    case "inline-container":
-      return `InlineContainerNode(id: ${node.id}, childrenCount: ${node.children.length})`;
-    case "group":
-      return `GroupNode(id: ${node.id})`;
-    case "fraction":
-      return `FractionNode(id: ${node.id}, numerator: ${node.numerator.id}, denominator: ${node.denominator.id})`;
-    case "root":
-      return `RootNode(id: ${node.id}, radicand: ${node.radicand.id}, degree: ${node.degree?.id})`;
-    case "big-operator":
-      return `BigOperatorNode(id: ${node.id}, operator: ${node.operator})`;
-    case "subsup":
-      return `SubSuperscriptNode(id: ${node.id}, base: ${node.base.id}, subLeft: ${node.subLeft.id}, supLeft: ${node.supLeft.id}, subRight: ${node.subRight.id}, supRight: ${node.supRight.id})`;
-    case "decorated":
-      return `DecoratedNode(id: ${node.id}, base: ${node.child.id}, decoration: ${node.decoration})`;
-    case "matrix":
-      return `MatrixNode(id: ${node.id}, rowsCount: ${node.rows.length})`;
-    case "vector":
-      return `VectorNode(id: ${node.id}, itemsCount: ${node.items.length}, orientation: ${node.orientation})`;
-    default:
-      return `UnknownNode`;
-  }
-};
+export interface CasesNode extends BaseNode {
+  type: "cases";
+  rows: [InlineContainerNode, InlineContainerNode][]; // each row is [value, condition]
+}
+
+export interface TextNode extends BaseNode {
+  type: "text";
+  content: string; // single character, number, or \command
+}
 
 // Helper function for stringifying MathNode
 export const nodeToMathText = (node: MathNode): string => {
-  switch (node.type) {
+  switch(node.type) {
     case "text":
       return `${node.content}`;
+    case "styled":
+      return `Styled(${nodeToMathText(node.child)})`;
+    case "multiline":
+      return `Multiline(${node.children.map(nodeToMathText).join(", ")})`;
+    case "root-wrapper":
+      return `RootWrapper(${nodeToMathText(node.child)})`;
     case "inline-container":
-      return `${node.children.map(nodeToMathText).join(" ")}`;
+      return `Inline(${node.children.map(nodeToMathText).join(" ")})`;
     case "group":
-      return `(${nodeToMathText(node.child)})`;
+      return `Group(${nodeToMathText(node.child)})`;
     case "fraction":
-      return `(${nodeToMathText(node.numerator)}/${nodeToMathText(node.denominator)})`;
-    case "root":
-      return `RootNode(id: ${node.id}, radicand: ${node.radicand.id}, degree: ${node.degree?.id})`;
+      return `Fraction(${nodeToMathText(node.numerator)}, ${nodeToMathText(node.denominator)})`;
+    case "nth-root":
+      return `NthRoot(${nodeToMathText(node.base)}, n=${nodeToMathText(node.index)})`;
     case "big-operator":
-      return `BigOperatorNode(id: ${node.id}, operator: ${node.operator})`;
-    case "subsup":
-      return `_{${node.subLeft.id}}^{${node.supLeft.id}}_${node.base.id}_{${node.subRight.id}}^{${node.supRight.id}}`;
-    case "decorated":
-      return `DecoratedNode(id: ${node.id}, base: ${node.child.id}, decoration: ${node.decoration})`;
+      return `BigOp(${node.operator}, lower=${nodeToMathText(node.lower)}, upper=${nodeToMathText(node.upper)})`;
+    case "childed":
+      return `_{${nodeToMathText(node.subLeft)}}^{${nodeToMathText(node.supLeft)}}{${nodeToMathText(node.base)}}_{${nodeToMathText(node.subRight)}}^{${nodeToMathText(node.supRight)}}`;
+    case "accented":
+      //TODO
+      return `Accented(TODO)`;
+    case "arrow":
+      //TODO
+      return `Arrow(TODO)`;
+    case "binom":
+      //TODO
+      return `Binom(${nodeToMathText(node.top)}, ${nodeToMathText(node.bottom)})`;
     case "matrix":
-      return `MatrixNode(id: ${node.id}, rowsCount: ${node.rows.length})`;
+      //TODO
+      return `Matrix(TODO)`;
     case "vector":
-      return `VectorNode(id: ${node.id}, itemsCount: ${node.items.length}, orientation: ${node.orientation})`;
+      //TODO
+      return `Vector(TODO)`;
+    case "cases":
+      //TODO
+      return `Cases(TODO)`;
     default:
-      return `UnknownNode`;
+      return `Unknown`;
   }
 };

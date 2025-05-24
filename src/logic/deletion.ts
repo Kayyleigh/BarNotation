@@ -47,14 +47,7 @@ export const handleBackspace = (state: EditorState): EditorState => {
         replacementChildren = child.children
         break;
       }
-      case "subsup": {
-        const corners = [parent.subLeft, parent.supLeft, parent.subRight, parent.supRight];
-        if (corners.every(corner => isEmptyNode(corner))) {
-          replacementChildren = (parent.base as InlineContainerNode).children
-        }
-        break;
-      }
-      case "actsymb": {
+      case "childed": {
         const corners = [parent.subLeft, parent.supLeft, parent.subRight, parent.supRight];
         if (corners.every(corner => isEmptyNode(corner))) {
           replacementChildren = (parent.base as InlineContainerNode).children

@@ -8,15 +8,8 @@ import {
   renderInlineContainerNode,
   renderFractionNode,
   renderGroupNode,
-  renderSubSuperscriptNode,
-  renderActSymbNode,
-  renderDecoratedNode,
-  //renderRootNode,
-  //renderBigOperatorNode,
-  //renderSubSuperscriptNode,
-  //renderDecoratedNode,
-  //renderMatrixNode,
-  //renderVectorNode,
+  renderChildedNode,
+  renderAccentedNode,
 } from "./MathRenderers";
 
 export type MathRendererProps = {
@@ -51,26 +44,41 @@ export const MathRenderer: React.FC<MathRendererProps> = ({
     case "fraction":
       return renderFractionNode(node, props);
 
-    case "root":
-      return renderRootNode(node, props);
+    case "nth-root":
+      return renderNthRootNode(node, props);
 
     case "big-operator":
       return renderBigOperatorNode(node, props);
 
-    case "subsup":
-      return renderSubSuperscriptNode(node, props);
+    case "childed":
+      return renderChildedNode(node, props);
 
-    case "actsymb":
-      return renderActSymbNode(node, props);
-
-    case "decorated":
-      return renderDecoratedNode(node, props);
+    case "accented":
+      return renderAccentedNode(node, props);
 
     case "matrix":
       return renderMatrixNode(node, props);
 
     case "vector":
       return renderVectorNode(node, props);
+
+    case "binom":
+      return renderBinomNode(node, props);
+
+    case "arrow":
+      return renderArrowNode(node, props);
+
+    case "cases":
+      return renderCasesNode(node, props);
+
+    case "styled":
+      return renderStyledNode(node, props);
+
+    case "multiline":
+      return renderMultilineNode(node, props);
+
+    case "root-wrapper":
+      return renderRootWrapperNode(node, props);
 
     default:
       console.warn(`No case match in MathRenderer.`)

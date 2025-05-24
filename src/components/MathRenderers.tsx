@@ -7,14 +7,9 @@ import type {
     TextNode, 
     InlineContainerNode, 
     GroupNode, 
-    FractionNode, 
-    RootNode, 
-    BigOperatorNode, 
-    SubSuperscriptNode,
-    ActuarialSymbolNode, 
-    DecoratedNode, 
-    MatrixNode, 
-    VectorNode 
+    FractionNode,
+    ChildedNode,
+    AccentedNode, 
 } from '../models/types';
 import clsx from 'clsx';
 import type { CursorPosition } from '../logic/cursor';
@@ -178,12 +173,15 @@ export const renderGroupNode = (
   );
 };
 
-export const renderSubSuperscriptNode = (
-  node: SubSuperscriptNode,
+export const renderChildedNode = (
+  node: ChildedNode,
   props: RenderProps
 ) => {
   return (
-    <span className={clsx("math-node", "type-subsup")}>
+    <span 
+      className={clsx("math-node", "type-subsup")}
+      style={{ backgroundColor: node.variant === 'subsup' ? '#FFAAAA' : '#AAAAFF' }}
+    >
       {/* Superscript left */}
       <span className="sup-left">
         <MathRenderer node={node.supLeft} {...props} />
@@ -212,61 +210,34 @@ export const renderSubSuperscriptNode = (
   );
 };
 
-export const renderActSymbNode = (
-  node: ActuarialSymbolNode,
-  props: RenderProps
-) => {
-  return (
-    <span className={clsx("math-node", "type-subsup")}>
-      {/* Superscript left */}
-      <span className="sup-left">
-        <MathRenderer node={node.supLeft} {...props} />
-      </span>
-
-      {/* Subscript left */}
-      <span className="sub-left">
-        <MathRenderer node={node.subLeft} {...props} />
-      </span>
-
-      {/* Base */}
-      <span className="base">
-        <MathRenderer node={node.base} {...props} />
-      </span>
-
-      {/* Subscript right */}
-      <span className="sub-right">
-        <MathRenderer node={node.subRight} {...props} />
-      </span>
-
-      {/* Superscript right */}
-      <span className="sup-right">
-        <MathRenderer node={node.supRight} {...props} />
-      </span>
-    </span>
-  );
-};
-
-export const renderDecoratedNode = (
-  node: DecoratedNode,
+export const renderAccentedNode = (
+  node: AccentedNode,
   props: RenderProps
 ) => {
   const { cursor, onCursorChange, onRootChange } = props;
-  const isCursorInside = cursor.containerId === node.child.id;
+  const isCursorInside = cursor.containerId === node.base.id;
 
-  const className = clsx(`math-node decorated-node decoration-${node.decoration}`);
+  let className;
+
+  if (node.accent.type === "predefined") {
+    className = clsx(`math-node decorated-node decoration-${node.accent.name}`);
+  }
+  else {
+    className = clsx(`math-node decorated-node decoration-custom`);
+  }
 
   return (
     <span
       className={className}
       onClick={(e) => {
         e.stopPropagation();
-        if (node.child.children.length === 0) {
-          onCursorChange({ containerId: node.child.id, index: 0 });
+        if (node.base.children.length === 0) {
+          onCursorChange({ containerId: node.base.id, index: 0 });
         }
       }}
     >
       {/* Render child inline container */}
-      {node.child.children.map((child, i) => {
+      {node.base.children.map((child, i) => {
         const elements: React.ReactNode[] = [];
 
         if (isCursorInside && cursor.index === i) {
@@ -280,7 +251,7 @@ export const renderDecoratedNode = (
             cursor={cursor}
             onCursorChange={onCursorChange}
             onRootChange={onRootChange}
-            parentContainerId={node.child.id}
+            parentContainerId={node.base.id}
             index={i + 1}
           />
         );
@@ -288,15 +259,22 @@ export const renderDecoratedNode = (
         return elements;
       })}
 
-      {isCursorInside && cursor.index === node.child.children.length && (
+      {isCursorInside && cursor.index === node.base.children.length && (
         <span className="cursor" />
       )}
     </span>
   );
 };
 
-//TODO: nth root
-//TODO: BigOperator
-//TODO: vector
-//TODO: matrix
-// Maybe more (e.g. multi-line stuff like cases)
+//renderNthRootNode(node, props);
+//renderBigOperatorNode(node, props);
+//renderChildedNode(node, props);
+//renderAccentedNode(node, props);
+//renderMatrixNode(node, props);
+//renderVectorNode(node, props);
+//renderBinomNode(node, props);
+//renderArrowNode(node, props);
+//renderCasesNode(node, props);
+//renderStyledNode(node, props);
+//renderMultilineNode(node, props);
+//renderRootWrapperNode(node, props);

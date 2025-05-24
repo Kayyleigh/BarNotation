@@ -2,45 +2,58 @@
 import type { 
   FractionNode, 
   InlineContainerNode, 
-  MathNode, 
-  RootNode, 
-  SubSuperscriptNode 
+  NthRootNode, 
+  StructureNode, 
+  ChildedNode 
 } from './types';
 import { generateId, createInlineContainer } from './nodeFactories';
 
-export const transformToFractionNode = (node: MathNode): FractionNode => ({
+export const transformToFractionNode = (node: StructureNode): FractionNode => ({
   id: generateId(),
   type: 'fraction',
   numerator: ensureInContainerNode(node),
   denominator: createInlineContainer(),
 });
 
-export const transformToSubscriptNode = (node: MathNode): SubSuperscriptNode => ({
+export const transformToChildedNode = (node: StructureNode, variant: "subsup" | "actsymb" = "subsup"): ChildedNode => ({
   id: generateId(),
-  type: 'subsup',
+  type: 'childed',
   base: ensureInContainerNode(node),
   subLeft: createInlineContainer(),
   supLeft: createInlineContainer(),
   subRight: createInlineContainer(),
   supRight: createInlineContainer(),
+  variant
 });
 
-export const transformToSuperscriptNode = (node: MathNode): SubSuperscriptNode => ({
+export const transformToSubscriptNode = (node: StructureNode): ChildedNode => ({
   id: generateId(),
-  type: 'subsup',
+  type: 'childed',
   base: ensureInContainerNode(node),
   subLeft: createInlineContainer(),
   supLeft: createInlineContainer(),
   subRight: createInlineContainer(),
   supRight: createInlineContainer(),
+  variant: 'subsup',
 });
-
-export const transformToNthRootNode = (degree: MathNode | undefined): RootNode => ({
+//TODO these are the same
+export const transformToSuperscriptNode = (node: StructureNode): ChildedNode => ({
   id: generateId(),
-  type: 'root',
-  radicand: createInlineContainer(),
-  degree: degree,
+  type: 'childed',
+  base: ensureInContainerNode(node),
+  subLeft: createInlineContainer(),
+  supLeft: createInlineContainer(),
+  subRight: createInlineContainer(),
+  supRight: createInlineContainer(),
+  variant: 'subsup',
 });
 
-const ensureInContainerNode = (node: MathNode): InlineContainerNode =>
-  node.type === 'inline-container' ? node : createInlineContainer([node]);
+export const transformToNthRootNode = (index: InlineContainerNode): NthRootNode => ({
+  id: generateId(),
+  type: 'nth-root',
+  base: createInlineContainer(),
+  index: index,
+});
+
+const ensureInContainerNode = (node: StructureNode | InlineContainerNode): InlineContainerNode =>
+  node.type === 'inline-container' ? node : createInlineContainer([node as StructureNode]);
