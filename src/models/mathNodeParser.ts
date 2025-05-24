@@ -110,11 +110,11 @@ export function parseLatex(input: string): MathNode {
         
           return createChildedNode(
             base as InlineContainerNode, 
+            'actsymb',
             subLeft as InlineContainerNode,
             supLeft as InlineContainerNode,
             subRight as InlineContainerNode,
             supRight as InlineContainerNode,
-            'actsymb'
           );
 
         }

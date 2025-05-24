@@ -1,6 +1,6 @@
 import { createAccentedNode, createInlineContainer, createTextNode } from '../models/nodeFactories';
 import type { MathNode, TextNode } from '../models/types';
-import { decorationToLatexCommand, type NodeDecoration } from '../utils/accentUtils';
+import { decorationToLatexCommand } from '../utils/accentUtils';
 
 export interface SpecialSequence {
   sequence: string;

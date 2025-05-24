@@ -1,7 +1,6 @@
 import { decorationToLatexCommand } from "../utils/accentUtils";
 import { getCloseSymbol, getOpenSymbol } from "../utils/bracketUtils";
 import { parseLatex } from "./mathNodeParser";
-import { createDecorated, createFraction, createInlineContainer, createRootNode, createSubSup, createTextNode } from "./nodeFactories";
 import { symbolToLatex } from "./specialSequences";
 import type { MathNode } from "./types";
 
@@ -26,40 +25,41 @@ export const nodeToLatex = (node: MathNode): string => {
         return `\\frac{${nodeToLatex(node.numerator)}}{${nodeToLatex(node.denominator)}}`;
       }
   
-      case "root": {
-        if (node.degree) {
-          return `\\sqrt[${nodeToLatex(node.degree)}]{${nodeToLatex(node.radicand)}}`;
+      case "nth-root": {
+        if (node.index) {
+          return `\\sqrt[${nodeToLatex(node.index)}]{${nodeToLatex(node.base)}}`;
         }
-        return `\\sqrt{${nodeToLatex(node.radicand)}}`;
+        return `\\sqrt{${nodeToLatex(node.base)}}`;
       }
   
       case "big-operator": {
-        const lower = node.lowerLimit ? `_{${nodeToLatex(node.lowerLimit)}}` : "";
-        const upper = node.upperLimit ? `^{${nodeToLatex(node.upperLimit)}}` : "";
+        const lower = node.lower ? `_{${nodeToLatex(node.lower)}}` : "";
+        const upper = node.upper ? `^{${nodeToLatex(node.upper)}}` : "";
         return `\\${node.operator}${lower}${upper}`;
       }
-  
-      case "subsup": {
-        const subLeft = `_{${node.subLeft ? nodeToLatex(node.subLeft) : ""}}`;
-        const supLeft = `^{${node.supLeft ? nodeToLatex(node.supLeft) : ""}}`;
-        const base = `{${nodeToLatex(node.base)}}`;
-        const subRight = `_{${node.subRight ? nodeToLatex(node.subRight) : ""}}`;
-        const supRight = `^{${node.supRight ? nodeToLatex(node.supRight) : ""}}`;
+      case "childed": {
+        if (node.variant === "subsup") {
+          const subLeft = `_{${node.subLeft ? nodeToLatex(node.subLeft) : ""}}`;
+          const supLeft = `^{${node.supLeft ? nodeToLatex(node.supLeft) : ""}}`;
+          const base = `{${nodeToLatex(node.base)}}`;
+          const subRight = `_{${node.subRight ? nodeToLatex(node.subRight) : ""}}`;
+          const supRight = `^{${node.supRight ? nodeToLatex(node.supRight) : ""}}`;
+        
+          return `${subLeft}${supLeft}${base}${subRight}${supRight}`;
+        } 
+        else {
+          const subLeft = `${node.subLeft ? nodeToLatex(node.subLeft) : ""}`;
+          const supLeft = `${node.supLeft ? nodeToLatex(node.supLeft) : ""}`;
+          const base = `${nodeToLatex(node.base)}`;
+          const subRight = `${node.subRight ? nodeToLatex(node.subRight) : ""}`;
+          const supRight = `${node.supRight ? nodeToLatex(node.supRight) : ""}`;
       
-        return `${subLeft}${supLeft}${base}${subRight}${supRight}`;
-      }
-
-      case "actsymb": {
-        const subLeft = `${node.subLeft ? nodeToLatex(node.subLeft) : ""}`;
-        const supLeft = `${node.supLeft ? nodeToLatex(node.supLeft) : ""}`;
-        const base = `${nodeToLatex(node.base)}`;
-        const subRight = `${node.subRight ? nodeToLatex(node.subRight) : ""}`;
-        const supRight = `${node.supRight ? nodeToLatex(node.supRight) : ""}`;
-      
-        return `\\actsymb[${subLeft}][${supLeft}]{${base}}{${subRight}}[${supRight}]`;
+          return `\\actsymb[${subLeft}][${supLeft}]{${base}}{${subRight}}[${supRight}]`;
+        }
       }
   
-      case "decorated": {
+      case "accented": {
+        // if predef then name (or improve), else \underset or \overset w the custom
         const latexCommand = decorationToLatexCommand[node.decoration];
         if (!latexCommand) throw new Error(`Unknown decoration: ${node.decoration}`);
         return `${latexCommand}{${nodeToLatex(node.child)}}`;
@@ -72,7 +72,7 @@ export const nodeToLatex = (node: MathNode): string => {
       }
   
       case "vector": {
-        const joined = node.items.map(nodeToLatex).join(
+        const joined = node.elements.map(nodeToLatex).join(
           node.orientation === "horizontal" ? " & " : " \\\\ "
         );
         const env = "bmatrix";

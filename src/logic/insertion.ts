@@ -163,7 +163,7 @@ export const handleCharacterInsert = (state: EditorState, char: string): EditorS
     children: updatedChildren,
   });
 
-  console.log(`updated root to ${nodeToLatex(updatedRoot)}`)
+  //console.log(`updated root to ${nodeToLatex(updatedRoot)}`)
 
   return {
     rootNode: updatedRoot,
