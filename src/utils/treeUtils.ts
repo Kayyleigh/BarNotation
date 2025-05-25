@@ -252,6 +252,13 @@ export const findNodeById = (node: MathNode, targetId: string): MathNode | null 
     }
     else if (root.type === 'accented') {
       if (root.base.id === inlineContainerId) return { parent: root, key: "child" };
+
+      if (root.accent.type === 'custom') {
+        if (root.accent.content.id === inlineContainerId) {
+          console.log(`Yes, ${root.accent.content}`)
+          return { parent: root, key: "accent.content" };
+        }
+      }
     }
     else {
       console.log(`${root.type} but no child matches the id`)

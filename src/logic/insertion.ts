@@ -51,7 +51,7 @@ export const handleCharacterInsert = (state: EditorState, char: string): EditorS
         console.log(transformedNode.child.type)
 
         if (transformedNode.child.type === 'inline-container') {
-          targetContainer = transformedNode.child as InlineContainerNode //TODO: fix for other types
+          targetContainer = transformedNode.child
           targetIndex = 0
         }
       } 

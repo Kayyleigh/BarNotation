@@ -30,6 +30,16 @@ export const handleBackspace = (state: EditorState): EditorState => {
     let replacementChildren: MathNode[] = [];
 
     switch (parent.type) {
+      case "accented": {
+        const baseChild = parent.base;
+
+        if (parent.accent.type === 'custom') {
+          if (key === "accent.content" && baseChild.type === "inline-container") {
+            replacementChildren = baseChild.children;
+          } 
+        }
+        break;
+      }
       case "fraction": {
         const numerator = parent.numerator;
         const denominator = parent.denominator;
