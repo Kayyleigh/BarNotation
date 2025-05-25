@@ -5,8 +5,7 @@ export type MathNode =
   | MultilineEquationNode
   | RootWrapperNode
   | InlineContainerNode
-  | StructureNode
-  | StyledNode;
+  | StructureNode;
 
 export type StructureNode =
   | FractionNode
@@ -20,7 +19,8 @@ export type StructureNode =
   | VectorNode
   | MatrixNode
   | CasesNode
-  | TextNode;
+  | TextNode
+  | StyledNode;
 
 export type NodeType =
   | "text"

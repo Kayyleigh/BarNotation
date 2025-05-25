@@ -9,7 +9,9 @@ import type {
     GroupNode, 
     FractionNode,
     ChildedNode,
-    AccentedNode, 
+    AccentedNode,
+    StyledNode,
+    TextStyle, 
 } from '../models/types';
 import clsx from 'clsx';
 import type { CursorPosition } from '../logic/cursor';
@@ -24,17 +26,47 @@ type RenderProps = {
   onRootChange: (newRoot: MathNode) => void;
   parentContainerId?: string;
   index?: number;
+
+  inheritedStyle?: TextStyle;
+
+};
+
+export const renderStyledNode = (node: StyledNode, props: RenderProps) => {
+  const mergedStyle: TextStyle = {
+    ...props.inheritedStyle,
+    ...node.style,
+  };
+
+  return (
+    <span className={getStyleClass(mergedStyle)} style={getInlineStyle(mergedStyle)}>
+      <MathRenderer
+        node={node.child}
+        {...props}
+        inheritedStyle={mergedStyle}
+      />
+    </span>
+  );
 };
 
 export const renderTextNode = (
   node: TextNode,
-  { cursor, onCursorChange, parentContainerId, index }: RenderProps
+  { cursor, onCursorChange, parentContainerId, index, inheritedStyle }: RenderProps
 ) => {
   const isSelected = cursor.containerId === node.id;
 
+  const className = clsx(
+    "math-node",
+    "type-text",
+    { selected: isSelected },
+    getStyleClass(inheritedStyle)
+  );
+  
+  const style = getInlineStyle(inheritedStyle);  
+
   return (
     <span
-      className={clsx("math-node", "type-text", { selected: isSelected })}
+      className={className} 
+      style={style}
       onClick={(e) => {
         e.stopPropagation();
         if (parentContainerId && index) {
@@ -88,6 +120,7 @@ export const renderInlineContainerNode = (
             onRootChange={props.onRootChange}
             parentContainerId={node.id}
             index={i + 1}
+            inheritedStyle={props.inheritedStyle}
           />
         );
 
@@ -215,20 +248,58 @@ export const renderAccentedNode = (
   props: RenderProps
 ) => {
   const { cursor, onCursorChange, onRootChange } = props;
-  const isCursorInside = cursor.containerId === node.base.id;
 
-  let className;
+  const renderBaseChildren = () => <MathRenderer node={node.base} {...props} />
 
-  if (node.accent.type === "predefined") {
-    className = clsx(`math-node decorated-node decoration-${node.accent.name}`);
-  }
-  else {
-    className = clsx(`math-node decorated-node decoration-custom`);
-  }
+
+  // const renderBaseChildren = () =>
+  //   node.base.children.map((child, i) => {
+  //     const elements: React.ReactNode[] = [];
+
+  //     if (isCursorInside && cursor.index === i) {
+  //       elements.push(<span key={`cursor-${i}`} className="cursor" />);
+  //     }
+
+  //     elements.push(
+  //       <MathRenderer
+  //         key={child.id}
+  //         node={child}
+  //         cursor={cursor}
+  //         onCursorChange={onCursorChange}
+  //         onRootChange={onRootChange}
+  //         parentContainerId={node.base.id}
+  //         index={i + 1}
+  //       />
+  //     );
+
+  //     return elements;
+  //   });
+
+  const renderCustomAccent = (position: "above" | "below") => {
+    return (
+      <div className={`accent-content accent-${position}`}>
+        <MathRenderer
+          node={node.accent.content}
+          cursor={cursor}
+          onCursorChange={onCursorChange}
+          onRootChange={onRootChange}
+          parentContainerId={node.accent.content.id}
+          index={0}
+        />
+      </div>
+    );
+  };
+
+  const isCustom = node.accent.type === "custom";
 
   return (
     <span
-      className={className}
+      className={clsx(
+        "math-node decorated-node",
+        isCustom
+          ? "decoration-custom"
+          : `decoration-${node.accent.name}`
+      )}
       onClick={(e) => {
         e.stopPropagation();
         if (node.base.children.length === 0) {
@@ -236,32 +307,11 @@ export const renderAccentedNode = (
         }
       }}
     >
-      {/* Render child inline container */}
-      {node.base.children.map((child, i) => {
-        const elements: React.ReactNode[] = [];
+      {isCustom && node.accent.position === "above" && renderCustomAccent("above")}
 
-        if (isCursorInside && cursor.index === i) {
-          elements.push(<span key={`cursor-${i}`} className="cursor" />);
-        }
+      <span className="accent-base">{renderBaseChildren()}</span>
 
-        elements.push(
-          <MathRenderer
-            key={child.id}
-            node={child}
-            cursor={cursor}
-            onCursorChange={onCursorChange}
-            onRootChange={onRootChange}
-            parentContainerId={node.base.id}
-            index={i + 1}
-          />
-        );
-
-        return elements;
-      })}
-
-      {isCursorInside && cursor.index === node.base.children.length && (
-        <span className="cursor" />
-      )}
+      {isCustom && node.accent.position === "below" && renderCustomAccent("below")}
     </span>
   );
 };
@@ -278,3 +328,17 @@ export const renderAccentedNode = (
 //renderStyledNode(node, props);
 //renderMultilineNode(node, props);
 //renderRootWrapperNode(node, props);
+
+function getStyleClass(style?: TextStyle): string {
+  return clsx({
+    "math-style-normal": style?.fontFamily === "normal",
+    "math-style-upright": style?.fontFamily === "upright",
+  });
+}
+
+function getInlineStyle(style?: TextStyle): React.CSSProperties {
+  return {
+    color: style?.color,
+    fontSize: style?.fontSize ? `${style.fontSize}px` : undefined,
+  };
+}

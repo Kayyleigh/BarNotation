@@ -1433,3 +1433,10 @@ switch(node.type) {
     return `Unknown`;
 }
 ```
+
+Next steps: 
+- fix custom accented nodes. Curr not even working cuz I cannot maybe give them children simply? Cuz it dep on the "type"
+
+### 25/05/2025
+Fixed a bunch of stuff regarding accented nodes
+made it on shift + arrow to avoid confusion because arrow feels somtimes like it should navigate thru existing

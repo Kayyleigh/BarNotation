@@ -2,7 +2,7 @@ import type { EditorState } from "./editor-state";
 import { handleArrowLeft, handleArrowRight } from "./navigation";
 import { handleBracketInsert, handleCharacterInsert } from "./insertion";
 import { handleBackspace } from "./deletion";
-import { transformToActsymbNode, transformToFraction, transformToSubSupNode } from "./transformations";
+import { transformToActsymbNode, transformToFraction, transformToSubSupNode, transformToCustomAccent } from "./transformations";
 import { getStyleFromSymbol, isClosingBracket, isOpeningBracket } from "../utils/bracketUtils";
 import { latexToMathNode, nodeToLatex } from "../models/latexParser";
 import type { InlineContainerNode } from "../models/types";
@@ -25,6 +25,17 @@ export function handleKeyDown(
   }
 
   // === Double-key events ===
+
+  if (e.shiftKey && e.key === "ArrowUp") {
+    e.preventDefault();
+    return transformToCustomAccent(state, "above");
+  }
+
+  if (e.shiftKey && e.key === "ArrowDown") {
+    e.preventDefault();
+    return transformToCustomAccent(state, "below");
+  }
+
 
   if (e.shiftKey && e.code === 'Digit6') {
     e.preventDefault();    

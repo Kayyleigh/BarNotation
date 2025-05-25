@@ -4,7 +4,8 @@ import type {
   InlineContainerNode, 
   NthRootNode, 
   StructureNode, 
-  ChildedNode 
+  ChildedNode, 
+  AccentedNode
 } from './types';
 import { generateId, createInlineContainer } from './nodeFactories';
 
@@ -13,6 +14,17 @@ export const transformToFractionNode = (node: StructureNode): FractionNode => ({
   type: 'fraction',
   numerator: ensureInContainerNode(node),
   denominator: createInlineContainer(),
+});
+
+export const transformToCustomAccentNode = (node: StructureNode, position: "above" | "below"): AccentedNode => ({
+  id: generateId(),
+  type: 'accented',
+  base: ensureInContainerNode(node),
+  accent: {
+    type: "custom",
+    content: createInlineContainer(),
+    position
+  }
 });
 
 export const transformToChildedNode = (node: StructureNode, variant: "subsup" | "actsymb" = "subsup"): ChildedNode => ({

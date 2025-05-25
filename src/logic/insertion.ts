@@ -27,7 +27,7 @@ export const handleCharacterInsert = (state: EditorState, char: string): EditorS
 
     const match = specialSequences.find(seq => seq.sequence === updatedPrev.content);
     if (match) {
-      const transformedNode = match.mathNode;
+      const transformedNode = match.createNode();
       const updatedChildren = [
         ...children.slice(0, index - 1),
         transformedNode,
@@ -45,6 +45,15 @@ export const handleCharacterInsert = (state: EditorState, char: string): EditorS
       if (transformedNode.type === 'accented') {
         targetContainer = transformedNode.base
         targetIndex = 0
+      }
+
+      if (transformedNode.type === 'styled') {
+        console.log(transformedNode.child.type)
+
+        if (transformedNode.child.type === 'inline-container') {
+          targetContainer = transformedNode.child as InlineContainerNode //TODO: fix for other types
+          targetIndex = 0
+        }
       } 
 
       return {

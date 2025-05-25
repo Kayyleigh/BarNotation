@@ -1,6 +1,6 @@
 import { type EditorState } from "./editor-state";
 import { findNodeById, updateNodeById } from "../utils/treeUtils";
-import { transformToFractionNode } from "../models/transformations";
+import { transformToCustomAccentNode, transformToFractionNode } from "../models/transformations";
 import { type BracketStyle } from "../utils/bracketUtils";
 import { createChildedNode, createGroupNode, createInlineContainer } from "../models/nodeFactories";
 import type { InlineContainerNode } from "../models/types";
@@ -31,6 +31,39 @@ export function transformToFraction(state: EditorState): EditorState {
     rootNode: updatedRoot,
     cursor: {
       containerId: fraction.denominator.id,
+      index: 0,
+    },
+  };
+}
+
+export function transformToCustomAccent(
+  state: EditorState,
+  position: "above" | "below"
+): EditorState {
+  const container = findNodeById(state.rootNode, state.cursor.containerId);
+  if (!container || container.type !== "inline-container") return state;
+  const idx = state.cursor.index;
+  if (idx === 0) return state;
+
+  const base = container.children[idx - 1]; 
+
+  const accentedNode = transformToCustomAccentNode(base, position)
+  
+  const newChildren = [
+    ...container.children.slice(0, idx - 1),
+    accentedNode,
+    ...container.children.slice(idx),
+  ];
+
+  const updatedRoot = updateNodeById(state.rootNode, container.id, {
+    ...container,
+    children: newChildren,
+  });
+
+  return {
+    rootNode: updatedRoot,
+    cursor: {
+      containerId: accentedNode.accent.content.id,
       index: 0,
     },
   };

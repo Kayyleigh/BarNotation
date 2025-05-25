@@ -11,7 +11,7 @@
   
     /* Sup/Sub alignment (relative to self) */
     --math-sub-overlap-x: 0.25em;
-    --math-sub-overlap-y: 1.3em;
+    --math-sub-overlap-y: 1.4em;
   
     /* Decorations */
     --math-decoration-color: blue;
@@ -26,7 +26,6 @@
   /* ========== Base Math Node ========== */
   .math-node {
     font-family: var(--math-font-family);
-    text-transform: math-auto;
     line-height: 1.2;
     color: inherit;
     display: inline-block;
@@ -193,3 +192,47 @@
     box-shadow: 0 0 4px rgba(0, 0, 0, 0.05);
   }
   
+  .decorated-node {
+    display: inline-block;
+    position: relative;
+  }
+  
+  .accent-content {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.6em;
+    white-space: nowrap;
+    pointer-events: auto;
+  }
+  
+  .accent-above {
+    bottom: 90%;
+    margin-bottom: 2px;
+  }
+  
+  .accent-below {
+    top: 100%;
+    margin-top: 2px;
+  }
+  
+  .accent-base {
+    display: inline-block;
+  }
+
+
+  
+.math-node.styled-node {
+  display: inline;
+}
+
+/* For default italic math appearance */
+.math-style-normal {
+  text-transform: math-auto; /* if supported or interpreted in your context */
+}
+
+/* For upright non-italic variables/constants */
+.math-style-upright {
+  text-transform: none;
+  color: blue;
+}

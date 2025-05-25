@@ -1,6 +1,6 @@
 import React from "react";
 import clsx from "clsx";
-import type { MathNode } from "../models/types";
+import type { MathNode, TextStyle } from "../models/types";
 import type { CursorPosition } from "../logic/cursor";
 
 import {
@@ -10,6 +10,7 @@ import {
   renderGroupNode,
   renderChildedNode,
   renderAccentedNode,
+  renderStyledNode,
 } from "./MathRenderers";
 
 export type MathRendererProps = {
@@ -19,6 +20,7 @@ export type MathRendererProps = {
   onRootChange: (newRoot: MathNode) => void;
   parentContainerId?: string;
   index?: number;
+  inheritedStyle?: TextStyle;
 };
 
 export const MathRenderer: React.FC<MathRendererProps> = ({
@@ -28,8 +30,9 @@ export const MathRenderer: React.FC<MathRendererProps> = ({
   onRootChange,
   parentContainerId,
   index,
+  inheritedStyle = { fontFamily: "normal" },
 }) => {
-  const props = { cursor, onCursorChange, onRootChange, parentContainerId, index };
+  const props = { cursor, onCursorChange, onRootChange, parentContainerId, index, inheritedStyle };
 
   switch (node.type) {
     case "text":

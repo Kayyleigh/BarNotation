@@ -11,7 +11,8 @@ export const directionalChildOrder: Record<
   "childed": ["base", "subLeft", "supLeft", "subRight", "supRight"],
   "big-operator": ["operator", "lower", "upper"],
   "group": ["child"],
-  "accented": ["base"],
+  "accented": ["base", "accent"],
+  "styled": ["child"],
   // inline-container is already sequential
 };
 
@@ -35,6 +36,14 @@ export function flattenCursorPositions(node: MathNode): CursorPosition[] {
       if (!order) return;
 
       for (const key of order) {
+        // Special handling for accented nodes
+        if (n.type === "accented" && key === "accent") {
+          if (n.accent.type === "custom") {
+            visit(n.accent.content);
+          }
+          continue;
+        }
+
         const child = (n as any)[key];
         if (child && typeof child === "object") {
           visit(child);

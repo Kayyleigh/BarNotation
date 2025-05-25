@@ -26,11 +26,15 @@ export const findNodeById = (node: MathNode, targetId: string): MathNode | null 
       case "group":
         return [node.child];
       case "accented":
-        return [node.base];
+        return node.accent.type === "custom"
+        ? [node.base, node.accent.content]
+        : [node.base];      
       case "fraction":
         return [node.numerator, node.denominator];
       case "childed":
         return [node.base, node.subLeft, node.supLeft, node.subRight, node.supRight];
+      case "styled":
+        return [node.child];
       default:
         return [];
     }
@@ -112,6 +116,15 @@ export const findNodeById = (node: MathNode, targetId: string): MathNode | null 
 
     const children = getLogicalChildren(node)
 
+    if (node.type === 'styled') {
+      const newChild = updateNodeById(node.child, targetId, replacement)
+
+      return {
+        ...node,
+        child: newChild
+      }
+    }
+
     if (node.type === 'group') {
       const newChild = updateInlineContainerNodeById(node.child, targetId, replacement)
       return {
@@ -121,7 +134,7 @@ export const findNodeById = (node: MathNode, targetId: string): MathNode | null 
       }
     }
 
-    if (node.type === 'accented') {
+    if (node.type === 'accented' && node.accent.type === 'predefined') {
       const newChild = updateInlineContainerNodeById(node.base, targetId, replacement)
       return {
         ...node,
@@ -151,7 +164,18 @@ export const findNodeById = (node: MathNode, targetId: string): MathNode | null 
           supRight: newChildren[4],
         }
       }
-      console.warn(`${node.type} is missing a case in updateNodeById (in treeUtils)`)
+      if (node.type === 'accented' && node.accent.type === 'custom') {
+        return {
+          ...node,
+          base: newChildren[0],
+          accent: {
+            type: 'custom',
+            content: newChildren[1],
+            position: node.accent.position
+          }
+        }
+      }
+      console.warn(`${node.type} is missing a case in updateStructureNodeById (in treeUtils)`)
     };
 
     return node;

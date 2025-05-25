@@ -153,6 +153,7 @@ import type {
   GroupNode,
   AccentKind,
   TextStyle,
+  TextNode,
 } from "./types"; // Adjust imports to your setup
 
 export const generateId = () => uuidv4();
@@ -309,7 +310,7 @@ export const createCasesNode = (
 
 export const createTextNode = (
   content: string
-): MathNode => ({
+): TextNode => ({
   id: uuidv4(),
   type: "text",
   content,
