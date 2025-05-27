@@ -11,7 +11,10 @@ import type {
     ChildedNode,
     AccentedNode,
     StyledNode,
-    TextStyle, 
+    TextStyle,
+    MultiDigitNode,
+    CommandInputNode,
+    BigOperatorNode, 
 } from '../models/types';
 import clsx from 'clsx';
 import type { CursorPosition } from '../logic/cursor';
@@ -53,7 +56,7 @@ export const renderTextNode = (
   { cursor, onCursorChange, parentContainerId, index, inheritedStyle }: RenderProps
 ) => {
   const isSelected = cursor.containerId === node.id;
-
+//TODO??
   const className = clsx(
     "math-node",
     "type-text",
@@ -83,6 +86,100 @@ export const renderTextNode = (
   );
 };
 
+export const renderMultiDigitNode = (
+  node: MultiDigitNode,
+  props: RenderProps
+) => {
+  const { cursor, onCursorChange } = props;
+  const isCursorInThisContainer = cursor.containerId === node.id;
+
+  return (
+    <span
+      className={clsx("math-node", "type-multi-digit")}
+      onClick={(e) => {
+        e.stopPropagation();
+        if (node.children.length === 0) {
+          onCursorChange({ containerId: node.id, index: 0 });
+        }
+      }}
+    >
+      {node.children.map((child, i) => {
+        const elements: React.ReactNode[] = [];
+
+        if (isCursorInThisContainer && cursor.index === i) {
+          elements.push(<span key={`cursor-${i}`} className="cursor" />);
+        }
+
+        elements.push(
+          <MathRenderer
+            key={child.id}
+            node={child}
+            cursor={cursor}
+            onCursorChange={onCursorChange}
+            onRootChange={props.onRootChange}
+            parentContainerId={node.id}
+            index={i + 1}
+            inheritedStyle={props.inheritedStyle}
+          />
+        );
+
+        return elements;
+      })}
+
+      {isCursorInThisContainer && cursor.index === node.children.length && (
+        <span className="cursor" />
+      )}
+    </span>
+  );
+};
+
+export const renderCommandInputNode = (
+  node: CommandInputNode,
+  props: RenderProps
+) => {
+  const { cursor, onCursorChange } = props;
+  const isCursorInThisContainer = cursor.containerId === node.id;
+
+  return (
+    <span
+      className={clsx("math-node", "type-command-input", "font-mono", "text-gray-600")}
+      onClick={(e) => {
+        e.stopPropagation();
+        if (node.children.length === 0) {
+          onCursorChange({ containerId: node.id, index: 0 });
+        }
+      }}
+    >
+      {node.children.map((child, i) => {
+        const elements: React.ReactNode[] = [];
+
+        if (isCursorInThisContainer && cursor.index === i) {
+          elements.push(<span key={`cursor-${i}`} className="cursor" />);
+        }
+
+        elements.push(
+          <MathRenderer
+            key={child.id}
+            node={child}
+            cursor={cursor}
+            onCursorChange={onCursorChange}
+            onRootChange={props.onRootChange}
+            parentContainerId={node.id}
+            index={i + 1}
+            inheritedStyle={props.inheritedStyle}
+          />
+        );
+
+        return elements;
+      })}
+
+      {isCursorInThisContainer && cursor.index === node.children.length && (
+        <span className="cursor" />
+      )}
+    </span>
+  );
+};
+
 
 export const renderInlineContainerNode = (
   node: InlineContainerNode,
@@ -98,7 +195,7 @@ export const renderInlineContainerNode = (
       onClick={(e) => {
         e.stopPropagation();
         if (node.children.length === 0) {
-          onCursorChange({ containerId: node.id, index: 0 });
+          onCursorChange({ containerId: node.id, index: 0, });
         }
       }}
     >
@@ -170,7 +267,7 @@ export const renderGroupNode = (
           e.stopPropagation();
           // If group contents empty, place cursor at start
           if (node.child.children.length === 0) {
-            onCursorChange({ containerId: node.child.id, index: 0 });
+            onCursorChange({ containerId: node.child.id, index: 0, });
           }
         }}
       >
@@ -213,7 +310,10 @@ export const renderChildedNode = (
   return (
     <span 
       className={clsx("math-node", "type-subsup")}
-      style={{ backgroundColor: node.variant === 'subsup' ? '#FFAAAA' : '#AAAAFF' }}
+      style={{
+        outline: node.variant === 'subsup' ? '2px solid #ffc98b' : '2px solid #ff6dfd',
+        outlineOffset: '-2px',
+      }}    
     >
       {/* Superscript left */}
       <span className="sup-left">
@@ -303,7 +403,7 @@ export const renderAccentedNode = (
       onClick={(e) => {
         e.stopPropagation();
         if (node.base.children.length === 0) {
-          onCursorChange({ containerId: node.base.id, index: 0 });
+          onCursorChange({ containerId: node.base.id, index: 0, });
         }
       }}
     >
@@ -315,6 +415,28 @@ export const renderAccentedNode = (
     </span>
   );
 };
+
+export const renderBigOperatorNode = (
+  node: BigOperatorNode,
+  props: RenderProps
+) => {
+  return (
+    <span className={clsx("math-node", "type-big-operator")}>
+      <div className="big-operator-wrapper">
+        <div className="big-operator-upper">
+          <MathRenderer node={node.upper} {...props} />
+        </div>
+        <div className="big-operator-symbol">
+          {node.operator}
+        </div>
+        <div className="big-operator-lower">
+          <MathRenderer node={node.lower} {...props} />
+        </div>
+      </div>
+    </span>
+  );
+};
+
 
 //renderNthRootNode(node, props);
 //renderBigOperatorNode(node, props);

@@ -1,6 +1,6 @@
 import type { EditorState } from "./editor-state";
 import { flattenCursorPositions, findCursorIndex } from "../utils/navigationUtils";
-
+//TODO: textnode nav? if prev is text then in_idx is its len. 
 export function handleArrowLeft(state: EditorState): EditorState {
   const flat = flattenCursorPositions(state.rootNode);
   const i = findCursorIndex(flat, state.cursor);

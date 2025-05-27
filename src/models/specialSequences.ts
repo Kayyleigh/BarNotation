@@ -1,4 +1,4 @@
-import { createAccentedNode, createInlineContainer, createStyledNode, createTextNode } from '../models/nodeFactories';
+import { createAccentedNode, createBigOperator, createInlineContainer, createStyledNode, createTextNode } from '../models/nodeFactories';
 import type { MathNode } from '../models/types';
 import { decorationToLatexCommand } from '../utils/accentUtils';
 
@@ -20,6 +20,25 @@ export const stylingOptions: SpecialSequence[] = [
     createNode: () => createStyledNode(
       createInlineContainer(),
       { fontFamily: "upright" }
+    ),
+  },
+];
+
+export const nodeTransformationSequences: SpecialSequence[] = [
+  {
+    sequence: "\\sum ",
+    createNode: () => createBigOperator(
+      "Σ",
+      createInlineContainer(),
+      createInlineContainer(),
+    ),
+  },
+  {
+    sequence: "\\int ",
+    createNode: () => createBigOperator(
+      "∫",
+      createInlineContainer(),
+      createInlineContainer(),
     ),
   },
 ];
@@ -222,6 +241,18 @@ export const standardFunctionNames: SpecialSequence[] = [
       { fontFamily: "upright" }
     ),
   },
+  { sequence: "\\argmax ", 
+    createNode: () => createStyledNode(
+      createTextNode("arg max"), 
+      { fontFamily: "upright" }
+    ),
+  },
+  { sequence: "\\argmin ", 
+    createNode: () => createStyledNode(
+      createTextNode("arg min"), 
+      { fontFamily: "upright" }
+    ),
+  },
   { sequence: "\\cos ", 
     createNode: () => createStyledNode(
       createTextNode("cos"), 
@@ -400,7 +431,8 @@ export const specialSequences: SpecialSequence[] = [
   ...otherSymbols,
   ...decoratedEntries,
   ...standardFunctionNames,
-  ...stylingOptions
+  ...stylingOptions, 
+  ...nodeTransformationSequences
 ];
 
 // export const symbolToLatex: Record<string, string> = Object.fromEntries(

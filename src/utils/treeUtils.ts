@@ -1,5 +1,5 @@
 // utils/treeUtils.ts
-import { type InlineContainerNode, type MathNode, type RootWrapperNode, type StructureNode } from "../models/types";
+import { type InlineContainerNode, type MathNode, type RootWrapperNode, type StructureNode, type TextNode } from "../models/types";
 
 export type TreePath = {
   parent: MathNode;
@@ -21,6 +21,10 @@ export const findNodeById = (node: MathNode, targetId: string): MathNode | null 
 
   export const getLogicalChildren = (node: MathNode): MathNode[] => {
     switch (node.type) {
+      case "multi-digit":
+        return node.children;
+      case "command-input":
+        return node.children;
       case "inline-container":
         return node.children;
       case "group":
@@ -31,6 +35,8 @@ export const findNodeById = (node: MathNode, targetId: string): MathNode | null 
         : [node.base];      
       case "fraction":
         return [node.numerator, node.denominator];
+      case "big-operator":
+        return [node.upper, node.lower];
       case "childed":
         return [node.base, node.subLeft, node.supLeft, node.subRight, node.supRight];
       case "styled":
@@ -116,6 +122,27 @@ export const findNodeById = (node: MathNode, targetId: string): MathNode | null 
 
     const children = getLogicalChildren(node)
 
+    if (node.type === "multi-digit") {
+      const newChildren = children.map(child =>
+        updateStructureNodeById(child as TextNode, targetId, replacement)
+      );
+
+      return {
+        ...node,
+        children: newChildren as TextNode[],
+      };
+    }
+    if (node.type === "command-input") {
+      const newChildren = children.map(child =>
+        updateStructureNodeById(child as TextNode, targetId, replacement)
+      );
+
+      return {
+        ...node,
+        children: newChildren as TextNode[],
+      };
+    }
+
     if (node.type === 'styled') {
       const newChild = updateNodeById(node.child, targetId, replacement)
 
@@ -152,6 +179,13 @@ export const findNodeById = (node: MathNode, targetId: string): MathNode | null 
           ...node,
           numerator: newChildren[0],
           denominator: newChildren[1]
+        }
+      }
+      if (node.type === 'big-operator') {
+        return {
+          ...node,
+          upper: newChildren[0],
+          lower: newChildren[1]
         }
       }
       if (node.type === 'childed') {
@@ -236,16 +270,24 @@ export const findNodeById = (node: MathNode, targetId: string): MathNode | null 
     inlineContainerId: string
   ): { parent: MathNode; key: string } | null {
 
-    if (root.type === 'fraction') {
+    if (root.type === 'text') {
+      return null;
+      //TODO: hope this doesnt fuck shit up; no idea what i am doing atm. But it kept having type=text in console
+    }
+    else if (root.type === 'fraction') {
       if (root.numerator.id === inlineContainerId) return { parent: root, key: "numerator" };
       if (root.denominator.id === inlineContainerId) return { parent: root, key: "denominator" };
     }
+    else if (root.type === 'big-operator') {
+      if (root.upper.id === inlineContainerId) return { parent: root, key: "upper" };
+      if (root.lower.id === inlineContainerId) return { parent: root, key: "lower" };
+    }
     else if (root.type === 'childed') {
       if (root.base.id === inlineContainerId) return { parent: root, key: "base" };
-      if (root.subLeft.id === inlineContainerId) return { parent: root, key: "subleft" };
-      if (root.supLeft.id === inlineContainerId) return { parent: root, key: "supleft" };
-      if (root.subRight.id === inlineContainerId) return { parent: root, key: "subright" };
-      if (root.supRight.id === inlineContainerId) return { parent: root, key: "supright" };
+      if (root.subLeft.id === inlineContainerId) return { parent: root, key: "subLeft" };
+      if (root.supLeft.id === inlineContainerId) return { parent: root, key: "supLeft" };
+      if (root.subRight.id === inlineContainerId) return { parent: root, key: "subRight" };
+      if (root.supRight.id === inlineContainerId) return { parent: root, key: "supRight" };
     }
     else if (root.type === 'group') {
       if (root.child.id === inlineContainerId) return { parent: root, key: "child" };
@@ -267,12 +309,12 @@ export const findNodeById = (node: MathNode, targetId: string): MathNode | null 
     // Recurse into children
     const childNodes = getLogicalChildren(root);
     for (const child of childNodes) {
-      if (child.type === 'inline-container') {
-        console.log(`child: inline container`)
-      }
-      else {
-        console.log(`child: ${child.type}`)
-      }
+      // if (child.type === 'inline-container') {
+      //   console.log(`child: inline container`)
+      // }
+      // else {
+      //   console.log(`child: ${child.type}`)
+      // }
       const result = findParentOfInlineContainer(child, inlineContainerId);
       if (result) return result;
     }
@@ -289,6 +331,12 @@ export const findNodeById = (node: MathNode, targetId: string): MathNode | null 
         containers.push(
           ...(node.numerator.type === "inline-container" ? [node.numerator] : []),
           ...(node.denominator.type === "inline-container" ? [node.denominator] : [])
+        );
+        break;
+      case "big-operator":
+        containers.push(
+          ...(node.upper.type === "inline-container" ? [node.upper] : []),
+          ...(node.lower.type === "inline-container" ? [node.lower] : [])
         );
         break;
       case "group":

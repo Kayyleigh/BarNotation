@@ -123,6 +123,7 @@ export function transformToGroupNode(
   startIndex: number,
   endIndex: number,
   bracketStyle: BracketStyle,
+  side: "open" | "close",
 ): EditorState {
   const container = findNodeById(state.rootNode, containerId) as InlineContainerNode | undefined;
   if (!container || container.type !== "inline-container") return state;
@@ -152,8 +153,8 @@ export function transformToGroupNode(
     ...state,
     rootNode: updatedRoot,
     cursor: {
-      containerId: groupNode.child.id, // inline container inside the GroupNode
-      index: 0, //TODO: ideally know if should jump to end for after close is made
+      containerId: (side === 'open') ? groupNode.child.id : container.id, // inline container inside the GroupNode
+      index: (side === 'open') ? 0 : startIndex + 1, //TODO: ideally know if should jump to end for after close is made
     },
   };
 }

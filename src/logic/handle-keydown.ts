@@ -69,7 +69,7 @@ export function handleKeyDown(
   if (key === "#") {
     e.preventDefault();
     const forcedRoot = latexToMathNode(`P(A|B) = \\frac{P(B|A) P(A)}{P(B)}`);
-    return { rootNode: forcedRoot, cursor: { containerId: forcedRoot.id, index: (forcedRoot as InlineContainerNode).children.length } };
+    return { rootNode: forcedRoot, cursor: { containerId: forcedRoot.id, index: (forcedRoot as InlineContainerNode).children.length, } };
   }
 
   if (key === "ArrowLeft") {

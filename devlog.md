@@ -1440,3 +1440,166 @@ Next steps:
 ### 25/05/2025
 Fixed a bunch of stuff regarding accented nodes
 made it on shift + arrow to avoid confusion because arrow feels somtimes like it should navigate thru existing
+implemented rendering and commands for upright styled stuff (also \text )
+made \sin, \tan, \lim etc make predefined upright textnodes (yes, textnode; not IC)
+make safe deletion of custom accented nodes (do not delete child on accent deletion; do delete accent on child deletion)
+
+Next steps:
+Sequential tasks:
+1. Implement cursor control inside text nodes (maybe not in \sin etc? not sure; maybe no harm in allowing?)
+2. track hovered node
+3. track multi-selection (will req lotta deletion logic too?)
+4. hovering logic??!
+
+Anytime tasks:
+- make del of bracket not del whole group?
+- implement bigop
+- implement arrows
+- make custom accent spacing better (atm bad for e.g. lim, but above is good for actsymb) and make it change the width of the space that its "parent" takes up
+
+![alt text](image-27.png)
+sexy
+
+Maybe nice for final product: instead (?) of having complicated stuff with predefined courses or sth for the menus, just have a component where user drags nodes to, and each becomes a "template node" that is "permanent" and can be dragged to copy. Easy to delete, even easier to add, and maybe that component can have tabs to divide the mess into own-defined collections of templates
+
+### 26/05/2025
+
+When doing 1/2 and then ^3 it will allow it, which looks off cuz irl you would put brackets no?
+
+![alt text](image-28.png)
+current impl does this shite but that is ok because
+`_{}^{}{(\frac{1}{2})}_{\overset{1}{x}:\angl{n}}^{}`
+also does that, and this is just the dirty version that does not use itop etc yet
+TODO: explain the diff in user guide and/or report, and maybe even impl a tooltip or sth to recc switch to itop
+
+Big Operator: inline sum is quite similar to Sigma with subright and supright (but not 100% same :()
+otherwise need bigass version :3
+This whole inline vs block shite is really annoying. I think since my app is a visual version that should translate to latex in a WYSIWYG way, I need to choose 1 (or support both but have a toggle). I choose block for now
+
+Idea for the big clipboard thingy: just drag into it to save to collection. Then also have a little box to drag into to delete. But since deletion is probably often needed: do not ask "are you sure?". Rather, have a ~5min timer to undo any trashed before it is permanently deleted? Also give this component a "selection" mode where you can click a bunch and drag all of em into the trash. In the trash, also put a "recover all" option.
+
+changed fraction children size to 1em cuz that is what inline mode seems to do?
+
+BUG: currently when turning node into group it does not wrap in IC
+TODO: when typing into the scrollable (cuz v long eq), make it shift so user sees the new stuff instead of staying at the start
+TODO: make brackets take on parent's height?
+TODO: enable scroll in editor component (or buttons!) to change base text size
+
+Broke everything; TODO revert all or check all where I use -1 
+
+Must ask chatgpt wtf I should do to get the mouse-based cursor control inside the number
+Fixed the del a lil but still makes it del 2x necc for single char
+also arrow nav is fucked
+nav bit works now but only not on last node, and also still not at all inside text nodes 
+I am confused, why do I have index seperate from cursor again in math renderers??
+index is the index of the node itself
+cursor holds the curr index in the doc
+
+Maybe I need sth like this but for within textnode? 
+```
+    <span
+      className={clsx("math-node", "type-inline-container")}
+      onClick={(e) => {
+        e.stopPropagation();
+        if (node.children.length === 0) {
+          onCursorChange({ containerId: node.id, index: 0, offsetInTextNode: 0 });
+        }
+      }}
+    >
+      {node.children.map((child, i) => {
+        const elements: React.ReactNode[] = [];
+
+        // Render cursor before this child if applicable
+        if (isCursorInThisContainer && cursor.index === i) {
+          elements.push(<span key={`cursor-${i}`} className="cursor" />);
+        }
+
+        // Render the child itself
+        elements.push(
+          <MathRenderer
+            key={child.id}
+            node={child}
+            cursor={cursor}
+            onCursorChange={onCursorChange}
+            onRootChange={props.onRootChange}
+            parentContainerId={node.id}
+            index={i + 1}
+            inheritedStyle={props.inheritedStyle}
+          />
+        );
+
+        return elements;
+      })}
+
+      {/* Cursor at the end of the container */}
+      {isCursorInThisContainer && cursor.index === node.children.length && (
+        <span className="cursor" />
+      )}
+    </span>
+```
+
+curr nav broken: char not navvable if in_idx is not 0. somehwer, I do not properly update
+
+offsetInTextNode will be removed. I will be using TextNode only for single-character stuff, and when multi-digit stuff is made it will become some kinda container (IC, Group, or new type). For commands it is more difficult: mutli-char must have cursor control BUT ALSO easily allow for match checking and replacement of the node.
+
+TODO introduce wrapper nodes:
+```
+interface MultiDigitNode extends BaseNode {
+  type: "multi-digit";
+  children: TextNode[]; // each with one digit
+}
+```
+and 
+```
+interface CommandInputNode extends BaseNode {
+  type: "command-input";
+  children: TextNode[]; // e.g., `\a`, `\al`, `\alpha`
+}
+```
+And remove all the shit I added for offset in textnode
+
+```
+if (char === "\\") {
+      const newCommandInput = createCommandInputNode([createTextNode(char)])
+
+      const updatedChildren = [
+        ...children.slice(0, index - 1),
+        newMultiDigit,
+        ...children.slice(index),
+      ];
+
+      const updatedRoot = updateNodeById(state.rootNode, container.id, {
+        ...container,
+        children: updatedChildren,
+      });
+
+      return {
+        rootNode: updatedRoot,
+        cursor: {
+          containerId: container.id,
+          index: index + 1,
+        },
+      };
+    }
+```
+^make sth like that appear first to ensure commands make new node wrap
+TODO: maybe I need to put IC and the new wrappers into own node type so I won't run into trouble with the container tracking for cursor
+
+### 27/05/2025
+
+Made commandinputnode safe del and nav
+but it does not allow insertion yet within the node, only nav and del
+TODO fix that
+TODO also make sure that command is reverted back to flattened when the "\" is removed
+
+I also broke digits, now they are always just atomic 
+
+TODO: backspace on empty childed's child should go to prev child, except when first child: then if all empty, revert to its base
+
+Fixed bracket creation cursor jumps
+
+TODO: Everything I do with adding to multidigit etc should also exist at the other side of it. I.e. always checking if next node is multidigit (or curr digit and next digit to merge).
+
+Things to wrap in brackets when applying transform: 
+- fraction
+- 

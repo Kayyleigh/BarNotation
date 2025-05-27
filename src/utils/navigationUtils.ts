@@ -8,8 +8,8 @@ export const directionalChildOrder: Record<
 > = {
   "fraction": ["numerator", "denominator"],
   "nth-root": ["base", "index"], // if degree exists
-  "childed": ["base", "subLeft", "supLeft", "subRight", "supRight"],
-  "big-operator": ["operator", "lower", "upper"],
+  "childed": ["base", "supLeft", "subLeft", "subRight", "supRight"],
+  "big-operator": ["upper", "lower"],
   "group": ["child"],
   "accented": ["base", "accent"],
   "styled": ["child"],
@@ -22,7 +22,7 @@ export function flattenCursorPositions(node: MathNode): CursorPosition[] {
   function visit(n: MathNode) {
     if (n.type === "inline-container") {
       // Start of this container
-      positions.push({ containerId: n.id, index: 0 });
+      positions.push({ containerId: n.id, index: 0, });
 
       n.children.forEach((child, i) => {
         // Visit children recursively
@@ -30,7 +30,19 @@ export function flattenCursorPositions(node: MathNode): CursorPosition[] {
         // Cursor between child i and i+1
         positions.push({ containerId: n.id, index: i + 1 });
       });
-    } else {
+    } 
+    else if (n.type === "multi-digit" || n.type === "command-input") {
+      positions.push({ containerId: n.id, index: 0, });
+
+      n.children.forEach((child, i) => {
+        if (i < n.children.length - 1) {
+          visit(child);
+          // Cursor between child i and i+1
+          positions.push({ containerId: n.id, index: i + 1 });
+        }
+      });
+    } 
+    else {
       // For compound nodes like fraction, root, etc.
       const order = directionalChildOrder[n.type];
       if (!order) return;
@@ -55,6 +67,15 @@ export function flattenCursorPositions(node: MathNode): CursorPosition[] {
   visit(node);
   return positions;
 }
+
+// export function findCursorIndex(
+//     flatList: CursorPosition[],
+//     cursor: CursorPosition
+//   ): number {
+//     return flatList.findIndex(
+//       (p) => p.containerId === cursor.containerId && p.index === cursor.index
+//     );
+//   }
 
 export function findCursorIndex(
     flatList: CursorPosition[],

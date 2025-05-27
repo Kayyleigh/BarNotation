@@ -11,6 +11,9 @@ import {
   renderChildedNode,
   renderAccentedNode,
   renderStyledNode,
+  renderCommandInputNode,
+  renderMultiDigitNode,
+  renderBigOperatorNode,
 } from "./MathRenderers";
 
 export type MathRendererProps = {
@@ -37,6 +40,12 @@ export const MathRenderer: React.FC<MathRendererProps> = ({
   switch (node.type) {
     case "text":
       return renderTextNode(node, props);
+
+    case "multi-digit":
+      return renderMultiDigitNode(node, props);
+
+    case "command-input":
+      return renderCommandInputNode(node, props);
 
     case "inline-container":
       return renderInlineContainerNode(node, props);

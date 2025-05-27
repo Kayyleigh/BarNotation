@@ -7,6 +7,10 @@ export type MathNode =
   | InlineContainerNode
   | StructureNode;
 
+export type TextContainerNode = 
+  | MultiDigitNode 
+  | CommandInputNode;
+
 export type StructureNode =
   | FractionNode
   | NthRootNode
@@ -20,10 +24,14 @@ export type StructureNode =
   | MatrixNode
   | CasesNode
   | TextNode
-  | StyledNode;
+  | StyledNode
+  | MultiDigitNode
+  | CommandInputNode;
 
 export type NodeType =
   | "text"
+  | "command-input"
+  | "multi-digit"
   | "styled"
   | "multiline"
   | "root-wrapper"
@@ -184,11 +192,33 @@ export interface TextNode extends BaseNode {
   content: string; // single character, number, or \command
 }
 
+// Node types for multi-character sequences
+export interface TextContainerNodeBase {
+  id: string;
+  type: "multi-digit" | "command-input";
+  children: TextNode[];
+}
+
+export interface MultiDigitNode extends BaseNode {
+  type: "multi-digit";
+  children: TextNode[]; // each with one digit
+}
+
+export interface CommandInputNode extends BaseNode {
+  type: "command-input";
+  children: TextNode[]; // e.g., `\a`, `\al`, `\alpha`
+}
+
+
+
 // Helper function for stringifying MathNode
 export const nodeToMathText = (node: MathNode): string => {
   switch(node.type) {
     case "text":
       return `${node.content}`;
+    case "multi-digit":
+    case "command-input":
+      return `${node.children.map(child => child.content).join("")}`;
     case "styled":
       return `Styled(${nodeToMathText(node.child)})`;
     case "multiline":
