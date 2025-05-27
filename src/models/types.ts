@@ -54,7 +54,7 @@ export interface BaseNode {
 }
 
 export interface TextStyle {
-  fontFamily?: "normal" | "italic" | "upright";
+  fontFamily?: "normal" | "italic" | "upright" | "command";
   color?: string;
   fontSize?: number;
 }

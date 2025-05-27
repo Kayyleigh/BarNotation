@@ -20,7 +20,7 @@ import clsx from 'clsx';
 import type { CursorPosition } from '../logic/cursor';
 import '../styles/math-node.css' 
 import '../styles/accents.css' 
-import { getCloseSymbol, getOpenSymbol } from '../utils/bracketUtils';
+import { getCloseSymbol, getOpenSymbol, isClosingBracket, isOpeningBracket } from '../utils/bracketUtils';
 
 
 type RenderProps = {
@@ -56,14 +56,15 @@ export const renderTextNode = (
   { cursor, onCursorChange, parentContainerId, index, inheritedStyle }: RenderProps
 ) => {
   const isSelected = cursor.containerId === node.id;
-//TODO??
+
   const className = clsx(
     "math-node",
     "type-text",
     { selected: isSelected },
+    { "bracket-node": isOpeningBracket(node.content) || isClosingBracket(node.content) },
     getStyleClass(inheritedStyle)
   );
-  
+
   const style = getInlineStyle(inheritedStyle);  
 
   return (
@@ -166,7 +167,7 @@ export const renderCommandInputNode = (
             onRootChange={props.onRootChange}
             parentContainerId={node.id}
             index={i + 1}
-            inheritedStyle={props.inheritedStyle}
+            inheritedStyle={{fontFamily: 'command'}}
           />
         );
 
@@ -309,11 +310,7 @@ export const renderChildedNode = (
 ) => {
   return (
     <span 
-      className={clsx("math-node", "type-subsup")}
-      style={{
-        outline: node.variant === 'subsup' ? '2px solid #ffc98b' : '2px solid #ff6dfd',
-        outlineOffset: '-2px',
-      }}    
+      className={clsx("math-node", "type-childed", node.variant === 'subsup' ? "type-subsup" : "type-actsymb")}  
     >
       {/* Superscript left */}
       <span className="sup-left">
@@ -455,6 +452,7 @@ function getStyleClass(style?: TextStyle): string {
   return clsx({
     "math-style-normal": style?.fontFamily === "normal",
     "math-style-upright": style?.fontFamily === "upright",
+    "math-style-command": style?.fontFamily === "command",
   });
 }
 

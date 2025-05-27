@@ -1,5 +1,65 @@
-body {
+  /* ============================================= */
+/* =============== VARIABLES =================== */
+/* ============================================= */
+
+:root {
+  --background-color: white;
+
+  /* ===== Typography & Scaling ===== */
+  --math-font-family: 'STIX Two Math', 'Cambria Math', 'Times New Roman', serif;
+  --math-font-size-base: 2.4rem;
+  --math-scale-factor: 0.5; /* Recursive scale-down for nested nodes */
+  --math-font-size-sub: 0.6em;
+  --math-font-size-fraction: 1em;
+
+  /* ===== Layout ===== */
+  --math-line-height: 1.2;
+
+  /* ===== Cursor & Selection ===== */
+  --math-text-color: black;
+  --math-cursor-color: black;
+  --math-selection-bg: rgba(0, 123, 255, 0.15);
+  
+  /* ===== Sub/Sup Alignment ===== */
+  --math-sub-overlap-x: 0.1em;
+  --math-sub-overlap-y: 1.4em;
+  --math-sup-overlap-y: 1.35em;
+
+  /* ===== Decoration & Accents ===== */
+  --math-decoration-color: blue;
+  --math-accent-color: #adc6a2;
+
+  /* ===== Theming (Custom Palette) ===== */
+  --math-color-1: #003366;
+  --math-color-2: #B00020;
+  --math-color-3: #00695C;
+  --math-color-bracket: #4B0082;
+  --math-color-muted: #787878;
+
+  /* ===== Editor Container ===== */
+  --math-editor-bg: white;
+  --math-editor-border: #ccc;
+  --math-editor-shadow: rgba(0, 0, 0, 0.05);
+}
+
+.dark {
+  --background-color: #252526;
+
+  --math-cursor-color: white;
+  --math-text-color: white;
+  --math-selection-bg: rgba(255, 255, 255, 0.1);
+  --math-editor-bg: #1e1e1e;
+  --math-editor-border: #444;
+  --math-editor-shadow: rgba(0, 0, 0, 0.3);
+  --math-accent-color: #ce9178;
+
+  --math-color-pair-brackets: #1b9fff;
+  --math-color-single-bracket: #d21618;
+}
+
+  body {
     font-family: sans-serif;
+    background-color: var(--background-color);
   }
   
   .editor-container {
@@ -20,4 +80,3 @@ body {
     cursor: pointer;
     border: 1px solid;
   }
-  

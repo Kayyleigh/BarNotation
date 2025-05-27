@@ -1602,4 +1602,11 @@ TODO: Everything I do with adding to multidigit etc should also exist at the oth
 
 Things to wrap in brackets when applying transform: 
 - fraction
-- 
+- ...
+
+
+Style-coding node types:
+:green_heart: clarity of current state
+:green_heart: 
+:warning: coloring like vsc assumes user's own experiences
+:warning: removes "WYSIWYG" effect: no longer really what you "get" when copying to latex

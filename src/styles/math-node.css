@@ -1,110 +1,74 @@
-:root {
-    /* Typography & Layout */
-    --math-font-family: 'STIX Two Math', serif;
-    --math-font-size-base: 2.4rem;
-    --math-scale-factor: 0.5; /* Each nested level shrinks by this factor */
-    --math-font-size-sub: 0.6em;
-    --math-font-size-fraction: 1em;
-  
-    /* Cursor & Selection */
-    --math-color-selection-bg: rgba(0, 123, 255, 0.15);
-    --math-cursor-color: black;
-  
-    /* Sup/Sub alignment (relative to self) */
-    --math-sub-overlap-x: 0.1em;
-    --math-sub-overlap-y: 1.4em;
-    --math-sup-overlap-y: 1.35em;
-  
-    /* Decorations */
-    --math-decoration-color: blue;
 
-    --test_color1: #003366;
-    --test_color2: #B00020;
-    --test_color3: #00695C;
-    --test_color4: #4B0082;
-    --test_color5: #787878;
-
-  }
+  /* ============================================= */
+  /* =============== BASE STYLES ================= */
+  /* ============================================= */
   
-  /* Dark mode override */
-  .dark {
-    --math-color-selection-bg: rgba(255, 255, 255, 0.1);
-    --math-cursor-color: white;
-  }
-  
-  /* ========== Base Math Node ========== */
   .math-node {
     font-family: var(--math-font-family);
-    line-height: 1.2;
-    width: max-content;
-    color: inherit;
+    font-size: var(--math-font-size-base);
+    line-height: var(--math-line-height);
     display: inline-block;
+    width: max-content;
     vertical-align: middle;
     cursor: pointer;
+    color: inherit;
     padding: 0.05em;
     position: relative;
   }
+
+  .bracket-node {
+    color: var(--math-color-single-bracket);
+  }
   
-  /* Recursive shrink on all children */
   .math-node .math-node {
     font-size: var(--math-scale-factor);
   }
   
-  /* ========== Selection Highlight ========== */
   .math-node.selected {
-    background-color: var(--math-color-selection-bg);
+    background-color: var(--math-selection-bg);
     border-radius: 4px;
   }
   
-  /* ========== Cursor ========== */
-  .cursor {
-    display: inline-block;
-    width: 1px;
-    height: 1em;
-    background-color: var(--math-cursor-color);
-    vertical-align: bottom;
-    animation: blink 1s steps(1, end) infinite;
+  .math-node.styled-node {
+    display: inline;
   }
   
-  @keyframes blink {
-    50% { opacity: 0; }
+  .math-node .math-style-normal {
+    text-transform: math-auto; /* No-op, but placeholder */
+    font-family: var(--math-font-family);
   }
   
-  /* ========== Inline Container ========== */
+  .math-node :not(.type-text).math-style-upright {
+    text-transform: none;
+    background-color: rgba(197, 134, 192, 0.1); 
+    padding: 0.05em;
+    border-radius: 0.2em;
+    font-family: var(--math-font-family);
+    color: rgb(197, 134, 192);
+  }
+
+  .math-node.type-text.math-style-upright {
+    padding: 0 0.1em;
+  }
+
+  .math-node .math-style-command {
+    color: #dcdcaa;
+    text-transform: none;
+    font-family: 'Courier New', Courier, monospace;
+  }
+  
+  
+  /* ============================================= */
+  /* =============== INLINE & GROUPS ============= */
+  /* ============================================= */
+  
   .type-inline-container {
     display: inline-flex;
     flex-wrap: nowrap;
-    align-items: anchor-center;
+    align-items: center;
     gap: 0.1em;
   }
   
-  /* ========== Fraction ========== */
-  .type-fraction {
-    display: inline-block;
-    line-height: 1;
-    vertical-align: middle;
-  }
-  
-  .fraction {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .fraction hr {
-    width: 100%;
-    border: none;
-    border-top: 1px solid currentColor;
-    margin: 0.1em 0;
-  }
-  
-  .numerator,
-  .denominator {
-    font-size: var(--math-font-size-fraction);
-    text-align: center;
-  }
-  
-  /* ========== Group ========== */
   .type-group {
     display: inline-flex;
     align-items: center;
@@ -112,27 +76,17 @@
   
   .bracket {
     font-weight: bold;
-    padding: 0 2px;
+    padding: 0 0.05em;
     font-size: 1.2em;
-    color: var(--test_color4);
+    color: var(--math-color-pair-brackets);
   }
   
-  /* ========== Root Node ========== */
-  .root {
-    display: inline-flex;
-    align-items: flex-start;
-    gap: 0.1em;
-  }
   
-  /* ========== Big Operator ========== */
-  .big-op {
-    font-size: 1.3em;
-    margin: 0 0.3em;
-    vertical-align: middle;
-  }
+  /* ============================================= */
+  /* =============== SUB/SUP ===================== */
+  /* ============================================= */
   
-  /* ========== Sub/Superscript Layout ========== */
-  .type-subsup {
+  .type-childed {
     display: inline-grid;
     grid-template-columns: auto auto auto;
     grid-template-rows: 0 auto 0;
@@ -141,21 +95,37 @@
     line-height: 1;
     vertical-align: middle;
   }
+
+  .type-subsup {
+  }
+
+  .type-actsymb {
+    color: #4ec9b0;
+    /* border-radius: 0.2em;
+    border: 0.04em solid #4ec9b0; */
+  }
+
+  .type-actsymb .base .type-inline-container {
+    background-color: rgb(78, 201, 176, 0.1);
+    border-radius: 0.2em;
+    padding: 0 0.1em;
+    /* border-radius: 0.2em;
+    border: 0.04em solid #4ec9b0; */
+  }
   
   .base {
     grid-column: 2;
     grid-row: 2;
-    z-index: 1;
   }
   
-  .sub-left,
-  .sup-left,
-  .sub-right,
-  .sup-right {
+  .sub-left, .sup-left, .sub-right, .sup-right {
     font-size: var(--math-font-size-sub);
     line-height: 1;
     position: relative;
     white-space: nowrap;
+    /* color: #9cdcfe; blue*/
+    /* adc6a2 greenish*/
+    /* 4ec9b0 turq */
   }
   
   /* Sub/Sup left/right with relative translation */
@@ -189,19 +159,77 @@
     justify-self: start;
     align-self: end;
     transform: translate(calc(-1 * var(--math-sub-overlap-x)), var(--math-sup-overlap-y));
+  }  
+  
+  /* ============================================= */
+  /* =============== FRACTION ==================== */
+  /* ============================================= */
+  
+  .type-fraction {
+    display: inline-block;
+    vertical-align: middle;
   }
   
-  /* ========== Editor Container ========== */
-  .math-editor {
-    max-width: 100%;
-    padding: 1em;
-    font-size: var(--math-font-size-base);
-    overflow-x: auto;
-    background: white;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    box-shadow: 0 0 4px rgba(0, 0, 0, 0.05);
+  .fraction {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
+  
+  .fraction hr {
+    width: 100%;
+    border: none;
+    border-top: 1px solid currentColor;
+    margin: 0.1em 0;
+  }
+  
+  .numerator,
+  .denominator {
+    font-size: var(--math-font-size-fraction);
+    text-align: center;
+  }
+  
+  
+  /* ============================================= */
+  /* =============== BIG OPERATORS ============== */
+  /* ============================================= */
+  
+  .math-node.type-big-operator {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 0.3em;
+  }
+  
+  .big-operator-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 1.2em;
+    line-height: 1;
+  }
+  
+  .big-operator-upper {
+    font-size: 0.6em;
+    line-height: 1;
+  }
+
+  .big-operator-lower {
+    font-size: 0.6em;
+    line-height: 1;
+  }
+  
+  .big-operator-symbol {
+    font-size: 1.4em;
+    margin-bottom: -0.1em;
+    line-height: 1;
+    color: #ffd700;
+  }
+  
+  
+  /* ============================================= */
+  /* =============== DECORATIONS ================= */
+  /* ============================================= */
   
   .decorated-node {
     display: inline-block;
@@ -214,65 +242,56 @@
     transform: translateX(-50%);
     font-size: 0.7em;
     white-space: nowrap;
+    color: var(--math-accent-color);
     pointer-events: auto;
-    color: var(--test_color5);
   }
   
   .accent-above {
-    bottom: 1.3em;
-    margin-bottom: 2px;
+    bottom: 1.5em;
+    /* margin-bottom: 0.2em; */
   }
   
   .accent-below {
-    top: 1.3em;
-    margin-top: 2px;
+    top: 1.5em;
+    margin-top: 0.5em;
   }
   
   .accent-base {
     display: inline-block;
   }
-
-
   
-.math-node.styled-node {
-  display: inline;
-}
-
-/* For default italic math appearance */
-.math-style-normal {
-  text-transform: math-auto; /* if supported or interpreted in your context */
-}
-
-/* For upright non-italic variables/constants */
-.math-style-upright {
-  text-transform: none;
-  background-color: rgba(0, 0, 0, 0.05); /* TODO remove; just for debug */
-  border-radius: 0.2em;
-}
-
-.math-node.type-big-operator {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 0.3em;
-}
-
-.big-operator-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  font-size: 1.2em;
-  line-height: 1;
-}
-
-.big-operator-upper,
-.big-operator-lower {
-  font-size: 0.6em;
-  line-height: 1;
-}
-
-.big-operator-symbol {
-  font-size: 1.4em;
-  line-height: 1;
-}
-
+  
+  /* ============================================= */
+  /* =============== CURSOR ====================== */
+  /* ============================================= */
+  
+  .cursor {
+    display: inline-block;
+    width: 1px;
+    height: 1em;
+    background-color: var(--math-cursor-color);
+    vertical-align: bottom;
+    animation: blink 1s steps(1, end) infinite;
+  }
+  
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+  
+  
+  /* ============================================= */
+  /* =============== EDITOR WRAPPER ============== */
+  /* ============================================= */
+  
+  .math-editor {
+    max-width: 100%;
+    padding: 1em;
+    font-size: var(--math-font-size-base);
+    overflow-x: auto;
+    background: var(--math-editor-bg);
+    color: var(--math-text-color);
+    border: 1px solid var(--math-editor-border);
+    border-radius: 6px;
+    box-shadow: 0 0 4px var(--math-editor-shadow);
+  }
+  

@@ -1,11 +1,11 @@
 import React from "react";
-import MathEditor from "./components/MathEditor";
 import './styles/styles.css'
+import MathNotationTool from "./components/MathNotationTool";
 
 const App: React.FC = () => (
   <div>
     <h1>Math Notation Editor</h1>
-    <MathEditor />
+    <MathNotationTool />
   </div>
 );
 

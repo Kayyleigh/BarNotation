@@ -36,7 +36,7 @@ export const findNodeById = (node: MathNode, targetId: string): MathNode | null 
       case "fraction":
         return [node.numerator, node.denominator];
       case "big-operator":
-        return [node.upper, node.lower];
+        return [node.lower, node.upper];
       case "childed":
         return [node.base, node.subLeft, node.supLeft, node.subRight, node.supRight];
       case "styled":
@@ -184,8 +184,8 @@ export const findNodeById = (node: MathNode, targetId: string): MathNode | null 
       if (node.type === 'big-operator') {
         return {
           ...node,
-          upper: newChildren[0],
-          lower: newChildren[1]
+          upper: newChildren[1],
+          lower: newChildren[0]
         }
       }
       if (node.type === 'childed') {
@@ -279,8 +279,8 @@ export const findNodeById = (node: MathNode, targetId: string): MathNode | null 
       if (root.denominator.id === inlineContainerId) return { parent: root, key: "denominator" };
     }
     else if (root.type === 'big-operator') {
-      if (root.upper.id === inlineContainerId) return { parent: root, key: "upper" };
       if (root.lower.id === inlineContainerId) return { parent: root, key: "lower" };
+      if (root.upper.id === inlineContainerId) return { parent: root, key: "upper" };
     }
     else if (root.type === 'childed') {
       if (root.base.id === inlineContainerId) return { parent: root, key: "base" };
@@ -335,8 +335,8 @@ export const findNodeById = (node: MathNode, targetId: string): MathNode | null 
         break;
       case "big-operator":
         containers.push(
+          ...(node.lower.type === "inline-container" ? [node.lower] : []),
           ...(node.upper.type === "inline-container" ? [node.upper] : []),
-          ...(node.lower.type === "inline-container" ? [node.lower] : [])
         );
         break;
       case "group":

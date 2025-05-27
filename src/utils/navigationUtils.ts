@@ -9,7 +9,7 @@ export const directionalChildOrder: Record<
   "fraction": ["numerator", "denominator"],
   "nth-root": ["base", "index"], // if degree exists
   "childed": ["base", "supLeft", "subLeft", "subRight", "supRight"],
-  "big-operator": ["upper", "lower"],
+  "big-operator": ["lower", "upper"],
   "group": ["child"],
   "accented": ["base", "accent"],
   "styled": ["child"],

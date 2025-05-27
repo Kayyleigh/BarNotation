@@ -215,7 +215,7 @@ export const handleBackspace = (state: EditorState): EditorState => {
   //const childToDelete = currentToDelete[order[order.length - 1]]
 
   //console.log(`${childToDelete}`)
-  if (currentToDelete.type !== "text") {
+  if (currentToDelete.type !== "text" && currentToDelete.type !== "styled") {
     const simulatePrevState = handleArrowLeft(state)
 
     const children = getLogicalChildren(currentToDelete)
@@ -224,7 +224,7 @@ export const handleBackspace = (state: EditorState): EditorState => {
     console.log(lastChild?.type)    
     
     //TODO: handle brackets (revert)
-    
+
     return handleBackspace(simulatePrevState)
   }
   // Standard deletion

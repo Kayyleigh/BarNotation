@@ -1,0 +1,283 @@
+:root {
+    /* Typography & Layout */
+    --math-font-family: 'STIX Two Math', serif;
+    --math-font-size-base: 2.4rem;
+    --math-scale-factor: 0.5; /* Each nested level shrinks by this factor */
+    --math-font-size-sub: 0.6em;
+    --math-font-size-fraction: 1em;
+  
+    /* Cursor & Selection */
+    --math-color-selection-bg: rgba(0, 123, 255, 0.15);
+    --math-cursor-color: black;
+  
+    /* Sup/Sub alignment (relative to self) */
+    --math-sub-overlap-x: 0.1em;
+    --math-sub-overlap-y: 1.4em;
+    --math-sup-overlap-y: 1.35em;
+  
+    /* Decorations */
+    --math-decoration-color: blue;
+
+    --test_color1: #003366;
+    --test_color2: #B00020;
+    --test_color3: #00695C;
+    --test_color4: #4B0082;
+    --test_color5: #787878;
+
+  }
+  
+  /* Dark mode override */
+  .dark {
+    --math-color-selection-bg: rgba(255, 255, 255, 0.1);
+    --math-cursor-color: white;
+  }
+  
+  /* ========== Base Math Node ========== */
+  .math-node {
+    font-family: var(--math-font-family);
+    line-height: 1.2;
+    width: max-content;
+    color: inherit;
+    display: inline-block;
+    vertical-align: middle;
+    cursor: pointer;
+    padding: 0.05em;
+    position: relative;
+  }
+  
+  /* Recursive shrink on all children */
+  .math-node .math-node {
+    font-size: var(--math-scale-factor);
+  }
+  
+  /* ========== Selection Highlight ========== */
+  .math-node.selected {
+    background-color: var(--math-color-selection-bg);
+    border-radius: 4px;
+  }
+  
+  /* ========== Cursor ========== */
+  .cursor {
+    display: inline-block;
+    width: 1px;
+    height: 1em;
+    background-color: var(--math-cursor-color);
+    vertical-align: bottom;
+    animation: blink 1s steps(1, end) infinite;
+  }
+  
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+  
+  /* ========== Inline Container ========== */
+  .type-inline-container {
+    display: inline-flex;
+    flex-wrap: nowrap;
+    align-items: anchor-center;
+    gap: 0.1em;
+  }
+  
+  /* ========== Fraction ========== */
+  .type-fraction {
+    display: inline-block;
+    line-height: 1;
+    vertical-align: middle;
+  }
+  
+  .fraction {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .fraction hr {
+    width: 100%;
+    border: none;
+    border-top: 1px solid currentColor;
+    margin: 0.1em 0;
+  }
+  
+  .numerator,
+  .denominator {
+    font-size: var(--math-font-size-fraction);
+    text-align: center;
+  }
+  
+  /* ========== Group ========== */
+  .type-group {
+    display: inline-flex;
+    align-items: center;
+  }
+  
+  .bracket {
+    font-weight: bold;
+    padding: 0 2px;
+    font-size: 1.2em;
+    color: var(--test_color4);
+  }
+  
+  /* ========== Root Node ========== */
+  .root {
+    display: inline-flex;
+    align-items: flex-start;
+    gap: 0.1em;
+  }
+  
+  /* ========== Big Operator ========== */
+  .big-op {
+    font-size: 1.3em;
+    margin: 0 0.3em;
+    vertical-align: middle;
+  }
+  
+  /* ========== Sub/Superscript Layout ========== */
+  .type-subsup {
+    display: inline-grid;
+    grid-template-columns: auto auto auto;
+    grid-template-rows: 0 auto 0;
+    justify-items: center;
+    align-items: center;
+    line-height: 1;
+    vertical-align: middle;
+  }
+  
+  .base {
+    grid-column: 2;
+    grid-row: 2;
+    z-index: 1;
+  }
+  
+  .sub-left,
+  .sup-left,
+  .sub-right,
+  .sup-right {
+    font-size: var(--math-font-size-sub);
+    line-height: 1;
+    position: relative;
+    white-space: nowrap;
+  }
+  
+  /* Sub/Sup left/right with relative translation */
+  .sub-left {
+    grid-column: 1;
+    grid-row: 3;
+    justify-self: end;
+    align-self: start;
+    transform: translate(var(--math-sub-overlap-x), calc(-1 * var(--math-sub-overlap-y)));
+  }
+  
+  .sup-left {
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: end;
+    align-self: end;
+    transform: translate(var(--math-sub-overlap-x), var(--math-sup-overlap-y));
+  }
+  
+  .sub-right {
+    grid-column: 3;
+    grid-row: 3;
+    justify-self: start;
+    align-self: start;
+    transform: translate(calc(-1 * var(--math-sub-overlap-x)), calc(-1 * var(--math-sub-overlap-y)));
+  }
+  
+  .sup-right {
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: start;
+    align-self: end;
+    transform: translate(calc(-1 * var(--math-sub-overlap-x)), var(--math-sup-overlap-y));
+  }
+  
+  /* ========== Editor Container ========== */
+  .math-editor {
+    max-width: 100%;
+    padding: 1em;
+    font-size: var(--math-font-size-base);
+    overflow-x: auto;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.05);
+  }
+  
+  .decorated-node {
+    display: inline-block;
+    position: relative;
+  }
+  
+  .accent-content {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.7em;
+    white-space: nowrap;
+    pointer-events: auto;
+    color: var(--test_color5);
+  }
+  
+  .accent-above {
+    bottom: 1.3em;
+    margin-bottom: 2px;
+  }
+  
+  .accent-below {
+    top: 1.3em;
+    margin-top: 2px;
+  }
+  
+  .accent-base {
+    display: inline-block;
+  }
+
+
+  
+.math-node.styled-node {
+  display: inline;
+}
+
+/* For default italic math appearance */
+.math-style-normal {
+  text-transform: math-auto; /* if supported or interpreted in your context */
+}
+
+/* For upright non-italic variables/constants */
+.math-style-upright {
+  text-transform: none;
+  background-color: rgba(0, 0, 0, 0.05); /* TODO remove; just for debug */
+  border-radius: 0.2em;
+}
+
+.math-style-command {
+  text-transform: none;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.math-node.type-big-operator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 0.3em;
+}
+
+.big-operator-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 1.2em;
+  line-height: 1;
+}
+
+.big-operator-upper,
+.big-operator-lower {
+  font-size: 0.6em;
+  line-height: 1;
+}
+
+.big-operator-symbol {
+  font-size: 1.4em;
+  line-height: 1;
+}
+
