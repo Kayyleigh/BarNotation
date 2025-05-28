@@ -1,7 +1,7 @@
 import { decorationToLatexCommand } from "../utils/accentUtils";
 import { getCloseSymbol, getOpenSymbol } from "../utils/bracketUtils";
 import { parseLatex } from "./mathNodeParser";
-import { symbolToLatex } from "./specialSequences";
+import { bigOperatorToLatex, symbolToLatex } from "./specialSequences";
 import type { MathNode } from "./types";
 
 export const nodeToLatex = (node: MathNode): string => {
@@ -9,6 +9,11 @@ export const nodeToLatex = (node: MathNode): string => {
       case "text": {
         const fromMap = symbolToLatex[node.content]; // Revert special char back to latex sequence
         return fromMap ?? node.content;
+      }
+
+      case "styled": {
+        //TODO: maybe here allow own styling to latex styling mapping too
+        return nodeToLatex(node.child);
       }
   
       case "inline-container": {
@@ -35,7 +40,7 @@ export const nodeToLatex = (node: MathNode): string => {
       case "big-operator": {
         const lower = node.lower ? `_{${nodeToLatex(node.lower)}}` : "";
         const upper = node.upper ? `^{${nodeToLatex(node.upper)}}` : "";
-        return `\\${node.operator}${lower}${upper}`;
+        return `${bigOperatorToLatex[node.operator]}${lower}${upper}`;
       }
       case "childed": {
         if (node.variant === "subsup") {
@@ -60,9 +65,18 @@ export const nodeToLatex = (node: MathNode): string => {
   
       case "accented": {
         // if predef then name (or improve), else \underset or \overset w the custom
-        const latexCommand = decorationToLatexCommand[node.decoration];
-        if (!latexCommand) throw new Error(`Unknown decoration: ${node.decoration}`);
-        return `${latexCommand}{${nodeToLatex(node.child)}}`;
+        if (node.accent.type === 'predefined') {
+          const latexCommand = decorationToLatexCommand[node.accent.name];
+          if (!latexCommand) {
+            throw new Error(`Unknown decoration: ${node.accent}`);
+          }
+          return `${latexCommand}{${nodeToLatex(node.base)}}`;
+        }
+        else {
+          // Custom accent type
+          const latexCommand = node.accent.position === 'above' ? '\\overset' : '\\underset'
+          return `${latexCommand}{${nodeToLatex(node.accent.content)}}{${nodeToLatex(node.base)}}`;
+        }
       }
   
       case "matrix": {
@@ -80,6 +94,7 @@ export const nodeToLatex = (node: MathNode): string => {
       }
   
       default: {
+        console.warn(`${node.type} has no case in nodeToLatex.`)
         return "";
       }
     }

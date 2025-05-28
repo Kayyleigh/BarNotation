@@ -1610,3 +1610,6 @@ Style-coding node types:
 :green_heart: 
 :warning: coloring like vsc assumes user's own experiences
 :warning: removes "WYSIWYG" effect: no longer really what you "get" when copying to latex
+
+### 28/05/2025
+`\\sum _{i\doteq 1}^{N}(_{}^{}{x}_{}^{i}+\frac{2x}{3})`

@@ -131,14 +131,29 @@ export function parseLatex(input: string): MathNode {
         else if (name in decorationToLatexCommandInverse) {
           const child = parseGroup();
           base = createAccentedNode(
-            decorationToLatexCommandInverse[name as keyof typeof decorationToLatexCommandInverse],
-            child
+            child,
+            { 
+              type: 'predefined',
+              name: decorationToLatexCommandInverse[name as keyof typeof decorationToLatexCommandInverse],
+            },
+            
           );
         } 
         else if (symbolToLatexInverse[name]) {
           base = createTextNode(symbolToLatexInverse[name]);
         } 
+        else if (name === 'overset') {
+          const accentContent = parseGroup();
+          const child = parseGroup();
+          base = createAccentedNode(child, { type: 'custom', content: accentContent, position: 'above' } )
+        }
+        else if (name === 'underset') {
+          const accentContent = parseGroup();
+          const child = parseGroup();
+          base = createAccentedNode(child, { type: 'custom', content: accentContent, position: 'below' } )
+        }
         else {
+          console.log(`Name not found: '${name}'`)
           base = createTextNode("\\" + name);
         }
       } 
@@ -149,7 +164,7 @@ export function parseLatex(input: string): MathNode {
         base = createTextNode(consume().value);
       } 
       else {
-        throw new Error("Unexpected token");
+        throw new Error(`Unexpected token: ${token}`);
       }
 
       //_{}^{}{x}_{}^{3}
@@ -162,8 +177,10 @@ export function parseLatex(input: string): MathNode {
     
       while (true) {
         const next = peek();
-        if (!next || next.type !== "char") break;
-    
+        if (!next || next.type !== "char") {
+          console.log(`${next} is not a char`)
+          break;
+        }
         if (next.value === "_") {
           consume();
           subRight = parseGroup() as InlineContainerNode;
@@ -187,6 +204,8 @@ export function parseLatex(input: string): MathNode {
     while (i < tokens.length) {
       children.push(parseExpression() as StructureNode);
     }
+    //TODO here ensure that not always nesting IC?
+    // Spaces should be ignored
     return children.length === 1 ? children[0] : createInlineContainer(children);
   }
 

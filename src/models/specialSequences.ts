@@ -24,7 +24,7 @@ export const stylingOptions: SpecialSequence[] = [
   },
 ];
 
-export const nodeTransformationSequences: SpecialSequence[] = [
+export const bigOperatorSequences: SpecialSequence[] = [
   {
     sequence: "\\sum ",
     createNode: () => createBigOperator(
@@ -423,34 +423,43 @@ export const standardFunctionNames: SpecialSequence[] = [
   },
 ]
 
-export const specialSequences: SpecialSequence[] = [
+const specialSymbols: SpecialSequence[] = [
   ...greekLetters,
   ...hebrewLetters,
   ...binaryOperators,
   ...logicSymbols,
   ...otherSymbols,
-  ...decoratedEntries,
   ...standardFunctionNames,
+]
+
+export const specialSequences: SpecialSequence[] = [
+  ...specialSymbols,
+  ...decoratedEntries,
   ...stylingOptions, 
-  ...nodeTransformationSequences
+  ...bigOperatorSequences,
 ];
 
-// export const symbolToLatex: Record<string, string> = Object.fromEntries(
-//   specialSequences
-//     .filter(e => e.mathNode.type === 'text')
-//     .map(e => [(e.mathNode as TextNode).content, e.sequence])
-// );
-
-// export const symbolToLatexInverse = Object.fromEntries(
-//   Object.entries(symbolToLatex).map(([k, v]) => [v.replace(/^\\/, ""), k])
-// );
+export const bigOperatorToLatex: Record<string, string> = Object.fromEntries(
+  bigOperatorSequences
+    .map(e => {
+      const node = e.createNode();
+      if (node.type === 'big-operator') {
+        return [node.operator, e.sequence];
+      }
+      return null;
+    })
+    .filter((entry): entry is [string, string] => entry !== null)
+);
 
 export const symbolToLatex: Record<string, string> = Object.fromEntries(
-  specialSequences
+  specialSymbols
     .map(e => {
       const node = e.createNode();
       if (node.type === 'text') {
         return [node.content, e.sequence];
+      }
+      else if (node.type === 'styled') {
+        return [node.child.content, e.sequence];
       }
       return null;
     })
@@ -458,5 +467,5 @@ export const symbolToLatex: Record<string, string> = Object.fromEntries(
 );
 
 export const symbolToLatexInverse = Object.fromEntries(
-  Object.entries(symbolToLatex).map(([k, v]) => [v.replace(/^\\/, ""), k])
+  Object.entries(symbolToLatex).map(([k, v]) => [v.replace(/^\\/, "").trimEnd(), k])
 );

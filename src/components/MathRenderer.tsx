@@ -100,7 +100,7 @@ export const MathRenderer: React.FC<MathRendererProps> = ({
             selected: cursor.containerId === node.id,
           })}
         >
-          Unsupported node: {node.type}
+          Unsupported node: {node}
         </span>
       );
   }
