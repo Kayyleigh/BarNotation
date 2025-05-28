@@ -14,7 +14,8 @@ import type {
     TextStyle,
     MultiDigitNode,
     CommandInputNode,
-    BigOperatorNode, 
+    BigOperatorNode,
+    RootWrapperNode, 
 } from '../models/types';
 import clsx from 'clsx';
 import type { CursorPosition } from '../logic/cursor';
@@ -32,6 +33,33 @@ type RenderProps = {
 
   inheritedStyle?: TextStyle;
 
+};
+
+export const renderRootWrapperNode = (
+  node: RootWrapperNode,
+  props: RenderProps
+) => {
+  // Root wrapper is just a container for one child, no cursor logic here
+  const child = node.child;
+
+  if (!child) {
+    // If no child, render empty placeholder or nothing
+    return <span className="math-node root-wrapper-empty" />;
+  }
+
+  return (
+    <span className="math-node root-wrapper">
+      <MathRenderer
+        node={child}
+        cursor={props.cursor}
+        onCursorChange={props.onCursorChange}
+        onRootChange={props.onRootChange}
+        parentContainerId={node.id}
+        index={0} // Since root wrapper is not navigable, index can be 0 or ignored
+        inheritedStyle={props.inheritedStyle}
+      />
+    </span>
+  );
 };
 
 export const renderStyledNode = (node: StyledNode, props: RenderProps) => {
@@ -433,6 +461,44 @@ export const renderBigOperatorNode = (
     </span>
   );
 };
+
+export const renderNthRootNode = (
+  node: NthRootNode,
+  props: RenderProps
+) => {
+  const { cursor, onCursorChange, onRootChange, inheritedStyle } = props;
+
+  return (
+    <span className="math-node type-nth-root">
+      <span className="root-wrapper">
+        <span className="nth-index">
+          <MathRenderer
+            node={node.index}
+            cursor={cursor}
+            onCursorChange={onCursorChange}
+            onRootChange={onRootChange}
+            parentContainerId={node.id}
+            index={0}
+            inheritedStyle={inheritedStyle}
+          />
+        </span>
+        <span className="radical-symbol">√</span>
+        <span className="radicand">
+          <MathRenderer
+            node={node.base}
+            cursor={cursor}
+            onCursorChange={onCursorChange}
+            onRootChange={onRootChange}
+            parentContainerId={node.id}
+            index={1}
+            inheritedStyle={inheritedStyle}
+          />
+        </span>
+      </span>
+    </span>
+  );
+};
+
 
 
 //renderNthRootNode(node, props);

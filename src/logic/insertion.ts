@@ -118,6 +118,11 @@ export const handleCharacterInsert = (state: EditorState, char: string): EditorS
       let targetContainer = container
       let targetIndex = index
 
+      if (transformedNode.type === 'nth-root') {
+        targetContainer = transformedNode.base
+        targetIndex = 0
+      }
+
       if (transformedNode.type === 'accented') {
         targetContainer = transformedNode.base
         targetIndex = 0

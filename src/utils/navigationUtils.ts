@@ -7,12 +7,13 @@ export const directionalChildOrder: Record<
   string[] // ordered list of child keys
 > = {
   "fraction": ["numerator", "denominator"],
-  "nth-root": ["base", "index"], // if degree exists
+  "nth-root": ["index", "base"],
   "childed": ["base", "supLeft", "subLeft", "subRight", "supRight"],
   "big-operator": ["lower", "upper"],
   "group": ["child"],
   "accented": ["base", "accent"],
   "styled": ["child"],
+  "root-wrapper": ["child"],
   // inline-container is already sequential
 };
 

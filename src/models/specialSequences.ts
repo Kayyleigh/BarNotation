@@ -1,4 +1,4 @@
-import { createAccentedNode, createBigOperator, createInlineContainer, createStyledNode, createTextNode } from '../models/nodeFactories';
+import { createAccentedNode, createBigOperator, createInlineContainer, createNthRoot, createStyledNode, createTextNode } from '../models/nodeFactories';
 import type { MathNode } from '../models/types';
 import { decorationToLatexCommand } from '../utils/accentUtils';
 
@@ -23,6 +23,16 @@ export const stylingOptions: SpecialSequence[] = [
     ),
   },
 ];
+
+export const nodeTransformationSequences: SpecialSequence[] = [ //TODO: rename to relevant
+  {
+    sequence: "\\sqrt ",
+    createNode: () => createNthRoot(
+      createInlineContainer(),
+      createInlineContainer(),
+    ),
+  },
+]
 
 export const bigOperatorSequences: SpecialSequence[] = [
   {
@@ -97,6 +107,20 @@ export const hebrewLetters: SpecialSequence[] = [
   { sequence: "\\gimel ", createNode: () => createTextNode("ℷ") },
 ];
 
+export const arrowSymbols: SpecialSequence[] = [
+  { sequence: "\\uparrow ", createNode: () => createTextNode("↑") },
+  { sequence: "\\downarrow ", createNode: () => createTextNode("↓") },
+  { sequence: "\\leftarrow ", createNode: () => createTextNode("←") },
+  { sequence: "\\to ", createNode: () => createTextNode("→") },
+  { sequence: "\\rightarrow ", createNode: () => createTextNode("→") },
+  { sequence: "\\Uparrow ", createNode: () => createTextNode("⇑") },
+  { sequence: "\\Downarrow ", createNode: () => createTextNode("⇓") },
+  { sequence: "\\Leftarrow ", createNode: () => createTextNode("⇐") },
+  { sequence: "\\Rightarrow ", createNode: () => createTextNode("⇒") },
+  { sequence: "\\leftrightarrow ", createNode: () => createTextNode("↔") },
+  { sequence: "\\Leftrightarrow ", createNode: () => createTextNode("⇔") },
+];
+
 export const binaryOperators: SpecialSequence[] = [
   { sequence: "\\ast ", createNode: () => createTextNode("∗") },
   { sequence: "\\pm ", createNode: () => createTextNode("±") },
@@ -138,7 +162,7 @@ export const binaryOperators: SpecialSequence[] = [
   { sequence: "\\simeq ", createNode: () => createTextNode("≃") },
   { sequence: "\\nsim ", createNode: () => createTextNode("≁") },
   { sequence: "\\neq ", createNode: () => createTextNode("≠") },
-  { sequence: "\\doteq ", createNode: () => createTextNode("=") },
+  { sequence: "\\doteq ", createNode: () => createTextNode("≐") },
   { sequence: "\\fallingdotseq ", createNode: () => createTextNode("≒") },
   { sequence: "\\risingdotseq ", createNode: () => createTextNode("≓") },
   { sequence: "\\propto ", createNode: () => createTextNode("∝") },
@@ -214,6 +238,7 @@ export const logicSymbols: SpecialSequence[] = [
 
 export const otherSymbols: SpecialSequence[] = [
   { sequence: "\\infty ", createNode: () => createTextNode("∞") },
+  { sequence: "\\partial ", createNode: () => createTextNode("∂") },
 ];
 
 export const standardFunctionNames: SpecialSequence[] = [
@@ -437,8 +462,10 @@ export const specialSequences: SpecialSequence[] = [
   ...decoratedEntries,
   ...stylingOptions, 
   ...bigOperatorSequences,
+  ...nodeTransformationSequences,
+  ...arrowSymbols,
 ];
-
+//TODO merge bigop into nodetransf
 export const bigOperatorToLatex: Record<string, string> = Object.fromEntries(
   bigOperatorSequences
     .map(e => {

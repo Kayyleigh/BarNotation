@@ -1,12 +1,12 @@
 import { type CursorPosition, createInitialCursor } from "./cursor";
-import { type MathNode, type InlineContainerNode } from "../models/types";
+import { type MathNode, type RootWrapperNode } from "../models/types";
 
 export interface EditorState {
   rootNode: MathNode;
   cursor: CursorPosition;
 }
 
-export const createEditorState = (root: InlineContainerNode): EditorState => ({
+export const createEditorState = (root: RootWrapperNode): EditorState => ({
   rootNode: root,
   cursor: createInitialCursor(root),
 });

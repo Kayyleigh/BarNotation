@@ -4,7 +4,6 @@ import MathNotationTool from "./components/MathNotationTool";
 
 const App: React.FC = () => (
   <div>
-    <h1>Math Notation Editor</h1>
     <MathNotationTool />
   </div>
 );

@@ -14,6 +14,8 @@ import {
   renderCommandInputNode,
   renderMultiDigitNode,
   renderBigOperatorNode,
+  renderRootWrapperNode,
+  renderNthRootNode,
 } from "./MathRenderers";
 
 export type MathRendererProps = {

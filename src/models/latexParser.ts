@@ -6,10 +6,18 @@ import type { MathNode } from "./types";
 
 export const nodeToLatex = (node: MathNode): string => {
     switch (node.type) {
+      case "root-wrapper": {
+        return `\\[\n${nodeToLatex(node.child)}\n\\]`
+      }
+
       case "text": {
         const fromMap = symbolToLatex[node.content]; // Revert special char back to latex sequence
         return fromMap ?? node.content;
       }
+
+      case "multi-digit":
+      case "command-input":
+        return node.children.map(nodeToLatex).join("");
 
       case "styled": {
         //TODO: maybe here allow own styling to latex styling mapping too

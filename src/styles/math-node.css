@@ -295,3 +295,36 @@
     box-shadow: 0 0 4px var(--math-editor-shadow);
   }
   
+  .type-nth-root {
+    display: inline-flex;
+    align-items: flex-start;
+    position: relative;
+    font-size: 1em;
+  }
+  
+  .root-wrapper {
+    display: inline-flex;
+    position: relative;
+    font-size: 1em;
+  }
+  
+  .nth-index {
+    font-size: 0.6em;
+    position: absolute;
+    left: -0.6em;
+    top: 0;
+    color: #ffd700;
+  }
+  
+  .radical-symbol {
+    font-size: 1em;
+    color: #ffd700;
+  }
+  
+  .radicand {
+    border-top: 0.08em solid #ffd700;
+    translate: 0 -0.07em;
+    padding-top: 0.07em;
+    padding-right: 0.1em;
+  }
+  

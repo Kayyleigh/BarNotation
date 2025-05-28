@@ -21,6 +21,8 @@ export const findNodeById = (node: MathNode, targetId: string): MathNode | null 
 
   export const getLogicalChildren = (node: MathNode): MathNode[] => {
     switch (node.type) {
+      case "root-wrapper":
+        return [node.child];
       case "multi-digit":
         return node.children;
       case "command-input":
@@ -35,6 +37,8 @@ export const findNodeById = (node: MathNode, targetId: string): MathNode | null 
         : [node.base];      
       case "fraction":
         return [node.numerator, node.denominator];
+      case "nth-root":
+        return [node.index, node.base];
       case "big-operator":
         return [node.lower, node.upper];
       case "childed":
@@ -181,6 +185,13 @@ export const findNodeById = (node: MathNode, targetId: string): MathNode | null 
           denominator: newChildren[1]
         }
       }
+      if (node.type === 'nth-root') {
+        return {
+          ...node,
+          index: newChildren[0],
+          base: newChildren[1]
+        }
+      }
       if (node.type === 'big-operator') {
         return {
           ...node,
@@ -209,6 +220,7 @@ export const findNodeById = (node: MathNode, targetId: string): MathNode | null 
           }
         }
       }
+      updateNodeById(node, targetId, replacement)
       console.warn(`${node.type} is missing a case in updateStructureNodeById (in treeUtils)`)
     };
 
@@ -278,6 +290,10 @@ export const findNodeById = (node: MathNode, targetId: string): MathNode | null 
       if (root.numerator.id === inlineContainerId) return { parent: root, key: "numerator" };
       if (root.denominator.id === inlineContainerId) return { parent: root, key: "denominator" };
     }
+    else if (root.type === 'nth-root') {
+      if (root.index.id === inlineContainerId) return { parent: root, key: "index" };
+      if (root.base.id === inlineContainerId) return { parent: root, key: "base" };
+    }
     else if (root.type === 'big-operator') {
       if (root.lower.id === inlineContainerId) return { parent: root, key: "lower" };
       if (root.upper.id === inlineContainerId) return { parent: root, key: "upper" };
@@ -327,10 +343,19 @@ export const findNodeById = (node: MathNode, targetId: string): MathNode | null 
     const containers: InlineContainerNode[] = [];
   
     switch (node.type) {
+      case "root-wrapper": 
+        containers.push(...[node.child] as InlineContainerNode[]);
+        break;
       case "fraction":
         containers.push(
           ...(node.numerator.type === "inline-container" ? [node.numerator] : []),
           ...(node.denominator.type === "inline-container" ? [node.denominator] : [])
+        );
+        break;
+      case "nth-root":
+        containers.push(
+          ...(node.index.type === "inline-container" ? [node.index] : []),
+          ...(node.base.type === "inline-container" ? [node.base] : [])
         );
         break;
       case "big-operator":
@@ -344,10 +369,6 @@ export const findNodeById = (node: MathNode, targetId: string): MathNode | null 
         break;
       case "accented":
         containers.push(...[node.base] as InlineContainerNode[]);
-        break;
-      case "nth-root":
-        if (node.index.type === "inline-container") containers.push(node.index);
-        if (node.base.type === "inline-container") containers.push(node.base);
         break;
       case "childed":
         if (node.base.type === "inline-container") containers.push(node.base);

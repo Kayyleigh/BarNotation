@@ -126,7 +126,7 @@
 
 // export default MathEditor;
 import React, { useRef } from "react";
-import { createInlineContainer } from "../models/nodeFactories";
+import { createInlineContainer, createRootWrapper } from "../models/nodeFactories";
 import { createEditorState, setCursor } from "../logic/editor-state";
 import { handleKeyDown } from "../logic/handle-keydown";
 import { MathRenderer } from "./MathRenderer";
@@ -139,7 +139,7 @@ import {
 import { nodeToLatex } from "../models/latexParser";
 import { parseLatex } from "../models/mathNodeParser";
 
-const initialState = createEditorState(createInlineContainer());
+const initialState = createEditorState(createRootWrapper());
 
 const MathEditor: React.FC = () => {
   const editorRef = useRef<HTMLDivElement>(null);

@@ -194,7 +194,7 @@ export function parseLatex(input: string): MathNode {
     
       // 4. Return SubSup node if any scripts found, else just base
       if (subLeft || supLeft || subRight || supRight) {
-        return createChildedNode(base, subLeft, supLeft, subRight, supRight, 'subsup');
+        return createChildedNode(base, 'subsup', subLeft, supLeft, subRight, supRight);
       }
       return base;
     }

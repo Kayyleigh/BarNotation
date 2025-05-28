@@ -1613,3 +1613,19 @@ Style-coding node types:
 
 ### 28/05/2025
 `\\sum _{i\doteq 1}^{N}(_{}^{}{x}_{}^{i}+\frac{2x}{3})`
+did some parsing fixes for new nodes etc
+still bad when doing a space after the latex stuff
+need to check if spaces are expected and if so maybe explicitly match on them for special symbols
+or otherwise need to change the mapping to actually split latex from input sequence (which is a good idea anyway) in SpecialSequences
+
+TODO:
+- fix bracket matching in parser
+- fix \sum in parser
+- ignore(?) rootwrapper in parser
+- make all special sequences have latex seq separate from input seq, even if I will use the same for almost all, because otherwise it is impossible to force commands that are unknown in the app. Because "\" becomes setminus. Not sure actually atm if my idea fixes that
+- work on special styling for sum and inf, because they cannot be treated the same due to diff spacing (annoying gap down) and the way the next math will not be nicely aligned as you expect in latex
+
+:) made nth root rendering etc
+- TODO: eventually use svg for all kinds of fancy stuff to actually make it latexy?
+- TODO: make cursor disappear if full editor component not selected?
+- TODO!!: do not allow paste of IC into IC --> flatten!

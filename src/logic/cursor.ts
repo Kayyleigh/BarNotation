@@ -6,8 +6,8 @@ export interface CursorPosition {
 }
 
 export const createInitialCursor = (root: MathNode): CursorPosition => {
-  if (root.type !== "inline-container") throw new Error("Root must be container");
-  return { containerId: root.id, index: 0 };
+  if (root.type !== "root-wrapper") throw new Error("Root must be root wrapper");
+  return { containerId: root.child.id, index: 0 };
 };
 
 export const getNodeAtCursor = (

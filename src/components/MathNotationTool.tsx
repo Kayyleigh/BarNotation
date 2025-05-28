@@ -17,6 +17,7 @@ const App: React.FC = () => {
 
   return (
     <div className="app-container">
+      <h1>Math Notation Tool</h1>
       <header className="app-header">
         <button onClick={toggleDarkMode} className="theme-toggle-button">
           {isDarkMode ? "🌙 Dark Mode" : "☀️ Light Mode"}
