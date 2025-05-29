@@ -30,6 +30,13 @@ type RenderProps = {
   hoveredId?: string;
   onCursorChange: (cursor: CursorPosition) => void;
   onRootChange: (newRoot: MathNode) => void;
+
+  // Drag-and-drop handlers
+  onStartDrag: (nodeId: string) => void;
+  onUpdateDropTarget: (targetId: string, targetIndex: number) => void;
+  onHandleDrop: () => void;
+  onClearDrag: () => void;
+  
   parentContainerId?: string;
   index?: number;
   onHoverChange: (hoveredId?: string) => void;
@@ -103,8 +110,9 @@ function renderContainerChildren(
   children: MathNode[],
   containerId: string,
   props: RenderProps,
+  inheritedStyle?: TextStyle
 ): React.ReactNode {
-  const { cursor, hoveredId, onCursorChange, onRootChange, onHoverChange, inheritedStyle, ancestorIds } = props;
+  const { cursor, hoveredId, onCursorChange, onRootChange, onHoverChange, ancestorIds } = props;
   const isCursorInThisContainer = cursor.containerId === containerId;
   const newAncestorIds = [containerId, ...(ancestorIds ?? [])];
 
@@ -119,6 +127,7 @@ function renderContainerChildren(
 
         elements.push(
           <MathRenderer
+					  {...props}
             key={child.id}
             node={child}
             cursor={cursor}
@@ -324,11 +333,19 @@ export const renderFractionNode = (
   >
     <div className="fraction">
       <div className="numerator">
-        <MathRenderer node={node.numerator} {...props} ancestorIds={[node.id, ...(props.ancestorIds ?? [])]} />
+        <MathRenderer
+					node={node.numerator} 
+          {...props} 
+          ancestorIds={[node.id, ...(props.ancestorIds ?? [])]} 
+        />
       </div>
       <hr />
       <div className="denominator">
-        <MathRenderer node={node.denominator} {...props} ancestorIds={[node.id, ...(props.ancestorIds ?? [])]} />
+        <MathRenderer
+					node={node.denominator} 
+          {...props} 
+          ancestorIds={[node.id, ...(props.ancestorIds ?? [])]} 
+        />
       </div>
     </div>
   </span>
@@ -360,7 +377,11 @@ export const renderGroupNode = (
         }
       }}
     >
-      <MathRenderer node={node.child} {...props} ancestorIds={[node.id, ...(props.ancestorIds ?? [])]} />
+      <MathRenderer
+        node={node.child} 
+        {...props} 
+        ancestorIds={[node.id, ...(props.ancestorIds ?? [])]} 
+      />
     </span>
     <span className="bracket bracket-close">{getCloseSymbol(node.bracketStyle)}</span>
   </span>
@@ -382,11 +403,16 @@ export const renderChildedNode = (
     onMouseLeave={(e) => handleMouseLeave(e, node.id, props.ancestorIds, props.onHoverChange!)}
 
   >
-    <span className="sup-left"><MathRenderer node={node.supLeft} {...props} ancestorIds={[node.id, ...(props.ancestorIds ?? [])]} /></span>
-    <span className="sub-left"><MathRenderer node={node.subLeft} {...props} ancestorIds={[node.id, ...(props.ancestorIds ?? [])]} /></span>
-    <span className="base"><MathRenderer node={node.base} {...props} ancestorIds={[node.id, ...(props.ancestorIds ?? [])]} /></span>
-    <span className="sub-right"><MathRenderer node={node.subRight} {...props} ancestorIds={[node.id, ...(props.ancestorIds ?? [])]} /></span>
-    <span className="sup-right"><MathRenderer node={node.supRight} {...props} ancestorIds={[node.id, ...(props.ancestorIds ?? [])]} /></span>
+    <span className="sup-left"><MathRenderer
+					node={node.supLeft} {...props} ancestorIds={[node.id, ...(props.ancestorIds ?? [])]} /></span>
+    <span className="sub-left"><MathRenderer
+					node={node.subLeft} {...props} ancestorIds={[node.id, ...(props.ancestorIds ?? [])]} /></span>
+    <span className="base"><MathRenderer
+					node={node.base} {...props} ancestorIds={[node.id, ...(props.ancestorIds ?? [])]} /></span>
+    <span className="sub-right"><MathRenderer
+					node={node.subRight} {...props} ancestorIds={[node.id, ...(props.ancestorIds ?? [])]} /></span>
+    <span className="sup-right"><MathRenderer
+					node={node.supRight} {...props} ancestorIds={[node.id, ...(props.ancestorIds ?? [])]} /></span>
   </span>
 );
 
@@ -398,7 +424,8 @@ export const renderAccentedNode = (
     <div className={`accent-content accent-${position}`}>
       <MathRenderer
         node={node.accent.content}
-        {...props} ancestorIds={[node.id, ...(props.ancestorIds ?? [])]}
+        {...props} 
+        ancestorIds={[node.id, ...(props.ancestorIds ?? [])]}
         parentContainerId={node.accent.content.id}
         index={0}
       />
@@ -425,7 +452,12 @@ export const renderAccentedNode = (
       onMouseLeave={(e) => handleMouseLeave(e, node.id, props.ancestorIds, props.onHoverChange!)}
     >
       {isCustom && node.accent.position === "above" && renderCustomAccent("above")}
-      <span className="accent-base"><MathRenderer node={node.base} {...props} ancestorIds={[node.id, ...(props.ancestorIds ?? [])]} /></span>
+      <span className="accent-base">
+        <MathRenderer
+					node={node.base} 
+          {...props} 
+          ancestorIds={[node.id, ...(props.ancestorIds ?? [])]} 
+        /></span>
       {isCustom && node.accent.position === "below" && renderCustomAccent("below")}
     </span>
   );
@@ -448,11 +480,13 @@ export const renderBigOperatorNode = (
   >
     <div className="big-operator-wrapper">
       <div className="big-operator-upper">
-        <MathRenderer node={node.upper} {...props} ancestorIds={[node.id, ...(props.ancestorIds ?? [])]} />
+        <MathRenderer
+					node={node.upper} {...props} ancestorIds={[node.id, ...(props.ancestorIds ?? [])]} />
       </div>
       <div className="big-operator-symbol">{node.operator}</div>
       <div className="big-operator-lower">
-        <MathRenderer node={node.lower} {...props} ancestorIds={[node.id, ...(props.ancestorIds ?? [])]} />
+        <MathRenderer
+					node={node.lower} {...props} ancestorIds={[node.id, ...(props.ancestorIds ?? [])]} />
       </div>
     </div>
   </span>
@@ -464,17 +498,23 @@ export const renderNthRootNode = (
 ) => (
   <span
     data-nodeid={node.id}
-    className="math-node type-nth-root"
+    className={clsx(
+      "math-node", 
+      "type-nth-root",
+      { hovered: getIsHovered(node, props) },
+    )}
     onMouseEnter={() => handleMouseEnter(node.id, props.onHoverChange!)}
     onMouseLeave={(e) => handleMouseLeave(e, node.id, props.ancestorIds, props.onHoverChange!)}
   >
     <span className="root-wrapper">
       <span className="nth-index">
-        <MathRenderer node={node.index} {...props} ancestorIds={[node.id, ...(props.ancestorIds ?? [])]} parentContainerId={node.id} index={0} />
+        <MathRenderer
+					node={node.index} {...props} ancestorIds={[node.id, ...(props.ancestorIds ?? [])]} parentContainerId={node.id} index={0} />
       </span>
       <span className="radical-symbol">√</span>
       <span className="radicand">
-        <MathRenderer node={node.base} {...props} ancestorIds={[node.id, ...(props.ancestorIds ?? [])]} parentContainerId={node.id} index={1} />
+        <MathRenderer
+				  node={node.base} {...props} ancestorIds={[node.id, ...(props.ancestorIds ?? [])]} parentContainerId={node.id} index={1} />
       </span>
     </span>
   </span>

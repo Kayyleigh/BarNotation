@@ -1,6 +1,70 @@
 import type { EditorState } from "./editor-state";
 import type { MathNode } from "../models/types";
-import { findNodeById, updateNodeById } from "../utils/treeUtils";
+import { findNodeById, findParentContainerAndIndex, updateNodeById } from "../utils/treeUtils";
+
+export function moveNodeByDrag(
+  state: EditorState,
+  draggedNodeId: string,
+  targetContainerId: string,
+  targetIndex: number
+): EditorState {
+  const draggedNode = findNodeById(state.rootNode, draggedNodeId);
+  if (!draggedNode) return state;
+
+  // Remove node
+  let newState = deleteNodeById(state, draggedNodeId);
+
+  // Re-insert at target location
+  newState = insertNodeAtIndex(newState, targetContainerId, targetIndex, draggedNode);
+
+  return newState;
+}
+
+export function insertNodeAtIndex(
+  state: EditorState,
+  containerId: string,
+  index: number,
+  newNode: MathNode
+): EditorState {
+  const container = findNodeById(state.rootNode, containerId);
+
+  if (!container || container.type !== "inline-container") return state;
+
+  const newChildren = [...container.children];
+  newChildren.splice(index, 0, newNode);
+
+  const updatedContainer = { ...container, children: newChildren };
+  const newRoot = updateNodeById(state.rootNode, container.id, updatedContainer);
+
+  return {
+    ...state,
+    rootNode: newRoot,
+    cursor: {
+      containerId,
+      index: index + 1, // optional: move cursor after drop
+    },
+  };
+}
+
+export function deleteNodeById(state: EditorState, nodeId: string): EditorState {
+  const info = findParentContainerAndIndex(state.rootNode, nodeId);
+  if (!info) return state;
+
+  const { container, indexInParent } = info;
+  const newChildren = [...container.children];
+  newChildren.splice(indexInParent, 1);
+
+  const updatedContainer: MathNode = {
+    ...container,
+    children: newChildren,
+  };
+
+  const newRoot = updateNodeById(state.rootNode, container.id, updatedContainer);
+  return {
+    ...state,
+    rootNode: newRoot,
+  };
+}
 
 // Inserts the given node at the cursor position
 export function insertNodeAtCursor(state: EditorState, newNode: MathNode): EditorState {

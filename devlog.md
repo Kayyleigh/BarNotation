@@ -1871,3 +1871,17 @@ export const renderMultilineNode = (
 };
 
 ```
+
+Hover stuff nice-ish
+drag stuff fffuuuuuuccckkkkeedddd
+but draggable-node-wrapper not yet styled so that is first thing to try
+after that, actually fix those functions
+
+OK kinda works 
+Next steps:
+- (DONE) get back my pretty styling of special nodes? 
+- enable ctrl z of drag actions
+- allow drop also in IC
+
+![alt text](image-31.png)
+Drag queen

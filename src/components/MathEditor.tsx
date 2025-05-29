@@ -1,9 +1,10 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { createRootWrapper } from "../models/nodeFactories";
 import { createEditorState, setCursor, setHoveredNode } from "../logic/editor-state";
 import { handleKeyDown } from "../logic/handle-keydown";
 import { MathRenderer } from "./MathRenderer";
 import { useEditorHistory } from "../hooks/useEditorHistory";
+import { useDragState } from "../hooks/useDragState";
 import {
   insertNodeAtCursor,
   deleteSelectedNode,
@@ -24,6 +25,20 @@ const MathEditor: React.FC = () => {
     undo,
     redo,
   } = useEditorHistory(initialState);
+
+  // Create a ref that always has the current editorState
+  const editorStateRef = useRef(editorState);
+  useEffect(() => {
+    editorStateRef.current = editorState;
+  }, [editorState]);
+
+  // Hook with ref instead of value
+  const {
+    startDrag,
+    updateDropTarget,
+    handleDrop,
+    clearDrag,
+  } = useDragState(editorStateRef, updateEditorState);
 
   // Get hovered node type
   const hoveredNode = editorState.hoveredNodeId && findNodeById(editorState.rootNode, editorState.hoveredNodeId);
@@ -106,6 +121,10 @@ const MathEditor: React.FC = () => {
         onHoverChange={(hoveredId) =>
           updateEditorState(setHoveredNode(editorState, hoveredId))
         }
+        onStartDrag={startDrag}
+        onUpdateDropTarget={updateDropTarget}
+        onHandleDrop={handleDrop}
+        onClearDrag={clearDrag}
       />
     {/* Overlay text in upper right */}
     {hoveredType && (

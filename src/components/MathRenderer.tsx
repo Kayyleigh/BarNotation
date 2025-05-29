@@ -17,14 +17,21 @@ import {
   renderRootWrapperNode,
   renderNthRootNode,
 } from "./MathRenderers";
+import { findParentContainerAndIndex } from "../utils/treeUtils";
 
 export type MathRendererProps = {
   node: MathNode;
   cursor: CursorPosition;
-  hoveredId?: string; 
+  hoveredId?: string;
   onCursorChange: (cursor: CursorPosition) => void;  
   onRootChange: (newRoot: MathNode) => void;
   onHoverChange: (hoveredId?: string) => void;
+
+  // Drag-and-drop handlers
+  onStartDrag: (nodeId: string) => void;
+  onUpdateDropTarget: (targetId: string, targetIndex: number) => void;
+  onHandleDrop: () => void;
+  onClearDrag: () => void;
 
   parentContainerId?: string;
   ancestorIds?: string[];
@@ -39,68 +46,96 @@ export const MathRenderer: React.FC<MathRendererProps> = ({
   onCursorChange,
   onHoverChange,
   onRootChange,
+  onStartDrag,
+  onUpdateDropTarget,
+  onHandleDrop,
+  onClearDrag,
   parentContainerId,
   ancestorIds,
   index,
   inheritedStyle = { fontFamily: "normal" },
 }) => {
-  const props = { cursor, hoveredId, onCursorChange, onHoverChange, onRootChange, parentContainerId, ancestorIds, index, inheritedStyle };
+
+  const dragHandlers = {
+    draggable: true,
+    onDragStart: (e: React.DragEvent) => {
+      e.stopPropagation();
+      onStartDrag(node.id);
+    },
+    onDragOver: (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      onUpdateDropTarget(node.id, index ?? 0);
+    },
+    onDrop: (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      onHandleDrop();
+    },
+    onDragEnd: () => {
+      onClearDrag();
+    },
+  };
+
+  const baseProps = { cursor, hoveredId, onCursorChange, onHoverChange, onRootChange, onStartDrag, onUpdateDropTarget, onHandleDrop, onClearDrag, parentContainerId, ancestorIds, index, inheritedStyle };
+
+  let content;
 
   switch (node.type) {
     case "text":
-      return renderTextNode(node, props);
-
+      content = renderTextNode(node, baseProps);
+			break;
     case "multi-digit":
-      return renderMultiDigitNode(node, props);
-
+      content = renderMultiDigitNode(node, baseProps);
+			break;
     case "command-input":
-      return renderCommandInputNode(node, props);
-
+      content = renderCommandInputNode(node, baseProps);
+			break;
     case "inline-container":
-      return renderInlineContainerNode(node, props);
-
+      content = renderInlineContainerNode(node, baseProps);
+			break;
     case "group":
-      return renderGroupNode(node, props);
-
+      content = renderGroupNode(node, baseProps);
+			break;
     case "fraction":
-      return renderFractionNode(node, props);
-
+      content = renderFractionNode(node, baseProps);
+			break;
     case "nth-root":
-      return renderNthRootNode(node, props);
-
+      content = renderNthRootNode(node, baseProps);
+			break;
     case "big-operator":
-      return renderBigOperatorNode(node, props);
-
+      content = renderBigOperatorNode(node, baseProps);
+			break;
     case "childed":
-      return renderChildedNode(node, props);
-
+      content = renderChildedNode(node, baseProps);
+			break;
     case "accented":
-      return renderAccentedNode(node, props);
-
-    case "matrix":
-      return renderMatrixNode(node, props);
-
-    case "vector":
-      return renderVectorNode(node, props);
-
-    case "binom":
-      return renderBinomNode(node, props);
-
-    case "arrow":
-      return renderArrowNode(node, props);
-
-    case "cases":
-      return renderCasesNode(node, props);
-
+      content = renderAccentedNode(node, baseProps);
+			break;
+    // case "matrix":
+    //   content = renderMatrixNode(node, baseProps);
+		// 	break;
+    // case "vector":
+    //   content = renderVectorNode(node, baseProps);
+		// 	break;
+    // case "binom":
+    //   content = renderBinomNode(node, baseProps);
+		// 	break;
+    // case "arrow":
+    //   content = renderArrowNode(node, baseProps);
+		// 	break;
+    // case "cases":
+    //   content = renderCasesNode(node, baseProps);
+		// 	break;
     case "styled":
-      return renderStyledNode(node, props);
-
-    case "multiline":
-      return renderMultilineNode(node, props);
-
+      content = renderStyledNode(node, baseProps);
+			break;
+    // case "multiline":
+    //   content = renderMultilineNode(node, baseProps);
+		// 	break;
     case "root-wrapper":
-      return renderRootWrapperNode(node, props);
-
+      content = renderRootWrapperNode(node, baseProps);
+      break;
     default:
       console.warn(`No case match in MathRenderer.`)
       return (
@@ -109,8 +144,14 @@ export const MathRenderer: React.FC<MathRendererProps> = ({
             selected: cursor.containerId === node.id,
           })}
         >
-          Unsupported node: {node}
+          Unsupported node: {node.id}
         </span>
       );
   }
+  // Wrap the rendered content in a draggable div
+  return (
+    <span {...dragHandlers} className="draggable-node-wrapper">
+      {content}
+    </span>
+  );
 };
