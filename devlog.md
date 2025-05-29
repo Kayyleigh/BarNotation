@@ -1629,3 +1629,102 @@ TODO:
 - TODO: eventually use svg for all kinds of fancy stuff to actually make it latexy?
 - TODO: make cursor disappear if full editor component not selected?
 - TODO!!: do not allow paste of IC into IC --> flatten!
+
+There are a lot of bugs atm but I want to implement a simple version of node dragging next to make sure that idea is even possible. But make it as generic as possible i.e. not depend on node types, no cases, blabla
+
+TODO allow period inside multidigit (and comma?). uhhm maybe I need to actually know what is an operator vs not
+
+![alt text](image-29.png)
+Starting to look pretty nice, but that first bracket pair should not be needed. I need to split operators...
+
+Next steps:
+- multi-node selection (siblings)
+- drag into "clipboard" section
+- drag from "clipboard" section
+- drag within node
+- multi-node drag (wrap into IC or other container type?)
+- fix multidigit starting idx issues (similar to end of multidigit). Same for command-input
+- hover actions on hover of accentNode
+- implement matrices and vectors and binom
+- hover actions on hover of groupnode -> to matrix/vector etc
+- hover actions on hover of actsymb or subsup -> switch to the other variant
+- ArrowNode?
+- CasesNode
+- MultiLineEquationNode
+- enable zooming in editor to change text size
+
+Nice? 
+- Make a little grey text in the upper right corner of the editor component that always prints the name of the node type you are hovered on? 
+- .type-actsymb .base .type-inline-container should have the color bg but nested IC in it should not. Only fist level child!
+
+Things to think about:
+- what to do with things like \lim? It already looks good, but it will give the wrong latex because in latex it's sub and superscript, while in mine it is \underset and \overset. Maybe I need to make those a bigOperator?? In node transformations
+- REALLY have to clean up specialSequences
+
+ugh I really need to fix multichar nodes
+
+Very generally speaking: this editor is all about simplifying latex typing by offering visual structure and hotkeys while typing it. It is important that each hotkey etc does what you expect, and is relevant for the use case. I think my editor is WYGIWYM for the step from typing to visualization in-app, but the app is _supposed to be_ WYSIWYG for LaTeX (but it isn't -- it has colors. And differences because latex is huge).
+
+Big choice to make:
+what is more intuitive? f2/ gives (f2) or only the 2 as numerator?
+I.e. ditch the multidigit; match until operator (?) during node transforms, or leave as is?
+
+![alt text](image-30.png)
+
+Im so tired rn but chatgpt has now the last message be exactly what I am looking for as implementation plan for multiselect
+
+### 29/05/2025
+This app should allow to type anything _as on the board in a lecture_. That means 
+
+| Hotkey               | Function                     |
+| -------------------- | ---------------------------- |
+| `Ctrl + Alt + Del`   | Task manager/security screen |
+| `Alt + F4`           | Close active window          |
+| `Alt + Tab`          | Switch between apps          |
+| `Ctrl + Shift + Esc` | Open Task Manager            |
+| `Win + L`            | Lock screen                  |
+| `Win + D`            | Show desktop                 |
+| `Win + E`            | Open File Explorer           |
+| `Win + R`            | Run dialog                   |
+| `Win + Tab`          | Task View                    |
+
+| Hotkey                   | Function            |
+| ------------------------ | ------------------- |
+| `Ctrl/Cmd + T`           | New tab             |
+| `Ctrl/Cmd + W`           | Close tab           |
+| `Ctrl/Cmd + R`           | Reload page         |
+| `Ctrl/Cmd + Shift + R`   | Hard reload         |
+| `Ctrl/Cmd + L`           | Focus address bar   |
+| `Ctrl/Cmd + Shift + T`   | Reopen closed tab   |
+| `Ctrl/Cmd + Tab`         | Next tab            |
+| `Ctrl/Cmd + Shift + Tab` | Previous tab        |
+| `Ctrl/Cmd + + / -`       | Zoom in/out         |
+| `F5`                     | Reload (Windows)    |
+| `Cmd + ,`                | Preferences (macOS) |
+| `Ctrl + F`               | Find in page        |
+
+| Hotkey             | Why Be Careful                     |
+| ------------------ | ---------------------------------- |
+| `Ctrl/Cmd + C/V/X` | Copy/Paste/Cut – expected behavior |
+| `Ctrl/Cmd + Z/Y`   | Undo/Redo – standard editing       |
+| `Ctrl/Cmd + S`     | Save – might trigger browser save  |
+| `Ctrl/Cmd + P`     | Print – opens system print dialog  |
+| `Ctrl/Cmd + D`     | Bookmark page                      |
+| `Ctrl/Cmd + O`     | Open file                          |
+
+My current hotkeys:
+| Hotkey             | My App's Behavior                     |
+| ------------------ | ---------------------------------- |
+| `Ctrl + C/V/X` | Copy/Paste/Cut – expected behavior |
+| `Ctrl + Z/Y`   | Undo/Redo – standard editing       |
+| `Shift + 6`     | (`^` wihtout Dead;) make subsup & focus top-right |
+| `Shift + _`     | (to match prev;) make subsup & focus bottom-right |
+| `Ctrl + 6`     | make actuarial & focus top-right |
+| `Ctrl + _`     | make actuarial & focus bottom-right |
+| `Ctrl + Shift + 6`     | make actuarial & focus top-left |
+| `Ctrl + Shift + _`     | make actuarial & focus bottom-left |
+| `Shift + ArrowUp`     | make custom accented & focus above |
+| `Shift + ArrowDown`     | make custom accented & focus below |
+| `/`     | make fraction & focus denominator |
+
+TODO: ensure \/ gives a normal slash

@@ -311,18 +311,19 @@
   .nth-index {
     font-size: 0.6em;
     position: absolute;
-    left: -0.6em;
-    top: 0;
+    top: -0.3em;
     color: #ffd700;
   }
   
   .radical-symbol {
     font-size: 1em;
+    translate: 0 0.33em;
     color: #ffd700;
+    transform: scaleY(1.4);
   }
   
   .radicand {
-    border-top: 0.08em solid #ffd700;
+    border-top: 0.1em solid #ffd700;
     translate: 0 -0.07em;
     padding-top: 0.07em;
     padding-right: 0.1em;

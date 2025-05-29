@@ -25,7 +25,7 @@ const App: React.FC = () => {
       </header>
 
       <main className="editor-layout">
-        <Toolbar />
+        {/* <Toolbar /> */}
         <MathEditor />
       </main>
     </div>

@@ -6,7 +6,7 @@
 /* Hat, bar, tilde, widehat, ddot, mathring */
 .decorated-node::before {
     position: absolute;
-    top: -0.8em;
+    top: -0.1em;
     left: 50%;
     transform: translateX(-50%);
     font-size: 0.7em;

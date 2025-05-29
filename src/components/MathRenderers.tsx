@@ -105,7 +105,7 @@ export const renderTextNode = (
           // Set cursor to position after this node in the parent container
           onCursorChange({
             containerId: parentContainerId,
-            index: index, // placeholder, should be actual index
+            index: index,
           });
         }
       }}
@@ -376,30 +376,6 @@ export const renderAccentedNode = (
 
   const renderBaseChildren = () => <MathRenderer node={node.base} {...props} />
 
-
-  // const renderBaseChildren = () =>
-  //   node.base.children.map((child, i) => {
-  //     const elements: React.ReactNode[] = [];
-
-  //     if (isCursorInside && cursor.index === i) {
-  //       elements.push(<span key={`cursor-${i}`} className="cursor" />);
-  //     }
-
-  //     elements.push(
-  //       <MathRenderer
-  //         key={child.id}
-  //         node={child}
-  //         cursor={cursor}
-  //         onCursorChange={onCursorChange}
-  //         onRootChange={onRootChange}
-  //         parentContainerId={node.base.id}
-  //         index={i + 1}
-  //       />
-  //     );
-
-  //     return elements;
-  //   });
-
   const renderCustomAccent = (position: "above" | "below") => {
     return (
       <div className={`accent-content accent-${position}`}>
@@ -499,20 +475,12 @@ export const renderNthRootNode = (
   );
 };
 
-
-
-//renderNthRootNode(node, props);
-//renderBigOperatorNode(node, props);
-//renderChildedNode(node, props);
-//renderAccentedNode(node, props);
 //renderMatrixNode(node, props);
 //renderVectorNode(node, props);
 //renderBinomNode(node, props);
 //renderArrowNode(node, props);
 //renderCasesNode(node, props);
-//renderStyledNode(node, props);
 //renderMultilineNode(node, props);
-//renderRootWrapperNode(node, props);
 
 function getStyleClass(style?: TextStyle): string {
   return clsx({
