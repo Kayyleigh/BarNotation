@@ -28,6 +28,11 @@
     background-color: var(--math-selection-bg);
     border-radius: 4px;
   }
+
+  .math-node.hovered {
+    background-color: var(--math-hover-bg);
+    border-radius: 4px;
+  }
   
   .math-node.styled-node {
     display: inline;

@@ -21,9 +21,13 @@ import {
 export type MathRendererProps = {
   node: MathNode;
   cursor: CursorPosition;
-  onCursorChange: (cursor: CursorPosition) => void;
+  hoveredId?: string; 
+  onCursorChange: (cursor: CursorPosition) => void;  
   onRootChange: (newRoot: MathNode) => void;
+  onHoverChange: (hoveredId?: string) => void;
+
   parentContainerId?: string;
+  ancestorIds?: string[];
   index?: number;
   inheritedStyle?: TextStyle;
 };
@@ -31,13 +35,16 @@ export type MathRendererProps = {
 export const MathRenderer: React.FC<MathRendererProps> = ({
   node,
   cursor,
+  hoveredId,
   onCursorChange,
+  onHoverChange,
   onRootChange,
   parentContainerId,
+  ancestorIds,
   index,
   inheritedStyle = { fontFamily: "normal" },
 }) => {
-  const props = { cursor, onCursorChange, onRootChange, parentContainerId, index, inheritedStyle };
+  const props = { cursor, hoveredId, onCursorChange, onHoverChange, onRootChange, parentContainerId, ancestorIds, index, inheritedStyle };
 
   switch (node.type) {
     case "text":

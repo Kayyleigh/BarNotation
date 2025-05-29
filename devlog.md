@@ -1728,3 +1728,146 @@ My current hotkeys:
 | `/`     | make fraction & focus denominator |
 
 TODO: ensure \/ gives a normal slash
+
+I asked chatgpt for a refactor to clean up renderers and instead got the completion of unimplemented node types
+```
+// --- Additional Renderers ---
+
+export const renderMatrixNode = (
+  node: any, // Replace `any` with your actual MatrixNode type if available
+  props: RenderProps
+) => {
+  return (
+    <span className="math-node type-matrix" onMouseEnter={() => props.onHoverChange?.(node.id)}>
+      <span className="matrix-bracket-left">[</span>
+      <span className="matrix-contents">
+        {node.rows.map((row: any[], rowIndex: number) => (
+          <div key={rowIndex} className="matrix-row">
+            {row.map((cell: MathNode, cellIndex: number) => (
+              <span key={cell.id} className="matrix-cell">
+                <MathRenderer
+                  node={cell}
+                  {...props}
+                  parentContainerId={node.id}
+                  index={0}
+                />
+              </span>
+            ))}
+          </div>
+        ))}
+      </span>
+      <span className="matrix-bracket-right">]</span>
+    </span>
+  );
+};
+
+export const renderVectorNode = (
+  node: any, // Replace with VectorNode if defined
+  props: RenderProps
+) => {
+  return (
+    <span className="math-node type-vector" onMouseEnter={() => props.onHoverChange?.(node.id)}>
+      <span className="vector-bracket-left">[</span>
+      <span className="vector-contents">
+        {node.elements.map((el: MathNode, i: number) => (
+          <div key={el.id} className="vector-element">
+            <MathRenderer
+              node={el}
+              {...props}
+              parentContainerId={node.id}
+              index={0}
+            />
+          </div>
+        ))}
+      </span>
+      <span className="vector-bracket-right">]</span>
+    </span>
+  );
+};
+
+export const renderBinomNode = (
+  node: any,
+  props: RenderProps
+) => {
+  return (
+    <span className="math-node type-binom" onMouseEnter={() => props.onHoverChange?.(node.id)}>
+      <span className="binom-bracket-left">(</span>
+      <span className="binom-contents">
+        <div className="binom-top">
+          <MathRenderer node={node.top} {...props} />
+        </div>
+        <div className="binom-bottom">
+          <MathRenderer node={node.bottom} {...props} />
+        </div>
+      </span>
+      <span className="binom-bracket-right">)</span>
+    </span>
+  );
+};
+
+export const renderArrowNode = (
+  node: any,
+  props: RenderProps
+) => {
+  return (
+    <span className="math-node type-arrow" onMouseEnter={() => props.onHoverChange?.(node.id)}>
+      <span className="arrow-left">
+        <MathRenderer node={node.left} {...props} />
+      </span>
+      <span className="arrow-symbol">{node.arrow}</span>
+      <span className="arrow-right">
+        <MathRenderer node={node.right} {...props} />
+      </span>
+    </span>
+  );
+};
+
+export const renderCasesNode = (
+  node: any,
+  props: RenderProps
+) => {
+  return (
+    <span className="math-node type-cases" onMouseEnter={() => props.onHoverChange?.(node.id)}>
+      <span className="cases-brace-left">{'{'}</span>
+      <span className="cases-contents">
+        {node.rows.map((row: { condition: MathNode; result: MathNode }, i: number) => (
+          <div key={i} className="cases-row">
+            <span className="cases-result">
+              <MathRenderer node={row.result} {...props} />
+            </span>
+            <span className="cases-condition">
+              <MathRenderer node={row.condition} {...props} />
+            </span>
+          </div>
+        ))}
+      </span>
+    </span>
+  );
+};
+
+export const renderMultilineNode = (
+  node: any,
+  props: RenderProps
+) => {
+  return (
+    <span className="math-node type-multiline" onMouseEnter={() => props.onHoverChange?.(node.id)}>
+      <span className="multiline-contents">
+        {node.lines.map((line: MathNode[], lineIndex: number) => (
+          <div key={lineIndex} className="multiline-line">
+            {line.map((child: MathNode, i: number) => (
+              <MathRenderer
+                key={child.id}
+                node={child}
+                {...props}
+                parentContainerId={node.id}
+                index={0}
+              />
+            ))}
+          </div>
+        ))}
+      </span>
+    </span>
+  );
+};
+
+```

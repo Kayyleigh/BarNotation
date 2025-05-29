@@ -12,6 +12,8 @@
   --math-font-size-sub: 0.6em;
   --math-font-size-fraction: 1em;
 
+  --math-editor-container-padding: 1rem;
+
   /* ===== Layout ===== */
   --math-line-height: 1.2;
 
@@ -19,7 +21,8 @@
   --math-text-color: black;
   --math-cursor-color: black;
   --math-selection-bg: rgba(0, 123, 255, 0.15);
-  
+  --math-hover-bg: rgb(0, 8, 255);
+
   /* ===== Sub/Sup Alignment ===== */
   --math-sub-overlap-x: 0.1em;
   --math-sub-overlap-y: 1.4em;
@@ -48,6 +51,7 @@
   --math-cursor-color: white;
   --math-text-color: white;
   --math-selection-bg: rgba(255, 255, 255, 0.1);
+  --math-hover-bg: #1ba0ff2c;
   --math-editor-bg: #1e1e1e;
   --math-editor-border: #444;
   --math-editor-shadow: rgba(0, 0, 0, 0.3);
@@ -63,7 +67,7 @@
   }
   
   .editor-container {
-    padding: 1rem;
+    padding: var(--math-editor-container-padding);
     max-width: 800px;
     margin: auto;
   }
@@ -80,3 +84,15 @@
     cursor: pointer;
     border: 1px solid;
   }
+
+.hover-type-info {
+  position: relative;
+  float: inline-end;
+  top: calc(-2 * var(--math-editor-container-padding) + 4px);
+  right: calc(-2 * var(--math-editor-container-padding) + 4px);
+  pointer-events: none;
+  opacity: 0.3;
+  font-size: 0.4em;
+  font-family: monospace;
+  user-select: none;
+}
