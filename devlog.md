@@ -1885,3 +1885,20 @@ Next steps:
 
 ![alt text](image-31.png)
 Drag queen
+
+### 30/05/2025
+Did some styling cleanup
+also found out that currently, index of nth root does not influence parent width when long. //TODO fix later
+
+Latex box stuff!
+My inspiration for the refresh latex button:
+
+|Outdated|Not outdated|
+|--|--|
+|![alt text](image-32.png)|![alt text](image-33.png)|
+
+From WebLab: https://eip.pages.ewi.tudelft.nl/eip-website/weblab.html
+
+Overleaf colors for block style:
+#833fba: things with slash 
+#036a07: non-brackets

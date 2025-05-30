@@ -1,6 +1,6 @@
 import { createAccentedNode, createBigOperator, createInlineContainer, createNthRoot, createStyledNode, createTextNode } from '../models/nodeFactories';
 import type { MathNode } from '../models/types';
-import { decorationToLatexCommand } from '../utils/accentUtils';
+import { decorationToLatexCommand, type NodeDecoration, type DecorationInfo } from '../utils/accentUtils';
 
 export interface SpecialSequence {
   sequence: string;
@@ -8,11 +8,18 @@ export interface SpecialSequence {
 }
 
 export const decoratedEntries: SpecialSequence[] = Object.entries(decorationToLatexCommand).map(
-  ([decoration, sequence]) => ({
-    sequence,
-    createNode: () => createAccentedNode(createInlineContainer(), { type: 'predefined', name: decoration }),
-  })
+  ([decoration, decorationInfo]) => {
+    // Assert or cast decorationInfo if necessary
+    const info = decorationInfo as DecorationInfo;
+    console.log(`decoration ${decoration}`)
+    console.log(`decoration info ${decorationInfo.command}, ${decorationInfo.package}`)
+    return {
+      sequence: info.command,  // Explicit key-value pair
+      createNode: () => createAccentedNode(createInlineContainer(), { type: 'predefined', decoration: decoration as NodeDecoration }),
+    };
+  }
 );
+
 
 export const stylingOptions: SpecialSequence[] = [
   {
@@ -111,8 +118,8 @@ export const arrowSymbols: SpecialSequence[] = [
   { sequence: "\\uparrow ", createNode: () => createTextNode("↑") },
   { sequence: "\\downarrow ", createNode: () => createTextNode("↓") },
   { sequence: "\\leftarrow ", createNode: () => createTextNode("←") },
-  { sequence: "\\to ", createNode: () => createTextNode("→") },
   { sequence: "\\rightarrow ", createNode: () => createTextNode("→") },
+  { sequence: "\\to ", createNode: () => createTextNode("→") },
   { sequence: "\\Uparrow ", createNode: () => createTextNode("⇑") },
   { sequence: "\\Downarrow ", createNode: () => createTextNode("⇓") },
   { sequence: "\\Leftarrow ", createNode: () => createTextNode("⇐") },
@@ -455,6 +462,8 @@ const specialSymbols: SpecialSequence[] = [
   ...logicSymbols,
   ...otherSymbols,
   ...standardFunctionNames,
+  ...arrowSymbols,
+
 ]
 
 export const specialSequences: SpecialSequence[] = [
@@ -463,7 +472,6 @@ export const specialSequences: SpecialSequence[] = [
   ...stylingOptions, 
   ...bigOperatorSequences,
   ...nodeTransformationSequences,
-  ...arrowSymbols,
 ];
 //TODO merge bigop into nodetransf
 export const bigOperatorToLatex: Record<string, string> = Object.fromEntries(

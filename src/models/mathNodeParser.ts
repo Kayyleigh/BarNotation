@@ -1,4 +1,4 @@
-import { decorationToLatexCommandInverse } from "../utils/accentUtils";
+import { decorationToLatexCommandInverse, type NodeDecoration } from "../utils/accentUtils";
 import { createAccentedNode, createChildedNode, createFraction, createInlineContainer, createTextNode } from "./nodeFactories";
 import { symbolToLatexInverse } from "./specialSequences";
 import type { InlineContainerNode, MathNode, StructureNode } from "./types";
@@ -134,7 +134,7 @@ export function parseLatex(input: string): MathNode {
             child,
             { 
               type: 'predefined',
-              name: decorationToLatexCommandInverse[name as keyof typeof decorationToLatexCommandInverse],
+              decoration: decorationToLatexCommandInverse[name] as NodeDecoration,
             },
             
           );

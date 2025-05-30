@@ -3,6 +3,8 @@
 /* ============================================= */
 
 :root {
+  --main-text-color: #000000;
+
   --background-color: white;
 
   /* ===== Typography & Scaling ===== */
@@ -20,32 +22,58 @@
   /* ===== Cursor & Selection ===== */
   --math-text-color: black;
   --math-cursor-color: black;
-  --math-selection-bg: rgba(0, 123, 255, 0.15);
-  --math-hover-bg: rgb(0, 8, 255);
+  --math-selection-bg: rgba(0, 0, 0, 0.07);
+  --math-hover-bg: #1ba0ff1a;
 
   /* ===== Sub/Sup Alignment ===== */
   --math-sub-overlap-x: 0.1em;
   --math-sub-overlap-y: 1.4em;
   --math-sup-overlap-y: 1.35em;
 
-  /* ===== Decoration & Accents ===== */
-  --math-decoration-color: blue;
-  --math-accent-color: #adc6a2;
-
   /* ===== Theming (Custom Palette) ===== */
-  --math-color-1: #003366;
-  --math-color-2: #B00020;
-  --math-color-3: #00695C;
-  --math-color-bracket: #4B0082;
-  --math-color-muted: #787878;
+
+  --math-accent-color: #b4462c;
+
+  --math-color-single-bracket: #d21618;      /* Keep red for clarity */
+  --math-color-pair-brackets: #007acc;
+
+  --math-color-actuarial-text: #00796b;
+  --math-color-actuarial-bg: rgba(0, 121, 107, 0.08);
+
+  --math-color-big-operator-symbol: #c48800;
+  --math-color-big-operator-limits: var(--math-text-color);
+
+  --math-color-nth-root-symbol: #c48800;
+  --math-color-nth-root-index: #c48800;
+
+  --math-color-upright-text: #6a0dad;
+  --math-color-upright-bg: rgba(106, 13, 173, 0.08);
+
+  --math-color-command-input-text: #929270;
 
   /* ===== Editor Container ===== */
   --math-editor-bg: white;
   --math-editor-border: #ccc;
   --math-editor-shadow: rgba(0, 0, 0, 0.05);
+
+  /* ===== Latex Container ===== */
+  --latex-text-color: #767677;
+  --latex-refresh-button-color-updated: #3a9e5a; 
+  --latex-refresh-button-color-updated-hover: #2c7d46;
+  --latex-refresh-button-color-updated-active: #24683a;
+  --latex-refresh-button-color-outdated: #d98200;
+  --latex-refresh-button-color-outdated-hover: #aa6a00;
+  --latex-refresh-button-color-outdated-active: #8a5500;
+
+  --latex-text-color-command: #833fba; 
+  --latex-text-color-bracket: #000000;
+  --latex-text-color-other: #036a07;
+  --latex-text-color-actsymb: #00ff08;
 }
 
 .dark {
+  --main-text-color: #ffffff;
+
   --background-color: #252526;
 
   --math-cursor-color: white;
@@ -57,13 +85,45 @@
   --math-editor-shadow: rgba(0, 0, 0, 0.3);
   --math-accent-color: #ce9178;
 
-  --math-color-pair-brackets: #1b9fff;
   --math-color-single-bracket: #d21618;
+  --math-color-pair-brackets: #1b9fff;
+
+  --math-color-actuarial-text: #4ec9b0;
+  --math-color-actuarial-bg: rgb(78, 201, 176, 0.1);
+
+  --math-color-big-operator-symbol: #ffd700;
+  --math-color-big-operator-limits: var(--math-text-color);
+
+  --math-color-nth-root-symbol: #ffd700;
+  --math-color-nth-root-index: #ffd700;
+
+  --math-color-upright-text: rgb(197, 134, 192);
+  --math-color-upright-bg: rgba(197, 134, 192, 0.1); 
+
+  --math-color-command-input-text: #dcdcaa;
+
+  /* ===== Latex Container ===== */
+  --latex-text-color: #8B8B8D;
+  --latex-refresh-button-color-updated: #43ac6a; 
+  --latex-refresh-button-color-updated-hover: #358753;
+  --latex-refresh-button-color-updated-active: #2b6e44;
+  --latex-refresh-button-color-outdated: #e99002; 
+  --latex-refresh-button-color-outdated-hover: #b67102;
+  --latex-refresh-button-color-outdated-active: #935b01;
+
+  --latex-text-color-command: #c586c0;  /* softer violet, easy on dark bg */
+  --latex-text-color-bracket: #d4d4d4;  /* light gray to ensure visibility on dark */
+  --latex-text-color-other: #6a9955;    /* cool green, consistent with code editors */
+  
 }
 
   body {
     font-family: sans-serif;
     background-color: var(--background-color);
+  }
+
+  h1 {
+    color: var(--main-text-color);
   }
   
   .editor-container {
@@ -85,14 +145,155 @@
     border: 1px solid;
   }
 
-.hover-type-info {
-  position: relative;
-  float: inline-end;
-  top: calc(-2 * var(--math-editor-container-padding) + 4px);
-  right: calc(-2 * var(--math-editor-container-padding) + 4px);
-  pointer-events: none;
-  opacity: 0.3;
-  font-size: 0.4em;
-  font-family: monospace;
-  user-select: none;
-}
+    
+  /* ============================================= */
+  /* =============== EDITOR WRAPPER ============== */
+  /* ============================================= */
+  
+  .editor-layout {
+    position: relative;
+  }
+
+  .math-editor {
+    max-width: 100%;
+    padding: 1em;
+    font-size: var(--math-font-size-base);
+    overflow: auto;
+    background: var(--math-editor-bg);
+    color: var(--math-text-color);
+    border: 1px solid var(--math-editor-border);
+    border-radius: 6px;
+    box-shadow: 0 0 4px var(--math-editor-shadow);
+  }
+
+  .hover-type-info {
+    position: absolute;
+    top: 0.5em;
+    right: 0.9em;
+    pointer-events: none;
+    opacity: 0.3;
+    font-size: 0.4em;
+    font-family: monospace;
+    user-select: none;
+  }
+
+  .latex-viewer {
+    margin-top: 1.5em;
+    padding: 0.75em;
+    color: var(--math-text-color);
+    border-radius: 6px;
+    font-family: monospace;
+  }
+  
+  .latex-header {
+    display: flex;
+    gap: 1em;
+    align-items: center;
+    margin-bottom: 0.5em;
+  }
+  
+  .refresh-button {
+    padding: 0.4em 0.8em;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.85em;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.1s ease;
+  }
+  
+  .refresh-button.fresh {
+    background-color: var(--latex-refresh-button-color-updated);
+    color: white;
+  }
+  .refresh-button.fresh:hover {
+    background-color: var(--latex-refresh-button-color-updated-hover);
+  }
+  .refresh-button.fresh:active {
+    background-color: var(--latex-refresh-button-color-updated-active);
+  }
+
+  .refresh-button.outdated {
+    background-color: var(--latex-refresh-button-color-outdated);
+    color: white;
+  }
+  .refresh-button.outdated:hover {
+    background-color: var(--latex-refresh-button-color-outdated-hover);
+  }
+  .refresh-button.outdated:active {
+    background-color: var(--latex-refresh-button-color-outdated-active);
+  }
+
+  .latex-timestamp {
+    font-size: 0.75em;
+    opacity: 0.6;
+  }
+  
+  .latex-box-wrapper {
+    position: relative;
+    display: flex;
+  }
+  
+  .latex-box {
+    width: 100%;
+    overflow: auto;
+    min-height: 5em;
+    resize: none;
+    background: inherit;
+    color: inherit;
+    border: 1px solid var(--math-editor-border);
+    color: var(--latex-text-color);
+    border-radius: 4px;
+    padding: 0.5em 10em 0.5em 0.5em;
+    margin: 0;
+    font-family: inherit;
+    font-size: 1em;
+    outline: none;
+    overflow-wrap: normal;
+    white-space: pre-wrap;
+  }
+  
+  .copy-button {
+    position: absolute;
+    top: 0.5em;
+    right: 1em;
+    opacity: 0;
+    transition: opacity 0.1s ease;
+    background: var(--math-editor-border);
+    color: var(--math-text-color);
+    border: none;
+    border-radius: 4px;
+    padding: 0.2em 0.6em;
+    font-size: 1em;
+    cursor: pointer;
+  }
+  
+  .latex-box-wrapper:hover .copy-button {
+    opacity: 1;
+  }
+  
+  .latex-output {
+    font-family: monospace;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  
+  .latex-cmd {
+    color: var(--latex-text-color-command);
+  }
+  
+  .latex-bracket {
+    color: var(--latex-text-color-bracket);
+  }
+  
+  .latex-text {
+    color: var(--latex-text-color-other);
+  }
+
+  .latex-actuarialsymbol {
+    border-bottom: 1px dashed var(--math-color-actuarial-text);
+  }  
+
+  .latex-actuarialangle {
+    border-bottom: 1px dashed var(--math-color-actuarial-text);
+  }

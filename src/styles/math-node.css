@@ -45,11 +45,11 @@
   
   .math-node :not(.type-text).math-style-upright {
     text-transform: none;
-    background-color: rgba(197, 134, 192, 0.1); 
+    background-color: var(--math-color-upright-bg);
     padding: 0.05em;
     border-radius: 0.2em;
     font-family: var(--math-font-family);
-    color: rgb(197, 134, 192);
+    color: var(--math-color-upright-text);
   }
 
   .math-node.type-text.math-style-upright {
@@ -57,7 +57,7 @@
   }
 
   .math-node .math-style-command {
-    color: #dcdcaa;
+    color: var(--math-color-command-input-text);
     text-transform: none;
     font-family: 'Courier New', Courier, monospace;
   }
@@ -102,20 +102,17 @@
   }
 
   .type-subsup {
+    /*  */
   }
 
   .type-actsymb {
-    color: #4ec9b0;
-    /* border-radius: 0.2em;
-    border: 0.04em solid #4ec9b0; */
+    color: var(--math-color-actuarial-text);
   }
 
   .type-actsymb .base .type-inline-container {
-    background-color: rgb(78, 201, 176, 0.1);
+    /* background-color: var(--math-color-actuarial-bg); */
     border-radius: 0.2em;
     padding: 0 0.1em;
-    /* border-radius: 0.2em;
-    border: 0.04em solid #4ec9b0; */
   }
   
   .base {
@@ -128,9 +125,6 @@
     line-height: 1;
     position: relative;
     white-space: nowrap;
-    /* color: #9cdcfe; blue*/
-    /* adc6a2 greenish*/
-    /* 4ec9b0 turq */
   }
   
   /* Sub/Sup left/right with relative translation */
@@ -217,18 +211,20 @@
   .big-operator-upper {
     font-size: 0.6em;
     line-height: 1;
+    color: var(--math-color-big-operator-limits);
   }
 
   .big-operator-lower {
     font-size: 0.6em;
     line-height: 1;
+    color: var(--math-color-big-operator-limits);
   }
   
   .big-operator-symbol {
     font-size: 1.4em;
     margin-bottom: -0.1em;
     line-height: 1;
-    color: #ffd700;
+    color: var(--math-color-big-operator-symbol);
   }
   
   
@@ -283,23 +279,6 @@
     50% { opacity: 0; }
   }
   
-  
-  /* ============================================= */
-  /* =============== EDITOR WRAPPER ============== */
-  /* ============================================= */
-  
-  .math-editor {
-    max-width: 100%;
-    padding: 1em;
-    font-size: var(--math-font-size-base);
-    overflow-x: auto;
-    background: var(--math-editor-bg);
-    color: var(--math-text-color);
-    border: 1px solid var(--math-editor-border);
-    border-radius: 6px;
-    box-shadow: 0 0 4px var(--math-editor-shadow);
-  }
-  
   .type-nth-root {
     display: inline-flex;
     align-items: flex-start;
@@ -317,18 +296,18 @@
     font-size: 0.6em;
     position: absolute;
     top: -0.3em;
-    color: #ffd700;
+    color: var(--math-color-nth-root-index);
   }
   
   .radical-symbol {
     font-size: 1em;
     translate: 0 0.33em;
-    color: #ffd700;
+    color: var(--math-color-nth-root-symbol);
     transform: scaleY(1.4);
   }
   
   .radicand {
-    border-top: 0.1em solid #ffd700;
+    border-top: 0.1em solid var(--math-color-nth-root-symbol);
     translate: 0 -0.07em;
     padding-top: 0.07em;
     padding-right: 0.1em;

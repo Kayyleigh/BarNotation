@@ -1,5 +1,5 @@
-//import type { NodeDecoration } from "../utils/accentUtils";
-//import type { BracketStyle } from "../utils/bracketUtils";
+import type { NodeDecoration } from "../utils/accentUtils";
+import type { BracketStyle } from "../utils/bracketUtils";
 
 export type MathNode =
   | MultilineEquationNode
@@ -113,14 +113,8 @@ export interface ChildedNode extends BaseNode {
   supRight: InlineContainerNode;
 }
 
-// export interface DecoratedNode extends BaseNode {
-//   type: "decorated";
-//   child: InlineContainerNode;
-//   decoration: NodeDecoration;
-// }
-
 export type AccentKind =
-  | { type: "predefined"; name: string }     // e.g., "hat", "tilde", "overline"
+  | { type: "predefined"; decoration: NodeDecoration }     // e.g., "hat", "tilde", "overline"
   | { type: "custom"; content: InlineContainerNode; position: "above" | "below" };
 
 export interface AccentedNode extends BaseNode {
@@ -141,16 +135,6 @@ export interface GroupNode extends BaseNode {
   child: InlineContainerNode;
   bracketStyle: BracketStyle;
 }
-
-export type BracketStyle =
-  | "none"
-  | "parentheses"
-  | "square"
-  | "curly"
-  | "angle"
-  | "vertical"
-  | "floor"
-  | "ceil";
 
 export interface BinomCoefficientNode extends BaseNode {
   type: "binom";

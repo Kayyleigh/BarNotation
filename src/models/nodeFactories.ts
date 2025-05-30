@@ -2,7 +2,6 @@ import { v4 as uuidv4 } from "uuid";
 import type {
   MathNode,
   InlineContainerNode,
-  BracketStyle,
   RootWrapperNode,
   StructureNode,
   MultilineEquationNode,
@@ -22,6 +21,7 @@ import type {
   MultiDigitNode,
   CommandInputNode,
 } from "./types"; // Adjust imports to your setup
+import type { BracketStyle } from "../utils/bracketUtils";
 
 export const generateId = () => uuidv4();
 

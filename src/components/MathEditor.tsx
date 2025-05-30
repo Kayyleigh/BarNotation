@@ -3,6 +3,7 @@ import { createRootWrapper } from "../models/nodeFactories";
 import { createEditorState, setCursor, setHoveredNode } from "../logic/editor-state";
 import { handleKeyDown } from "../logic/handle-keydown";
 import { MathRenderer } from "./MathRenderer";
+import LatexViewer from "./LatexViewer";
 import { useEditorHistory } from "../hooks/useEditorHistory";
 import { useDragState } from "../hooks/useDragState";
 import {
@@ -99,39 +100,42 @@ const MathEditor: React.FC = () => {
   };
 
   return (
-    <div
-      ref={editorRef}
-      className="math-editor"
-      tabIndex={0}
-      onKeyDown={onKeyDown}
-      onCopy={onCopy}
-      onCut={onCut}
-      onPaste={onPaste}
-    >
-      <MathRenderer
-        node={editorState.rootNode}
-        cursor={editorState.cursor}
-        hoveredId={editorState.hoveredNodeId}
-        onCursorChange={(newCursor) =>
-          updateEditorState(setCursor(editorState, newCursor))
-        }
-        onRootChange={(newRoot) =>
-          updateEditorState({ ...editorState, rootNode: newRoot })
-        }
-        onHoverChange={(hoveredId) =>
-          updateEditorState(setHoveredNode(editorState, hoveredId))
-        }
-        onStartDrag={startDrag}
-        onUpdateDropTarget={updateDropTarget}
-        onHandleDrop={handleDrop}
-        onClearDrag={clearDrag}
-      />
-    {/* Overlay text in upper right */}
-    {hoveredType && (
-        <div className="hover-type-info">
-          {hoveredType}
-        </div>
-      )}
+    <div>
+      <div
+        ref={editorRef}
+        className="math-editor"
+        tabIndex={0}
+        onKeyDown={onKeyDown}
+        onCopy={onCopy}
+        onCut={onCut}
+        onPaste={onPaste}
+      >
+        <MathRenderer
+          node={editorState.rootNode}
+          cursor={editorState.cursor}
+          hoveredId={editorState.hoveredNodeId}
+          onCursorChange={(newCursor) =>
+            updateEditorState(setCursor(editorState, newCursor))
+          }
+          onRootChange={(newRoot) =>
+            updateEditorState({ ...editorState, rootNode: newRoot })
+          }
+          onHoverChange={(hoveredId) =>
+            updateEditorState(setHoveredNode(editorState, hoveredId))
+          }
+          onStartDrag={startDrag}
+          onUpdateDropTarget={updateDropTarget}
+          onHandleDrop={handleDrop}
+          onClearDrag={clearDrag}
+        />
+      {/* Overlay text in upper right */}
+      {hoveredType && (
+          <div className="hover-type-info">
+            {hoveredType}
+          </div>
+        )}
+      </div>
+      <LatexViewer rootNode={editorState.rootNode} />
     </div>
   );
 };

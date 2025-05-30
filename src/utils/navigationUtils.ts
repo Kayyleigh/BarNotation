@@ -69,15 +69,6 @@ export function flattenCursorPositions(node: MathNode): CursorPosition[] {
   return positions;
 }
 
-// export function findCursorIndex(
-//     flatList: CursorPosition[],
-//     cursor: CursorPosition
-//   ): number {
-//     return flatList.findIndex(
-//       (p) => p.containerId === cursor.containerId && p.index === cursor.index
-//     );
-//   }
-
 export function findCursorIndex(
     flatList: CursorPosition[],
     cursor: CursorPosition

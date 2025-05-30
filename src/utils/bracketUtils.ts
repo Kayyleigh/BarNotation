@@ -3,10 +3,13 @@
 // TODO: ensure latex compatibility of symbols (used in latexParser). See https://tug.ctan.org/info/short-math-guide/short-math-guide.pdf
 
   export const bracketSymbols: Record<string, { open: string; close: string }> = {
-    round: { open: "(", close: ")" },
+    parentheses: { open: "(", close: ")" },
     square: { open: "[", close: "]" },
     curly: { open: "{", close: "}" },
-    chevron: { open: "⟨", close: "⟩" },
+    angle: { open: "⟨", close: "⟩" },
+    //vertical: { open: "|", close: "|" }, //TODO include once I allow nice render of lonely vertical lines (not red)
+    floor: { open: "⌊", close: "⌋" },
+    ceil: { open: "⌈", close: "⌉" },
   };
 
   // Extract keys as a union type of styles:

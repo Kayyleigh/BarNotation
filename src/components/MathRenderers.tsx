@@ -312,7 +312,7 @@ export const renderInlineContainerNode = (
     onMouseEnter={() => handleMouseEnter(node.id, props.onHoverChange!)}
     onMouseLeave={(e) => handleMouseLeave(e, node.id, props.ancestorIds, props.onHoverChange!)}
   >
-    {renderContainerChildren(node.children, node.id, props)}
+    {renderContainerChildren(node.children, node.id, props, props.inheritedStyle)}
   </span>
 );
 
@@ -439,7 +439,7 @@ export const renderAccentedNode = (
       data-nodeid={node.id}
       className={clsx(
         "math-node decorated-node",
-        isCustom ? "decoration-custom" : `decoration-${node.accent.name}`,
+        isCustom ? "decoration-custom" : `decoration-${node.accent.decoration}`,
         { hovered: getIsHovered(node, props) },
       )}
       onClick={(e) => {

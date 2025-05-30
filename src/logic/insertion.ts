@@ -2,10 +2,9 @@ import type { EditorState } from "./editor-state";
 import { createCommandInputNode, createMultiDigitNode, createTextNode } from "../models/nodeFactories";
 import { findNodeById, updateNodeById } from "../utils/treeUtils";
 import { specialSequences } from "../models/specialSequences";
-import { nodeToMathText, type InlineContainerNode, type TextNode } from "../models/types";
+import { type InlineContainerNode, type TextNode } from "../models/types";
 import { getCloseSymbol, getOpenSymbol, type BracketStyle } from "../utils/bracketUtils";
 import { transformToGroupNode } from "./transformations";
-import { nodeToLatex } from "../models/latexParser";
 
 export const handleCharacterInsertInTextContainer = (state: EditorState, char: string): EditorState => {
   const container = findNodeById(state.rootNode, state.cursor.containerId);
@@ -29,8 +28,6 @@ export const handleCharacterInsertInTextContainer = (state: EditorState, char: s
       ...container,
       children: updatedChildren,
     });
-
-    //console.log(`updated root to ${nodeToLatex(updatedRoot)}`)
 
     return {
       rootNode: updatedRoot,
