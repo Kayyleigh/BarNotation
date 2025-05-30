@@ -69,21 +69,39 @@ export function deleteNodeById(state: EditorState, nodeId: string): EditorState 
 // Inserts the given node at the cursor position
 export function insertNodeAtCursor(state: EditorState, newNode: MathNode): EditorState {
   const container = findNodeById(state.rootNode, state.cursor.containerId);
+  console.log(`Inserting ${newNode.type} into ${container?.type}`);
 
   if (!container || container.type !== "inline-container") return state;
 
-  const newChildren = [...container.children];
-  newChildren.splice(state.cursor.index, 0, newNode);
+  let newIndex = state.cursor.index;
+  let newRoot = state.rootNode;
+  let newState = state;
 
-  const updatedContainer = { ...container, children: newChildren };
-  const newRoot = updateNodeById(state.rootNode, container.id, updatedContainer);
+  if (newNode.type === 'inline-container') {
+    // Flatten: insert each child one by one
+    for (const childNode of newNode.children) {
+      newState = insertNodeAtCursor(newState, childNode);
+    }
+    // After inserting all children, return updated state
+    return newState;
+  } else {
+    // Insert newNode at current cursor index
+    const newChildren = [...container.children];
+    newChildren.splice(newIndex, 0, newNode);
+
+    const updatedContainer = { ...container, children: newChildren };
+    newRoot = updateNodeById(state.rootNode, container.id, updatedContainer);
+
+    // Update cursor index to be after the inserted node
+    newIndex = newIndex + 1;
+  }
 
   return {
     ...state,
     rootNode: newRoot,
     cursor: {
       containerId: container.id,
-      index: state.cursor.index + 1,
+      index: newIndex,
     },
   };
 }

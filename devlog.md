@@ -1902,3 +1902,6 @@ From WebLab: https://eip.pages.ewi.tudelft.nl/eip-website/weblab.html
 Overleaf colors for block style:
 #833fba: things with slash 
 #036a07: non-brackets
+
+![alt text](image-34.png)
+lots and lots and lots and lots and lots of debugging today. It's still broken but for the nicher stuff mostly 

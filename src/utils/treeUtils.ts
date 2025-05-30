@@ -318,8 +318,8 @@ export const findNodeById = (node: MathNode, targetId: string): MathNode | null 
         }
       }
     }
-    else {
-      console.log(`${root.type} but no child matches the id`)
+    else if (root.type !== 'inline-container') {
+      console.warn(`${root.type} but no child matches the id`)
     }
 
     // Recurse into children

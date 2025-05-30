@@ -11,8 +11,6 @@ export const decoratedEntries: SpecialSequence[] = Object.entries(decorationToLa
   ([decoration, decorationInfo]) => {
     // Assert or cast decorationInfo if necessary
     const info = decorationInfo as DecorationInfo;
-    console.log(`decoration ${decoration}`)
-    console.log(`decoration info ${decorationInfo.command}, ${decorationInfo.package}`)
     return {
       sequence: info.command,  // Explicit key-value pair
       createNode: () => createAccentedNode(createInlineContainer(), { type: 'predefined', decoration: decoration as NodeDecoration }),
@@ -112,6 +110,14 @@ export const hebrewLetters: SpecialSequence[] = [
   { sequence: "\\beth ", createNode: () => createTextNode("ℶ") },
   { sequence: "\\daleth ", createNode: () => createTextNode("ℸ") },
   { sequence: "\\gimel ", createNode: () => createTextNode("ℷ") },
+];
+
+
+export const bracketSymbolSequences: SpecialSequence[] = [
+  { sequence: "\\lfloor ", createNode: () => createTextNode("⌊") },
+  { sequence: "\\rfloor ", createNode: () => createTextNode("⌋") },
+  { sequence: "\\lceil ", createNode: () => createTextNode("⌈") },
+  { sequence: "\\rceil ", createNode: () => createTextNode("⌉") },
 ];
 
 export const arrowSymbols: SpecialSequence[] = [
@@ -463,7 +469,7 @@ const specialSymbols: SpecialSequence[] = [
   ...otherSymbols,
   ...standardFunctionNames,
   ...arrowSymbols,
-
+  ...bracketSymbolSequences,
 ]
 
 export const specialSequences: SpecialSequence[] = [
@@ -503,4 +509,16 @@ export const symbolToLatex: Record<string, string> = Object.fromEntries(
 
 export const symbolToLatexInverse = Object.fromEntries(
   Object.entries(symbolToLatex).map(([k, v]) => [v.replace(/^\\/, "").trimEnd(), k])
+);
+
+export const latexToSymbolTextNode: Record<string, () => MathNode> = Object.fromEntries(
+  specialSymbols
+  .map(e => {
+    return [e.sequence.replace(/^\\/, "").trimEnd(), e.createNode];
+  })
+  .filter((entry): entry is [string, (() => MathNode)] => entry !== null)
+);
+
+export const bigOperatorToLatexInverse = Object.fromEntries(
+  Object.entries(bigOperatorToLatex).map(([k, v]) => [v.replace(/^\\/, "").trimEnd(), k])
 );

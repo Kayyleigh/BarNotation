@@ -143,15 +143,23 @@ export const handleBackspace = (state: EditorState): EditorState => {
         replacementChildren = child.children
         break;
       }
+      case "big-operator": {
+        //const lower = parent.lower;
+        //const upper = parent.upper;
+        return handleArrowLeft(state);
+
+      }
       case "childed": {
         console.log(`I am in childed. I am at ${key}`)
         const child = parent[key as keyof typeof parent];
         const corners = [parent.subLeft, parent.supLeft, parent.subRight, parent.supRight];
 
         if (key === 'supLeft' && corners.every(corner => isEmptyNode(corner))) {
+          console.log(`YOU SHOULD REVERT`)
           replacementChildren = (parent.base as InlineContainerNode).children
         }
-        else if (isEmptyNode(child)) {
+        else if (key != 'supLeft' && isEmptyNode(child)) {
+          console.log(`MAKE IT FEEL LIKE DELETE BUT ACTUALLY BACKSPACE`)
           return handleArrowLeft(state)
           //return state
         }
@@ -215,7 +223,9 @@ export const handleBackspace = (state: EditorState): EditorState => {
   //const childToDelete = currentToDelete[order[order.length - 1]]
 
   //console.log(`${childToDelete}`)
-  if (currentToDelete.type !== "text" && currentToDelete.type !== "styled") {
+  if (currentToDelete.type !== "text" 
+    && currentToDelete.type !== "styled" 
+    && (currentToDelete.type !== "big-operator" || !isEmptyNode(currentToDelete.lower) || !isEmptyNode(currentToDelete.upper))) {
     const simulatePrevState = handleArrowLeft(state)
 
     const children = getLogicalChildren(currentToDelete)
@@ -226,7 +236,8 @@ export const handleBackspace = (state: EditorState): EditorState => {
     //TODO: handle brackets (revert)
 
     return handleBackspace(simulatePrevState)
-  }
+  } 
+
   // Standard deletion
   const updatedChildren = [
     ...container.children.slice(0, cursor.index - 1),

@@ -1,19 +1,21 @@
 import { decorationToLatexCommandInverse, type NodeDecoration } from "../utils/accentUtils";
-import { createAccentedNode, createChildedNode, createFraction, createInlineContainer, createTextNode } from "./nodeFactories";
-import { symbolToLatexInverse } from "./specialSequences";
-import type { InlineContainerNode, MathNode, StructureNode } from "./types";
+import { bracketSymbols, getStyleFromSymbol, isOpeningBracket } from "../utils/bracketUtils";
+import { createAccentedNode, createBigOperator, createChildedNode, createFraction, createGroupNode, createInlineContainer, createNthRoot, createTextNode } from "./nodeFactories";
+import { bigOperatorToLatexInverse, latexToSymbolTextNode, symbolToLatex, symbolToLatexInverse } from "./specialSequences";
+import type { GroupNode, InlineContainerNode, MathNode, StructureNode } from "./types";
 
 type Token =
   | { type: "command", name: string }
   | { type: "brace_open" }
   | { type: "brace_close" }
-  | { type: "char", value: string };
+  | { type: "char", value: string }
+  | { type: "whitespace", value: string };
 
 
 export function parseLatex(input: string): MathNode {
     const tokens = tokenize(input);
     let i = 0;
-  
+
     function peek(): Token | undefined {
       return tokens[i];
     }
@@ -21,10 +23,67 @@ export function parseLatex(input: string): MathNode {
     function consume(): Token {
       return tokens[i++];
     }
-  
+
+    function skipWhitespace() {
+      while (peek()?.type === "whitespace") {
+        consume();
+      }
+    }
+
+    function parseBracketGroup(openBracket: string): GroupNode {
+      const style = getStyleFromSymbol(openBracket);
+      const expectedClose = style ? bracketSymbols[style].close : undefined;
+      console.log(`parsing bracket group for ${openBracket}`)
+      if (!expectedClose) {
+        throw new Error(`Unknown bracket style for ${openBracket}`);
+      }
+    
+      const children: StructureNode[] = [];
+    
+      while (peek() && !(peek()?.type === "char" && peek()?.value === expectedClose)) {
+        const child = parseExpression();
+        if (child) {
+          console.log(`pushing ${child.type}`)
+          children.push(child as StructureNode);
+        }
+      }
+    
+      const close = consume();
+      if (close.type !== "char" || close.value !== expectedClose) {
+        throw new Error(`Expected closing bracket '${expectedClose}'`);
+      }
+    
+      // Could wrap it in a special node if needed — for now InlineContainer is fine
+      return createGroupNode(createInlineContainer(children), getStyleFromSymbol(openBracket));
+    }   
+
+    function parseChildScript(): InlineContainerNode {
+      if (peek()?.type === "brace_open") {
+        return parseGroup();
+      } else {
+        const next = peek();
+        if (next?.type === "char" || next?.type === "command") {
+          const token = consume();
+          let node: StructureNode;
+          if (token.type === "char") {
+            node = createTextNode(token.value);
+          } else {
+            const symbolNode = symbolToLatexInverse[token.name] ? latexToSymbolTextNode[token.name]() : createTextNode("\\" + token.name);
+            node = symbolNode;
+          }
+          return createInlineContainer([node]);
+        }
+        throw new Error(`Invalid script target after _ or ^`);
+      }
+    }
+    
+    
     function expect(type: Token["type"]): Token {
       const token = consume();
-      if (token.type !== type) throw new Error(`Expected ${type}`);
+      console.log(token)
+      console.log(`Expect ${token.type}`)
+      if (token.type !== type && (token.type === "char" || token.type === "whitespace")) console.log(`Value: ${token.value}`);
+      if (token.type !== type) throw new Error(`Expected ${type}, got ${token.type}`);
       return token;
     }
 
@@ -45,11 +104,12 @@ export function parseLatex(input: string): MathNode {
         } else {
           throw new Error("Expected closing ]");
         }
+        console.log(`Optional Bracket String ${str}`)
         return str;
       }
       return undefined;
     }
-  
+
     function parseGroup(): InlineContainerNode {
       expect("brace_open");
       const nodes: StructureNode[] = [];
@@ -60,7 +120,7 @@ export function parseLatex(input: string): MathNode {
       return createInlineContainer(nodes);
     }
   
-    function parseExpression(): MathNode {
+    function parseExpression(): MathNode | undefined {
       // 1. Parse prescripts (left subscripts/superscripts)
       let subLeft: InlineContainerNode | undefined;
       let supLeft: InlineContainerNode | undefined;
@@ -68,13 +128,13 @@ export function parseLatex(input: string): MathNode {
       while (true) {
         const next = peek();
         if (!next || next.type !== "char") break;
-    
+
         if (next.value === "_") {
           consume();
-          subLeft = parseGroup() as InlineContainerNode;
+          subLeft = parseChildScript();
         } else if (next.value === "^") {
           consume();
-          supLeft = parseGroup() as InlineContainerNode;
+          supLeft = parseChildScript();
         } else {
           break;
         }
@@ -82,9 +142,17 @@ export function parseLatex(input: string): MathNode {
     
       // 2. Parse base
       const token = peek();
+      console.log(`Looking at ${token?.type}`)
+      if (token?.type === "char") {
+        console.log(`Since its char: ${token.value}`)
+      }
+      if (token?.type === "command") {
+        console.log(`Since its command: ${token.name}`)
+      }
+
       if (!token) throw new Error("Unexpected end of input");
     
-      let base: InlineContainerNode;
+      let base = createTextNode("");
     
       if (token.type === "command") {
         const { name } = consume() as { type: "command"; name: string };
@@ -95,8 +163,8 @@ export function parseLatex(input: string): MathNode {
           const supLeftStr = parseOptionalBracketString();
 
           // Make MathNode with valid input (empty InlineContainer if undefined)
-          const subLeft = parseLatex(subLeftStr ? subLeftStr : "{}");
-          const supLeft = parseLatex(supLeftStr ? supLeftStr : "{}");
+          const subLeft = parseLatex("{" + (subLeftStr ? subLeftStr : "") + "}");
+          const supLeft = parseLatex("{" + (supLeftStr ? supLeftStr : "") + "}");
       
           // Parse mandatory base group {A}
           const base = parseGroup();
@@ -106,7 +174,7 @@ export function parseLatex(input: string): MathNode {
       
           // Parse optional right subscript bracket, e.g. [2]
           const supRightStr = parseOptionalBracketString();
-          const supRight = parseLatex(supRightStr ? supRightStr : "{}");
+          const supRight = parseLatex("{" + (supRightStr ? supRightStr : "") + "}");
         
           return createChildedNode(
             base as InlineContainerNode, 
@@ -125,8 +193,13 @@ export function parseLatex(input: string): MathNode {
         } 
         else if (name === "sqrt") {
           // your sqrt parsing logic here ...
+          const indexString = parseOptionalBracketString();
+          const index = parseLatex(indexString ? ("{" + indexString + "}")  : "{}") as InlineContainerNode;
           const radicand = parseGroup();
-          base = { type: "root", radicand };
+          base = createNthRoot(
+            radicand,
+            index,
+          );
         } 
         else if (name in decorationToLatexCommandInverse) {
           const child = parseGroup();
@@ -140,8 +213,38 @@ export function parseLatex(input: string): MathNode {
           );
         } 
         else if (symbolToLatexInverse[name]) {
-          base = createTextNode(symbolToLatexInverse[name]);
+          base = latexToSymbolTextNode[name](); // Call creatNode()
+
+          if (symbolToLatex[name] && symbolToLatex[name].charAt(symbolToLatex[name].length - 1) === " ") {
+            if (peek()?.type === "char" && peek()?.value === " ") {
+              console.log(`SWALLOWED A SPACE AFTER ${name}`)
+              consume(); // consume ' '
+            } else console.log(`NOPE type is ${peek()?.type}`)
+           }
         } 
+        else if (bigOperatorToLatexInverse[name]) {
+          // Parse optional subscript (lower limit)
+          let lower: InlineContainerNode = createInlineContainer();
+          let upper: InlineContainerNode = createInlineContainer();
+
+          skipWhitespace();
+          // Check if next token is '_' for lower limit
+          if (peek()?.type === "char" && peek()?.value === "_") {
+            consume(); // consume '_'
+            skipWhitespace();
+            lower = parseGroup();
+          }
+
+          // Check if next token is '^' for upper limit
+          if (peek()?.type === "char" && peek()?.value === "^") {
+            consume(); // consume '^'
+            skipWhitespace();
+            upper = parseGroup();
+          }
+
+          base = createBigOperator(bigOperatorToLatexInverse[name], lower, upper);
+        }
+
         else if (name === 'overset') {
           const accentContent = parseGroup();
           const child = parseGroup();
@@ -152,8 +255,15 @@ export function parseLatex(input: string): MathNode {
           const child = parseGroup();
           base = createAccentedNode(child, { type: 'custom', content: accentContent, position: 'below' } )
         }
+        else if (name === 'left') {
+          console.warn(`Not yet implemented: ${name}`)
+        }
+        else if (name === 'right') {
+          console.warn(`Not yet implemented: ${name}`)
+        }
         else {
           console.log(`Name not found: '${name}'`)
+          console.log(`creating \\${name} `)
           base = createTextNode("\\" + name);
         }
       } 
@@ -161,16 +271,32 @@ export function parseLatex(input: string): MathNode {
         base = parseGroup();
       } 
       else if (token.type === "char") {
-        base = createTextNode(consume().value);
+        if (isOpeningBracket(token.value)) {
+          const open = token.value;
+          consume();
+      
+          try {
+            base = parseBracketGroup(open);
+          } catch (err) {
+            console.warn(`Cannot parse visual bracket group for ${open}: ${err}`);
+            //TODO ensure no tokens are thrown away here??!
+            base = createTextNode(open);
+          }
+        } else {
+          consume();
+          base = createTextNode(token.value);
+        }
+      }
+      else if (token.type === "whitespace") {
+        consume();
+        base = parseExpression()
+        //base = createTextNode(token.value);
+        //return;
       } 
       else {
-        throw new Error(`Unexpected token: ${token}`);
+        throw new Error(`Unexpected token: ${token} ${token.type}`);
       }
 
-      //_{}^{}{x}_{}^{3}
-      //
-      //_{_{}^{}{}_{}^{}}^{_{}^{}{}_{}^{3}}{x}_{}^{}
-    
       // 3. Parse postscripts (right subscripts/superscripts)
       let subRight: InlineContainerNode | undefined;
       let supRight: InlineContainerNode | undefined;
@@ -178,15 +304,15 @@ export function parseLatex(input: string): MathNode {
       while (true) {
         const next = peek();
         if (!next || next.type !== "char") {
-          console.log(`${next} is not a char`)
+          // console.log(`${next} is not a char (${next?.type})`)
           break;
         }
         if (next.value === "_") {
           consume();
-          subRight = parseGroup() as InlineContainerNode;
+          subRight = parseChildScript();
         } else if (next.value === "^") {
           consume();
-          supRight = parseGroup() as InlineContainerNode;
+          supRight = parseChildScript();
         } else {
           break;
         }
@@ -194,7 +320,7 @@ export function parseLatex(input: string): MathNode {
     
       // 4. Return SubSup node if any scripts found, else just base
       if (subLeft || supLeft || subRight || supRight) {
-        return createChildedNode(base, 'subsup', subLeft, supLeft, subRight, supRight);
+        return createChildedNode(createInlineContainer([base]), 'subsup', subLeft, supLeft, subRight, supRight);
       }
       return base;
     }
@@ -202,10 +328,12 @@ export function parseLatex(input: string): MathNode {
     // Entry point
     const children: StructureNode[] = [];
     while (i < tokens.length) {
-      children.push(parseExpression() as StructureNode);
+      const child = parseExpression() as StructureNode;
+      if (child) {
+        children.push(child);
+      }
     }
     //TODO here ensure that not always nesting IC?
-    // Spaces should be ignored
     return children.length === 1 ? children[0] : createInlineContainer(children);
   }
 
@@ -216,17 +344,43 @@ export function parseLatex(input: string): MathNode {
       const ch = input[i];
       if (ch === "\\") {
         i++;
-        let name = "";
-        while (/[a-zA-Z]/.test(input[i])) name += input[i++];
-        tokens.push({ type: "command", name });
+        const next = input[i];
+  
+        if (!next) break;
+  
+        if (/[a-zA-Z]/.test(next)) {
+          let name = "";
+          while (/[a-zA-Z]/.test(input[i])) {
+            name += input[i++];
+          }
+          tokens.push({ type: "command", name });
+          console.log(`Pushed command: ${name}`)
+        } else {
+          // 🔥 This handles `\{`, `\}`, `\%`, etc.
+          tokens.push({ type: "char", value: "\\" });
+          tokens.push({ type: "char", value: next });
+          console.log(`Pushed char: ${next}`)
+          i++; // Advance past the escaped character
+        }
       } else if (ch === "{") {
         tokens.push({ type: "brace_open" });
+        console.log(`Pushed brace_open`)
         i++;
       } else if (ch === "}") {
         tokens.push({ type: "brace_close" });
+        console.log(`Pushed brace_close`)
         i++;
+      } else if (/\s/.test(ch)) {
+        let ws = "";
+        while (i < input.length && /\s/.test(input[i])) {
+          ws += input[i++];
+        }
+        tokens.push({ type: "whitespace", value: ws });
+        console.log(`Pushed whitespace`)
+
       } else {
         tokens.push({ type: "char", value: ch });
+        console.log(`Pushed char ${ch}`)
         i++;
       }
     }
