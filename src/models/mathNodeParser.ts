@@ -1,7 +1,7 @@
 import { decorationToLatexCommandInverse, type NodeDecoration } from "../utils/accentUtils";
 import { bracketSymbols, getStyleFromSymbol, isOpeningBracket } from "../utils/bracketUtils";
-import { createAccentedNode, createBigOperator, createChildedNode, createFraction, createGroupNode, createInlineContainer, createNthRoot, createStyledNode, createTextNode } from "./nodeFactories";
-import { bigOperatorToLatexInverse, getNodeFromAlias, latexToSymbolTextNode, symbolToLatex, symbolToLatexInverse } from "./specialSequences";
+import { createAccentedNode, createChildedNode, createFraction, createGroupNode, createInlineContainer, createNthRoot, createStyledNode, createTextNode } from "./nodeFactories";
+import { getBigOpNodeFromAlias, getStyledNodeFromAlias, getSymbolNodeFromAlias, symbolToLatex } from "./specialSequences";
 import type { GroupNode, InlineContainerNode, MathNode, StructureNode } from "./types";
 
 type Token =
@@ -40,7 +40,8 @@ export function parseLatex(input: string): MathNode {
     
       const children: StructureNode[] = [];
     
-      while (peek() && !(peek()?.type === "char" && peek()?.value === expectedClose)) {
+      let token;
+      while ((token = peek()) && !(token.type === "char" && token.value === expectedClose)) {
         const child = parseExpression();
         if (child) {
           console.log(`pushing ${child.type}`)
@@ -69,7 +70,10 @@ export function parseLatex(input: string): MathNode {
             node = createTextNode(token.value);
           } else if (token.type === "command"){
             // Get transformed node OR create text node with escaped sequence 
-            node = getNodeFromAlias(token.name) || createTextNode(token.name, "\\" + token.name);
+            node = getSymbolNodeFromAlias(token.name) || createTextNode(token.name, "\\" + token.name);
+          } else {
+            node = createTextNode("") //TODO this might be dumb
+            console.log(`Am I dumb?`)
           }
           return createInlineContainer([node]);
         }
@@ -89,10 +93,13 @@ export function parseLatex(input: string): MathNode {
 
     // Helper: parse optional bracket content as a string
     function parseOptionalBracketString(): string | undefined {
-      if (peek()?.type === "char" && peek()?.value === "[") {
+      const token = peek();
+      if (token && token.type === "char" && token.value === "[") {
         consume(); // consume '['
         let str = "";
-        while (peek() && !(peek()?.type === "char" && peek()?.value === "]")) {
+
+        let next;
+        while ((next = peek()) && !(next.type === "char" && next.value === "]")) {
           const t = consume();
           if (t.type === "char") str += t.value;
           else if (t.type === "command") {
@@ -106,7 +113,7 @@ export function parseLatex(input: string): MathNode {
           else if (t.type === "brace_open") str += "{";
           else if (t.type === "brace_close") str += "}";
         }
-        if (peek()?.type === "char" && peek()?.value === "]") {
+        if (next && next.type === "char" && next.value === "]") {
           consume(); // consume ']'
         } else {
           throw new Error("Expected closing ]");
@@ -217,11 +224,17 @@ export function parseLatex(input: string): MathNode {
               type: 'predefined',
               decoration: decorationToLatexCommandInverse[name] as NodeDecoration,
             },
-            
           );
         } 
-        else if (getNodeFromAlias(name)) {
-          base = getNodeFromAlias(name); // Call creatNode()
+        else if (getStyledNodeFromAlias(name)) {
+          // Parse child node that will receive styling
+          const child = parseGroup();
+
+          // Call styled node creation (wrap around child) with inferred styling from command name
+          base = getStyledNodeFromAlias(name, child)
+        }
+        else if (getSymbolNodeFromAlias(name)) {
+          base = getSymbolNodeFromAlias(name); // Call creatNode()
 
           if (symbolToLatex[name] && symbolToLatex[name].charAt(symbolToLatex[name].length - 1) === " ") {
             if (peek()?.type === "char" && peek()?.value === " ") {
@@ -230,27 +243,32 @@ export function parseLatex(input: string): MathNode {
             } else console.log(`NOPE type is ${peek()?.type}`)
            }
         } 
-        else if (bigOperatorToLatexInverse[name]) {
+        else if (getBigOpNodeFromAlias(name)) {
           // Parse optional subscript (lower limit)
           let lower: InlineContainerNode = createInlineContainer();
           let upper: InlineContainerNode = createInlineContainer();
 
           skipWhitespace();
+          
           // Check if next token is '_' for lower limit
-          if (peek()?.type === "char" && peek()?.value === "_") {
+          let next = peek();
+          if (next && next.type === "char" && next.value === "_") {
             consume(); // consume '_'
             skipWhitespace();
-            lower = parseGroup();
+            lower = parseChildScript();
           }
 
           // Check if next token is '^' for upper limit
-          if (peek()?.type === "char" && peek()?.value === "^") {
+          next = peek();
+          if (next && next.type === "char" && next.value === "^") {
             consume(); // consume '^'
             skipWhitespace();
-            upper = parseGroup();
+            upper = parseChildScript();
           }
-
-          base = createBigOperator(bigOperatorToLatexInverse[name], lower, upper);
+          const result = getBigOpNodeFromAlias(name, lower, upper);
+          if (result != undefined) {
+            base = result;
+          } else throw new Error(`PROBLEM: COULD NOT MAKE THE BIG OP FROM ${name}!!`)          
         }
 
         else if (name === 'overset') {
@@ -281,11 +299,12 @@ export function parseLatex(input: string): MathNode {
           console.log(`Name not found: '${name}'. Creating`)
           console.log(`creating \\${name} `)
           // Create text node with escaped sequence 
-          base = createStyledNode(createTextNode("\\" + name, "\\" + name), { fontFamily: "upright" });
+          base = createStyledNode(createTextNode("\\" + name, "\\" + name), { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } });
         }
       } 
       else if (token.type === "brace_open") {
-        base = parseGroup();
+        console.log(`Is this reached? I hope NOT`)
+        base = createGroupNode(parseGroup());
       } 
       else if (token.type === "char") {
         if (isOpeningBracket(token.value)) {

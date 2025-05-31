@@ -48,9 +48,12 @@ type RenderProps = {
 
 function getStyleClass(style?: TextStyle): string {
   return clsx({
-    "math-style-normal": style?.fontFamily === "normal",
-    "math-style-upright": style?.fontFamily === "upright",
-    "math-style-command": style?.fontFamily === "command",
+    "math-style-normal": style?.fontStyling?.fontStyle === "normal",
+    "math-style-upright": style?.fontStyling?.fontStyle === "upright",
+    "math-style-command": style?.fontStyling?.fontStyle === "command",
+    "math-style-bold": style?.fontStyling?.fontStyle === "bold",
+    "math-style-calligraphic": style?.fontStyling?.fontStyle === "calligraphic",
+    "math-style-blackboard": style?.fontStyling?.fontStyle === "blackboard",
   });
 }
 
@@ -288,7 +291,7 @@ export const renderCommandInputNode = (
     onMouseEnter={() => handleMouseEnter(node.id, props.onHoverChange!)}
     onMouseLeave={(e) => handleMouseLeave(e, node.id, props.ancestorIds, props.onHoverChange!)}
   >
-    {renderContainerChildren(node.children, node.id, props, { fontFamily: 'command' })}
+    {renderContainerChildren(node.children, node.id, props, { fontStyling: { fontStyle: 'command', fontStyleAlias: "" } })}
   </span>
 );
 

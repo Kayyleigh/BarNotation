@@ -1,5 +1,5 @@
 import { createAccentedNode, createBigOperator, createInlineContainer, createNthRoot, createStyledNode, createTextNode } from '../models/nodeFactories';
-import type { MathNode, StructureNode } from '../models/types';
+import type { InlineContainerNode, StructureNode, TextStyle } from '../models/types';
 import { decorationToLatexCommand, type NodeDecoration, type DecorationInfo } from '../utils/accentUtils';
 
 export interface SpecialSequence {
@@ -18,15 +18,20 @@ export const decoratedEntries: SpecialSequence[] = Object.entries(decorationToLa
   }
 );
 
+const makeStyledSequence = (sequence: string, style: TextStyle): SpecialSequence => ({
+  sequence,
+  createNode: (
+    child = createInlineContainer()
+  ) => createStyledNode(child, style),
+});
 
 export const stylingOptions: SpecialSequence[] = [
-  {
-    sequence: "\\text ",
-    createNode: () => createStyledNode(
-      createInlineContainer(),
-      { fontFamily: "upright" }
-    ),
-  },
+  makeStyledSequence("\\text ", { fontStyling: { fontStyle: "upright" , fontStyleAlias: "\\text" } }),
+  makeStyledSequence("\\mathbf ", { fontStyling: { fontStyle: "bold" , fontStyleAlias: "\\mathbf" } }),
+  makeStyledSequence("\\mathbb ", { fontStyling: { fontStyle: "blackboard" , fontStyleAlias: "\\mathbb" } }),
+  makeStyledSequence("\\boldsymbol ", { fontStyling: { fontStyle: "bold" , fontStyleAlias: "\\boldsymbol" } }),
+  makeStyledSequence("\\mathcal ", { fontStyling: { fontStyle: "calligraphic" , fontStyleAlias: "\\mathcal" } }),
+  //TODO add the rest of the existing \\math<...>
 ];
 
 export const nodeTransformationSequences: SpecialSequence[] = [ //TODO: rename to relevant
@@ -39,23 +44,21 @@ export const nodeTransformationSequences: SpecialSequence[] = [ //TODO: rename t
   },
 ]
 
+const makeBigOp = (sequence: string, symbol: string): SpecialSequence => ({
+  sequence,
+  createNode: (
+    lower = createInlineContainer(),
+    upper = createInlineContainer()
+  ) => createBigOperator(symbol, lower, upper),
+});
+
 export const bigOperatorSequences: SpecialSequence[] = [
-  {
-    sequence: "\\sum ",
-    createNode: () => createBigOperator(
-      "Σ",
-      createInlineContainer(),
-      createInlineContainer(),
-    ),
-  },
-  {
-    sequence: "\\int ",
-    createNode: () => createBigOperator(
-      "∫",
-      createInlineContainer(),
-      createInlineContainer(),
-    ),
-  },
+  makeBigOp("\\sum ", "Σ"),
+  makeBigOp("\\prod ", "Π"),
+  makeBigOp("\\int ", "∫"),
+  makeBigOp("\\iint ", "∫∫"),
+  makeBigOp("\\iiint ", "∫∫∫"),
+  makeBigOp("\\iiiint ", "∫∫∫∫"),
 ];
 
 //NOTE TO SELF: sequence is what _I_ allow; alias is a unique identifier _I_ chose
@@ -115,7 +118,6 @@ export const hebrewLetters: SpecialSequence[] = [
   { sequence: "\\gimel ", createNode: () => createTextNode("ℷ", "\\gimel ") },
 ];
 
-
 export const bracketSymbolSequences: SpecialSequence[] = [
   { sequence: "\\lfloor ", createNode: () => createTextNode("⌊", "\\lfloor ") },
   { sequence: "\\rfloor ", createNode: () => createTextNode("⌋", "\\rfloor ") },
@@ -138,6 +140,7 @@ export const arrowSymbols: SpecialSequence[] = [
 ];
 
 export const binaryOperators: SpecialSequence[] = [
+  { sequence: "\\cdot ", createNode: () => createTextNode("⋅", "\\cdot ") },
   { sequence: "\\ast ", createNode: () => createTextNode("∗", "\\ast ") },
   { sequence: "\\pm ", createNode: () => createTextNode("±", "\\pm ") },
   { sequence: "\\cap ", createNode: () => createTextNode("∩", "\\cap ") },
@@ -250,216 +253,219 @@ export const logicSymbols: SpecialSequence[] = [
   { sequence: "\\neg ", createNode: () => createTextNode("¬", "\\neg ") },
   { sequence: "\\nexists ", createNode: () => createTextNode("∄", "\\nexists ") },
   { sequence: "\\varnothing ", createNode: () => createTextNode("∅", "\\varnothing ") },
+  { sequence: "\\top ", createNode: () => createTextNode("⊤", "\\top ") },
+  { sequence: "\\bot ", createNode: () => createTextNode("⊥", "\\bot ") },
 ];
 
 export const otherSymbols: SpecialSequence[] = [
   { sequence: "\\infty ", createNode: () => createTextNode("∞", "\\infty ") },
   { sequence: "\\partial ", createNode: () => createTextNode("∂", "\\partial ") },
+  { sequence: "\\nabla ", createNode: () => createTextNode("∇", "\\nabla ") },   
 ];
 
 export const standardFunctionNames: SpecialSequence[] = [
   { sequence: "\\arccos ", 
     createNode: () => createStyledNode(
       createTextNode("arccos", "\\arccos "), 
-      { fontFamily: "upright" }
+      { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   { sequence: "\\arcsin ", 
     createNode: () => createStyledNode(
       createTextNode("arcsin", "\\arcsin "), 
-      { fontFamily: "upright" }
+      { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   { sequence: "\\arctan ", 
     createNode: () => createStyledNode(
       createTextNode("arctan", "\\arctan "), 
-      { fontFamily: "upright" }
+      { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   { sequence: "\\arg ", 
     createNode: () => createStyledNode(
       createTextNode("arg", "\\arg "), 
-      { fontFamily: "upright" }
+      { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   { sequence: "\\argmax ", 
     createNode: () => createStyledNode(
       createTextNode("arg max", "\\argmax "), 
-      { fontFamily: "upright" }
+      { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   { sequence: "\\argmin ", 
     createNode: () => createStyledNode(
       createTextNode("arg min", "\\argmin "), 
-      { fontFamily: "upright" }
+      { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   { sequence: "\\cos ", 
     createNode: () => createStyledNode(
       createTextNode("cos", "\\cos "), 
-      { fontFamily: "upright" }
+      { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   { sequence: "\\cosh ", 
     createNode: () => createStyledNode(
       createTextNode("cosh", "\\cosh "), 
-      { fontFamily: "upright" }
+      { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   { sequence: "\\cot ", 
     createNode: () => createStyledNode(
       createTextNode("cot", "\\cot "), 
-      { fontFamily: "upright" }
+      { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   { sequence: "\\coth ", 
     createNode: () => createStyledNode(
       createTextNode("coth", "\\coth "), 
-      { fontFamily: "upright" }
+      { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   { sequence: "\\csc ", 
     createNode: () => createStyledNode(
       createTextNode("csc", "\\csc "), 
-      { fontFamily: "upright" }
+      { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   { sequence: "\\deg ", 
     createNode: () => createStyledNode(
       createTextNode("deg", "\\deg "), 
-      { fontFamily: "upright" }
+      { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   { sequence: "\\det ", 
     createNode: () => createStyledNode(
       createTextNode("det", "\\det "), 
-      { fontFamily: "upright" }
+      { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   { sequence: "\\dim ", 
     createNode: () => createStyledNode(
       createTextNode("dim", "\\dim "), 
-      { fontFamily: "upright" }
+      { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   { sequence: "\\exp ", 
     createNode: () => createStyledNode(
       createTextNode("exp", "\\exp "), 
-      { fontFamily: "upright" }
+      { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   { sequence: "\\gcd ", 
     createNode: () => createStyledNode(
       createTextNode("gcd", "\\gcd "), 
-      { fontFamily: "upright" }
+      { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   { sequence: "\\hom ", 
     createNode: () => createStyledNode(
       createTextNode("hom", "\\hom "), 
-      { fontFamily: "upright" }
+      { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   { sequence: "\\inf ", 
     createNode: () => createStyledNode(
       createTextNode("inf", "\\inf "), 
-      { fontFamily: "upright" }
+      { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   { sequence: "\\ker ", 
     createNode: () => createStyledNode(
       createTextNode("ker", "\\ker "), 
-      { fontFamily: "upright" }
+      { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   { sequence: "\\lg ", 
     createNode: () => createStyledNode(
       createTextNode("lg", "\\lg "), 
-      { fontFamily: "upright" }
+      { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   { sequence: "\\lim ", 
     createNode: () => createStyledNode(
       createTextNode("lim", "\\lim "), 
-      { fontFamily: "upright" }
+      { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   { sequence: "\\liminf ", 
     createNode: () => createStyledNode(
       createInlineContainer([createTextNode("lim inf", "\\liminf ")]), 
-      { fontFamily: "upright" }
+      { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   { sequence: "\\limsup ", 
     createNode: () => createStyledNode(
       createInlineContainer([createTextNode("lim sup", "\\limsup ")]), 
-      { fontFamily: "upright" }
+      { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   { sequence: "\\ln ", 
     createNode: () => createStyledNode(
       createTextNode("ln", "\\ln "), 
-      { fontFamily: "upright" }
+      { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   { sequence: "\\log ", 
     createNode: () => createStyledNode(
       createTextNode("log", "\\log "), 
-      { fontFamily: "upright" }
+      { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   { sequence: "\\max ", 
     createNode: () => createStyledNode(
       createTextNode("max", "\\max "), 
-      { fontFamily: "upright" }
+      { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   { sequence: "\\min ", 
     createNode: () => createStyledNode(
       createTextNode("min", "\\min "), 
-      { fontFamily: "upright" }
+      { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   { sequence: "\\Pr ", 
     createNode: () => createStyledNode(
       createTextNode("Pr", "\\Pr "), 
-      { fontFamily: "upright" }
+      { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   { sequence: "\\sec ", 
     createNode: () => createStyledNode(
       createTextNode("sec", "\\sec "), 
-      { fontFamily: "upright" }
+      { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   { sequence: "\\sin ", 
     createNode: () => createStyledNode(
       createTextNode("sin", "\\sin "), 
-      { fontFamily: "upright" }
+      { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   { sequence: "\\sinh ", 
     createNode: () => createStyledNode(
       createTextNode("sinh", "\\sinh "), 
-      { fontFamily: "upright" }
+      { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },    
   { sequence: "\\sup ", 
     createNode: () => createStyledNode(
       createTextNode("sup", "\\sup "), 
-      { fontFamily: "upright" }
+      { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   { sequence: "\\tan ", 
     createNode: () => createStyledNode(
       createTextNode("tan", "\\tan "), 
-      { fontFamily: "upright" }
+      { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   { sequence: "\\tanh ", 
     createNode: () => createStyledNode(
       createTextNode("tanh", "\\tanh "), 
-      { fontFamily: "upright" }
+      { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
 ]
@@ -510,28 +516,34 @@ export const symbolToLatex: Record<string, string> = Object.fromEntries(
     .filter((entry): entry is [string, string] => entry !== null)
 );
 
-export const symbolToLatexInverse = Object.fromEntries(
-  Object.entries(symbolToLatex).map(([k, v]) => [v.replace(/^\\/, "").trimEnd(), k])
-);
-
-export const latexToSymbolTextNode: Record<string, () => MathNode> = Object.fromEntries(
-  specialSymbols
-  .map(e => {
-    return [e.sequence.replace(/^\\/, "").trimEnd(), e.createNode];
-  })
-  .filter((entry): entry is [string, (() => MathNode)] => entry !== null)
-);
-
-export const bigOperatorToLatexInverse = Object.fromEntries(
-  Object.entries(bigOperatorToLatex).map(([k, v]) => [v.replace(/^\\/, "").trimEnd(), k])
-);
-
 const normalizeCommand = (cmd: string) => cmd.trim().replace(/^\\/, "");
 
-export const inputAliasToNodeFactory: Record<string, () => StructureNode> = Object.fromEntries(
+// Symbol (no arguments)
+
+export const inputAliasToSymbolNodeFactory: Record<string, () => StructureNode> = Object.fromEntries(
   specialSymbols.map(({ sequence, createNode }) => [normalizeCommand(sequence), createNode])
 );
 
-export function getNodeFromAlias(command: string): StructureNode | undefined {
-  return inputAliasToNodeFactory[command]?.();
-}
+export function getSymbolNodeFromAlias(command: string): StructureNode | undefined {
+  return inputAliasToSymbolNodeFactory[command]?.();
+};
+
+// Big Operator
+
+export const inputAliasToBigOpNodeFactory: Record<string, (lower?: InlineContainerNode, upper?: InlineContainerNode) => StructureNode> = Object.fromEntries(
+  bigOperatorSequences.map(({ sequence, createNode }) => [normalizeCommand(sequence), createNode])
+);
+
+export function getBigOpNodeFromAlias(command: string, lower?: InlineContainerNode, upper?: InlineContainerNode): StructureNode | undefined {
+  return inputAliasToBigOpNodeFactory[command]?.(lower, upper);
+};
+
+// Styled
+
+export const inputAliasToStyledNodeFactory: Record<string, (child?: InlineContainerNode) => StructureNode> = Object.fromEntries(
+  stylingOptions.map(({ sequence, createNode }) => [normalizeCommand(sequence), createNode])
+);
+
+export function getStyledNodeFromAlias(command: string, child?: InlineContainerNode): StructureNode | undefined {
+  return inputAliasToStyledNodeFactory[command]?.(child);
+};

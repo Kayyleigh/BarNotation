@@ -17,7 +17,6 @@ import {
   renderRootWrapperNode,
   renderNthRootNode,
 } from "./MathRenderers";
-import { findParentContainerAndIndex } from "../utils/treeUtils";
 
 export type MathRendererProps = {
   node: MathNode;
@@ -53,7 +52,7 @@ export const MathRenderer: React.FC<MathRendererProps> = ({
   parentContainerId,
   ancestorIds,
   index,
-  inheritedStyle = { fontFamily: "normal" },
+  inheritedStyle = { fontStyling: { fontStyle: "normal", fontStyleAlias: "" } },
 }) => {
 
   const dragHandlers = {

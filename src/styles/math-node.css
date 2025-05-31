@@ -42,6 +42,22 @@
     text-transform: math-auto; /* No-op, but placeholder */
     font-family: var(--math-font-family);
   }
+
+  .math-node .math-style-bold {
+    text-transform: none; /* No-op, but placeholder */
+    font-family: var(--math-font-family);
+    font-weight: bold;
+  }
+
+  .math-node .math-style-calligraphic {
+    font-family: "Brush Script MT", "Lucida Handwriting", cursive;
+  }
+
+  .math-node .math-style-blackboard {
+    font-family: serif;
+    font-weight: bold;
+    letter-spacing: 1px; /* Optional for extra distinction */
+  }
   
   .math-node :not(.type-text).math-style-upright {
     text-transform: none;
@@ -99,10 +115,6 @@
     align-items: center;
     line-height: 1;
     vertical-align: middle;
-  }
-
-  .type-subsup {
-    /*  */
   }
 
   .type-actsymb {

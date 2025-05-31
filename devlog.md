@@ -1923,3 +1923,22 @@ How to match all special sequences w style
 Replacement: `sequence: "$1", \n    createNode: () => createStyledNode(\n      createTextNode("$2", "$1"`
 
 Check for success: `createTextNode\("[^"]+"\)` should give no results
+
+refactored some of specialSequences (MUCH BETTER OMG)
+
+TODO: must ensure some way to get styling options back in latex. Either by node to latex having a style case, or by doing a similar thing as the new inputAlias of textnode?
+
+| Command         | Style             | Works on      | Notes                                                             |
+| --------------- | ----------------- | ------------- | ----------------------------------------------------------------- |
+| `\mathcal{}`    | Calligraphic      | A–Z           | Only uppercase; default in LaTeX                                  |
+| `\mathscr{}`    | Script (fancier)  | A–Z           | Needs `\usepackage{mathrsfs}` or `mathpazo`                       |
+| `\mathfrak{}`   | Fraktur (Gothic)  | A–Z, a–z      | Needs `\usepackage{amssymb}` or `eufrak`                          |
+| `\mathbb{}`     | Blackboard Bold   | A–Z           | Used for number sets: `\mathbb{R}, \mathbb{N}`; needs `amssymb`   |
+| `\mathbf{}`     | Bold Roman        | A–Z, a–z, 0–9 | Bolds normal Latin characters (not Greek)                         |
+| `\boldsymbol{}` | Bold math symbols | Everything    | Bolds Greek, operators, etc.; needs `amsmath`                     |
+| `\mathrm{}`     | Upright Roman     | A–Z, a–z      | Non-italic math text (useful for units/constants like "Re", "Im") |
+| `\mathit{}`     | Italic Roman      | A–Z, a–z      | Forces italic even in non-default contexts                        |
+| `\mathtt{}`     | Typewriter        | A–Z, a–z      | Fixed-width font, good for code snippets                          |
+| `\mathsf{}`     | Sans-serif        | A–Z, a–z      | Rare, but sometimes used in stylistic documents                   |
+
+Implemented: Now if trying to get unknown open/close bracket, it gives empty string

@@ -308,6 +308,9 @@ export const findNodeById = (node: MathNode, targetId: string): MathNode | null 
     else if (root.type === 'group') {
       if (root.child.id === inlineContainerId) return { parent: root, key: "child" };
     }
+    else if (root.type === 'styled') {
+      if (root.child.id === inlineContainerId) return { parent: root, key: "child" };
+    }
     else if (root.type === 'accented') {
       if (root.base.id === inlineContainerId) return { parent: root, key: "child" };
 

@@ -53,8 +53,13 @@ export interface BaseNode {
   type: NodeType;
 }
 
+export interface FontStyling {
+  fontStyle: "normal" | "italic" | "upright" | "command" | "bold" | "calligraphic" | "blackboard";
+  fontStyleAlias: string;
+}
+
 export interface TextStyle {
-  fontFamily?: "normal" | "italic" | "upright" | "command";
+  fontStyling?: FontStyling;
   color?: string;
   fontSize?: number;
 }

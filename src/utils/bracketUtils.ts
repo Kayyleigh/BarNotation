@@ -7,7 +7,7 @@
     square: { open: "[", close: "]" },
     curly: { open: "{", close: "}" },
     angle: { open: "⟨", close: "⟩" },
-    //vertical: { open: "|", close: "|" }, //TODO include once I allow nice render of lonely vertical lines (not red)
+    vertical: { open: "|", close: "|" }, //TODO include once I allow nice render of lonely vertical lines (not red)
     floor: { open: "⌊", close: "⌋" },
     ceil: { open: "⌈", close: "⌉" },
   };
@@ -29,12 +29,12 @@
     return symbolToStyleMap[symbol];
   }
   
-  export function getOpenSymbol(style: BracketStyle): string | undefined {
-    return bracketSymbols[style]?.open;
+  export function getOpenSymbol(style: BracketStyle): string {
+    return bracketSymbols[style]?.open || "" ;
   }
   
-  export function getCloseSymbol(style: BracketStyle): string | undefined {
-    return bracketSymbols[style]?.close;
+  export function getCloseSymbol(style: BracketStyle): string {
+    return bracketSymbols[style]?.close || "" ;
   }
   
   export const openingBrackets = new Set(

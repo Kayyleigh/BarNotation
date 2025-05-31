@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import MathEditor from "./MathEditor";
-import Toolbar from "./Toolbar";
 import "../styles/styles.css"; // Make sure it includes theme classes
 
 const App: React.FC = () => {

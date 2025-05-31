@@ -2,7 +2,7 @@ import { decorationToLatexCommand } from "../utils/accentUtils";
 import { getCloseSymbol, getOpenSymbol } from "../utils/bracketUtils";
 import { isEmptyNode } from "../utils/treeUtils";
 import { parseLatex } from "./mathNodeParser";
-import { bigOperatorToLatex, symbolToLatex } from "./specialSequences";
+import { bigOperatorToLatex } from "./specialSequences";
 import type { MathNode } from "./types";
 
 export const nodeToLatex = (node: MathNode): string => {
@@ -23,8 +23,29 @@ export const nodeToLatex = (node: MathNode): string => {
         return node.children.map(nodeToLatex).join("");
 
       case "styled": {
-        //TODO: maybe here allow own styling to latex styling mapping too
-        return nodeToLatex(node.child);
+        const { color, fontSize, fontStyling } = node.style;
+        const fontStyle = fontStyling?.fontStyleAlias;
+        
+        const child = nodeToLatex(node.child);
+        
+        const wrappers: string[] = [];
+        
+        if (fontSize) {
+          wrappers.push(`\\scalebox{${fontSize}}`);
+        }
+        if (color) {
+          wrappers.push(`\\textcolor{${color}}`);
+        }
+        if (fontStyle) {
+          wrappers.push(`${fontStyle}`);
+        }
+        
+        const wrapped = wrappers.reduceRight(
+          (acc, cmd) => `${cmd}{${acc}}`,
+          child
+        );
+        
+        return wrapped;
       }
   
       case "inline-container": {
@@ -137,7 +158,29 @@ export const nodeToLatex = (node: MathNode): string => {
         return node.children.map(nodeToLatexHighlighted).join("");
   
       case "styled": {
-        return nodeToLatexHighlighted(node.child);
+        const { color, fontSize, fontStyling } = node.style;
+        const fontStyle = fontStyling?.fontStyleAlias;
+        
+        const child = nodeToLatexHighlighted(node.child);
+        
+        const wrappers: string[] = [];
+        
+        if (fontSize) {
+          wrappers.push(`${wrapCmd('\\scalebox')}${wrapBracket('{')}${fontSize}${wrapBracket('}')}`);
+        }
+        if (color) {
+          wrappers.push(`${wrapCmd('\\textcolor')}${wrapBracket('{')}${color}${wrapBracket('}')}`);
+        }
+        if (fontStyle) {
+          wrappers.push(`${wrapCmd(`${fontStyle}`)}`);
+        }
+        
+        const wrapped = wrappers.reduceRight(
+          (acc, cmd) => `${cmd}${wrapBracket("{")}${acc}${wrapBracket("}")}`,
+          child
+        );
+        
+        return wrapped;
       }
   
       case "inline-container": {

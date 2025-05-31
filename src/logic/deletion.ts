@@ -5,7 +5,6 @@ import {
   type InlineContainerNode,
   type MathNode,
 } from "../models/types";
-import { directionalChildOrder } from "../utils/navigationUtils";
 import { handleArrowLeft } from "./navigation";
 
 //BUG: when deleting subsup that has nonempty other corners, it still deletes whole thing
