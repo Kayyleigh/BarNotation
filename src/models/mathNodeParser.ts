@@ -1,7 +1,7 @@
 import { decorationToLatexCommandInverse, type NodeDecoration } from "../utils/accentUtils";
 import { bracketSymbols, getStyleFromSymbol, isOpeningBracket } from "../utils/bracketUtils";
-import { createAccentedNode, createBigOperator, createChildedNode, createFraction, createGroupNode, createInlineContainer, createNthRoot, createTextNode } from "./nodeFactories";
-import { bigOperatorToLatexInverse, latexToSymbolTextNode, symbolToLatex, symbolToLatexInverse } from "./specialSequences";
+import { createAccentedNode, createBigOperator, createChildedNode, createFraction, createGroupNode, createInlineContainer, createNthRoot, createStyledNode, createTextNode } from "./nodeFactories";
+import { bigOperatorToLatexInverse, getNodeFromAlias, latexToSymbolTextNode, symbolToLatex, symbolToLatexInverse } from "./specialSequences";
 import type { GroupNode, InlineContainerNode, MathNode, StructureNode } from "./types";
 
 type Token =
@@ -67,9 +67,9 @@ export function parseLatex(input: string): MathNode {
           let node: StructureNode;
           if (token.type === "char") {
             node = createTextNode(token.value);
-          } else {
-            const symbolNode = symbolToLatexInverse[token.name] ? latexToSymbolTextNode[token.name]() : createTextNode("\\" + token.name);
-            node = symbolNode;
+          } else if (token.type === "command"){
+            // Get transformed node OR create text node with escaped sequence 
+            node = getNodeFromAlias(token.name) || createTextNode(token.name, "\\" + token.name);
           }
           return createInlineContainer([node]);
         }
@@ -95,7 +95,14 @@ export function parseLatex(input: string): MathNode {
         while (peek() && !(peek()?.type === "char" && peek()?.value === "]")) {
           const t = consume();
           if (t.type === "char") str += t.value;
-          else if (t.type === "command") str += "\\" + t.name;
+          else if (t.type === "command") {
+            if (t.name.startsWith("\\")) {
+              // If already starting with backspace (i.e., escaped char): do not add another
+              str += t.name; 
+            } else {
+              str += "\\" + t.name;              
+            }
+          }
           else if (t.type === "brace_open") str += "{";
           else if (t.type === "brace_close") str += "}";
         }
@@ -152,7 +159,8 @@ export function parseLatex(input: string): MathNode {
 
       if (!token) throw new Error("Unexpected end of input");
     
-      let base = createTextNode("");
+      let base: StructureNode;
+      base = createTextNode("");
     
       if (token.type === "command") {
         const { name } = consume() as { type: "command"; name: string };
@@ -212,8 +220,8 @@ export function parseLatex(input: string): MathNode {
             
           );
         } 
-        else if (symbolToLatexInverse[name]) {
-          base = latexToSymbolTextNode[name](); // Call creatNode()
+        else if (getNodeFromAlias(name)) {
+          base = getNodeFromAlias(name); // Call creatNode()
 
           if (symbolToLatex[name] && symbolToLatex[name].charAt(symbolToLatex[name].length - 1) === " ") {
             if (peek()?.type === "char" && peek()?.value === " ") {
@@ -261,10 +269,19 @@ export function parseLatex(input: string): MathNode {
         else if (name === 'right') {
           console.warn(`Not yet implemented: ${name}`)
         }
+        else if (name.startsWith("\\")) {
+          // TODO: recognize when to turn into special spacing like \,
+
+          console.warn(`Escape sequence: ${name}`)
+
+          // Create text node where display text is the sequence after "\"
+          base = createTextNode(name.slice(1), name);
+        }
         else {
-          console.log(`Name not found: '${name}'`)
+          console.log(`Name not found: '${name}'. Creating`)
           console.log(`creating \\${name} `)
-          base = createTextNode("\\" + name);
+          // Create text node with escaped sequence 
+          base = createStyledNode(createTextNode("\\" + name, "\\" + name), { fontFamily: "upright" });
         }
       } 
       else if (token.type === "brace_open") {
@@ -289,7 +306,6 @@ export function parseLatex(input: string): MathNode {
       }
       else if (token.type === "whitespace") {
         consume();
-        base = parseExpression()
         //base = createTextNode(token.value);
         //return;
       } 
@@ -356,9 +372,9 @@ export function parseLatex(input: string): MathNode {
           tokens.push({ type: "command", name });
           console.log(`Pushed command: ${name}`)
         } else {
-          // 🔥 This handles `\{`, `\}`, `\%`, etc.
-          tokens.push({ type: "char", value: "\\{" });
-          console.log(`Pushed char: ${next}`)
+          // 🔥 Special character escaping
+          tokens.push({ type: "command", name: "\\" + next });
+          console.log(`Pushed command IN ELSE: \\${next}`)
           i++; // Advance past the escaped character
         }
       } else if (ch === "{") {

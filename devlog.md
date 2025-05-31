@@ -1915,3 +1915,11 @@ quickly fixed command bracket insert (only in editor, not from latex)
 Note: when implementing the drag-from-dumpster thingy, I should not have it be anything about state cuz by then the parser _should_ work, meaning I can just insert at index from latex? Idk yet
 
 Maybe use Fn - instead of Ctrl - cuz I am already suffering because it feels like Ctrl - should zoom 
+
+### 31/05/2025 
+How to match all special sequences w style
+
+`sequence: "([^"]+)", \n    createNode: \(\) => createStyledNode\(\n      createTextNode\("([^"]+)"`
+Replacement: `sequence: "$1", \n    createNode: () => createStyledNode(\n      createTextNode("$2", "$1"`
+
+Check for success: `createTextNode\("[^"]+"\)` should give no results

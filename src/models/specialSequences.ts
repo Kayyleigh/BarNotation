@@ -1,10 +1,10 @@
 import { createAccentedNode, createBigOperator, createInlineContainer, createNthRoot, createStyledNode, createTextNode } from '../models/nodeFactories';
-import type { MathNode } from '../models/types';
+import type { MathNode, StructureNode } from '../models/types';
 import { decorationToLatexCommand, type NodeDecoration, type DecorationInfo } from '../utils/accentUtils';
 
 export interface SpecialSequence {
   sequence: string;
-  createNode: () => MathNode;
+  createNode: () => StructureNode;
 }
 
 export const decoratedEntries: SpecialSequence[] = Object.entries(decorationToLatexCommand).map(
@@ -58,404 +58,407 @@ export const bigOperatorSequences: SpecialSequence[] = [
   },
 ];
 
+//NOTE TO SELF: sequence is what _I_ allow; alias is a unique identifier _I_ chose
+// The fact that both are just LaTeX is "a complete coincidence?"
+// When  
 export const greekLetters: SpecialSequence[] = [
   // small
-  { sequence: "\\alpha ", createNode: () => createTextNode("α") },
-  { sequence: "\\beta ", createNode: () => createTextNode("β") },
-  { sequence: "\\chi ", createNode: () => createTextNode("χ") },
-  { sequence: "\\delta ", createNode: () => createTextNode("δ") },
-  { sequence: "\\digamma ", createNode: () => createTextNode("ͷ") },
-  { sequence: "\\epsilon ", createNode: () => createTextNode("ϵ") },
-  { sequence: "\\eta ", createNode: () => createTextNode("η") },
-  { sequence: "\\gamma ", createNode: () => createTextNode("γ") },
-  { sequence: "\\iota ", createNode: () => createTextNode("ι") },
-  { sequence: "\\kappa ", createNode: () => createTextNode("κ") },
-  { sequence: "\\lambda ", createNode: () => createTextNode("λ") },
-  { sequence: "\\mu ", createNode: () => createTextNode("µ") },
-  { sequence: "\\nu ", createNode: () => createTextNode("ν") },
-  { sequence: "\\omega ", createNode: () => createTextNode("ω") },
-  { sequence: "\\phi ", createNode: () => createTextNode("φ") },
-  { sequence: "\\pi ", createNode: () => createTextNode("π") },
-  { sequence: "\\psi ", createNode: () => createTextNode("ψ") },
-  { sequence: "\\rho ", createNode: () => createTextNode("ρ") },
-  { sequence: "\\sigma ", createNode: () => createTextNode("σ") },
-  { sequence: "\\tau ", createNode: () => createTextNode("τ") },
-  { sequence: "\\theta ", createNode: () => createTextNode("θ") },
-  { sequence: "\\upsilon ", createNode: () => createTextNode("υ") },
-  { sequence: "\\varepsilon ", createNode: () => createTextNode("ε") },
-  { sequence: "\\varkappa ", createNode: () => createTextNode("ϰ") },
-  { sequence: "\\varphi ", createNode: () => createTextNode("ϕ") },
-  { sequence: "\\varpi ", createNode: () => createTextNode("ϖ") },
-  { sequence: "\\varrho ", createNode: () => createTextNode("ϱ") },
-  { sequence: "\\varsigma ", createNode: () => createTextNode("ς") },
-  { sequence: "\\vartheta ", createNode: () => createTextNode("ϑ") },
-  { sequence: "\\xi ", createNode: () => createTextNode("ξ") },
-  { sequence: "\\zeta ", createNode: () => createTextNode("ζ") },
+  { sequence: "\\alpha ", createNode: () => createTextNode("α", "\\alpha ") },
+  { sequence: "\\beta ", createNode: () => createTextNode("β", "\\beta ") },
+  { sequence: "\\chi ", createNode: () => createTextNode("χ", "\\chi ") },
+  { sequence: "\\delta ", createNode: () => createTextNode("δ", "\\delta ") },
+  { sequence: "\\digamma ", createNode: () => createTextNode("ͷ", "\\digamma ") },
+  { sequence: "\\epsilon ", createNode: () => createTextNode("ϵ", "\\epsilon ") },
+  { sequence: "\\eta ", createNode: () => createTextNode("η", "\\eta ") },
+  { sequence: "\\gamma ", createNode: () => createTextNode("γ", "\\gamma ") },
+  { sequence: "\\iota ", createNode: () => createTextNode("ι", "\\iota ") },
+  { sequence: "\\kappa ", createNode: () => createTextNode("κ", "\\kappa ") },
+  { sequence: "\\lambda ", createNode: () => createTextNode("λ", "\\lambda ") },
+  { sequence: "\\mu ", createNode: () => createTextNode("µ", "\\mu ") },
+  { sequence: "\\nu ", createNode: () => createTextNode("ν", "\\nu ") },
+  { sequence: "\\omega ", createNode: () => createTextNode("ω", "\\omega ") },
+  { sequence: "\\phi ", createNode: () => createTextNode("φ", "\\phi ") },
+  { sequence: "\\pi ", createNode: () => createTextNode("π", "\\pi ") },
+  { sequence: "\\psi ", createNode: () => createTextNode("ψ", "\\psi ") },
+  { sequence: "\\rho ", createNode: () => createTextNode("ρ", "\\rho ") },
+  { sequence: "\\sigma ", createNode: () => createTextNode("σ", "\\sigma ") },
+  { sequence: "\\tau ", createNode: () => createTextNode("τ", "\\tau ") },
+  { sequence: "\\theta ", createNode: () => createTextNode("θ", "\\theta ") },
+  { sequence: "\\upsilon ", createNode: () => createTextNode("υ", "\\upsilon ") },
+  { sequence: "\\varepsilon ", createNode: () => createTextNode("ε", "\\varepsilon ") },
+  { sequence: "\\varkappa ", createNode: () => createTextNode("ϰ", "\\varkappa ") },
+  { sequence: "\\varphi ", createNode: () => createTextNode("ϕ", "\\varphi ") },
+  { sequence: "\\varpi ", createNode: () => createTextNode("ϖ", "\\varpi ") },
+  { sequence: "\\varrho ", createNode: () => createTextNode("ϱ", "\\varrho ") },
+  { sequence: "\\varsigma ", createNode: () => createTextNode("ς", "\\varsigma ") },
+  { sequence: "\\vartheta ", createNode: () => createTextNode("ϑ", "\\vartheta ") },
+  { sequence: "\\xi ", createNode: () => createTextNode("ξ", "\\xi ") },
+  { sequence: "\\zeta ", createNode: () => createTextNode("ζ", "\\zeta ") },
   // Large
-  { sequence: "\\Delta ", createNode: () => createTextNode("∆") },
-  { sequence: "\\Gamma ", createNode: () => createTextNode("Γ") },
-  { sequence: "\\Lambda ", createNode: () => createTextNode("Λ") },
-  { sequence: "\\Omega ", createNode: () => createTextNode("Ω") },
-  { sequence: "\\Phi ", createNode: () => createTextNode("Φ") },
-  { sequence: "\\Pi ", createNode: () => createTextNode("Π") },
-  { sequence: "\\Psi ", createNode: () => createTextNode("Ψ") },
-  { sequence: "\\Sigma ", createNode: () => createTextNode("Σ") },
-  { sequence: "\\Theta ", createNode: () => createTextNode("Θ") },
-  { sequence: "\\Upsilon ", createNode: () => createTextNode("Υ") },
-  { sequence: "\\Xi ", createNode: () => createTextNode("Ξ") },
+  { sequence: "\\Delta ", createNode: () => createTextNode("∆", "\\Delta ") },
+  { sequence: "\\Gamma ", createNode: () => createTextNode("Γ", "\\Gamma ") },
+  { sequence: "\\Lambda ", createNode: () => createTextNode("Λ", "\\Lambda ") },
+  { sequence: "\\Omega ", createNode: () => createTextNode("Ω", "\\Omega ") },
+  { sequence: "\\Phi ", createNode: () => createTextNode("Φ", "\\Phi ") },
+  { sequence: "\\Pi ", createNode: () => createTextNode("Π", "\\Pi ") },
+  { sequence: "\\Psi ", createNode: () => createTextNode("Ψ", "\\Psi ") },
+  { sequence: "\\Sigma ", createNode: () => createTextNode("Σ", "\\Sigma ") },
+  { sequence: "\\Theta ", createNode: () => createTextNode("Θ", "\\Theta ") },
+  { sequence: "\\Upsilon ", createNode: () => createTextNode("Υ", "\\Upsilon ") },
+  { sequence: "\\Xi ", createNode: () => createTextNode("Ξ", "\\Xi ") },
 ];
 
 export const hebrewLetters: SpecialSequence[] = [
-  { sequence: "\\aleph ", createNode: () => createTextNode("ℵ") },
-  { sequence: "\\beth ", createNode: () => createTextNode("ℶ") },
-  { sequence: "\\daleth ", createNode: () => createTextNode("ℸ") },
-  { sequence: "\\gimel ", createNode: () => createTextNode("ℷ") },
+  { sequence: "\\aleph ", createNode: () => createTextNode("ℵ", "\\aleph ") },
+  { sequence: "\\beth ", createNode: () => createTextNode("ℶ", "\\beth ") },
+  { sequence: "\\daleth ", createNode: () => createTextNode("ℸ", "\\daleth ") },
+  { sequence: "\\gimel ", createNode: () => createTextNode("ℷ", "\\gimel ") },
 ];
 
 
 export const bracketSymbolSequences: SpecialSequence[] = [
-  { sequence: "\\lfloor ", createNode: () => createTextNode("⌊") },
-  { sequence: "\\rfloor ", createNode: () => createTextNode("⌋") },
-  { sequence: "\\lceil ", createNode: () => createTextNode("⌈") },
-  { sequence: "\\rceil ", createNode: () => createTextNode("⌉") },
+  { sequence: "\\lfloor ", createNode: () => createTextNode("⌊", "\\lfloor ") },
+  { sequence: "\\rfloor ", createNode: () => createTextNode("⌋", "\\rfloor ") },
+  { sequence: "\\lceil ", createNode: () => createTextNode("⌈", "\\lceil ") },
+  { sequence: "\\rceil ", createNode: () => createTextNode("⌉", "\\rceil ") },
 ];
 
 export const arrowSymbols: SpecialSequence[] = [
-  { sequence: "\\uparrow ", createNode: () => createTextNode("↑") },
-  { sequence: "\\downarrow ", createNode: () => createTextNode("↓") },
-  { sequence: "\\leftarrow ", createNode: () => createTextNode("←") },
-  { sequence: "\\rightarrow ", createNode: () => createTextNode("→") },
-  { sequence: "\\to ", createNode: () => createTextNode("→") },
-  { sequence: "\\Uparrow ", createNode: () => createTextNode("⇑") },
-  { sequence: "\\Downarrow ", createNode: () => createTextNode("⇓") },
-  { sequence: "\\Leftarrow ", createNode: () => createTextNode("⇐") },
-  { sequence: "\\Rightarrow ", createNode: () => createTextNode("⇒") },
-  { sequence: "\\leftrightarrow ", createNode: () => createTextNode("↔") },
-  { sequence: "\\Leftrightarrow ", createNode: () => createTextNode("⇔") },
+  { sequence: "\\uparrow ", createNode: () => createTextNode("↑", "\\uparrow ") },
+  { sequence: "\\downarrow ", createNode: () => createTextNode("↓", "\\downarrow ") },
+  { sequence: "\\leftarrow ", createNode: () => createTextNode("←", "\\leftarrow ") },
+  { sequence: "\\rightarrow ", createNode: () => createTextNode("→", "\\rightarrow ") },
+  { sequence: "\\to ", createNode: () => createTextNode("→", "\\to ") },
+  { sequence: "\\Uparrow ", createNode: () => createTextNode("⇑", "\\Uparrow ") },
+  { sequence: "\\Downarrow ", createNode: () => createTextNode("⇓", "\\Downarrow ") },
+  { sequence: "\\Leftarrow ", createNode: () => createTextNode("⇐", "\\Leftarrow ") },
+  { sequence: "\\Rightarrow ", createNode: () => createTextNode("⇒", "\\Rightarrow ") },
+  { sequence: "\\leftrightarrow ", createNode: () => createTextNode("↔", "\\leftrightarrow ") },
+  { sequence: "\\Leftrightarrow ", createNode: () => createTextNode("⇔", "\\Leftrightarrow ") },
 ];
 
 export const binaryOperators: SpecialSequence[] = [
-  { sequence: "\\ast ", createNode: () => createTextNode("∗") },
-  { sequence: "\\pm ", createNode: () => createTextNode("±") },
-  { sequence: "\\cap ", createNode: () => createTextNode("∩") },
-  { sequence: "\\setminus ", createNode: () => createTextNode("\\") },
-  { sequence: "\\cup ", createNode: () => createTextNode("∪") },
-  { sequence: "\\smallsetminus ", createNode: () => createTextNode("∖") },
-  { sequence: "\\emptyset ", createNode: () => createTextNode("∅") },
-  { sequence: "\\bigcap ", createNode: () => createTextNode("⋂") },
-  { sequence: "\\bigcup ", createNode: () => createTextNode("⋃") },
-  { sequence: "\\bigvee ", createNode: () => createTextNode("⋁") },
-  { sequence: "\\bigwedge ", createNode: () => createTextNode("⋀") },
-  { sequence: "\\bigsqcup ", createNode: () => createTextNode("⋓") },
-  { sequence: "\\uplus ", createNode: () => createTextNode("⊎") },
-  { sequence: "\\diamond ", createNode: () => createTextNode("⋄") },
-  { sequence: "\\otimes ", createNode: () => createTextNode("⊗") },
-  { sequence: "\\oplus ", createNode: () => createTextNode("⊕") },
-  { sequence: "\\oslash ", createNode: () => createTextNode("⊘") },
-  { sequence: "\\odot ", createNode: () => createTextNode("⊙") },
-  { sequence: "\\circledcirc ", createNode: () => createTextNode("⊚") },
-  { sequence: "\\circledast ", createNode: () => createTextNode("⊛") },
-  { sequence: "\\ominus ", createNode: () => createTextNode("⊝") },
-  { sequence: "\\boxplus ", createNode: () => createTextNode("⊞") },
-  { sequence: "\\boxminus ", createNode: () => createTextNode("⊟") },
-  { sequence: "\\boxtimes ", createNode: () => createTextNode("⊠") },
-  { sequence: "\\boxdot ", createNode: () => createTextNode("⊡") },
-  { sequence: "\\dotplus ", createNode: () => createTextNode("∔") },
-  { sequence: "\\wr ", createNode: () => createTextNode("≀") },
-  { sequence: "\\bowtie ", createNode: () => createTextNode("⋈") },
-  { sequence: "\\models ", createNode: () => createTextNode("⊨") },
-  { sequence: "\\vDash ", createNode: () => createTextNode("⊩") },
-  { sequence: "\\Vdash ", createNode: () => createTextNode("⊫") },
-  { sequence: "\\nvdash ", createNode: () => createTextNode("⊬") },
-  { sequence: "\\nvDash ", createNode: () => createTextNode("⊭") },
-  { sequence: "\\equiv ", createNode: () => createTextNode("≡") },
-  { sequence: "\\cong ", createNode: () => createTextNode("≅") },
-  { sequence: "\\approx ", createNode: () => createTextNode("≈") },
-  { sequence: "\\sim ", createNode: () => createTextNode("∼") },
-  { sequence: "\\simeq ", createNode: () => createTextNode("≃") },
-  { sequence: "\\nsim ", createNode: () => createTextNode("≁") },
-  { sequence: "\\neq ", createNode: () => createTextNode("≠") },
-  { sequence: "\\doteq ", createNode: () => createTextNode("≐") },
-  { sequence: "\\fallingdotseq ", createNode: () => createTextNode("≒") },
-  { sequence: "\\risingdotseq ", createNode: () => createTextNode("≓") },
-  { sequence: "\\propto ", createNode: () => createTextNode("∝") },
-  { sequence: "\\lt ", createNode: () => createTextNode("<") },
-  { sequence: "\\gt ", createNode: () => createTextNode(">") },
-  { sequence: "\\nless ", createNode: () => createTextNode("≮") },
-  { sequence: "\\ngtr ", createNode: () => createTextNode("≯") },
-  { sequence: "\\ll ", createNode: () => createTextNode("≪") },
-  { sequence: "\\gg ", createNode: () => createTextNode("≫") },
-  { sequence: "\\lesssim ", createNode: () => createTextNode("≲") },
-  { sequence: "\\gtrsim ", createNode: () => createTextNode("≳") },
-  { sequence: "\\lessgtr ", createNode: () => createTextNode("≶") },
-  { sequence: "\\gtrless ", createNode: () => createTextNode("≷") },
-  { sequence: "\\lesseqgtr ", createNode: () => createTextNode("⋚") },
-  { sequence: "\\gtreqless ", createNode: () => createTextNode("⋛") },
-  { sequence: "\\leq ", createNode: () => createTextNode("≤") },
-  { sequence: "\\geq ", createNode: () => createTextNode("≥") },
-  { sequence: "\\leqq ", createNode: () => createTextNode("≦") },
-  { sequence: "\\geqq ", createNode: () => createTextNode("≧") },
-  { sequence: "\\leqslant ", createNode: () => createTextNode("⩽") },
-  { sequence: "\\geqslant ", createNode: () => createTextNode("⩾") },
-  { sequence: "\\subset ", createNode: () => createTextNode("⊂") },
-  { sequence: "\\supset ", createNode: () => createTextNode("⊃") },
-  { sequence: "\\subseteq ", createNode: () => createTextNode("⊆") },
-  { sequence: "\\supseteq ", createNode: () => createTextNode("⊇") },
-  { sequence: "\\nsubseteq ", createNode: () => createTextNode("⊈") },
-  { sequence: "\\nsupseteq ", createNode: () => createTextNode("⊉") },
-  { sequence: "\\subsetneq ", createNode: () => createTextNode("⊊") },
-  { sequence: "\\supsetneq ", createNode: () => createTextNode("⊋") },
-  { sequence: "\\sqsubset ", createNode: () => createTextNode("⊏") },
-  { sequence: "\\sqsupset ", createNode: () => createTextNode("⊐") },
-  { sequence: "\\sqsubseteq ", createNode: () => createTextNode("⊑") },
-  { sequence: "\\sqsupseteq ", createNode: () => createTextNode("⊒") },
-  { sequence: "\\preceq ", createNode: () => createTextNode("≼") },
-  { sequence: "\\succeq ", createNode: () => createTextNode("≽") },
-  { sequence: "\\prec ", createNode: () => createTextNode("≺") },
-  { sequence: "\\succ ", createNode: () => createTextNode("≻") },
-  { sequence: "\\precsim ", createNode: () => createTextNode("⋞") },
-  { sequence: "\\succsim ", createNode: () => createTextNode("⋟") },
-  { sequence: "\\vdash ", createNode: () => createTextNode("⊢") },
-  { sequence: "\\dashv ", createNode: () => createTextNode("⊣") },
-  { sequence: "\\lhd ", createNode: () => createTextNode("⋋") },
-  { sequence: "\\rhd ", createNode: () => createTextNode("⋌") },
-  { sequence: "\\triangleleft ", createNode: () => createTextNode("⊲") },
-  { sequence: "\\triangleright ", createNode: () => createTextNode("⊳") },
-  { sequence: "\\unlhd ", createNode: () => createTextNode("⊴") },
-  { sequence: "\\unrhd ", createNode: () => createTextNode("⊵") },
-  { sequence: "\\intercal ", createNode: () => createTextNode("⊺") },
-  { sequence: "\\barwedge ", createNode: () => createTextNode("⊼") },
-  { sequence: "\\veebar ", createNode: () => createTextNode("⊽") },
-  { sequence: "\\curlyvee ", createNode: () => createTextNode("⊻") },
-  { sequence: "\\curlywedge ", createNode: () => createTextNode("⊼") },
-  { sequence: "\\doublebarwedge ", createNode: () => createTextNode("⧺") },
-  { sequence: "\\perp ", createNode: () => createTextNode("⟂") },
-  { sequence: "\\parallel ", createNode: () => createTextNode("∥") },
-  { sequence: "\\nparallel ", createNode: () => createTextNode("∦") },
-  { sequence: "\\mid ", createNode: () => createTextNode("∣") },
-  { sequence: "\\nmid ", createNode: () => createTextNode("∤") },
-  { sequence: "\\notin ", createNode: () => createTextNode("∉") },
-  { sequence: "\\in ", createNode: () => createTextNode("∈") },
-  { sequence: "\\ni ", createNode: () => createTextNode("∍") },
-  { sequence: "\\therefore ", createNode: () => createTextNode("∴") },
-  { sequence: "\\because ", createNode: () => createTextNode("∵") }
+  { sequence: "\\ast ", createNode: () => createTextNode("∗", "\\ast ") },
+  { sequence: "\\pm ", createNode: () => createTextNode("±", "\\pm ") },
+  { sequence: "\\cap ", createNode: () => createTextNode("∩", "\\cap ") },
+  { sequence: "\\setminus ", createNode: () => createTextNode("\\", "\\setminus ") },
+  { sequence: "\\cup ", createNode: () => createTextNode("∪", "\\cup ") },
+  { sequence: "\\smallsetminus ", createNode: () => createTextNode("∖", "\\smallsetminus ") },
+  { sequence: "\\emptyset ", createNode: () => createTextNode("∅", "\\emptyset ") },
+  { sequence: "\\bigcap ", createNode: () => createTextNode("⋂", "\\bigcap ") },
+  { sequence: "\\bigcup ", createNode: () => createTextNode("⋃", "\\bigcup ") },
+  { sequence: "\\bigvee ", createNode: () => createTextNode("⋁", "\\bigvee ") },
+  { sequence: "\\bigwedge ", createNode: () => createTextNode("⋀", "\\bigwedge ") },
+  { sequence: "\\bigsqcup ", createNode: () => createTextNode("⋓", "\\bigsqcup ") },
+  { sequence: "\\uplus ", createNode: () => createTextNode("⊎", "\\uplus ") },
+  { sequence: "\\diamond ", createNode: () => createTextNode("⋄", "\\diamond ") },
+  { sequence: "\\otimes ", createNode: () => createTextNode("⊗", "\\otimes ") },
+  { sequence: "\\oplus ", createNode: () => createTextNode("⊕", "\\oplus ") },
+  { sequence: "\\oslash ", createNode: () => createTextNode("⊘", "\\oslash ") },
+  { sequence: "\\odot ", createNode: () => createTextNode("⊙", "\\odot ") },
+  { sequence: "\\circledcirc ", createNode: () => createTextNode("⊚", "\\circledcirc ") },
+  { sequence: "\\circledast ", createNode: () => createTextNode("⊛", "\\circledast ") },
+  { sequence: "\\ominus ", createNode: () => createTextNode("⊝", "\\ominus ") },
+  { sequence: "\\boxplus ", createNode: () => createTextNode("⊞", "\\boxplus ") },
+  { sequence: "\\boxminus ", createNode: () => createTextNode("⊟", "\\boxminus ") },
+  { sequence: "\\boxtimes ", createNode: () => createTextNode("⊠", "\\boxtimes ") },
+  { sequence: "\\boxdot ", createNode: () => createTextNode("⊡", "\\boxdot ") },
+  { sequence: "\\dotplus ", createNode: () => createTextNode("∔", "\\dotplus ") },
+  { sequence: "\\wr ", createNode: () => createTextNode("≀", "\\wr ") },
+  { sequence: "\\bowtie ", createNode: () => createTextNode("⋈", "\\bowtie ") },
+  { sequence: "\\models ", createNode: () => createTextNode("⊨", "\\models ") },
+  { sequence: "\\vDash ", createNode: () => createTextNode("⊩", "\\vDash ") },
+  { sequence: "\\Vdash ", createNode: () => createTextNode("⊫", "\\Vdash ") },
+  { sequence: "\\nvdash ", createNode: () => createTextNode("⊬", "\\nvdash ") },
+  { sequence: "\\nvDash ", createNode: () => createTextNode("⊭", "\\nvDash ") },
+  { sequence: "\\equiv ", createNode: () => createTextNode("≡", "\\equiv ") },
+  { sequence: "\\cong ", createNode: () => createTextNode("≅", "\\cong ") },
+  { sequence: "\\approx ", createNode: () => createTextNode("≈", "\\approx ") },
+  { sequence: "\\sim ", createNode: () => createTextNode("∼", "\\sim ") },
+  { sequence: "\\simeq ", createNode: () => createTextNode("≃", "\\simeq ") },
+  { sequence: "\\nsim ", createNode: () => createTextNode("≁", "\\nsim ") },
+  { sequence: "\\neq ", createNode: () => createTextNode("≠", "\\neq ") },
+  { sequence: "\\doteq ", createNode: () => createTextNode("≐", "\\doteq ") },
+  { sequence: "\\fallingdotseq ", createNode: () => createTextNode("≒", "\\fallingdotseq ") },
+  { sequence: "\\risingdotseq ", createNode: () => createTextNode("≓", "\\risingdotseq ") },
+  { sequence: "\\propto ", createNode: () => createTextNode("∝", "\\propto ") },
+  { sequence: "\\lt ", createNode: () => createTextNode("<", "\\lt ") },
+  { sequence: "\\gt ", createNode: () => createTextNode(">", "\\gt ") },
+  { sequence: "\\nless ", createNode: () => createTextNode("≮", "\\nless ") },
+  { sequence: "\\ngtr ", createNode: () => createTextNode("≯", "\\ngtr ") },
+  { sequence: "\\ll ", createNode: () => createTextNode("≪", "\\ll ") },
+  { sequence: "\\gg ", createNode: () => createTextNode("≫", "\\gg ") },
+  { sequence: "\\lesssim ", createNode: () => createTextNode("≲", "\\lesssim ") },
+  { sequence: "\\gtrsim ", createNode: () => createTextNode("≳", "\\gtrsim ") },
+  { sequence: "\\lessgtr ", createNode: () => createTextNode("≶", "\\lessgtr ") },
+  { sequence: "\\gtrless ", createNode: () => createTextNode("≷", "\\gtrless ") },
+  { sequence: "\\lesseqgtr ", createNode: () => createTextNode("⋚", "\\lesseqgtr ") },
+  { sequence: "\\gtreqless ", createNode: () => createTextNode("⋛", "\\gtreqless ") },
+  { sequence: "\\leq ", createNode: () => createTextNode("≤", "\\leq ") },
+  { sequence: "\\geq ", createNode: () => createTextNode("≥", "\\geq ") },
+  { sequence: "\\leqq ", createNode: () => createTextNode("≦", "\\leqq ") },
+  { sequence: "\\geqq ", createNode: () => createTextNode("≧", "\\geqq ") },
+  { sequence: "\\leqslant ", createNode: () => createTextNode("⩽", "\\leqslant ") },
+  { sequence: "\\geqslant ", createNode: () => createTextNode("⩾", "\\geqslant ") },
+  { sequence: "\\subset ", createNode: () => createTextNode("⊂", "\\subset ") },
+  { sequence: "\\supset ", createNode: () => createTextNode("⊃", "\\supset ") },
+  { sequence: "\\subseteq ", createNode: () => createTextNode("⊆", "\\subseteq ") },
+  { sequence: "\\supseteq ", createNode: () => createTextNode("⊇", "\\supseteq ") },
+  { sequence: "\\nsubseteq ", createNode: () => createTextNode("⊈", "\\nsubseteq ") },
+  { sequence: "\\nsupseteq ", createNode: () => createTextNode("⊉", "\\nsupseteq ") },
+  { sequence: "\\subsetneq ", createNode: () => createTextNode("⊊", "\\subsetneq ") },
+  { sequence: "\\supsetneq ", createNode: () => createTextNode("⊋", "\\supsetneq ") },
+  { sequence: "\\sqsubset ", createNode: () => createTextNode("⊏", "\\sqsubset ") },
+  { sequence: "\\sqsupset ", createNode: () => createTextNode("⊐", "\\sqsupset ") },
+  { sequence: "\\sqsubseteq ", createNode: () => createTextNode("⊑", "\\sqsubseteq ") },
+  { sequence: "\\sqsupseteq ", createNode: () => createTextNode("⊒", "\\sqsupseteq ") },
+  { sequence: "\\preceq ", createNode: () => createTextNode("≼", "\\preceq ") },
+  { sequence: "\\succeq ", createNode: () => createTextNode("≽", "\\succeq ") },
+  { sequence: "\\prec ", createNode: () => createTextNode("≺", "\\prec ") },
+  { sequence: "\\succ ", createNode: () => createTextNode("≻", "\\succ ") },
+  { sequence: "\\precsim ", createNode: () => createTextNode("⋞", "\\precsim ") },
+  { sequence: "\\succsim ", createNode: () => createTextNode("⋟", "\\succsim ") },
+  { sequence: "\\vdash ", createNode: () => createTextNode("⊢", "\\vdash ") },
+  { sequence: "\\dashv ", createNode: () => createTextNode("⊣", "\\dashv ") },
+  { sequence: "\\lhd ", createNode: () => createTextNode("⋋", "\\lhd ") },
+  { sequence: "\\rhd ", createNode: () => createTextNode("⋌", "\\rhd ") },
+  { sequence: "\\triangleleft ", createNode: () => createTextNode("⊲", "\\triangleleft ") },
+  { sequence: "\\triangleright ", createNode: () => createTextNode("⊳", "\\triangleright ") },
+  { sequence: "\\unlhd ", createNode: () => createTextNode("⊴", "\\unlhd ") },
+  { sequence: "\\unrhd ", createNode: () => createTextNode("⊵", "\\unrhd ") },
+  { sequence: "\\intercal ", createNode: () => createTextNode("⊺", "\\intercal ") },
+  { sequence: "\\barwedge ", createNode: () => createTextNode("⊼", "\\barwedge ") },
+  { sequence: "\\veebar ", createNode: () => createTextNode("⊽", "\\veebar ") },
+  { sequence: "\\curlyvee ", createNode: () => createTextNode("⊻", "\\curlyvee ") },
+  { sequence: "\\curlywedge ", createNode: () => createTextNode("⊼", "\\curlywedge ") },
+  { sequence: "\\doublebarwedge ", createNode: () => createTextNode("⧺", "\\doublebarwedge ") },
+  { sequence: "\\perp ", createNode: () => createTextNode("⟂", "\\perp ") },
+  { sequence: "\\parallel ", createNode: () => createTextNode("∥", "\\parallel ") },
+  { sequence: "\\nparallel ", createNode: () => createTextNode("∦", "\\nparallel ") },
+  { sequence: "\\mid ", createNode: () => createTextNode("∣", "\\mid ") },
+  { sequence: "\\nmid ", createNode: () => createTextNode("∤", "\\nmid ") },
+  { sequence: "\\notin ", createNode: () => createTextNode("∉", "\\notin ") },
+  { sequence: "\\in ", createNode: () => createTextNode("∈", "\\in ") },
+  { sequence: "\\ni ", createNode: () => createTextNode("∍", "\\ni ") },
+  { sequence: "\\therefore ", createNode: () => createTextNode("∴", "\\therefore ") },
+  { sequence: "\\because ", createNode: () => createTextNode("∵", "\\because ") }
 ];
 
 export const logicSymbols: SpecialSequence[] = [
-  { sequence: "\\forall ", createNode: () => createTextNode("∀") },
-  { sequence: "\\exists ", createNode: () => createTextNode("∃") },
-  { sequence: "\\neg ", createNode: () => createTextNode("¬") },
-  { sequence: "\\nexists ", createNode: () => createTextNode("∄") },
-  { sequence: "\\varnothing ", createNode: () => createTextNode("∅") },
+  { sequence: "\\forall ", createNode: () => createTextNode("∀", "\\forall ") },
+  { sequence: "\\exists ", createNode: () => createTextNode("∃", "\\exists ") },
+  { sequence: "\\neg ", createNode: () => createTextNode("¬", "\\neg ") },
+  { sequence: "\\nexists ", createNode: () => createTextNode("∄", "\\nexists ") },
+  { sequence: "\\varnothing ", createNode: () => createTextNode("∅", "\\varnothing ") },
 ];
 
 export const otherSymbols: SpecialSequence[] = [
-  { sequence: "\\infty ", createNode: () => createTextNode("∞") },
-  { sequence: "\\partial ", createNode: () => createTextNode("∂") },
+  { sequence: "\\infty ", createNode: () => createTextNode("∞", "\\infty ") },
+  { sequence: "\\partial ", createNode: () => createTextNode("∂", "\\partial ") },
 ];
 
 export const standardFunctionNames: SpecialSequence[] = [
   { sequence: "\\arccos ", 
     createNode: () => createStyledNode(
-      createTextNode("arccos"), 
+      createTextNode("arccos", "\\arccos "), 
       { fontFamily: "upright" }
     ),
   },
   { sequence: "\\arcsin ", 
     createNode: () => createStyledNode(
-      createTextNode("arcsin"), 
+      createTextNode("arcsin", "\\arcsin "), 
       { fontFamily: "upright" }
     ),
   },
   { sequence: "\\arctan ", 
     createNode: () => createStyledNode(
-      createTextNode("arctan"), 
+      createTextNode("arctan", "\\arctan "), 
       { fontFamily: "upright" }
     ),
   },
   { sequence: "\\arg ", 
     createNode: () => createStyledNode(
-      createTextNode("arg"), 
+      createTextNode("arg", "\\arg "), 
       { fontFamily: "upright" }
     ),
   },
   { sequence: "\\argmax ", 
     createNode: () => createStyledNode(
-      createTextNode("arg max"), 
+      createTextNode("arg max", "\\argmax "), 
       { fontFamily: "upright" }
     ),
   },
   { sequence: "\\argmin ", 
     createNode: () => createStyledNode(
-      createTextNode("arg min"), 
+      createTextNode("arg min", "\\argmin "), 
       { fontFamily: "upright" }
     ),
   },
   { sequence: "\\cos ", 
     createNode: () => createStyledNode(
-      createTextNode("cos"), 
+      createTextNode("cos", "\\cos "), 
       { fontFamily: "upright" }
     ),
   },
   { sequence: "\\cosh ", 
     createNode: () => createStyledNode(
-      createTextNode("cosh"), 
+      createTextNode("cosh", "\\cosh "), 
       { fontFamily: "upright" }
     ),
   },
   { sequence: "\\cot ", 
     createNode: () => createStyledNode(
-      createTextNode("cot"), 
+      createTextNode("cot", "\\cot "), 
       { fontFamily: "upright" }
     ),
   },
   { sequence: "\\coth ", 
     createNode: () => createStyledNode(
-      createTextNode("coth"), 
+      createTextNode("coth", "\\coth "), 
       { fontFamily: "upright" }
     ),
   },
   { sequence: "\\csc ", 
     createNode: () => createStyledNode(
-      createTextNode("csc"), 
+      createTextNode("csc", "\\csc "), 
       { fontFamily: "upright" }
     ),
   },
   { sequence: "\\deg ", 
     createNode: () => createStyledNode(
-      createTextNode("deg"), 
+      createTextNode("deg", "\\deg "), 
       { fontFamily: "upright" }
     ),
   },
   { sequence: "\\det ", 
     createNode: () => createStyledNode(
-      createTextNode("det"), 
+      createTextNode("det", "\\det "), 
       { fontFamily: "upright" }
     ),
   },
   { sequence: "\\dim ", 
     createNode: () => createStyledNode(
-      createTextNode("dim"), 
+      createTextNode("dim", "\\dim "), 
       { fontFamily: "upright" }
     ),
   },
   { sequence: "\\exp ", 
     createNode: () => createStyledNode(
-      createTextNode("exp"), 
+      createTextNode("exp", "\\exp "), 
       { fontFamily: "upright" }
     ),
   },
   { sequence: "\\gcd ", 
     createNode: () => createStyledNode(
-      createTextNode("gcd"), 
+      createTextNode("gcd", "\\gcd "), 
       { fontFamily: "upright" }
     ),
   },
   { sequence: "\\hom ", 
     createNode: () => createStyledNode(
-      createTextNode("hom"), 
+      createTextNode("hom", "\\hom "), 
       { fontFamily: "upright" }
     ),
   },
   { sequence: "\\inf ", 
     createNode: () => createStyledNode(
-      createTextNode("inf"), 
+      createTextNode("inf", "\\inf "), 
       { fontFamily: "upright" }
     ),
   },
   { sequence: "\\ker ", 
     createNode: () => createStyledNode(
-      createTextNode("ker"), 
+      createTextNode("ker", "\\ker "), 
       { fontFamily: "upright" }
     ),
   },
   { sequence: "\\lg ", 
     createNode: () => createStyledNode(
-      createTextNode("lg"), 
+      createTextNode("lg", "\\lg "), 
       { fontFamily: "upright" }
     ),
   },
   { sequence: "\\lim ", 
     createNode: () => createStyledNode(
-      createTextNode("lim"), 
+      createTextNode("lim", "\\lim "), 
       { fontFamily: "upright" }
     ),
   },
   { sequence: "\\liminf ", 
     createNode: () => createStyledNode(
-      createInlineContainer([createTextNode("lim inf")]), 
+      createInlineContainer([createTextNode("lim inf", "\\liminf ")]), 
       { fontFamily: "upright" }
     ),
   },
   { sequence: "\\limsup ", 
     createNode: () => createStyledNode(
-      createInlineContainer([createTextNode("lim sup")]), 
+      createInlineContainer([createTextNode("lim sup", "\\limsup ")]), 
       { fontFamily: "upright" }
     ),
   },
   { sequence: "\\ln ", 
     createNode: () => createStyledNode(
-      createTextNode("ln"), 
+      createTextNode("ln", "\\ln "), 
       { fontFamily: "upright" }
     ),
   },
   { sequence: "\\log ", 
     createNode: () => createStyledNode(
-      createTextNode("log"), 
+      createTextNode("log", "\\log "), 
       { fontFamily: "upright" }
     ),
   },
   { sequence: "\\max ", 
     createNode: () => createStyledNode(
-      createTextNode("max"), 
+      createTextNode("max", "\\max "), 
       { fontFamily: "upright" }
     ),
   },
   { sequence: "\\min ", 
     createNode: () => createStyledNode(
-      createTextNode("min"), 
+      createTextNode("min", "\\min "), 
       { fontFamily: "upright" }
     ),
   },
   { sequence: "\\Pr ", 
     createNode: () => createStyledNode(
-      createTextNode("Pr"), 
+      createTextNode("Pr", "\\Pr "), 
       { fontFamily: "upright" }
     ),
   },
   { sequence: "\\sec ", 
     createNode: () => createStyledNode(
-      createTextNode("sec"), 
+      createTextNode("sec", "\\sec "), 
       { fontFamily: "upright" }
     ),
   },
   { sequence: "\\sin ", 
     createNode: () => createStyledNode(
-      createTextNode("sin"), 
+      createTextNode("sin", "\\sin "), 
       { fontFamily: "upright" }
     ),
   },
   { sequence: "\\sinh ", 
     createNode: () => createStyledNode(
-      createTextNode("sinh"), 
+      createTextNode("sinh", "\\sinh "), 
       { fontFamily: "upright" }
     ),
-  },
+  },    
   { sequence: "\\sup ", 
     createNode: () => createStyledNode(
-      createTextNode("sup"), 
+      createTextNode("sup", "\\sup "), 
       { fontFamily: "upright" }
     ),
   },
   { sequence: "\\tan ", 
     createNode: () => createStyledNode(
-      createTextNode("tan"), 
+      createTextNode("tan", "\\tan "), 
       { fontFamily: "upright" }
     ),
   },
   { sequence: "\\tanh ", 
     createNode: () => createStyledNode(
-      createTextNode("tanh"), 
+      createTextNode("tanh", "\\tanh "), 
       { fontFamily: "upright" }
     ),
   },
@@ -522,3 +525,13 @@ export const latexToSymbolTextNode: Record<string, () => MathNode> = Object.from
 export const bigOperatorToLatexInverse = Object.fromEntries(
   Object.entries(bigOperatorToLatex).map(([k, v]) => [v.replace(/^\\/, "").trimEnd(), k])
 );
+
+const normalizeCommand = (cmd: string) => cmd.trim().replace(/^\\/, "");
+
+export const inputAliasToNodeFactory: Record<string, () => StructureNode> = Object.fromEntries(
+  specialSymbols.map(({ sequence, createNode }) => [normalizeCommand(sequence), createNode])
+);
+
+export function getNodeFromAlias(command: string): StructureNode | undefined {
+  return inputAliasToNodeFactory[command]?.();
+}

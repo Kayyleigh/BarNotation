@@ -12,8 +12,10 @@ export const nodeToLatex = (node: MathNode): string => {
       }
 
       case "text": {
-        const fromMap = symbolToLatex[node.content]; // Revert special char back to latex sequence
-        return fromMap ?? node.content;
+        // Use inputAlias instead of content to ensure correct parsing of content, even when escaped or when it is a command alias
+        // Theoretically, this should call some function on node.inputAlias to actually get latex from my intermediate representation
+        // I do not do that because my chosen intermediate representation is 100% based on latex
+        return node.inputAlias;
       }
 
       case "multi-digit":
@@ -126,9 +128,7 @@ export const nodeToLatex = (node: MathNode): string => {
       }
   
       case "text": {
-        const fromMap = symbolToLatex[node.content]; // revert special char to latex
-        const content = fromMap ?? node.content;
-        return wrapText(content);
+        return wrapText(node.inputAlias);
       }
   
       case "multi-digit":

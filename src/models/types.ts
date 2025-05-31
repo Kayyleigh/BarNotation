@@ -174,6 +174,7 @@ export interface CasesNode extends BaseNode {
 export interface TextNode extends BaseNode {
   type: "text";
   content: string; // single character or special sequence's result string
+  inputAlias: string;
 }
 
 // Node types for multi-character sequences

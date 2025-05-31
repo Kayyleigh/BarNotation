@@ -20,6 +20,7 @@ import type {
   TextNode,
   MultiDigitNode,
   CommandInputNode,
+  StyledNode,
 } from "./types"; // Adjust imports to your setup
 import type { BracketStyle } from "../utils/bracketUtils";
 
@@ -176,11 +177,13 @@ export const createCasesNode = (
 // ========== Text and Styling ==========
 
 export const createTextNode = (
-  content: string
+  content: string,
+  inputAlias: string = content,
 ): TextNode => ({
   id: uuidv4(),
   type: "text",
   content,
+  inputAlias,
 });
 
 export const createMultiDigitNode = (children: TextNode[] = []): MultiDigitNode => ({
@@ -195,10 +198,7 @@ export const createCommandInputNode = (children: TextNode[] = []): CommandInputN
   children,
 });
 
-export const createStyledNode = (
-  child: MathNode,
-  style: TextStyle = {}
-): MathNode => ({
+export const createStyledNode = (child: MathNode, style: TextStyle = {}): StyledNode => ({
   id: uuidv4(),
   type: "styled",
   child,
