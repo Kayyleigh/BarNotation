@@ -1942,3 +1942,6 @@ TODO: must ensure some way to get styling options back in latex. Either by node 
 | `\mathsf{}`     | Sans-serif        | A–Z, a–z      | Rare, but sometimes used in stylistic documents                   |
 
 Implemented: Now if trying to get unknown open/close bracket, it gives empty string
+TODO: add overline and underbrace styles for nodedecoration
+underbrace is so hideous and also it doesnt work well cuz it should b elike bigop but for me it is a deco
+but that is not the most important thing atm

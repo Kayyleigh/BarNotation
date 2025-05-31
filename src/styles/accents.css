@@ -49,7 +49,8 @@
     pointer-events: none;
   }
 
-.decoration-joint::before {
+.decoration-joint::before,
+.decoration-overline::before {
     content: '';
     position: absolute;
     top: -0.2em;
@@ -86,3 +87,24 @@
     width: 0.02rem;
     height: 80%;
   }
+
+  .decoration-underbrace {
+    position: relative;
+    display: inline-block;
+    padding-bottom: 1.5em; /* space for the brace */
+    color: var(--math-text-color);
+  }
+  
+  .decoration-underbrace::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 1em;
+    width: 100%;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20' preserveAspectRatio='none'%3e%3cpath d='M0,10 L15,10 C20,10 20,20 25,20 C30,20 30,10 35,10 L65,10 C70,10 70,20 75,20 C80,20 80,10 85,10 L100,10' fill='none' stroke='%23000' stroke-width='2'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    pointer-events: none;
+  }
+  
