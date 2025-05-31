@@ -357,8 +357,7 @@ export function parseLatex(input: string): MathNode {
           console.log(`Pushed command: ${name}`)
         } else {
           // 🔥 This handles `\{`, `\}`, `\%`, etc.
-          tokens.push({ type: "char", value: "\\" });
-          tokens.push({ type: "char", value: next });
+          tokens.push({ type: "char", value: "\\{" });
           console.log(`Pushed char: ${next}`)
           i++; // Advance past the escaped character
         }

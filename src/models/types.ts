@@ -173,7 +173,7 @@ export interface CasesNode extends BaseNode {
 
 export interface TextNode extends BaseNode {
   type: "text";
-  content: string; // single character, number, or \command
+  content: string; // single character or special sequence's result string
 }
 
 // Node types for multi-character sequences

@@ -1905,3 +1905,13 @@ Overleaf colors for block style:
 
 ![alt text](image-34.png)
 lots and lots and lots and lots and lots of debugging today. It's still broken but for the nicher stuff mostly 
+
+Next steps
+- fix more (i.e. `\{` not being group node but allowed to be anway); and group node pairing of rceil; and recognize \rightarrow (I think \to overrides it cuz no 1:1 mapping in specialSequences)
+- Make dragging actions part of EditorHistory
+- Make hover actions NOT part of EditorHistory
+
+quickly fixed command bracket insert (only in editor, not from latex)
+Note: when implementing the drag-from-dumpster thingy, I should not have it be anything about state cuz by then the parser _should_ work, meaning I can just insert at index from latex? Idk yet
+
+Maybe use Fn - instead of Ctrl - cuz I am already suffering because it feels like Ctrl - should zoom 

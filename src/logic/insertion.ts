@@ -3,7 +3,7 @@ import { createCommandInputNode, createMultiDigitNode, createTextNode } from "..
 import { findNodeById, updateNodeById } from "../utils/treeUtils";
 import { specialSequences } from "../models/specialSequences";
 import { type InlineContainerNode, type TextNode } from "../models/types";
-import { getCloseSymbol, getOpenSymbol, type BracketStyle } from "../utils/bracketUtils";
+import { getCloseSymbol, getOpenSymbol, getStyleFromSymbol, isClosingBracket, isOpeningBracket, type BracketStyle } from "../utils/bracketUtils";
 import { transformToGroupNode } from "./transformations";
 
 export const handleCharacterInsertInTextContainer = (state: EditorState, char: string): EditorState => {
@@ -106,6 +106,15 @@ export const handleCharacterInsert = (state: EditorState, char: string): EditorS
         transformedNode,
         ...children.slice(index),
       ];
+
+      if (transformedNode.type === "text" && 
+        (isOpeningBracket(transformedNode.content) || isClosingBracket(transformedNode.content))) {
+        const style = getStyleFromSymbol(transformedNode.content);
+        const side = isOpeningBracket(transformedNode.content) ? "open" : "close";
+        console.log(`NEW BRACKET: ${style} (${side})`)
+
+        return handleBracketInsert(state, style, side)
+      } 
 
       const updatedRoot = updateNodeById(state.rootNode, container.id, {
         ...container,
