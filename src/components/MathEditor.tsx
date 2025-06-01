@@ -39,12 +39,15 @@ const MathEditor: React.FC = () => {
     updateDropTarget,
     handleDrop,
     clearDrag,
+    dropTargetId,
+    dropTargetIndex,
   } = useDragState(editorStateRef, updateEditorState);
 
   // Get hovered node type
   const hoveredNode = editorState.hoveredNodeId && findNodeById(editorState.rootNode, editorState.hoveredNodeId);
   const hoveredType = hoveredNode ? hoveredNode.type : "None";
 
+  const dropTargetCursor = { containerId: dropTargetId, index: dropTargetIndex }
 
   const onKeyDown = (e: React.KeyboardEvent) => {
     const isMac = navigator.platform.includes("Mac");
@@ -113,6 +116,7 @@ const MathEditor: React.FC = () => {
         <MathRenderer
           node={editorState.rootNode}
           cursor={editorState.cursor}
+          dropTargetCursor={dropTargetCursor}
           hoveredId={editorState.hoveredNodeId}
           onCursorChange={(newCursor) =>
             updateEditorState(setCursor(editorState, newCursor))

@@ -27,6 +27,8 @@ import { getCloseSymbol, getOpenSymbol, isClosingBracket, isOpeningBracket } fro
 
 type RenderProps = {
   cursor: CursorPosition;
+  dropTargetCursor: CursorPosition;
+
   hoveredId?: string;
   onCursorChange: (cursor: CursorPosition) => void;
   onRootChange: (newRoot: MathNode) => void;
@@ -98,7 +100,7 @@ function handleMouseLeave(
   hoverClearTimeout = window.setTimeout(() => {
     onHoverChange(undefined);
     hoverClearTimeout = null;
-  }, 1);
+  }, 0);
 }
 
 
@@ -115,8 +117,12 @@ function renderContainerChildren(
   props: RenderProps,
   inheritedStyle?: TextStyle
 ): React.ReactNode {
-  const { cursor, hoveredId, onCursorChange, onRootChange, onHoverChange, ancestorIds } = props;
+  const { cursor, dropTargetCursor, hoveredId, 
+    onCursorChange, onRootChange, onHoverChange, 
+    onClearDrag, onHandleDrop, onStartDrag, onUpdateDropTarget, 
+    ancestorIds } = props;
   const isCursorInThisContainer = cursor.containerId === containerId;
+  const inDragState = dropTargetCursor.containerId !== null && dropTargetCursor.index !== null;
   const newAncestorIds = [containerId, ...(ancestorIds ?? [])];
 
   return (
@@ -124,9 +130,13 @@ function renderContainerChildren(
       {children.map((child, i) => {
         const elements: React.ReactNode[] = [];
 
-        if (isCursorInThisContainer && cursor.index === i) {
+        if (!inDragState && isCursorInThisContainer && cursor.index === i) {
           elements.push(<span key={`cursor-${i}`} className="cursor" />);
         }
+
+        // if (isDropTargetInThisContainer && dropTargetCursor.index === i) { //TODO NO this is exactly when it DOES NOT WORK 
+        //   elements.push(<span key={`drop-target-cursor-${i}`} className="drop-target-cursor" />);
+        // }
 
         elements.push(
           <MathRenderer
@@ -134,10 +144,15 @@ function renderContainerChildren(
             key={child.id}
             node={child}
             cursor={cursor}
+            dropTargetCursor={dropTargetCursor}
             hoveredId={hoveredId}
             onCursorChange={onCursorChange}
             onRootChange={onRootChange}
             onHoverChange={onHoverChange}
+            onClearDrag={onClearDrag}
+            onHandleDrop={onHandleDrop}
+            onStartDrag={onStartDrag}
+            onUpdateDropTarget={onUpdateDropTarget}
             parentContainerId={containerId}
             ancestorIds={newAncestorIds}
             index={i + 1}
@@ -147,7 +162,7 @@ function renderContainerChildren(
 
         return elements;
       })}
-      {isCursorInThisContainer && cursor.index === children.length && (
+      {!inDragState && isCursorInThisContainer && cursor.index === children.length && (
         <span className="cursor" />
       )}
     </>
@@ -161,10 +176,10 @@ export const renderTextNode = (
   props: RenderProps
 ) => {
 
-  const { index, parentContainerId, onCursorChange, inheritedStyle } = props;
+  const { index, dropTargetCursor, parentContainerId, onCursorChange, inheritedStyle } = props;
 
   const isSelected = props.cursor.containerId === node.id; //TODO: remove? I don't think I am using this anymore
-
+  
   const className = clsx(
     "math-node",
     "type-text",

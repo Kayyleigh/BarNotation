@@ -291,6 +291,21 @@
     50% { opacity: 0; }
   }
   
+  .drop-target-cursor {
+    display: inline-block;
+    width: 3px;
+    height: 1em;
+    /* vertical-align: baseline;  */
+    background-image: repeating-linear-gradient(
+      to bottom,
+      var(--math-drop-cursor-color),
+      var(--math-drop-cursor-color) 3px,
+      transparent 3px,
+      transparent 6px
+    );
+    background-color: transparent; /* fall back */
+  }
+
   .type-nth-root {
     display: inline-flex;
     align-items: flex-start;

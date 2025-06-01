@@ -21,6 +21,7 @@ import {
 export type MathRendererProps = {
   node: MathNode;
   cursor: CursorPosition;
+  dropTargetCursor: CursorPosition;
   hoveredId?: string;
   onCursorChange: (cursor: CursorPosition) => void;  
   onRootChange: (newRoot: MathNode) => void;
@@ -41,6 +42,7 @@ export type MathRendererProps = {
 export const MathRenderer: React.FC<MathRendererProps> = ({
   node,
   cursor,
+  dropTargetCursor,
   hoveredId,
   onCursorChange,
   onHoverChange,
@@ -76,7 +78,7 @@ export const MathRenderer: React.FC<MathRendererProps> = ({
     },
   };
 
-  const baseProps = { cursor, hoveredId, onCursorChange, onHoverChange, onRootChange, onStartDrag, onUpdateDropTarget, onHandleDrop, onClearDrag, parentContainerId, ancestorIds, index, inheritedStyle };
+  const baseProps = { cursor, dropTargetCursor, hoveredId, onCursorChange, onHoverChange, onRootChange, onStartDrag, onUpdateDropTarget, onHandleDrop, onClearDrag, parentContainerId, ancestorIds, index, inheritedStyle };
 
   let content;
 
@@ -147,10 +149,17 @@ export const MathRenderer: React.FC<MathRendererProps> = ({
         </span>
       );
   }
+  
+//TODO here deal w drop target cursor??
+  const isDropTarget = dropTargetCursor.containerId === node.id && dropTargetCursor.index === index;
+
   // Wrap the rendered content in a draggable div
   return (
     <span {...dragHandlers} className="draggable-node-wrapper">
       {content}
+        {isDropTarget && (
+        <span className="drop-target-cursor" />
+      )}
     </span>
   );
 };

@@ -377,8 +377,13 @@ export function parseLatex(input: string): MathNode {
 
           console.warn(`Escape sequence: ${name}`)
 
-          // Create text node where display text is the sequence after "\"
-          base = createTextNode(name.slice(1), name);
+          if (name === "\\,") {
+            base = createTextNode(" ", name);
+          }
+          else {
+            // Create text node where display text is the sequence after "\"
+            base = createTextNode(name.slice(1), name);
+          }
         }
         else {
           console.log(`Name not found: '${name}'. Creating`)

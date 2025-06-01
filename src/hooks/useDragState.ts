@@ -1,8 +1,9 @@
 import { useState } from "react";
 import type { EditorState } from "../logic/editor-state";
 import { deleteNodeById, insertNodeAtIndex } from "../logic/node-manipulation";
-import { findNodeById, findParentContainerAndIndex } from "../utils/treeUtils";
+import { findNodeById, findParentContainerAndIndex, getLogicalChildren } from "../utils/treeUtils";
 import type { MathNode } from "../models/types";
+import { nodeToLatex } from "../models/latexParser";
 
 export interface DragState {
   draggedNodeId: string | null;
@@ -48,6 +49,15 @@ export function useDragState(
     // Find parent container of target node (target node should be new sibling)
     const container = findParentContainerAndIndex(editorState.rootNode, dropTargetId)
     if (!container) return 
+    if (container.container === draggedNode) {
+      console.warn(`Cannot insert into own child: ${container.container.children.map(c => nodeToLatex(c)).join("")}`);
+      return;
+    }
+
+    if (getLogicalChildren(draggedNode).includes(container.container)) {
+      console.warn(`Cannot insert into own child: ${container.container.children.map(c => nodeToLatex(c)).join("")}`);
+      return;
+    }
 
     newState = insertNodeAtIndex(newState, container.container.id, dropTargetIndex, draggedNode);
     console.log(`${dropTargetId} at ${dropTargetIndex} should become ${draggedNode.type}`)

@@ -22,6 +22,7 @@
   /* ===== Cursor & Selection ===== */
   --math-text-color: black;
   --math-cursor-color: black;
+  --math-drop-cursor-color: black;
   --math-selection-bg: rgba(0, 0, 0, 0.07);
   --math-hover-bg: #1ba0ff1a;
 
@@ -77,6 +78,8 @@
   --background-color: #252526;
 
   --math-cursor-color: white;
+  --math-drop-cursor-color: white;
+
   --math-text-color: white;
   --math-selection-bg: rgba(255, 255, 255, 0.1);
   --math-hover-bg: #1ba0ff2c;

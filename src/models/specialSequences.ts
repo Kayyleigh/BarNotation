@@ -27,6 +27,7 @@ const makeStyledSequence = (sequence: string, style: TextStyle): SpecialSequence
 
 export const stylingOptions: SpecialSequence[] = [
   makeStyledSequence("\\text ", { fontStyling: { fontStyle: "upright" , fontStyleAlias: "\\text" } }),
+  makeStyledSequence("\\operatorname ", { fontStyling: { fontStyle: "upright" , fontStyleAlias: "\\operatorname" } }),
   makeStyledSequence("\\mathbf ", { fontStyling: { fontStyle: "bold" , fontStyleAlias: "\\mathbf" } }),
   makeStyledSequence("\\mathbb ", { fontStyling: { fontStyle: "blackboard" , fontStyleAlias: "\\mathbb" } }),
   makeStyledSequence("\\boldsymbol ", { fontStyling: { fontStyle: "bold" , fontStyleAlias: "\\boldsymbol" } }),
@@ -264,6 +265,34 @@ export const otherSymbols: SpecialSequence[] = [
 ];
 
 export const standardFunctionNames: SpecialSequence[] = [
+
+  // Custom (Valid inputs in my app, NOT in latex!!)
+
+  // Note: `\\arg\\max` means that copying back into the editor splits it into 2 nodes.
+  // Only way to prevent that is by mapping it back to my own accepted `\\argmax`
+  // This would be confusing because by definition in this file, "sequence" tells what sequence is accepted
+  // ... and `\\arg\\max` is not one of the sequences. It's two of them! So this behavior is expected and acceptable imo. 
+  { sequence: "\\argmax ", 
+    createNode: () => createStyledNode(
+      createTextNode("arg max", "\\arg\\max"), 
+      { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
+    ),
+  },
+  { sequence: "\\argmin ", 
+    createNode: () => createStyledNode(
+      createTextNode("arg min", "\\arg\\min"), 
+      { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
+    ),
+  },
+  { sequence: "\\Var ", 
+    createNode: () => createStyledNode(
+      createTextNode("Var", "\\operatorname{Var}"), 
+      { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
+    ),
+  },
+    
+  // Valid in latex
+
   { sequence: "\\arccos ", 
     createNode: () => createStyledNode(
       createTextNode("arccos", "\\arccos "), 
@@ -285,18 +314,6 @@ export const standardFunctionNames: SpecialSequence[] = [
   { sequence: "\\arg ", 
     createNode: () => createStyledNode(
       createTextNode("arg", "\\arg "), 
-      { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
-    ),
-  },
-  { sequence: "\\argmax ", 
-    createNode: () => createStyledNode(
-      createTextNode("arg max", "\\arg\\max"), // Not recognized by latex so this is the best way imo
-      { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
-    ),
-  },
-  { sequence: "\\argmin ", 
-    createNode: () => createStyledNode(
-      createTextNode("arg min", "\\arg\\min"), 
       { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
