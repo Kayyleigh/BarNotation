@@ -4,7 +4,6 @@ import { type MathNode, type RootWrapperNode } from "../models/types";
 export interface EditorState {
   rootNode: MathNode;
   cursor: CursorPosition;
-  hoveredNodeId?: string; // optional: null = nothing hovered
 }
 
 export const createEditorState = (root: RootWrapperNode): EditorState => ({
@@ -16,9 +15,3 @@ export const setCursor = (state: EditorState, newCursor: CursorPosition): Editor
   ...state,
   cursor: newCursor,
 });
-
-export const setHoveredNode = (state: EditorState, hoveredNodeId?: string): EditorState => ({
-  ...state,
-  hoveredNodeId,
-});
-

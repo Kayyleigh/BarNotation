@@ -1,11 +1,12 @@
 import React, { useEffect, useRef } from "react";
 import { createRootWrapper } from "../models/nodeFactories";
-import { createEditorState, setCursor, setHoveredNode } from "../logic/editor-state";
+import { createEditorState, setCursor } from "../logic/editor-state";
 import { handleKeyDown } from "../logic/handle-keydown";
 import { MathRenderer } from "./MathRenderer";
 import LatexViewer from "./LatexViewer";
 import { useEditorHistory } from "../hooks/useEditorHistory";
 import { useDragState } from "../hooks/useDragState";
+import { useHoverState } from "../hooks/useHoverState";
 import {
   insertNodeAtCursor,
   deleteSelectedNode,
@@ -33,6 +34,11 @@ const MathEditor: React.FC = () => {
     editorStateRef.current = editorState;
   }, [editorState]);
 
+  const { 
+    hoveredNodeId, 
+    setHoveredNodeId 
+  } = useHoverState();
+
   // Hook with ref instead of value
   const {
     startDrag,
@@ -44,7 +50,7 @@ const MathEditor: React.FC = () => {
   } = useDragState(editorStateRef, updateEditorState);
 
   // Get hovered node type
-  const hoveredNode = editorState.hoveredNodeId && findNodeById(editorState.rootNode, editorState.hoveredNodeId);
+  const hoveredNode = hoveredNodeId && findNodeById(editorState.rootNode, hoveredNodeId);
   const hoveredType = hoveredNode ? hoveredNode.type : "None";
 
   const dropTargetCursor = { containerId: dropTargetId, index: dropTargetIndex }
@@ -117,15 +123,13 @@ const MathEditor: React.FC = () => {
           node={editorState.rootNode}
           cursor={editorState.cursor}
           dropTargetCursor={dropTargetCursor}
-          hoveredId={editorState.hoveredNodeId}
+          hoveredId={hoveredNodeId}
+          onHoverChange={setHoveredNodeId}
           onCursorChange={(newCursor) =>
             updateEditorState(setCursor(editorState, newCursor))
           }
           onRootChange={(newRoot) =>
             updateEditorState({ ...editorState, rootNode: newRoot })
-          }
-          onHoverChange={(hoveredId) =>
-            updateEditorState(setHoveredNode(editorState, hoveredId))
           }
           onStartDrag={startDrag}
           onUpdateDropTarget={updateDropTarget}

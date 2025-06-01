@@ -29,6 +29,8 @@ type RenderProps = {
   dropTargetCursor: CursorPosition;
 
   hoveredId?: string;
+  onHoverChange: (hoveredId?: string) => void;
+
   onCursorChange: (cursor: CursorPosition) => void;
   onRootChange: (newRoot: MathNode) => void;
 
@@ -40,7 +42,6 @@ type RenderProps = {
   
   parentContainerId?: string;
   index?: number;
-  onHoverChange: (hoveredId?: string) => void;
   inheritedStyle?: TextStyle;
   ancestorIds?: string[]; // list of ancestor node ids from closest to farthest
 };

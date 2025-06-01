@@ -255,7 +255,7 @@ export const findNodeById = (node: MathNode, targetId: string): MathNode | null 
   export function findParentContainerAndIndex(
     root: MathNode,
     childId: string
-  ): { container: InlineContainerNode | MultiDigitNode | CommandInputNode; indexInParent: number } | null {
+  ): { container: InlineContainerNode | MultiDigitNode | CommandInputNode; indexInParent: number } | null { //TODO do not allow multidigit and commandinput here
     if (root.type === "inline-container") {
       for (let i = 0; i < root.children.length; i++) {
         const child = root.children[i];
