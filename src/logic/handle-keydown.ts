@@ -14,12 +14,12 @@ export function handleKeyDown(
 
   // === Triple-key events ===
 
-  if (e.ctrlKey && e.shiftKey && e.code === 'Digit6') {
+  if (e.metaKey && e.shiftKey && e.code === 'Digit6') {
     e.preventDefault();
     return transformToActsymbNode(state, "supLeft");
   }
 
-  if (e.ctrlKey && e.shiftKey && e.key === '_') {
+  if (e.metaKey && e.shiftKey && e.key === '_') {
     e.preventDefault();
     return transformToActsymbNode(state, "subLeft");
   }
@@ -47,12 +47,12 @@ export function handleKeyDown(
     return transformToSubSupNode(state, "subRight");
   }
 
-  if (e.ctrlKey && e.key === '6') {
+  if (e.metaKey && e.key === '6') {
     e.preventDefault();
     return transformToActsymbNode(state, "supRight");
   }
 
-  if (e.ctrlKey && e.key === '-') {
+  if (e.metaKey && e.key === '-') {
     e.preventDefault();
     return transformToActsymbNode(state, "subRight");
   }
@@ -60,17 +60,6 @@ export function handleKeyDown(
   // === Single-key events ===
 
   const key = e.key;
-
-  if (key === "@") {
-    e.preventDefault();
-    console.log(nodeToLatex(state.rootNode))
-  }
-
-  if (key === "#") {
-    e.preventDefault();
-    const forcedRoot = latexToMathNode(`P(A|B) = \\frac{P(B|A) P(A)}{P(B)}`);
-    return { rootNode: forcedRoot, cursor: { containerId: forcedRoot.id, index: (forcedRoot as InlineContainerNode).children.length, } };
-  }
 
   if (key === "ArrowLeft") {
     e.preventDefault();

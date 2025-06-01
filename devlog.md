@@ -1950,3 +1950,9 @@ but that is not the most important thing atm
 
 Weeee
 nice work
+
+Next steps:
+- ensure clicking on non-text nodes still brings cursor somewhere intuitive
+- allow dropping of dragged nodes into IC? 
+- Make drop-target "cursor" 
+- make "clear equation" button

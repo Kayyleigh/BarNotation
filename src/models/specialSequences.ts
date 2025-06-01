@@ -290,13 +290,13 @@ export const standardFunctionNames: SpecialSequence[] = [
   },
   { sequence: "\\argmax ", 
     createNode: () => createStyledNode(
-      createTextNode("arg max", "\\argmax "), 
+      createTextNode("arg max", "\\arg\\max"), // Not recognized by latex so this is the best way imo
       { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   { sequence: "\\argmin ", 
     createNode: () => createStyledNode(
-      createTextNode("arg min", "\\argmin "), 
+      createTextNode("arg min", "\\arg\\min"), 
       { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
