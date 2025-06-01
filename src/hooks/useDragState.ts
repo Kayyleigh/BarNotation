@@ -48,7 +48,10 @@ export function useDragState(
 
     // Find parent container of target node (target node should be new sibling)
     const container = findParentContainerAndIndex(editorState.rootNode, dropTargetId)
-    if (!container) return 
+    if (!container) {
+      console.warn(`Whoopsy, no parent container found for: ${dropTargetId}`);
+      return 
+    }
     if (container.container === draggedNode) {
       console.warn(`Cannot insert into own child: ${container.container.children.map(c => nodeToLatex(c)).join("")}`);
       return;

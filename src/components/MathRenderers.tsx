@@ -20,7 +20,6 @@ import type {
 } from '../models/types';
 import clsx from 'clsx';
 import type { CursorPosition } from '../logic/cursor';
-
 import '../styles/math-node.css';
 import '../styles/accents.css';
 import { getCloseSymbol, getOpenSymbol, isClosingBracket, isOpeningBracket } from '../utils/bracketUtils';
@@ -120,7 +119,7 @@ function renderContainerChildren(
   const { cursor, dropTargetCursor, hoveredId, 
     onCursorChange, onRootChange, onHoverChange, 
     onClearDrag, onHandleDrop, onStartDrag, onUpdateDropTarget, 
-    ancestorIds } = props;
+    ancestorIds, parentContainerId, index } = props;
   const isCursorInThisContainer = cursor.containerId === containerId;
   const inDragState = dropTargetCursor.containerId !== null && dropTargetCursor.index !== null;
   const newAncestorIds = [containerId, ...(ancestorIds ?? [])];
@@ -131,14 +130,23 @@ function renderContainerChildren(
         const elements: React.ReactNode[] = [];
 
         if (!inDragState && isCursorInThisContainer && cursor.index === i) {
-          elements.push(<span key={`cursor-${i}`} className="cursor" />);
+          elements.push(
+          <span 
+            key={`cursor-${i}`} 
+            className="cursor" 
+          />);
         }
 
-        // if (isDropTargetInThisContainer && dropTargetCursor.index === i) { //TODO NO this is exactly when it DOES NOT WORK 
-        //   elements.push(<span key={`drop-target-cursor-${i}`} className="drop-target-cursor" />);
-        // }
-
         elements.push(
+        <span 
+          key={`clickable-${i}`} 
+          onClick={(e) => {
+            e.stopPropagation();
+            if (containerId && i + 1) {
+              onCursorChange({ containerId: containerId, index: i + 1 });
+            }
+          }
+        }>
           <MathRenderer
 					  {...props}
             key={child.id}
@@ -158,8 +166,8 @@ function renderContainerChildren(
             index={i + 1}
             inheritedStyle={inheritedStyle}
           />
+          </span>
         );
-
         return elements;
       })}
       {!inDragState && isCursorInThisContainer && cursor.index === children.length && (
@@ -176,7 +184,7 @@ export const renderTextNode = (
   props: RenderProps
 ) => {
 
-  const { index, dropTargetCursor, parentContainerId, onCursorChange, inheritedStyle } = props;
+  const { index, parentContainerId, onCursorChange, inheritedStyle } = props;
 
   const isSelected = props.cursor.containerId === node.id; //TODO: remove? I don't think I am using this anymore
   
@@ -272,7 +280,7 @@ export const renderMultiDigitNode = (
       )}
       onClick={(e) => {
         e.stopPropagation();
-        if (node.children.length === 0) {
+        if (node.id) {
           props.onCursorChange({ containerId: node.id, index: 0 });
         }
       }}
@@ -299,7 +307,7 @@ export const renderCommandInputNode = (
     )}
     onClick={(e) => {
       e.stopPropagation();
-      if (node.children.length === 0) {
+      if (node.id) {
         props.onCursorChange({ containerId: node.id, index: 0 });
       }
     }}
@@ -323,7 +331,7 @@ export const renderInlineContainerNode = (
     )}
     onClick={(e) => {
       e.stopPropagation();
-      if (node.children.length === 0) {
+      if (node.id) {
         props.onCursorChange({ containerId: node.id, index: 0 });
       }
     }}
@@ -524,16 +532,18 @@ export const renderNthRootNode = (
     onMouseEnter={() => handleMouseEnter(node.id, props.onHoverChange!)}
     onMouseLeave={(e) => handleMouseLeave(e, node.id, props.ancestorIds, props.onHoverChange!)}
   >
-    <span className="root-wrapper">
+
+    <div className="nth-root-wrapper">
       <span className="nth-index">
         <MathRenderer
 					node={node.index} {...props} ancestorIds={[node.id, ...(props.ancestorIds ?? [])]} parentContainerId={node.id} index={0} />
       </span>
-      <span className="radical-symbol">√</span>
+      <span
+        className="radical-symbol"></span>
       <span className="radicand">
         <MathRenderer
 				  node={node.base} {...props} ancestorIds={[node.id, ...(props.ancestorIds ?? [])]} parentContainerId={node.id} index={1} />
       </span>
-    </span>
+    </div>
   </span>
 );

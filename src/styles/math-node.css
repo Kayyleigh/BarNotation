@@ -12,8 +12,17 @@
     vertical-align: middle;
     cursor: pointer;
     color: inherit;
-    padding: 0.05em;
+    padding: 0em 0.15em;
     position: relative;
+  }
+  
+  .type-command-input .math-node,
+  .type-multi-digit .math-node {
+    padding: 0;
+  }
+
+  .root-wrapper {
+    display: inline-flex;
   }
 
   .bracket-node {
@@ -85,9 +94,28 @@
   
   .type-inline-container {
     display: inline-flex;
+    min-width: 0.5em;
+    min-height: 1em;
+    justify-content: flex-end;
     flex-wrap: nowrap;
     align-items: center;
-    gap: 0.1em;
+    padding: 0.1em 0em 0.1em 0.1em;
+  }
+
+  .type-multi-digit {
+    display: inline-flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 0em;
+    padding: 0.15em;
+  }
+
+  .type-command-input {
+    display: inline-flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 0em;
+    padding: 0.15em;
   }
   
   .type-group {
@@ -135,6 +163,7 @@
   .sub-left, .sup-left, .sub-right, .sup-right {
     font-size: var(--math-font-size-sub);
     line-height: 1;
+    padding: 0.05em;
     position: relative;
     white-space: nowrap;
   }
@@ -209,7 +238,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    margin: 0 0.3em;
+    padding: 0 0.2em;
   }
   
   .big-operator-wrapper {
@@ -312,25 +341,43 @@
     position: relative;
     font-size: 1em;
   }
-  
-  .root-wrapper {
-    display: inline-flex;
+
+  .nth-root-wrapper {
+    display: flex;
     position: relative;
-    font-size: 1em;
+    align-items: stretch;   /* children stretch to full container height */
+  }
+  
+
+  .radical-symbol {
+    width: 0.5em;
+    margin-right: 0.1em;
+    position: relative;
+  }
+  
+  .radical-symbol::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 0.5em;
+    height: 100%;
+    background-color: transparent;
+    border-right: 0.1em solid var(--math-color-nth-root-symbol);
+    border-bottom: 0.3em solid var(--math-color-nth-root-symbol);
+    left: 0.2em;
+    bottom: 0.02em;
+    transform-origin: top;
+    transform: rotate(30deg) skew(15deg, 38deg);
   }
   
   .nth-index {
     font-size: 0.6em;
-    position: absolute;
+    position: relative;
+    justify-self: start;
+    align-self: start;
     top: -0.3em;
     color: var(--math-color-nth-root-index);
-  }
-  
-  .radical-symbol {
-    font-size: 1em;
-    translate: 0 0.33em;
-    color: var(--math-color-nth-root-symbol);
-    transform: scaleY(1.4);
   }
   
   .radicand {

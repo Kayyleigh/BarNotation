@@ -4,8 +4,6 @@ import { handleBracketInsert, handleCharacterInsert } from "./insertion";
 import { handleBackspace } from "./deletion";
 import { transformToActsymbNode, transformToFraction, transformToSubSupNode, transformToCustomAccent } from "./transformations";
 import { getStyleFromSymbol, isClosingBracket, isOpeningBracket } from "../utils/bracketUtils";
-import { latexToMathNode, nodeToLatex } from "../models/latexParser";
-import type { InlineContainerNode } from "../models/types";
 
 export function handleKeyDown(
   e: React.KeyboardEvent,
@@ -14,14 +12,26 @@ export function handleKeyDown(
 
   // === Triple-key events ===
 
-  if (e.metaKey && e.shiftKey && e.code === 'Digit6') {
+  if (e.shiftKey && e.ctrlKey && e.code === 'Digit6') {
     e.preventDefault();
     return transformToActsymbNode(state, "supLeft");
   }
 
-  if (e.metaKey && e.shiftKey && e.key === '_') {
+  if (e.shiftKey && e.ctrlKey && e.code === 'Minus') {
     e.preventDefault();
     return transformToActsymbNode(state, "subLeft");
+  }
+
+  // === Double-key events ===
+
+  if (e.altKey && e.code === 'Digit6') {
+    e.preventDefault();
+    return transformToActsymbNode(state, "supRight");
+  }
+
+  if (e.altKey && e.code === 'Minus') {
+    e.preventDefault();
+    return transformToActsymbNode(state, "subRight");
   }
 
   // === Double-key events ===
@@ -45,16 +55,6 @@ export function handleKeyDown(
   if (e.shiftKey && e.key === '_') {
     e.preventDefault();
     return transformToSubSupNode(state, "subRight");
-  }
-
-  if (e.metaKey && e.key === '6') {
-    e.preventDefault();
-    return transformToActsymbNode(state, "supRight");
-  }
-
-  if (e.metaKey && e.key === '-') {
-    e.preventDefault();
-    return transformToActsymbNode(state, "subRight");
   }
 
   // === Single-key events ===

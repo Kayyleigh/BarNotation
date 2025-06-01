@@ -1956,3 +1956,10 @@ Next steps:
 - allow dropping of dragged nodes into IC? 
 - Make drop-target "cursor" 
 - make "clear equation" button
+
+### 01/06/2025
+
+TODO: fix the drag-drop of multi-digit and command-input
+
+![alt text](image-36.png)
+AW YEHAHH

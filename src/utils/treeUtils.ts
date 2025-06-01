@@ -1,5 +1,5 @@
 // utils/treeUtils.ts
-import { type InlineContainerNode, type MathNode, type RootWrapperNode, type StructureNode, type TextNode } from "../models/types";
+import { type CommandInputNode, type InlineContainerNode, type MathNode, type MultiDigitNode, type RootWrapperNode, type StructureNode, type TextNode } from "../models/types";
 
 export type TreePath = {
   parent: MathNode;
@@ -31,6 +31,8 @@ export const findNodeById = (node: MathNode, targetId: string): MathNode | null 
         return node.children;
       case "group":
         return [node.child];
+      case "styled":
+        return [node.child];
       case "accented":
         return node.accent.type === "custom"
         ? [node.base, node.accent.content]
@@ -43,8 +45,6 @@ export const findNodeById = (node: MathNode, targetId: string): MathNode | null 
         return [node.lower, node.upper];
       case "childed":
         return [node.base, node.subLeft, node.supLeft, node.subRight, node.supRight];
-      case "styled":
-        return [node.child];
       default:
         return [];
     }
@@ -255,7 +255,7 @@ export const findNodeById = (node: MathNode, targetId: string): MathNode | null 
   export function findParentContainerAndIndex(
     root: MathNode,
     childId: string
-  ): { container: InlineContainerNode; indexInParent: number } | null {
+  ): { container: InlineContainerNode | MultiDigitNode | CommandInputNode; indexInParent: number } | null {
     if (root.type === "inline-container") {
       for (let i = 0; i < root.children.length; i++) {
         const child = root.children[i];
@@ -368,6 +368,9 @@ export const findNodeById = (node: MathNode, targetId: string): MathNode | null 
         );
         break;
       case "group":
+        containers.push(...[node.child] as InlineContainerNode[]);
+        break;
+      case "styled":
         containers.push(...[node.child] as InlineContainerNode[]);
         break;
       case "accented":
