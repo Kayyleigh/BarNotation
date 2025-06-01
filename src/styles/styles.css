@@ -3,13 +3,16 @@
 /* ============================================= */
 
 :root {
+
+  --editor-font-size: 2.4em;
+
   --main-text-color: #000000;
 
   --background-color: white;
 
   /* ===== Typography & Scaling ===== */
   --math-font-family: 'STIX Two Math', 'Cambria Math', 'Times New Roman', serif;
-  --math-font-size-base: 2.4rem;
+  --math-font-size-base: 10em;
   --math-scale-factor: 0.5; /* Recursive scale-down for nested nodes */
   --math-font-size-sub: 0.6em;
   --math-font-size-fraction: 1em;
@@ -159,8 +162,9 @@
 
   .math-editor {
     max-width: 100%;
+    height: 6em;
     padding: 1em;
-    font-size: var(--math-font-size-base);
+    font-size: var(--editor-font-size);
     overflow: auto;
     background: var(--math-editor-bg);
     color: var(--math-text-color);

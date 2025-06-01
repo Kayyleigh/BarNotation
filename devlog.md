@@ -1963,3 +1963,5 @@ TODO: fix the drag-drop of multi-digit and command-input
 
 ![alt text](image-36.png)
 AW YEHAHH
+
+Also quickly added zoom stuff

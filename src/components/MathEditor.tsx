@@ -7,6 +7,7 @@ import LatexViewer from "./LatexViewer";
 import { useEditorHistory } from "../hooks/useEditorHistory";
 import { useDragState } from "../hooks/useDragState";
 import { useHoverState } from "../hooks/useHoverState";
+import { useZoom } from "../hooks/useZoom";
 import {
   insertNodeAtCursor,
   deleteSelectedNode,
@@ -48,6 +49,9 @@ const MathEditor: React.FC = () => {
     dropTargetId,
     dropTargetIndex,
   } = useDragState(editorStateRef, updateEditorState);
+
+  // Zoom level
+  const zoomLevel = useZoom(editorRef);
 
   // Get hovered node type
   const hoveredNode = hoveredNodeId && findNodeById(editorState.rootNode, hoveredNodeId);
@@ -139,8 +143,8 @@ const MathEditor: React.FC = () => {
       {/* Overlay text in upper right */}
       {hoveredType && (
           <div className="hover-type-info">
-            {hoveredType}
-          </div>
+  {hoveredType} • {Math.round(zoomLevel * 100)}%
+  </div>
         )}
       </div>
       <LatexViewer rootNode={editorState.rootNode} />
