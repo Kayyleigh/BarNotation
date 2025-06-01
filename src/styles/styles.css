@@ -73,6 +73,21 @@
   --latex-text-color-bracket: #000000;
   --latex-text-color-other: #036a07;
   --latex-text-color-actsymb: #00ff08;
+
+  /* Hotkey Ovelay */
+  --hotkey-overlay-bg: var(--background-color);
+  --hotkey-overlay-color: var(--main-text-color);
+
+  --hotkey-key-bg: #eee;
+  --hotkey-key-color: #111;
+
+  --hotkey-menu-close-button-bg: #333;
+  --hotkey-menu-close-button-color: #eee;
+
+  /* Main app buttons etc */
+  --button-bg: #eee;
+  --button-color: #333;
+
 }
 
 .dark {
@@ -121,6 +136,19 @@
   --latex-text-color-bracket: #d4d4d4;  /* light gray to ensure visibility on dark */
   --latex-text-color-other: #6a9955;    /* cool green, consistent with code editors */
   
+  /* Hotkey Overlay */
+  --hotkey-overlay-bg: var(--background-color);
+  --hotkey-overlay-color: var(--main-text-color);
+
+  --hotkey-key-bg: #444;
+  --hotkey-key-color: #eee;
+
+  --hotkey-menu-close-button-bg: #eee;
+  --hotkey-menu-close-button-color: #333;
+
+  /* Main app buttons etc */
+  --button-bg: #333;
+  --button-color: #eee;
 }
 
   body {

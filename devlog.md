@@ -1965,3 +1965,6 @@ TODO: fix the drag-drop of multi-digit and command-input
 AW YEHAHH
 
 Also quickly added zoom stuff
+
+Some next TODOs for usability but not extremely crucial yet:
+- when childed base is larger than 1 node long, wrap into group

@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
 import MathEditor from "./MathEditor";
-import "../styles/styles.css"; // Make sure it includes theme classes
+import HotkeyOverlay from "./HotkeyOverlay"; 
+import "../styles/styles.css"; // includes theme classes (i.e. dark mode)
 
 const App: React.FC = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     return localStorage.getItem("mathEditorTheme") === "dark";
   });
+
+  const [showHotkeys, setShowHotkeys] = useState(false);
 
   useEffect(() => {
     document.body.classList.toggle("dark", isDarkMode);
@@ -13,6 +16,7 @@ const App: React.FC = () => {
   }, [isDarkMode]);
 
   const toggleDarkMode = () => setIsDarkMode(prev => !prev);
+  const toggleHotkeyOverlay = () => setShowHotkeys(prev => !prev);
 
   return (
     <div className="app-container">
@@ -21,12 +25,16 @@ const App: React.FC = () => {
         <button onClick={toggleDarkMode} className="theme-toggle-button">
           {isDarkMode ? "🌙 Dark Mode" : "☀️ Light Mode"}
         </button>
+        <button onClick={toggleHotkeyOverlay} className="hotkey-button">
+          ⌨️ Hotkeys
+        </button>
       </header>
 
       <main className="editor-layout">
-        {/* <Toolbar /> */}
         <MathEditor />
       </main>
+
+      {showHotkeys && <HotkeyOverlay onClose={() => setShowHotkeys(false)} />}
     </div>
   );
 };

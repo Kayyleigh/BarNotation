@@ -1,0 +1,103 @@
+  
+  .theme-toggle-button,
+  .hotkey-button {
+    margin-left: 1rem;
+    background: var(--button-bg);
+    color: var(--button-color);
+    border: 1px solid var(--button-bg);
+    padding: 0.4rem 0.8rem;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .hotkey-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4); /* consistent modal background */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  
+  .hotkey-overlay-content {
+    background: var(--hotkey-overlay-bg, var(--background-color));
+    color: var(--hotkey-text-color, var(--main-text-color));
+    border-radius: 8px;
+    padding: 2rem;
+    width: 90%;
+    max-width: 500px;
+    max-height: 80%;
+    overflow-y: auto;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    position: relative;
+  }
+  
+  .hotkey-close-button {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.75rem;
+    font-size: 1.25rem;
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+  }
+  
+  .hotkey-group {
+    margin-bottom: 2rem;
+  }
+  
+  .hotkey-group h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid var(--math-editor-border);
+    padding-bottom: 0.25rem;
+  }
+  
+  .hotkey-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .hotkey-row {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
+  }
+  
+  .hotkey-keys {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    font-family: monospace;
+  }
+  
+  .key {
+    background: var(--hotkey-key-bg, var(--button-bg));
+    color: var(--hotkey-key-color, var(--button-color));
+    padding: 0.2em 0.5em;
+    border-radius: 4px;
+    margin: 0 2px;
+    font-size: 0.95em;
+    font-family: monospace;
+    border: 1px solid var(--button-bg);
+  }
+  
+  .key-separator {
+    margin: 0 4px;
+    font-weight: normal;
+    color: var(--hotkey-key-color, var(--button-color));
+  }
+  
+  .hotkey-desc {
+    font-size: 0.95rem;
+  }
+  
