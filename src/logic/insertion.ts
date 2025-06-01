@@ -101,11 +101,6 @@ export const handleCharacterInsert = (state: EditorState, char: string): EditorS
 
     if (match) {
       const transformedNode = match.createNode();
-      const updatedChildren = [
-        ...children.slice(0, index - 1),
-        transformedNode,
-        ...children.slice(index),
-      ];
 
       if (transformedNode.type === "text" && 
         (isOpeningBracket(transformedNode.content) || isClosingBracket(transformedNode.content))) {
@@ -116,8 +111,25 @@ export const handleCharacterInsert = (state: EditorState, char: string): EditorS
         // If no valid style, use round brackets
         const safeStyle = style || "parentheses";
 
-        return handleBracketInsert(state, safeStyle, side)
+        // Exclude new node from children because bracket handler will do it
+        const updatedChildren = [
+          ...children.slice(0, index - 1),
+          ...children.slice(index),
+        ];
+
+        const updatedRoot = updateNodeById(state.rootNode, container.id, {
+          ...container,
+          children: updatedChildren,
+        });
+
+        return handleBracketInsert({...state, rootNode: updatedRoot}, safeStyle, side)
       } 
+
+      const updatedChildren = [
+        ...children.slice(0, index - 1),
+        transformedNode,
+        ...children.slice(index),
+      ];
 
       const updatedRoot = updateNodeById(state.rootNode, container.id, {
         ...container,

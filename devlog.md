@@ -1945,3 +1945,8 @@ Implemented: Now if trying to get unknown open/close bracket, it gives empty str
 TODO: add overline and underbrace styles for nodedecoration
 underbrace is so hideous and also it doesnt work well cuz it should b elike bigop but for me it is a deco
 but that is not the most important thing atm
+
+![alt text](image-35.png)
+
+Weeee
+nice work
