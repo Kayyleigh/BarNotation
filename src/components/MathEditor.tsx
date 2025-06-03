@@ -22,9 +22,10 @@ const initialState = createEditorState(createRootWrapper());
 interface MathEditorProps {
   resetZoomSignal: number;
   defaultZoom: number;
+  showLatex: boolean;
 }
 
-const MathEditor: React.FC<MathEditorProps> = ({ resetZoomSignal, defaultZoom }) => {
+const MathEditor: React.FC<MathEditorProps> = ({ resetZoomSignal, defaultZoom, showLatex }) => {
   const editorRef = useRef<HTMLDivElement>(null);
   const zoomLevel = useZoom(editorRef, resetZoomSignal, defaultZoom);
   
@@ -156,13 +157,15 @@ const MathEditor: React.FC<MathEditorProps> = ({ resetZoomSignal, defaultZoom })
           isActive={isActive}  // is editor active (i.e. should I render the cursor)
         />
       {/* Overlay text in upper right */}
-      {hoveredType && (
+        {hoveredType && (
           <div className="hover-type-info">
-  {hoveredType} • {Math.round(zoomLevel * 100)}%
-  </div>
+            {hoveredType} • {Math.round(zoomLevel * 100)}%
+          </div>
         )}
       </div>
-      <LatexViewer rootNode={editorState.rootNode} />
+      {showLatex && (
+        <LatexViewer rootNode={editorState.rootNode} />
+      )}
     </div>
   );
 };

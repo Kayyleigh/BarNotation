@@ -1,7 +1,6 @@
 .cell-list {
     display: flex;
     flex-direction: column;
-    gap: 0.1rem;
     padding: 1rem;
     overflow-y: auto;
   }
@@ -11,26 +10,37 @@
     gap: 1rem;
     margin: 1rem 0;
   }
+
+  .cell {
+    padding: 0.8em 0em;
+  }
   
   .math-cell {
     position: relative;
   }
-  
-  .preview-button {
-    position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-    background: var(--button-bg);
-    color: var(--button-color);
-    border: none;
-    padding: 0.3rem 0.6rem;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
+
   .text-cell {
+    position: relative;
     font-size: 1em;
-    margin: 0.1rem;
     resize: none;
   }
   
+  .cell-toolbar {
+    position: absolute;
+    top: -0.4em;
+    right: 1em;
+    display: flex;
+    gap: 0.5rem;
+    z-index: 1;
+  }
+  
+  .preview-button,
+  .delete-button {
+    background: #444;
+    color: white;
+    border: none;
+    padding: 4px 8px;
+    font-size: 12px;
+    border-radius: 4px;
+    cursor: pointer;
+  }

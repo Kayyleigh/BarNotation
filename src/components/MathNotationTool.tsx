@@ -136,6 +136,7 @@ const App: React.FC = () => {
               key={cell.id}
               resetZoomSignal={resetZoomSignal}
               defaultZoom={defaultZoom}
+              onDelete={() => deleteCell(cell.id)}
               // pass content & onChange if MathCell supports editing content
             />
           ) : (
@@ -144,6 +145,7 @@ const App: React.FC = () => {
               value={cell.content}
               onChange={(val) => updateCellContent(cell.id, val)}
               placeholder="Enter text here..."
+              onDelete={() => deleteCell(cell.id)}
             />
           )
         )}

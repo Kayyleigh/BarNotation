@@ -2182,4 +2182,15 @@ Helper Functions:
   handleMouseLeave → conditionally clear hover
 ```
 Progress:
-- make nodeToLatex only have 1 function, with the "highlighted?" being a boolean input argument 
+- made nodeToLatex only have 1 function, with the "highlighted?" being a boolean input argument
+- made cursor show only in selected container
+- enable individual zoom level per container
+- enable global zoom reset with custom preference
+- turn tool into jupyter-notebook-inspired scrollable cell list of Math cells and Text Cells
+
+todo: make nice preview toggle: 
+- set text-align: center in math-editor
+- hide all latex
+- remove borders and box-shadows from cells
+- set zoom levels to fit the boxes?
+- no hover and zoom info in corners 
