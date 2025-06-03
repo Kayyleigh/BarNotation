@@ -1,18 +1,15 @@
+
+
+  .math-preview {
+    text-transform: math-auto;
+  }
+
   /* ============================================= */
   /* ================== BUTTONS ================== */
   /* ============================================= */
 
   .theme-toggle-button,
-  .hotkey-button {
-    margin-left: 1rem;
-    background: var(--button-bg);
-    color: var(--button-color);
-    border: 1px solid var(--button-bg);
-    padding: 0.4rem 0.8rem;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-
+  .hotkey-button,
   .zoom-button {
     margin-left: 1rem;
     background: var(--button-bg);
@@ -22,7 +19,72 @@
     border-radius: 5px;
     cursor: pointer;
   }
-  
+
+  .zoom-dropdown-wrapper {
+    position: relative;
+    display: inline-block; /* Ensures dropdown aligns to toggle */
+  }
+
+  .zoom-dropdown {
+    position: relative;
+  }
+
+  /* Align the dropdown toggle button next to "Reset Zoom" */
+  .zoom-dropdown-toggle {
+    background: var(--button-bg);
+    color: var(--button-color);
+    border: 1px solid var(--button-bg);
+    padding: 0.4rem 0.6rem;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  /* Zoom dropdown panel styling */
+  .zoom-dropdown-panel {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: var(--panel-bg, #fff);
+    border: 1px solid var(--border-color, #ccc);
+    border-radius: 6px;
+    padding: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 10;
+    width: 260px;
+  }
+
+  /* Inside the dropdown: label */
+  .zoom-dropdown-panel label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Zoom range input (slider) */
+  .zoom-dropdown-panel input[type="range"] {
+    width: 100%;
+  }
+
+  /* Zoom preview row */
+  .zoom-dropdown-preview {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.75rem;
+  }
+
+  .zoom-dropdown-preview span:first-child {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--main-text-color, #333);
+  }
+
+  .zoom-dropdown-preview span:last-child {
+    transition: font-size 0.2s ease;
+    line-height: 1;
+  }
+
   /* ============================================= */
   /* =============== EDITOR WRAPPER ============== */
   /* ============================================= */

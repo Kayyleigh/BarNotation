@@ -21,13 +21,12 @@ const initialState = createEditorState(createRootWrapper());
 
 interface MathEditorProps {
   resetZoomSignal: number;
+  defaultZoom: number;
 }
 
-const MathEditor: React.FC<MathEditorProps> = ({ resetZoomSignal }) => {
+const MathEditor: React.FC<MathEditorProps> = ({ resetZoomSignal, defaultZoom }) => {
   const editorRef = useRef<HTMLDivElement>(null);
-
-  // Pass resetZoomSignal to useZoom
-  const zoomLevel = useZoom(editorRef, resetZoomSignal);
+  const zoomLevel = useZoom(editorRef, resetZoomSignal, defaultZoom);
   
   // Use editor history
   const {
