@@ -1,6 +1,6 @@
 // bracketUtils.ts
 
-// TODO: ensure latex compatibility of symbols (used in latexParser). See https://tug.ctan.org/info/short-math-guide/short-math-guide.pdf
+// TODO: ensure latex compatibility of symbols (used in nodeToLatex). See https://tug.ctan.org/info/short-math-guide/short-math-guide.pdf
 
   export const bracketSymbols: Record<string, { open: string; close: string }> = {
     parentheses: { open: "(", close: ")" },

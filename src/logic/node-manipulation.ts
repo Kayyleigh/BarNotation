@@ -1,7 +1,7 @@
 import type { EditorState } from "./editor-state";
 import type { MathNode } from "../models/types";
 import { findNodeById, findParentContainerAndIndex, updateNodeById } from "../utils/treeUtils";
-import { nodeToLatex } from "../models/latexParser";
+import { nodeToLatex } from "../models/nodeToLatex";
 
 export function moveNodeByDrag(
   state: EditorState,
@@ -56,7 +56,7 @@ export function deleteNodeById(state: EditorState, nodeId: string): EditorState 
   console.log(`Do we have a parent? ${info}`)
   if (!info) return state;
 
-  console.log(`Deleting node ${(info.container.children.map(c=> nodeToLatex(c)).join(""))}`)
+  console.log(`Deleting node ${(info.container.children.map(c=> nodeToLatex(c, false)).join(""))}`)
   const { container, indexInParent } = info;
   const newChildren = [...container.children];
   newChildren.splice(indexInParent, 1);

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { createRootWrapper } from "../models/nodeFactories";
 import { createEditorState, setCursor } from "../logic/editor-state";
 import { handleKeyDown } from "../logic/handle-keydown";
@@ -13,9 +13,9 @@ import {
   deleteSelectedNode,
   getSelectedNode,
 } from "../logic/node-manipulation";
-import { nodeToLatex } from "../models/latexParser";
 import { parseLatex } from "../models/mathNodeParser";
 import { findNodeById } from "../utils/treeUtils";
+import { nodeToLatex } from "../models/nodeToLatex";
 
 const initialState = createEditorState(createRootWrapper());
 
@@ -50,6 +50,9 @@ const MathEditor: React.FC = () => {
     dropTargetIndex,
   } = useDragState(editorStateRef, updateEditorState);
 
+  // Active state for editor (i.e. is cursor active in this editor component?)
+  const [isActive, setIsActive] = useState(false);
+
   // Zoom level
   const zoomLevel = useZoom(editorRef);
 
@@ -83,7 +86,7 @@ const MathEditor: React.FC = () => {
   const onCopy = (e: React.ClipboardEvent) => {
     const selectedNode = getSelectedNode(editorState);
     if (selectedNode) {
-      e.clipboardData.setData("text/plain", nodeToLatex(selectedNode));
+      e.clipboardData.setData("text/plain", nodeToLatex(selectedNode, false));
       e.preventDefault();
     }
   };
@@ -91,7 +94,7 @@ const MathEditor: React.FC = () => {
   const onCut = (e: React.ClipboardEvent) => {
     const selectedNode = getSelectedNode(editorState);
     if (selectedNode) {
-      e.clipboardData.setData("text/plain", nodeToLatex(selectedNode));
+      e.clipboardData.setData("text/plain", nodeToLatex(selectedNode, false));
       const updated = deleteSelectedNode(editorState);
       updateEditorState(updated);
       e.preventDefault();
@@ -122,6 +125,13 @@ const MathEditor: React.FC = () => {
         onCopy={onCopy}
         onCut={onCut}
         onPaste={onPaste}
+        onFocus={() => setIsActive(true)}
+        onBlur={(e) => {
+          // Only clear active if focus leaves the whole editor container
+          if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+            setIsActive(false);
+          }
+        }}
       >
         <MathRenderer
           node={editorState.rootNode}
@@ -139,6 +149,7 @@ const MathEditor: React.FC = () => {
           onUpdateDropTarget={updateDropTarget}
           onHandleDrop={handleDrop}
           onClearDrag={clearDrag}
+          isActive={isActive}  // is editor active (i.e. should I render the cursor)
         />
       {/* Overlay text in upper right */}
       {hoveredType && (

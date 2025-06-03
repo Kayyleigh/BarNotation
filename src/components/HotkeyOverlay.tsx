@@ -15,14 +15,14 @@ const groupedHotkeys = [
       [["Ctrl", "Shift", "6"], "Make actuarial (top-left focus)"],
       [["Alt", "-"], "Make actuarial (bottom-right focus)"],
       [["Alt", "6"], "Make actuarial (top-right focus)"],
+      [["Shift", "↓"], "Make underset"],
+      [["Shift", "↑"], "Make overset"],
       [["/"], "Turn node into numerator of new fraction"],
     ],
   },
   {
     title: "Structural Shortcuts",
     keys: [
-      [["Shift", "↓"], "Create underset"],
-      [["Shift", "↑"], "Create overset"],
       [["Drag & Drop"], "Rearrange nodes"],
     ],
   },

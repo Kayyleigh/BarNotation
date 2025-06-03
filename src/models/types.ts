@@ -74,7 +74,6 @@ export interface MultilineEquationNode extends BaseNode {
   type: "multiline";
   children: RootWrapperNode[];
   alignment?: "left" | "center" | "right" | "align" | "multline"; // Optional for LaTeX export
-
 }
 
 export interface RootWrapperNode extends BaseNode {
@@ -101,7 +100,7 @@ export interface NthRootNode extends BaseNode {
 
 export interface BigOperatorNode extends BaseNode {
   type: "big-operator";
-  operator: string; // e.g. "sum", "int", "lim"
+  operator: string;
   upper: InlineContainerNode;
   lower: InlineContainerNode;
 }
@@ -119,7 +118,7 @@ export interface ChildedNode extends BaseNode {
 }
 
 export type AccentKind =
-  | { type: "predefined"; decoration: NodeDecoration }     // e.g., "hat", "tilde", "overline"
+  | { type: "predefined"; decoration: NodeDecoration }  // e.g., "hat", "tilde", "overline"
   | { type: "custom"; content: InlineContainerNode; position: "above" | "below" };
 
 export interface AccentedNode extends BaseNode {
@@ -163,14 +162,6 @@ export interface MatrixNode extends BaseNode {
   // Maybe enable diff style for L vs R
 }
 
-// export interface CasesNode extends BaseNode {
-//   type: "cases";
-//   rows: {
-//     condition: InlineContainerNode;
-//     result: InlineContainerNode;
-//   }[];
-// }
-
 export interface CasesNode extends BaseNode {
   type: "cases";
   rows: [InlineContainerNode, InlineContainerNode][]; // each row is [value, condition]
@@ -198,8 +189,6 @@ export interface CommandInputNode extends BaseNode {
   type: "command-input";
   children: TextNode[]; // e.g., `\a`, `\al`, `\alpha`
 }
-
-
 
 // Helper function for stringifying MathNode
 export const nodeToMathText = (node: MathNode): string => {

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import MathEditor from "./MathEditor";
 import HotkeyOverlay from "./HotkeyOverlay"; 
-import "../styles/styles.css"; // includes theme classes (i.e. dark mode)
+import "../styles/themes.css"; // includes theme classes (i.e. dark mode)
+import "../styles/styles.css"; // styling for the main app
 
 const App: React.FC = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -31,6 +32,14 @@ const App: React.FC = () => {
       </header>
 
       <main className="editor-layout">
+        <MathEditor />
+        <MathEditor />
+        <MathEditor />
+        <MathEditor />
+        <MathEditor />
+        <MathEditor />
+        <MathEditor />
+        <MathEditor />
         <MathEditor />
       </main>
 

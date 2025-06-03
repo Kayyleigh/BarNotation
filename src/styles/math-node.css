@@ -125,7 +125,7 @@
   
   .bracket {
     font-weight: bold;
-    padding: 0 0.05em;
+    /* padding: 0 0.05em; */
     font-size: 1.2em;
     color: var(--math-color-pair-brackets);
   }
@@ -206,29 +206,29 @@
   /* ============================================= */
   
   .type-fraction {
-    display: inline-block;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     vertical-align: middle;
   }
   
   .fraction {
     display: flex;
     flex-direction: column;
-    align-items: center;
-  }
-  
-  .fraction hr {
-    width: 100%;
-    border: none;
-    border-top: 1px solid currentColor;
-    margin: 0.1em 0;
-  }
-  
-  .numerator,
-  .denominator {
-    font-size: var(--math-font-size-fraction);
+    align-items: stretch;
+    justify-content: center;
     text-align: center;
   }
   
+  .numerator, .denominator {
+  }
+  
+  .line {
+    height: 1px;
+    background-color: var(--math-text-color);
+    width: 100%;
+  }
   
   /* ============================================= */
   /* =============== BIG OPERATORS ============== */

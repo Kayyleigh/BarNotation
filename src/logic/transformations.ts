@@ -5,6 +5,7 @@ import { type BracketStyle } from "../utils/bracketUtils";
 import { createChildedNode, createGroupNode, createInlineContainer } from "../models/nodeFactories";
 import type { InlineContainerNode } from "../models/types";
 import type { CornerPosition } from "../utils/subsupUtils";
+import { nodeToLatex } from "../models/nodeToLatex";
 
 export function transformToFraction(state: EditorState): EditorState {
   const container = findNodeById(state.rootNode, state.cursor.containerId);
@@ -48,6 +49,11 @@ export function transformToCustomAccent(
   const base = container.children[idx - 1]; 
 
   const accentedNode = transformToCustomAccentNode(base, position)
+
+  if (accentedNode.accent.type === "predefined") {
+    console.warn(`Trying to transform to custom accent, but got predefined ${nodeToLatex(accentedNode)}`)
+    return state;
+  }
   
   const newChildren = [
     ...container.children.slice(0, idx - 1),
@@ -80,6 +86,10 @@ export function transformToChildedNode(
   if (idx === 0) return state;
 
   const base = container.children[idx - 1]; 
+
+  // console.log(`Turning ${nodeToLatex(base)} ${base.type} into childed`)^
+  // if (base.type === "") TODO here can check for types that need wrapping into group to allow childing
+
   const subsupBase = createInlineContainer([base])
   const subsupNode = createChildedNode(subsupBase, variant);
 

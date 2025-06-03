@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { nodeToLatex, nodeToLatexHighlighted } from "../models/latexParser";
+import { nodeToLatex } from "../models/nodeToLatex";
 import type { MathNode } from "../models/types"; // Replace with your actual Node type
 
 interface LatexViewerProps {
@@ -16,7 +16,7 @@ const LatexViewer: React.FC<LatexViewerProps> = ({ rootNode }) => {
     setLatex("Refreshing...");
     setTimeout(() => {
       try {
-        const latexCode = nodeToLatexHighlighted(rootNode);
+        const latexCode = nodeToLatex(rootNode, true);
         setLatex(latexCode);
         setLastRefreshed(new Date());
         setIsOutdated(false);
@@ -33,7 +33,7 @@ const LatexViewer: React.FC<LatexViewerProps> = ({ rootNode }) => {
   }, [rootNode]);
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(nodeToLatex(rootNode)); // Non-styled version
+    navigator.clipboard.writeText(nodeToLatex(rootNode, false)); // Non-styled version
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   };

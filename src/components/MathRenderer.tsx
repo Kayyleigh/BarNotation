@@ -20,6 +20,7 @@ import {
 
 export type MathRendererProps = {
   node: MathNode;
+  isActive: boolean;
   cursor: CursorPosition;
   dropTargetCursor: CursorPosition;
   hoveredId?: string;
@@ -41,6 +42,7 @@ export type MathRendererProps = {
 
 export const MathRenderer: React.FC<MathRendererProps> = ({
   node,
+  isActive,
   cursor,
   dropTargetCursor,
   hoveredId,
@@ -78,7 +80,7 @@ export const MathRenderer: React.FC<MathRendererProps> = ({
     },
   };
 
-  const baseProps = { cursor, dropTargetCursor, hoveredId, onCursorChange, onHoverChange, onRootChange, onStartDrag, onUpdateDropTarget, onHandleDrop, onClearDrag, parentContainerId, ancestorIds, index, inheritedStyle };
+  const baseProps = { isActive, cursor, dropTargetCursor, hoveredId, onCursorChange, onHoverChange, onRootChange, onStartDrag, onUpdateDropTarget, onHandleDrop, onClearDrag, parentContainerId, ancestorIds, index, inheritedStyle };
 
   let content;
 
@@ -150,7 +152,6 @@ export const MathRenderer: React.FC<MathRendererProps> = ({
       );
   }
   
-//TODO here deal w drop target cursor??
   const isDropTarget = dropTargetCursor.containerId === node.id && dropTargetCursor.index === index;
 
   // Wrap the rendered content in a draggable div

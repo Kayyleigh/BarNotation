@@ -1,5 +1,5 @@
 import React from "react";
-import './styles/styles.css'
+import './styles/themes.css'
 import MathNotationTool from "./components/MathNotationTool";
 
 const App: React.FC = () => (

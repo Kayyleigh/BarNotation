@@ -183,7 +183,7 @@ Notes:
 ---
 # Dev-log
 
-## First version (5/8/25-8/8/25)
+## First version (05/05/2025-08/05/2025)
 
 ### 05/05/2025 
 Made initial version. It cannot do operators yet, but the boxes are working (using buttons on hover)
@@ -305,7 +305,7 @@ tradeoffs to consider:
 ### 08/05/2025
 Gotta refactor everything maybe because this is going in the bin.
 
-## Proper Design (08/08-??)
+## Proper Design (08/05/2025-???)
 
 ### 08/05/2025
 Added a section to the start of this document, outlining the application design properly (similar to how it is taught in my uni).
@@ -1968,3 +1968,218 @@ Also quickly added zoom stuff
 
 Some next TODOs for usability but not extremely crucial yet:
 - when childed base is larger than 1 node long, wrap into group
+
+Just realised I am quite latex-focused. Maybe my output is latex. Latex is what you get. What you see is not at all what you get. What you see is what you would get if you would put what you got into a What You See Is What You Mean editor. Or so I thought. But latex is much more complex, e.g. with different column type options and stuff.
+
+My editor in itself is **WYSIWYG** (What You See Is What You Get) because it's interactive; all about directly building the math.
+
+But that is only for a single equation, and for within the app. You can look at your equation. Nice. Now what? Courses are more than 1 equation. I make the assumption that my editor is not enough. Latex parsing is a huge part of it, and latex is not at all what you were seeing in the editor. The part where I output latex is **WYSIWYM** (What You See Is What You Mean). Not your usual WYSIWYM editor, but it is similar in spirit. The loss of freedom in formatting appears in the form of loss of freedom in e.g. alias choices and spacing within the latex string.
+
+But ideally, this latex is then put back into a normal WYSIWYM editor. Under the assumption that my application correctly understood what you meant, the output of the external editor _should_ be what you got from the app in the first place. Due to ambiguities, this step is messy. E.g. precedences in actuarial science can look like underset and overset. You can display them as under-/overset, and then so will your final render. But it is not what you meant. Similarly, since block vs inline math is not something you have to adhere to in physical notes I visually allow both. You can just make a subscript or superscript to make it look inline. The final rendering would do so too, so you get what you see but not what you mean.
+
+
+Possible ways to represent a course:
+1. **side menu is all notes (math + text pairs); main page is 1 pair and a to-latex; user saves new pair with selected custom tag that represents the course.**
+  🔥 Courses-to-notations are allowed to be many-to-many
+  🔥 Getting started takes 0 effort (Very friendly for quick use!)
+  ⚠️ No feeling of a course "environment". (No clean dumpsters)
+  ⚠️ user effort required to obtain course overview.
+2. **Side menu is all courses, main page consists of an arbitrary-length sequence of math boxes and text boxes (similar to jupyter notebook), to-latex is moved outward to only translate the entire course to latex at once. This design would basically be reverse-overleaf.**
+  🔥 Very sequential; by-design follows sequential (i.e. chronological) nature of real lectures.
+  🔥 Great potential for to-latex: single click can give full latex for entire lecture/course, all styled and ready for pdf.
+  🔥 To-latex can infer necessary packages and include them in the latex output. No extra effort or learning curve for the user.
+  ⚠️ Need extra logic for text notes; sections and subsections etc may be necessary due to potentially large length of courses. This is easier than math (presumably) but I build this app due to other apps not being good enough for math. Text editors are already great, or at least better than what I would make.
+  ⚠️ Learning curve for user to know what latex normally looks like, or just in general the planning in advance (even though the latex is the _output_, for text you still need to decide the ((sub)sub)section tree).
+  ⚠️ Very sequential; implies that math (within a course) has a storyline.
+  ⚠️ Forces certain ideas on the user about how course notes are supposed to look (i.e. math **blocks** and text, always under each other; no freedom in layout)
+  ⚠️ No natural definition/separation of "lectures" within a course.
+3. side menu is all notes within a course, main working page is a math-text pair, but home button exists that sends to an overview of courses (similar to e.g. overleaf or samsung notes). 
+  🔥 Absence of other courses being visible may help feel like a clear environment; opens possibility to nicely separate different custom "node dumpster" for each course.
+  ⚠️ Courses are very detached 
+
+Sent the message
+
+### 02/06/2025
+he does not want it
+
+what am i doing
+
+todo: make childed revert to its base when dragging away the only child
+todo: add logical up/down nav:
+- fractions (+ calc which index?)
+- big operators
+- childed
+
+### 03/06/2025
+
+#### Components Pseudocode
+Pseudocode of the components of the application.
+
+**MathNotationTool.tsx** – _Top-level app container_
+```
+Component App:
+  State:
+    isDarkMode ← load from localStorage
+    showHotkeys ← false
+
+  on isDarkMode change:
+    → update document theme
+    → save to localStorage
+
+  Functions:
+    toggleDarkMode → toggle theme
+    toggleHotkeyOverlay → toggle help visibility
+
+  Render:
+    - Header:
+        - Dark mode toggle
+        - Hotkey overlay toggle
+    - Main:
+        - MathEditor
+    - If showHotkeys:
+        - HotkeyOverlay (with onClose handler)
+```
+
+**HotkeyOverlay.tsx** – _Global keyboard shortcut reference modal_
+```
+Component HotkeyOverlay(onClose):
+
+  Static data: groupedHotkeys = list of shortcut groups (title + key combos)
+
+  On mount:
+    - Listen for Escape → onClose
+    - Listen for outside click → onClose
+
+  On unmount:
+    - Remove event listeners
+
+  Render:
+    - Modal with:
+        - Close button
+        - Title
+        - For each group:
+            - Section with title + list of hotkeys
+```
+
+**MathEditor.tsx** – _Main editor for a single math expression_
+```
+Component MathEditor:
+
+  Setup:
+    - Editor state & ref
+    - Hooks for:
+        - Undo/redo history
+        - Hover tracking
+        - Drag-and-drop
+        - Zoom level
+
+  On editor state change:
+    - Sync ref with latest state
+
+  Handlers:
+    - onKeyDown: shortcuts, undo/redo, navigation
+    - onCopy / onCut / onPaste: LaTeX serialization & parsing
+
+  Render:
+    - Editor container with keyboard/mouse listeners
+    - MathRenderer (core visual rendering)
+    - Overlays: hovered node info, zoom level
+    - (Optional) LatexViewer for LaTeX output
+```
+
+**LatexViewer.tsx** – _Displays and manages LaTeX export for the editor_
+```
+Component LatexViewer(rootNode):
+
+  State:
+    - latex ← highlighted LaTeX string
+    - lastRefreshed ← last update timestamp
+    - isOutdated ← true if rootNode changed
+    - copied ← clipboard status
+
+  On rootNode change:
+    → Mark as outdated
+
+  Handlers:
+    - Refresh:
+        → Generate highlighted LaTeX
+        → Update timestamp and flags
+    - Copy:
+        → Copy plain LaTeX to clipboard
+        → Show confirmation briefly
+
+  Render:
+    - Refresh button + timestamp
+    - Output box (highlighted LaTeX)
+    - Copy button with visual feedback
+```
+**MathRenderer.tsx** – _Renders a single node using drag-and-drop-aware logic_
+```
+Component MathRenderer(node, props):
+
+  Setup:
+    - Define drag handlers:
+        onDragStart, onDragOver, onDrop, onDragEnd
+    - Create baseProps for shared interaction
+
+  Logic:
+    - Match node.type → call appropriate render function
+    - If node is a drop target → render indicator
+
+  Return:
+    - Rendered node wrapped with drag behavior
+```
+
+**MathRenderers.tsx** – _Rendering logic for all node types (recursive)_
+```
+Function renderContainerChildren:
+  - Check if cursor is in this container
+  - For each child:
+      - Insert cursor if needed
+      - Wrap with click handler
+      - Recursively render child
+  - Add trailing cursor if needed
+
+Function renderStyledNode:
+  - Merge styles
+  - Recursively render child
+
+Function renderRootWrapperNode:
+  - Render single child in wrapper
+
+Function renderMultiDigitNode:
+  - Render as span + recursively render children
+
+Function renderCommandInputNode:
+  - Use monospace style + render children
+
+Function renderInlineContainerNode:
+  - Span container with children
+
+Function renderFractionNode:
+  - Render numerator and denominator recursively
+
+Function renderGroupNode:
+  - Render brackets and inner content
+
+Function renderChildedNode:
+  - Render 5 slots (sup/sub left/right + base)
+
+Function renderAccentedNode:
+  - Render accent above/below + base
+
+Function renderBigOperatorNode:
+  - Render upper, operator, lower in stack
+
+Function renderNthRootNode:
+  - Render index and base with radical
+
+Helper Functions:
+  getStyleClass → map style type to className
+  getInlineStyle → convert style to CSS
+  getIsHovered → match hoveredId
+  handleMouseEnter → set hoveredId
+  handleMouseLeave → conditionally clear hover
+```
+Progress:
+- make nodeToLatex only have 1 function, with the "highlighted?" being a boolean input argument 

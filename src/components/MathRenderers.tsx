@@ -25,6 +25,8 @@ import '../styles/accents.css';
 import { getCloseSymbol, getOpenSymbol, isClosingBracket, isOpeningBracket } from '../utils/bracketUtils';
 
 type RenderProps = {
+  isActive: boolean;
+
   cursor: CursorPosition;
   dropTargetCursor: CursorPosition;
 
@@ -103,7 +105,6 @@ function handleMouseLeave(
   }, 0);
 }
 
-
 function getIsHovered(node: MathNode, props: RenderProps): boolean {
   if (props.hoveredId === node.id) {
     return true;
@@ -117,10 +118,10 @@ function renderContainerChildren(
   props: RenderProps,
   inheritedStyle?: TextStyle
 ): React.ReactNode {
-  const { cursor, dropTargetCursor, hoveredId, 
+  const { isActive, cursor, dropTargetCursor, hoveredId, 
     onCursorChange, onRootChange, onHoverChange, 
     onClearDrag, onHandleDrop, onStartDrag, onUpdateDropTarget, 
-    ancestorIds, parentContainerId, index } = props;
+    ancestorIds } = props;
   const isCursorInThisContainer = cursor.containerId === containerId;
   const inDragState = dropTargetCursor.containerId !== null && dropTargetCursor.index !== null;
   const newAncestorIds = [containerId, ...(ancestorIds ?? [])];
@@ -130,7 +131,7 @@ function renderContainerChildren(
       {children.map((child, i) => {
         const elements: React.ReactNode[] = [];
 
-        if (!inDragState && isCursorInThisContainer && cursor.index === i) {
+        if (isActive && !inDragState && isCursorInThisContainer && cursor.index === i) {
           elements.push(
           <span 
             key={`cursor-${i}`} 
@@ -152,6 +153,7 @@ function renderContainerChildren(
 					  {...props}
             key={child.id}
             node={child}
+            isActive={isActive}
             cursor={cursor}
             dropTargetCursor={dropTargetCursor}
             hoveredId={hoveredId}
@@ -171,7 +173,7 @@ function renderContainerChildren(
         );
         return elements;
       })}
-      {!inDragState && isCursorInThisContainer && cursor.index === children.length && (
+      {isActive && !inDragState && isCursorInThisContainer && cursor.index === children.length && (
         <span className="cursor" />
       )}
     </>
@@ -366,7 +368,7 @@ export const renderFractionNode = (
           ancestorIds={[node.id, ...(props.ancestorIds ?? [])]} 
         />
       </div>
-      <hr />
+      <div className="line"></div>
       <div className="denominator">
         <MathRenderer
 					node={node.denominator} 
