@@ -10,7 +10,9 @@
 
   .theme-toggle-button,
   .hotkey-button,
-  .zoom-button {
+  .zoom-button,
+  .math-cell-button,
+  .text-cell-button {
     margin-left: 1rem;
     background: var(--button-bg);
     color: var(--button-color);

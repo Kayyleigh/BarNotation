@@ -1,0 +1,36 @@
+.cell-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    padding: 1rem;
+    overflow-y: auto;
+  }
+  
+  .add-buttons {
+    display: flex;
+    gap: 1rem;
+    margin: 1rem 0;
+  }
+  
+  .math-cell {
+    position: relative;
+  }
+  
+  .preview-button {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: var(--button-bg);
+    color: var(--button-color);
+    border: none;
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .text-cell {
+    font-size: 1em;
+    margin: 0.1rem;
+    resize: none;
+  }
+  

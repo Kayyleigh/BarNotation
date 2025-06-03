@@ -1,15 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
-import MathEditor from "./MathEditor";
 import HotkeyOverlay from "./HotkeyOverlay"; 
 import "../styles/themes.css"; // includes theme classes (i.e. dark mode)
 import "../styles/styles.css"; // styling for the main app
 import "../styles/math-node.css"; // styling for the main app
+import "../styles/cells.css"; // styling for the main app
+import MathCell from "./MathCell";
+import TextCell from "./TextCell";
 
 const App: React.FC = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     return localStorage.getItem("mathEditorTheme") === "dark";
   });
-  
 
   const [showHotkeys, setShowHotkeys] = useState(false);
 
@@ -62,6 +63,26 @@ const App: React.FC = () => {
   const toggleDarkMode = () => setIsDarkMode(prev => !prev);
   const toggleHotkeyOverlay = () => setShowHotkeys(prev => !prev);
 
+  const [cells, setCells] = useState<Array<{ id: string; type: "math" | "text"; content: string }>>([
+    { id: "1", type: "math", content: "" },
+  ]);
+
+  const updateCellContent = (id: string, newContent: string) => {
+    setCells((prev) =>
+      prev.map((cell) =>
+        cell.id === id ? { ...cell, content: newContent } : cell
+      )
+    );
+  };
+
+  const addCell = (type: "math" | "text") => {
+    setCells((prev) => [...prev, { id: Date.now().toString(), type, content: "" }]);
+  };
+
+  const deleteCell = (id: string) => {
+    setCells((prev) => prev.filter((cell) => cell.id !== id));
+  };  
+
   return (
     <div className="app-container">
       <h1>Math Notation Tool</h1>
@@ -108,30 +129,30 @@ const App: React.FC = () => {
       </header>
 
       <main className="editor-layout">
-        <MathEditor 
-          resetZoomSignal={resetZoomSignal}
-          defaultZoom={defaultZoom}
-        />
-        <MathEditor 
-          resetZoomSignal={resetZoomSignal}
-          defaultZoom={defaultZoom}
-        />
-        <MathEditor 
-          resetZoomSignal={resetZoomSignal}
-          defaultZoom={defaultZoom}
-        />
-        <MathEditor 
-          resetZoomSignal={resetZoomSignal}
-          defaultZoom={defaultZoom}
-        />
-        <MathEditor 
-          resetZoomSignal={resetZoomSignal}
-          defaultZoom={defaultZoom}
-        />
-        <MathEditor 
-          resetZoomSignal={resetZoomSignal}
-          defaultZoom={defaultZoom}
-        />
+        <div className="cell-list">
+        {cells.map((cell) =>
+          cell.type === "math" ? (
+            <MathCell
+              key={cell.id}
+              resetZoomSignal={resetZoomSignal}
+              defaultZoom={defaultZoom}
+              // pass content & onChange if MathCell supports editing content
+            />
+          ) : (
+            <TextCell
+              key={cell.id}
+              value={cell.content}
+              onChange={(val) => updateCellContent(cell.id, val)}
+              placeholder="Enter text here..."
+            />
+          )
+        )}
+        </div>
+
+        <div className="add-buttons">
+          <button className="math-cell-button" onClick={() => addCell("math")}>+ Math Cell</button>
+          <button className="text-cell-button" onClick={() => addCell("text")}>+ Text Cell</button>
+        </div>
 
       </main>
 
