@@ -3,9 +3,13 @@
   /* =============== BASE STYLES ================= */
   /* ============================================= */
   
+  .math-editor .math-node {
+    font-size: var(--local-math-font-size-base);
+
+  }
+
   .math-node {
     font-family: var(--math-font-family);
-    font-size: var(--math-font-size-base);
     line-height: var(--math-line-height);
     display: inline-block;
     width: max-content;
@@ -220,10 +224,7 @@
     justify-content: center;
     text-align: center;
   }
-  
-  .numerator, .denominator {
-  }
-  
+
   .line {
     height: 1px;
     background-color: var(--math-text-color);

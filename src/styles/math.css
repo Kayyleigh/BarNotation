@@ -79,7 +79,7 @@
     grid-template-rows: auto auto auto;
     justify-items: center;
     align-items: center;
-    font-size: var(--math-font-size-base);
+    font-size: var(--local-math-font-size-base);
     background-color: var(--math-color-background-subsup);
     line-height: 1;
   }

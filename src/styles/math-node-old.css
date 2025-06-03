@@ -195,7 +195,7 @@
   .math-editor {
     max-width: 100%;
     padding: 1em;
-    font-size: var(--math-font-size-base);
+    font-size: var(--local-math-font-size-base);
     overflow-x: auto;
     background: white;
     border: 1px solid #ccc;

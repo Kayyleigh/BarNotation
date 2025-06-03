@@ -11,6 +11,13 @@ const App: React.FC = () => {
 
   const [showHotkeys, setShowHotkeys] = useState(false);
 
+  // Use a simple number state to trigger reset zooms
+  const [resetZoomSignal, setResetZoomSignal] = useState(0);
+
+  const resetAllZooms = () => {
+    setResetZoomSignal((n) => n + 1);
+  };
+
   useEffect(() => {
     document.body.classList.toggle("dark", isDarkMode);
     localStorage.setItem("mathEditorTheme", isDarkMode ? "dark" : "light");
@@ -29,18 +36,31 @@ const App: React.FC = () => {
         <button onClick={toggleHotkeyOverlay} className="hotkey-button">
           ⌨️ Hotkeys
         </button>
+        <button onClick={resetAllZooms} className="zoom-button">
+          ⛶ Reset Zoom
+        </button>
       </header>
 
       <main className="editor-layout">
-        <MathEditor />
-        <MathEditor />
-        <MathEditor />
-        <MathEditor />
-        <MathEditor />
-        <MathEditor />
-        <MathEditor />
-        <MathEditor />
-        <MathEditor />
+        <MathEditor 
+          resetZoomSignal={resetZoomSignal}
+        />
+        <MathEditor 
+          resetZoomSignal={resetZoomSignal}
+        />
+                <MathEditor 
+          resetZoomSignal={resetZoomSignal}
+        />
+                <MathEditor 
+          resetZoomSignal={resetZoomSignal}
+        />
+                <MathEditor 
+          resetZoomSignal={resetZoomSignal}
+        />
+                <MathEditor 
+          resetZoomSignal={resetZoomSignal}
+        />
+
       </main>
 
       {showHotkeys && <HotkeyOverlay onClose={() => setShowHotkeys(false)} />}

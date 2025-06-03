@@ -19,9 +19,17 @@ import { nodeToLatex } from "../models/nodeToLatex";
 
 const initialState = createEditorState(createRootWrapper());
 
-const MathEditor: React.FC = () => {
+interface MathEditorProps {
+  resetZoomSignal: number;
+}
+
+const MathEditor: React.FC<MathEditorProps> = ({ resetZoomSignal }) => {
   const editorRef = useRef<HTMLDivElement>(null);
 
+  // Pass resetZoomSignal to useZoom
+  const zoomLevel = useZoom(editorRef, resetZoomSignal);
+  
+  // Use editor history
   const {
     state: editorState,
     update: updateEditorState,
@@ -52,9 +60,6 @@ const MathEditor: React.FC = () => {
 
   // Active state for editor (i.e. is cursor active in this editor component?)
   const [isActive, setIsActive] = useState(false);
-
-  // Zoom level
-  const zoomLevel = useZoom(editorRef);
 
   // Get hovered node type
   const hoveredNode = hoveredNodeId && findNodeById(editorState.rootNode, hoveredNodeId);
