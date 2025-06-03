@@ -12,7 +12,8 @@
   .hotkey-button,
   .zoom-button,
   .math-cell-button,
-  .text-cell-button {
+  .text-cell-button,
+  .preview-toggle-button {
     margin-left: 1rem;
     background: var(--button-bg);
     color: var(--button-color);
@@ -127,6 +128,7 @@
     border: 1px solid var(--math-editor-border);
     border-radius: 6px;
     box-shadow: 0 0 4px var(--math-editor-shadow);
+    cursor: text; /* By default, should feel typable */
   }
 
   .hover-type-info {

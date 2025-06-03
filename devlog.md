@@ -2194,3 +2194,12 @@ todo: make nice preview toggle:
 - remove borders and box-shadows from cells
 - set zoom levels to fit the boxes?
 - no hover and zoom info in corners 
+
+- make max zoom in preview mode be just enough to not overflow-x
+
+todo: usability improvements for new overall app design
+- make cell actions undoable
+- enable cell duplication
+- enable cell re-ordering by drag
+- enable cell insertion by hover between existing cells
+

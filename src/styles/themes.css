@@ -90,6 +90,8 @@
 
     /* Zoom panel */
     --panel-bg: var(--background-color);
+
+    --text-cell-color: #000000;
   
   }
   
@@ -155,6 +157,8 @@
 
     /* Zoom panel */
     --panel-bg: var(--background-color);
+
+    --text-cell-color: #d4d4d4;
   }
 
   body {
@@ -171,5 +175,5 @@
   }
 
   span {
-    color: var(--main-text-color);
+    /* color: var(--main-text-color); */
   }

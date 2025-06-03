@@ -3,12 +3,13 @@ import React, { useEffect, useRef, useState } from "react";
 
 type TextCellProps = {
   value: string;
+  isPreviewMode: boolean;
   onChange: (newValue: string) => void;
   onDelete: () => void;
   placeholder?: string;
 };
 
-const TextCell: React.FC<TextCellProps> = ({ value, onChange, onDelete, placeholder }) => {
+const TextCell: React.FC<TextCellProps> = ({ value, isPreviewMode, onChange, onDelete, placeholder }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const [showToolbar, setShowToolbar] = useState(false);
@@ -23,9 +24,9 @@ const TextCell: React.FC<TextCellProps> = ({ value, onChange, onDelete, placehol
 
   return (
     <div
-      className={clsx("cell", "text-cell")}
-      onMouseEnter={() => setShowToolbar(true)}
-      onMouseLeave={() => setShowToolbar(false)}
+    className={clsx("cell", "text-cell", { preview: isPreviewMode })}
+    onMouseEnter={() => setShowToolbar(true)}
+    onMouseLeave={() => setShowToolbar(false)}
     >
       {showToolbar && (
         <div className="cell-toolbar">
@@ -37,21 +38,7 @@ const TextCell: React.FC<TextCellProps> = ({ value, onChange, onDelete, placehol
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        style={{
-          padding: "1em",
-          width: "100%",
-          resize: "none",
-          overflow: "hidden",
-          fontSize: "1rem",
-          fontFamily: "inherit",
-          border: "1px solid var(--math-editor-border)",
-          borderRadius: "6px",
-          boxShadow: "0 0 4px var(--math-editor-shadow)",
-          boxSizing: "border-box",
-          backgroundColor: "inherit",
-          color: "var(--main-text-color, inherit)",
-          background: "var(--math-editor-bg)",
-        }}
+        className="text-cell-input"
         rows={1}
       />
     </div>

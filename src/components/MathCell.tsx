@@ -5,10 +5,11 @@ import clsx from "clsx";
 interface MathCellProps {
   resetZoomSignal: number;
   defaultZoom: number;
+  isPreviewMode: boolean;
   onDelete: () => void;
 }
 
-const MathCell: React.FC<MathCellProps> = ({ resetZoomSignal, defaultZoom, onDelete }) => {
+const MathCell: React.FC<MathCellProps> = ({ resetZoomSignal, defaultZoom, isPreviewMode, onDelete }) => {
   const [showToolbar, setShowToolbar] = useState(false);
 
   const [showLatex, setShowLatex] = useState(false);
@@ -16,7 +17,13 @@ const MathCell: React.FC<MathCellProps> = ({ resetZoomSignal, defaultZoom, onDel
 
   return (
     <div
-      className={clsx("cell", "math-cell")}
+      className={clsx("cell", "math-cell", { preview: isPreviewMode })}
+      style={{
+        textAlign: isPreviewMode ? "center" : "left",
+        boxShadow: isPreviewMode ? "none" : undefined,
+        border: isPreviewMode ? "none" : undefined,
+        zoom: isPreviewMode ? 1 : defaultZoom, // or adjust with transform/scale
+      }}
       onMouseEnter={() => setShowToolbar(true)}
       onMouseLeave={() => setShowToolbar(false)}
     >

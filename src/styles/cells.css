@@ -24,6 +24,52 @@
     font-size: 1em;
     resize: none;
   }
+
+  .text-cell {
+    width: 100%;
+    box-sizing: border-box;
+    background: var(--math-editor-bg);
+    border: 1px solid var(--math-editor-border);
+    border-radius: 6px;
+    box-shadow: 0 0 4px var(--math-editor-shadow);
+    padding: 1em;
+    position: relative;
+  }
+  
+  .text-cell-input {
+    width: 100%;
+    resize: none;
+    overflow: hidden;
+    font-size: 1rem;
+    font-family: inherit;
+    background-color: inherit;
+    color: var(--text-cell-color, inherit);
+    border: none;
+    outline: none;
+    box-sizing: border-box;
+  }
+  
+  .text-cell-input.preview {
+    text-align: center;
+    pointer-events: none;
+  }
+
+  .text-cell.preview {
+    border: none;
+    box-shadow: none;
+    background: transparent;
+  }
+
+  .cell.preview .math-editor {
+    border: none;
+    box-shadow: none;
+    background: transparent;
+    padding: 0;
+  }
+
+  .cell.preview .hover-type-info {
+    opacity: 0;
+  }
   
   .cell-toolbar {
     position: absolute;

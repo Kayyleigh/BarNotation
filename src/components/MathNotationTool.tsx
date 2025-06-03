@@ -14,6 +14,10 @@ const App: React.FC = () => {
 
   const [showHotkeys, setShowHotkeys] = useState(false);
 
+  const [isPreviewMode, setIsPreviewMode] = useState(() => {
+    return localStorage.getItem("previewMode") === "on";
+  });
+
   // Use a simple number state to trigger reset zooms
   const [resetZoomSignal, setResetZoomSignal] = useState(0);
 
@@ -60,8 +64,14 @@ const App: React.FC = () => {
     localStorage.setItem("mathEditorTheme", isDarkMode ? "dark" : "light");
   }, [isDarkMode]);
 
+  useEffect(() => {
+    document.body.classList.toggle("on", isPreviewMode);
+    localStorage.setItem("previewMode", isPreviewMode ? "on" : "off");
+  }, [isPreviewMode]);
+
   const toggleDarkMode = () => setIsDarkMode(prev => !prev);
   const toggleHotkeyOverlay = () => setShowHotkeys(prev => !prev);
+  const togglePreviewMode = () => setIsPreviewMode(prev => !prev);
 
   const [cells, setCells] = useState<Array<{ id: string; type: "math" | "text"; content: string }>>([
     { id: "1", type: "math", content: "" },
@@ -88,12 +98,15 @@ const App: React.FC = () => {
       <h1>Math Notation Tool</h1>
       <header className="app-header">
         <button onClick={toggleDarkMode} className="theme-toggle-button">
-          {isDarkMode ? "🌙 Dark Mode" : "☀️ Light Mode"}
+          {isDarkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
         </button>
         <button onClick={toggleHotkeyOverlay} className="hotkey-button">
           ⌨️ Hotkeys
         </button>
-        
+        <button onClick={togglePreviewMode} className="preview-toggle-button">
+          {isPreviewMode ? "✏️ Edit Mode" : "🧾 Preview Mode"}
+        </button>
+      
         <button onClick={resetAllZooms} className="zoom-button">
           ⛶ Reset Zoom
         </button>
@@ -137,6 +150,7 @@ const App: React.FC = () => {
               resetZoomSignal={resetZoomSignal}
               defaultZoom={defaultZoom}
               onDelete={() => deleteCell(cell.id)}
+              isPreviewMode={isPreviewMode}
               // pass content & onChange if MathCell supports editing content
             />
           ) : (
@@ -146,6 +160,7 @@ const App: React.FC = () => {
               onChange={(val) => updateCellContent(cell.id, val)}
               placeholder="Enter text here..."
               onDelete={() => deleteCell(cell.id)}
+              isPreviewMode={isPreviewMode}
             />
           )
         )}
