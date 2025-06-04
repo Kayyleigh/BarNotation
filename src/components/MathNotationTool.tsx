@@ -7,7 +7,7 @@ import "../styles/math-node.css"; // styling for the main app
 import "../styles/cells.css"; // styling for the main app
 import MathCell from "./MathCell";
 import TextCell from "./TextCell";
-import clsx from "clsx";
+import InsertCellButtons from "./InsertCellButtons";
 
 const App: React.FC = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -79,6 +79,9 @@ const App: React.FC = () => {
     { id: "1", type: "math", content: "" },
   ]);
 
+  const [hoveredInsertIndex, setHoveredInsertIndex] = useState<number | null>(null);
+
+
   const updateCellContent = (id: string, newContent: string) => {
     setCells((prev) =>
       prev.map((cell) =>
@@ -87,10 +90,22 @@ const App: React.FC = () => {
     );
   };
 
-  const addCell = (type: "math" | "text") => {
-    setCells((prev) => [...prev, { id: Date.now().toString(), type, content: "" }]);
+  const addCell = (
+    type: "math" | "text",
+    index?: number
+  ) => {
+    const newCell = { id: Date.now().toString(), type, content: "" };
+    setCells((prev) => {
+      if (index === undefined || index < 0 || index > prev.length) {
+        // Append to end
+        return [...prev, newCell];
+      } else {
+        // Insert at specific index
+        return [...prev.slice(0, index), newCell, ...prev.slice(index)];
+      }
+    });
   };
-
+  
   const deleteCell = (id: string) => {
     setCells((prev) => prev.filter((cell) => cell.id !== id));
   };  
@@ -110,12 +125,25 @@ const App: React.FC = () => {
         showZoomDropdown={showZoomDropdown}
         handleZoomChange={handleZoomChange}
         dropdownRef={dropdownRef}
+        onAddCell={addCell}
       />
 
       <main className="editor-layout">
         <div className="cell-list">
-        {cells.map((cell) =>
-          cell.type === "math" ? (
+        {cells.map((cell, index) => (
+          <React.Fragment key={cell.id}>
+            <div
+              className="insert-zone"
+              onMouseEnter={() => setHoveredInsertIndex(index)}
+              onMouseLeave={() => setHoveredInsertIndex(null)}
+            >
+              <InsertCellButtons
+                onInsert={(type) => addCell(type, index)}
+                isVisible={hoveredInsertIndex === index}
+              />
+            </div>
+
+          {cell.type === "math" ? (
             <MathCell
               key={cell.id}
               resetZoomSignal={resetZoomSignal}
@@ -133,13 +161,22 @@ const App: React.FC = () => {
               onDelete={() => deleteCell(cell.id)}
               isPreviewMode={isPreviewMode}
             />
+          )}
+          </React.Fragment>
           )
         )}
         </div>
 
-        <div className="add-buttons">
-          <button className={clsx("button", "math-cell-button")} onClick={() => addCell("math")}>+ Math Cell</button>
-          <button className={clsx("button", "text-cell-button")} onClick={() => addCell("text")}>+ Text Cell</button>
+        {/* Insert buttons at end */}
+        <div
+          className="insert-zone"
+          onMouseEnter={() => setHoveredInsertIndex(cells.length)}
+          onMouseLeave={() => setHoveredInsertIndex(null)}
+        >
+          <InsertCellButtons
+            onInsert={(type) => addCell(type)}
+            isVisible={hoveredInsertIndex === cells.length}
+          />
         </div>
 
       </main>

@@ -15,6 +15,7 @@ interface HeaderBarProps {
   showZoomDropdown: boolean;
   handleZoomChange: (value: number) => void;
   dropdownRef: React.RefObject<HTMLDivElement | null>;
+  onAddCell: (type: "math" | "text") => void;
 }
 
 const HeaderBar: React.FC<HeaderBarProps> = ({
@@ -29,17 +30,18 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
   showZoomDropdown,
   handleZoomChange,
   dropdownRef,
+  onAddCell,
 }) => {
   return (
     <header className="app-header sticky-header">
       <Tooltip text="Add new math cell">
-        <button onClick={() => console.log("placeholder for button 1")} className={clsx("button")}>
+        <button onClick={() => onAddCell("math")} className={clsx("button")}>
             + Math Cell
         </button>
       </Tooltip>
 
       <Tooltip text="Add new text cell">
-        <button onClick={() => console.log("placeholder for button 2")} className={clsx("button")}>
+        <button onClick={() => onAddCell("text")} className={clsx("button")}>
             + Text Cell
         </button>
       </Tooltip>
