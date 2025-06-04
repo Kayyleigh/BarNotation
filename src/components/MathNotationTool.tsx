@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import HotkeyOverlay from "./HotkeyOverlay"; 
+import HeaderBar from "./HeaderBar";
 import "../styles/themes.css"; // includes theme classes (i.e. dark mode)
 import "../styles/styles.css"; // styling for the main app
 import "../styles/math-node.css"; // styling for the main app
 import "../styles/cells.css"; // styling for the main app
 import MathCell from "./MathCell";
 import TextCell from "./TextCell";
+import clsx from "clsx";
 
 const App: React.FC = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -95,51 +97,20 @@ const App: React.FC = () => {
 
   return (
     <div className="app-container">
-      <h1>Math Notation Tool</h1>
-      <header className="app-header">
-        <button onClick={toggleDarkMode} className="theme-toggle-button">
-          {isDarkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
-        </button>
-        <button onClick={toggleHotkeyOverlay} className="hotkey-button">
-          ⌨️ Hotkeys
-        </button>
-        <button onClick={togglePreviewMode} className="preview-toggle-button">
-          {isPreviewMode ? "✏️ Edit Mode" : "🧾 Preview Mode"}
-        </button>
-      
-        <button onClick={resetAllZooms} className="zoom-button">
-          ⛶ Reset Zoom
-        </button>
-
-        <div className="zoom-dropdown-wrapper" ref={dropdownRef}>
-          <button
-            onClick={() => setShowZoomDropdown((v) => !v)}
-            className="zoom-dropdown-toggle"
-          >
-            <span style={{ marginLeft: "0.25rem" }}>
-              {showZoomDropdown ? "▴" : "▾"}
-            </span>
-          </button>
-
-          {showZoomDropdown && (
-            <div className="zoom-dropdown-panel">
-              <label>Default Zoom</label>
-              <input
-                type="range"
-                min="0.5"
-                max="2"
-                step="0.01"
-                value={defaultZoom}
-                onChange={(e) => handleZoomChange(parseFloat(e.target.value))}
-              />
-              <div className="zoom-dropdown-preview">
-                <span>{Math.round(defaultZoom * 100)}%</span>
-                {/* <span className="math-preview" style={{ fontSize: `${defaultZoom * 1.6}rem` }}>A</span> */}
-              </div>
-            </div>
-          )}
-        </div>
-      </header>
+      <HeaderBar
+        isDarkMode={isDarkMode}
+        toggleDarkMode={toggleDarkMode}
+        showHotkeys={showHotkeys}
+        toggleHotkeyOverlay={toggleHotkeyOverlay}
+        isPreviewMode={isPreviewMode}
+        togglePreviewMode={togglePreviewMode}
+        resetAllZooms={resetAllZooms}
+        defaultZoom={defaultZoom}
+        setShowZoomDropdown={setShowZoomDropdown}
+        showZoomDropdown={showZoomDropdown}
+        handleZoomChange={handleZoomChange}
+        dropdownRef={dropdownRef}
+      />
 
       <main className="editor-layout">
         <div className="cell-list">
@@ -167,8 +138,8 @@ const App: React.FC = () => {
         </div>
 
         <div className="add-buttons">
-          <button className="math-cell-button" onClick={() => addCell("math")}>+ Math Cell</button>
-          <button className="text-cell-button" onClick={() => addCell("text")}>+ Text Cell</button>
+          <button className={clsx("button", "math-cell-button")} onClick={() => addCell("math")}>+ Math Cell</button>
+          <button className={clsx("button", "text-cell-button")} onClick={() => addCell("text")}>+ Text Cell</button>
         </div>
 
       </main>

@@ -2,6 +2,8 @@
 /* =============== THEMES =================== */
 /* ============================================= */
 
+/* pink: #d70087, darkblue: #015f86, orange: #d86410, purple: #8700af, green: #038700  */
+
 :root {
 
     --editor-font-size: 2.4em;
@@ -9,6 +11,7 @@
     --main-text-color: #000000;
   
     --background-color: white;
+    --app-background: var(--background-color);
   
     /* ===== Typography & Scaling ===== */
     --math-font-family: 'STIX Two Math', 'Cambria Math', 'Times New Roman', serif;
@@ -23,7 +26,7 @@
     --math-line-height: 1.2;
   
     /* ===== Cursor & Selection ===== */
-    --math-text-color: black;
+    --math-text-color: #444444;
     --math-cursor-color: black;
     --math-drop-cursor-color: black;
     --math-selection-bg: rgba(0, 0, 0, 0.07);
@@ -36,24 +39,25 @@
   
     /* ===== Theming (Custom Palette) ===== */
   
-    --math-accent-color: #b4462c;
+    --math-accent-color: #5f8700;
   
-    --math-color-single-bracket: #d21618;      /* Keep red for clarity */
-    --math-color-pair-brackets: #007acc;
+    --math-color-single-bracket: #d70000;      /* Keep red for clarity */
+    --math-color-pair-brackets: #444444;
   
-    --math-color-actuarial-text: #00796b;
-    --math-color-actuarial-bg: rgba(0, 121, 107, 0.08);
+    --math-color-actuarial-text: #005f87;
+    --math-color-actuarial-bg: #005f8714;
   
-    --math-color-big-operator-symbol: #c48800;
+    --math-color-big-operator-symbol: #d70087;
     --math-color-big-operator-limits: var(--math-text-color);
   
-    --math-color-nth-root-symbol: #c48800;
-    --math-color-nth-root-index: #c48800;
+    --math-color-nth-root-symbol: #d70087;
+    --math-color-nth-root-index: #d70087;
   
-    --math-color-upright-text: #6a0dad;
-    --math-color-upright-bg: rgba(106, 13, 173, 0.08);
+    --math-color-upright-text: #8700af;
+    --math-color-upright-bg: #8700af14;
   
-    --math-color-command-input-text: #929270;
+    /* --math-color-command-input-text: #929270; */
+    --math-color-command-input-text: #5f8700;
   
     /* ===== Editor Container ===== */
     --math-editor-bg: white;
@@ -99,6 +103,7 @@
     --main-text-color: #ffffff;
   
     --background-color: #252526;
+    --app-background: var(--background-color);
   
     --math-cursor-color: white;
     --math-drop-cursor-color: white;
@@ -159,6 +164,12 @@
     --panel-bg: var(--background-color);
 
     --text-cell-color: #d4d4d4;
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
   }
 
   body {

@@ -13,6 +13,7 @@
 
   .cell {
     padding: 0.8em 0em;
+    margin: 0em 0em 0em 1em;
   }
   
   .math-cell {
@@ -26,7 +27,6 @@
   }
 
   .text-cell {
-    width: 100%;
     box-sizing: border-box;
     background: var(--math-editor-bg);
     border: 1px solid var(--math-editor-border);

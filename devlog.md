@@ -2203,3 +2203,42 @@ todo: usability improvements for new overall app design
 - enable cell re-ordering by drag
 - enable cell insertion by hover between existing cells
 
+todo: 
+- do not make the hover drop cursor stay forever (easy fix same as normal cursor)
+- make zoom outside contianer do actual zooming of the rest of the app
+
+### 04/06/2025 
+I should not be working on this today but train wifi sucks so this is the one thing I do not need wifi for
+
+📖: better "icon" for preview mode
+
+some usability idea(s):
+- when pressing shift on hover, move hover target the (valid; ie. maybe skip IC) parent. THis would really save time instead of having to be very exactly in the right place with mouse
+- when hover target is a child of some non-IC node, highlight the parent in lower opacity, or make little outline, so the user knows what it belongs to
+- zoom-to-fit (for all math? Either take the edge case for all, or zoom all to fit independently)
+
+todo meta-stuffs:
+- find out wtf is making the textcell laggy. That is a big problem for a 100+wpm typer for sure
+- make zooming do normal page zoom when not inside a cell
+- also zoom text cells (but maybe not indiv? idk yet. For math makes sense cuz math is recursive but text is just text bro)
+- make latex viewer auto refresh on toggle
+- move latexviewer to the MathCell (so 1 up from the MathEditor) 
+- duplicate, drag, undo/redo cells
+- copy paste cells?
+- make math cell not be exactly too big for no overflow (may be caused by nth-root?)
+
+todo editor stuffs:
+- make ^i not do î when doing something to the power of i (idk yet how)
+
+left-side menu:
+- all courses (or all notes, whatever a note represents)
+- "outline" (in document) - will work w header, subheader, text, and math? 
+
+Done today:
+- removed the header that said "Math Notation Tool"
+
+next step for the header:
+- make sticky
+- add "Add cell" button for both cell types
+- theme toggling should go into "settings" popup/overlay/page/whatever
+- "Hide all latex"

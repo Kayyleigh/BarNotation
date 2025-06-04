@@ -4,23 +4,36 @@
     text-transform: math-auto;
   }
 
-  /* ============================================= */
-  /* ================== BUTTONS ================== */
-  /* ============================================= */
+  /* ========================================================== */
+  /* ================== HEADER BAR & BUTTONS ================== */
+  /* ========================================================== */
 
-  .theme-toggle-button,
-  .hotkey-button,
-  .zoom-button,
-  .math-cell-button,
-  .text-cell-button,
-  .preview-toggle-button {
-    margin-left: 1rem;
-    background: var(--button-bg);
+  .sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: var(--app-background);
+    padding: 0.5rem;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+
+  }
+  
+
+  .button {
+    background: var(--app-background);
     color: var(--button-color);
-    border: 1px solid var(--button-bg);
+    /* border: 1px solid var(--button-bg); */
+    border: none;
     padding: 0.4rem 0.8rem;
     border-radius: 5px;
     cursor: pointer;
+  }
+
+  .button:hover {
+    background: var(--button-bg);
   }
 
   .zoom-dropdown-wrapper {
@@ -33,14 +46,6 @@
   }
 
   /* Align the dropdown toggle button next to "Reset Zoom" */
-  .zoom-dropdown-toggle {
-    background: var(--button-bg);
-    color: var(--button-color);
-    border: 1px solid var(--button-bg);
-    padding: 0.4rem 0.6rem;
-    border-radius: 5px;
-    cursor: pointer;
-  }
 
   /* Zoom dropdown panel styling */
   .zoom-dropdown-panel {
@@ -200,6 +205,7 @@
   
   .latex-box {
     width: 100%;
+    text-align: left;
     overflow: auto;
     height: auto;
     resize: none;
