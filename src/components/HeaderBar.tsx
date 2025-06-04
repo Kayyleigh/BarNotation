@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import React from "react";
+import Tooltip from "./Tooltip";
 
 interface HeaderBarProps {
   isDarkMode: boolean;
@@ -31,31 +32,52 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
 }) => {
   return (
     <header className="app-header sticky-header">
-      <button onClick={() => console.log("placeholder for button 1")} className={clsx("button")}>
-        + Math Cell
-      </button>
-      <button onClick={() => console.log("placeholder for button 2")} className={clsx("button")}>
-        + Text Cell
-      </button>
-      <button onClick={() => console.log("placeholder for button 3")} className={clsx("button")}>
-        🧹 Clean
-      </button>
-      <button onClick={() => console.log("placeholder for button 4")} className={clsx("button")}>
-        🙈 Hide LaTeX
-      </button>
+      <Tooltip text="Add new math cell">
+        <button onClick={() => console.log("placeholder for button 1")} className={clsx("button")}>
+            + Math Cell
+        </button>
+      </Tooltip>
+
+      <Tooltip text="Add new text cell">
+        <button onClick={() => console.log("placeholder for button 2")} className={clsx("button")}>
+            + Text Cell
+        </button>
+      </Tooltip>
+
+      <Tooltip text="Remove empty cells">
+        <button onClick={() => console.log("placeholder for button 3")} className={clsx("button")}>
+            🧹 Clean
+        </button>
+      </Tooltip>
+
+      <Tooltip text="Hide all LaTeX">
+        <button onClick={() => console.log("placeholder for button 4")} className={clsx("button")}>
+            🙈 Hide LaTeX
+        </button>
+      </Tooltip>
+
+      <Tooltip text="Show hotkey overview">
+        <button onClick={toggleHotkeyOverlay} className={clsx("button", "hotkey-button")}>
+            ⌨️ Hotkeys
+        </button>
+      </Tooltip>
+
+      <Tooltip text="Toggle preview/edit mode">
+        <button onClick={togglePreviewMode} className={clsx("button", "preview-toggle-button")}>
+            {isPreviewMode ? "✏️ Edit" : "📖 Preview"}
+        </button>
+      </Tooltip>
+
+      <Tooltip text="Reset all zoom levels">
+        <button onClick={resetAllZooms} className={clsx("button", "zoom-button")}>
+            ⛶ Reset Zoom
+        </button>
+      </Tooltip>
 
       {/* <button onClick={toggleDarkMode} className={clsx("button", "theme-toggle-button")}>
         {isDarkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
       </button> */}
-      <button onClick={toggleHotkeyOverlay} className={clsx("button", "hotkey-button")}>
-        ⌨️ Hotkeys
-      </button>
-      <button onClick={togglePreviewMode} className={clsx("button", "preview-toggle-button")}>
-        {isPreviewMode ? "✏️ Edit" : "📖 Preview"}
-      </button>
-      <button onClick={resetAllZooms} className={clsx("button", "zoom-button")}>
-        ⛶ Reset Zoom
-      </button>
+
 
       <div className="zoom-dropdown-wrapper" ref={dropdownRef}>
         <button
@@ -84,9 +106,12 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
           </div>
         )}
       </div>
-      <button onClick={() => console.log("placeholder for settings button")} className={clsx("button")}>
-        ⚙️ Settings
-      </button>
+
+      <Tooltip text="Change your settings">
+        <button onClick={() => console.log("placeholder for settings button")} className={clsx("button")}>
+            ⚙️ Settings
+        </button>
+      </Tooltip>
     </header>
   );
 };
