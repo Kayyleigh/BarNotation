@@ -7,6 +7,7 @@ interface HeaderBarProps {
   toggleDarkMode: () => void;
   showHotkeys: boolean;
   toggleHotkeyOverlay: () => void;
+  setShowSettings: React.Dispatch<React.SetStateAction<boolean>>;
   isPreviewMode: boolean;
   togglePreviewMode: () => void;
   resetAllZooms: () => void;
@@ -19,11 +20,10 @@ interface HeaderBarProps {
 }
 
 const HeaderBar: React.FC<HeaderBarProps> = ({
-  isDarkMode,
-  toggleDarkMode,
   toggleHotkeyOverlay,
   isPreviewMode,
   togglePreviewMode,
+  setShowSettings,
   resetAllZooms,
   defaultZoom,
   setShowZoomDropdown,
@@ -34,86 +34,99 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
 }) => {
   return (
     <header className="app-header sticky-header">
-      <Tooltip text="Add new math cell">
-        <button onClick={() => onAddCell("math")} className={clsx("button")}>
-            + Math Cell
-        </button>
-      </Tooltip>
+      <div className="header-left">
+        <img className="app-logo" src="src/assets/logo.svg" alt="Logo" />
 
-      <Tooltip text="Add new text cell">
-        <button onClick={() => onAddCell("text")} className={clsx("button")}>
-            + Text Cell
-        </button>
-      </Tooltip>
+        <div className="button-bar">
+          <Tooltip text="Add new math cell">
+            <button onClick={() => onAddCell("math")} className={clsx("button")}>
+                + Math
+            </button>
+          </Tooltip>
 
-      <Tooltip text="Remove empty cells">
-        <button onClick={() => console.log("placeholder for button 3")} className={clsx("button")}>
-            🧹 Clean
-        </button>
-      </Tooltip>
+          <Tooltip text="Add new text cell">
+            <button onClick={() => onAddCell("text")} className={clsx("button")}>
+                + Text
+            </button>
+          </Tooltip>
 
-      <Tooltip text="Hide all LaTeX">
-        <button onClick={() => console.log("placeholder for button 4")} className={clsx("button")}>
-            🙈 Hide LaTeX
-        </button>
-      </Tooltip>
+          <Tooltip text="Remove empty cells">
+            <button onClick={() => console.log("placeholder for button 3")} className={clsx("button")}>
+                🧹 Clean
+            </button>
+          </Tooltip>
 
-      <Tooltip text="Show hotkey overview">
-        <button onClick={toggleHotkeyOverlay} className={clsx("button", "hotkey-button")}>
-            ⌨️ Hotkeys
-        </button>
-      </Tooltip>
+          <Tooltip text="Show all LaTeX">
+            <button onClick={() => console.log("placeholder for button 4")} className={clsx("button")}>
+                👁️ Show LaTeX
+            </button>
+          </Tooltip>
 
-      <Tooltip text="Toggle preview/edit mode">
-        <button onClick={togglePreviewMode} className={clsx("button", "preview-toggle-button")}>
-            {isPreviewMode ? "✏️ Edit" : "📖 Preview"}
-        </button>
-      </Tooltip>
+          <Tooltip text="Hide all LaTeX">
+            <button onClick={() => console.log("placeholder for button 4")} className={clsx("button")}>
+                🙈 Hide LaTeX
+            </button>
+          </Tooltip>
 
-      <Tooltip text="Reset all zoom levels">
-        <button onClick={resetAllZooms} className={clsx("button", "zoom-button")}>
-            ⛶ Reset Zoom
-        </button>
-      </Tooltip>
+          <Tooltip text="Show hotkey overview">
+            <button onClick={toggleHotkeyOverlay} className={clsx("button", "hotkey-button")}>
+              ⌨️ Hotkeys
+            </button>
+          </Tooltip>
 
-      {/* <button onClick={toggleDarkMode} className={clsx("button", "theme-toggle-button")}>
-        {isDarkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
-      </button> */}
+          <Tooltip text="Toggle preview/edit mode">
+            <button onClick={togglePreviewMode} className={clsx("button", "preview-toggle-button")}>
+                {isPreviewMode ? "✏️ Edit" : "📜 Preview"}
+            </button>
+          </Tooltip>
+
+          <Tooltip text="Reset all zoom levels">
+            <button onClick={resetAllZooms} className={clsx("button", "zoom-button")}>
+                ⛶ Reset Zoom
+            </button>
+          </Tooltip>
+
+          {/* <button onClick={toggleDarkMode} className={clsx("button", "theme-toggle-button")}>
+            {isDarkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
+          </button> */}
 
 
-      <div className="zoom-dropdown-wrapper" ref={dropdownRef}>
-        <button
-          onClick={() => setShowZoomDropdown((v) => !v)}
-          className={clsx("button", "zoom-dropdown-toggle")}
-        >
-          <span>
-            {showZoomDropdown ? "▴" : "▾"}
-          </span>
-        </button>
+          <div className="zoom-dropdown-wrapper" ref={dropdownRef}>
+            <button
+              onClick={() => setShowZoomDropdown((v) => !v)}
+              className={clsx("button", "zoom-dropdown-toggle")}
+            >
+              <span>
+                {showZoomDropdown ? "▴" : "▾"}
+              </span>
+            </button>
 
-        {showZoomDropdown && (
-          <div className="zoom-dropdown-panel">
-            <label>Default Zoom</label>
-            <input
-              type="range"
-              min="0.5"
-              max="2"
-              step="0.01"
-              value={defaultZoom}
-              onChange={(e) => handleZoomChange(parseFloat(e.target.value))}
-            />
-            <div className="zoom-dropdown-preview">
-              <span>{Math.round(defaultZoom * 100)}%</span>
-            </div>
+            {showZoomDropdown && (
+              <div className="zoom-dropdown-panel">
+                <label>Default Zoom</label>
+                <input
+                  type="range"
+                  min="0.5"
+                  max="2"
+                  step="0.01"
+                  value={defaultZoom}
+                  onChange={(e) => handleZoomChange(parseFloat(e.target.value))}
+                />
+                <div className="zoom-dropdown-preview">
+                  <span>{Math.round(defaultZoom * 100)}%</span>
+                </div>
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
-
-      <Tooltip text="Change your settings">
-        <button onClick={() => console.log("placeholder for settings button")} className={clsx("button")}>
-            ⚙️ Settings
-        </button>
-      </Tooltip>
+      <div className="header-right">
+        <Tooltip text="Change your settings">
+          <button onClick={() => setShowSettings(true)} className={clsx("button")}>
+              ⚙️ Settings
+          </button>
+        </Tooltip>
+      </div>
     </header>
   );
 };

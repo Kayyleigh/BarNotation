@@ -57,22 +57,25 @@
     padding: 1em;
     position: relative;
   }
-  
+
   .text-cell-input {
     width: 100%;
-    resize: none;
     overflow: hidden;
-    font-size: 1rem;
-    font-family: inherit;
-    background-color: inherit;
+    resize: none;
+    font: inherit;
+    line-height: 1.5;
     color: var(--text-cell-color, inherit);
+    padding: 0.5rem;
     border: none;
     outline: none;
+    background-color: transparent;
     box-sizing: border-box;
+    height: auto;
+    min-height: 1.5em;
   }
   
   .text-cell-input.preview {
-    text-align: center;
+    text-align: left;
     pointer-events: none;
   }
 

@@ -9,36 +9,52 @@ type TextCellProps = {
   placeholder?: string;
 };
 
-const TextCell: React.FC<TextCellProps> = ({ value, isPreviewMode, onChange, onDelete, placeholder }) => {
+const TextCell: React.FC<TextCellProps> = ({
+  value,
+  isPreviewMode,
+  onChange,
+  onDelete,
+  placeholder,
+}) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-
+  const [inputValue, setInputValue] = useState(value);
   const [showToolbar, setShowToolbar] = useState(false);
 
-  // Auto-resize textarea height when value changes
+  useEffect(() => {
+    setInputValue(value);
+  }, [value]);
+
+  // Resize immediately when value changes (external or internal)
   useEffect(() => {
     if (textareaRef.current) {
-      textareaRef.current.style.height = "auto"; // reset height to measure scrollHeight
-      textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
     }
-  }, [value]);
+  }, [inputValue]);
 
   return (
     <div
-    className={clsx("cell", "text-cell", { preview: isPreviewMode })}
-    onMouseEnter={() => setShowToolbar(true)}
-    onMouseLeave={() => setShowToolbar(false)}
+      className={clsx("cell", "text-cell", { preview: isPreviewMode })}
+      onMouseEnter={() => setShowToolbar(true)}
+      onMouseLeave={() => setShowToolbar(false)}
     >
       {showToolbar && (
         <div className="cell-toolbar">
-          <button className="delete-button" onClick={onDelete}>🗑️</button>
+          <button className="delete-button" onClick={onDelete}>
+            🗑️
+          </button>
         </div>
       )}
       <textarea
         ref={textareaRef}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
+        value={inputValue}
+        onChange={(e) => {
+          const val = e.target.value;
+          setInputValue(val);
+          onChange(val);
+        }}
         placeholder={placeholder}
-        className="text-cell-input"
+        className={clsx("text-cell-input", { preview: isPreviewMode })}
         rows={1}
       />
     </div>

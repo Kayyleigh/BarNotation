@@ -13,13 +13,58 @@
     top: 0;
     z-index: 10;
     background-color: var(--app-background);
-    padding: 0.5rem;
+    padding: 0.8rem 0.5rem 0.5rem 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+    align-items: flex-end;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    box-sizing: border-box;
+  }
+
+  .header-left {
+    display: flex;
+    gap: 2em;
+  }
+
+  .header-left img {
+    height: 2rem;  /* fill the header bar's height */
+    translate: 0 -0.25rem;
+  }
+
+  .header-left .button-bar {
     display: flex;
     gap: 0.5rem;
-    align-items: center;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-
+    align-items: flex-end;
   }
+/* 
+  .sticky-header.app-logo {
+    padding: 0.4rem 0.8rem;
+
+  } */
+
+  .settings-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 20;
+  }
+  
+  .settings-panel {
+    background: var(--background);
+    padding: 2rem;
+    border-radius: 0.5rem;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  }
+
   
 
   .button {

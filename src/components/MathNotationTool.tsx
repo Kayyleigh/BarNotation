@@ -8,6 +8,7 @@ import "../styles/cells.css"; // styling for the main app
 import MathCell from "./MathCell";
 import TextCell from "./TextCell";
 import InsertCellButtons from "./InsertCellButtons";
+import SettingsModal from "./SettingsModal";
 
 const App: React.FC = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -15,6 +16,7 @@ const App: React.FC = () => {
   });
 
   const [showHotkeys, setShowHotkeys] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   const [isPreviewMode, setIsPreviewMode] = useState(() => {
     return localStorage.getItem("previewMode") === "on";
@@ -117,6 +119,7 @@ const App: React.FC = () => {
         toggleDarkMode={toggleDarkMode}
         showHotkeys={showHotkeys}
         toggleHotkeyOverlay={toggleHotkeyOverlay}
+        setShowSettings={setShowSettings}
         isPreviewMode={isPreviewMode}
         togglePreviewMode={togglePreviewMode}
         resetAllZooms={resetAllZooms}
@@ -175,13 +178,20 @@ const App: React.FC = () => {
         >
           <InsertCellButtons
             onInsert={(type) => addCell(type)}
-            isVisible={hoveredInsertIndex === cells.length}
+            isVisible={true} // To always enable Tabbing to add cell
           />
         </div>
 
       </main>
 
       {showHotkeys && <HotkeyOverlay onClose={() => setShowHotkeys(false)} />}
+      {showSettings && (
+        <SettingsModal
+          onClose={() => setShowSettings(false)}
+          isDarkMode={isDarkMode}
+          toggleDarkMode={toggleDarkMode}
+        />
+      )}
     </div>
   );
 };

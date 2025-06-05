@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import "../styles/hotkeyOverlay.css";
+import Tooltip from "./Tooltip";
 
 interface HotkeyOverlayProps {
   onClose: () => void;
@@ -77,9 +78,13 @@ const HotkeyOverlay: React.FC<HotkeyOverlayProps> = ({ onClose }) => {
   return (
     <div className="hotkey-overlay">
       <div className="hotkey-overlay-content" ref={contentRef}>
-        <button className="hotkey-close-button" onClick={onClose}>
-          ✕
-        </button>
+        <span className="hotkey-close-button">
+          <Tooltip text="Close">
+            <button className="button" onClick={onClose}>
+              ✕
+            </button>
+          </Tooltip>
+        </span>
         <h2>Keyboard Shortcuts</h2>
 
         {groupedHotkeys.map((group, idx) => (
