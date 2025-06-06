@@ -1,32 +1,68 @@
-  .tooltip-wrapper {
-    position: relative;
-    display: inline-block;
-    cursor: pointer;
-  }
-  
-  .tooltip-text {
-    visibility: hidden;
-    opacity: 0;
-    background-color: black;
-    color: #fff;
-    text-align: center;
-    border-radius: 4px;
-    padding: 4px 8px;
-    position: absolute;
-    z-index: 10;
-    top: 115%; /* Position above */
-    left: 50%;
-    transform: translateX(-50%);
-    white-space: nowrap;
-    font-size: 0.7rem;
-    transition: opacity 0.2s ease-in-out;
-    transition-delay: 0s;
-    pointer-events: none;
-  }
-  
-  .tooltip-wrapper:hover .tooltip-text {
-    visibility: visible;
+.tooltip-wrapper {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.tooltip-text {
+  visibility: hidden;
+  opacity: 0;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 4px;
+  padding: 4px 8px;
+  position: absolute;
+  z-index: 10;
+  top: 115%; /* below the element */
+  white-space: nowrap;
+  font-size: 0.7rem;
+  transition: opacity 0.2s ease-in-out;
+  transition-delay: 0s;
+  pointer-events: none;
+}
+
+/* Appear on hover */
+.tooltip-wrapper:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+  transition-delay: 0.3s;
+}
+
+/* Position variants to avoid horizontal overflow */
+.tooltip-text.center {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.tooltip-text.left {
+  left: 0;
+  transform: none;
+}
+
+.tooltip-text.right {
+  right: 0;
+  left: auto;
+  transform: none;
+}
+
+.tooltip-fixed {
+  position: fixed;
+  background: black;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  font-size: 0.7rem;
+  transform: translateX(-50%);
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0;
+  animation: fadeInTooltip 0.2s ease-in forwards;
+}
+
+@keyframes fadeInTooltip {
+  to {
     opacity: 1;
-    transition-delay: 0.3s; /* Delay before showing */
   }
-  
+}

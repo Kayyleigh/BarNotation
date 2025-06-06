@@ -2268,3 +2268,5 @@ editor stuff:
 Feeling a little demotivated because soon the logical next step is database stuff 😭
 
 Moved cells to separate folder and made shared BaseCell but now LatexViewer should really be moved 1 lvl up at least (?), and the old .tsx for cells should be deleted later when I am sure the new ones are perfect
+
+added option to (not) use color in preview but still need to use it in the actual code. Atm it does nothin

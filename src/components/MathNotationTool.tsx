@@ -17,6 +17,10 @@ const App: React.FC = () => {
     return localStorage.getItem("mathEditorTheme") === "dark";
   });
 
+  const [showColorInPreview, setShowColorInPreview] = useState(() => {
+    return localStorage.getItem("showColorInPreview") === "true";
+  });
+
   const [selectedCellId, setSelectedCellId] = useState<string | null>(null);
 
   const {
@@ -118,6 +122,11 @@ const App: React.FC = () => {
   }, [isDarkMode]);
 
   useEffect(() => {
+    document.body.classList.toggle("true", showColorInPreview);
+    localStorage.setItem("showColorInPreview", showColorInPreview ? "true" : "false");
+  }, [showColorInPreview]);
+
+  useEffect(() => {
     document.body.classList.toggle("on", isPreviewMode);
     localStorage.setItem("previewMode", isPreviewMode ? "on" : "off");
   }, [isPreviewMode]);
@@ -135,6 +144,7 @@ const App: React.FC = () => {
   };
 
   const toggleDarkMode = () => setIsDarkMode(prev => !prev);
+  const toggleShowColorInPreview = () => setShowColorInPreview(prev => !prev);
   const toggleHotkeyOverlay = () => setShowHotkeys(prev => !prev);
   const togglePreviewMode = () => setIsPreviewMode(prev => !prev);
 
@@ -268,7 +278,7 @@ const App: React.FC = () => {
         >
           <InsertCellButtons
             onInsert={(type) => addCell(type)}
-            isVisible={true}
+            isVisible={isPreviewMode ? (hoveredInsertIndex === cells.length) : true}
           />
         </div>
       </main>
@@ -279,6 +289,8 @@ const App: React.FC = () => {
           onClose={() => setShowSettings(false)}
           isDarkMode={isDarkMode}
           toggleDarkMode={toggleDarkMode}
+          showColorInPreview={showColorInPreview}
+          toggleShowColorInPreview={toggleShowColorInPreview}
         />
       )}
     </div>

@@ -1,10 +1,19 @@
 import React, { useEffect, useRef } from "react";
 import Tooltip from "./Tooltip";
+import "../styles/settings.css";
 
-const SettingsModal: React.FC<{ onClose: () => void; isDarkMode: boolean; toggleDarkMode: () => void }> = ({
+const SettingsModal: React.FC<{ 
+  onClose: () => void; 
+  isDarkMode: boolean; 
+  toggleDarkMode: () => void;
+  showColorInPreview: boolean; 
+  toggleShowColorInPreview: () => void;
+}> = ({
   onClose,
   isDarkMode,
   toggleDarkMode,
+  showColorInPreview,
+  toggleShowColorInPreview,
 }) => {
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -49,6 +58,19 @@ const SettingsModal: React.FC<{ onClose: () => void; isDarkMode: boolean; toggle
                 {isDarkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
             </button>
           </Tooltip>
+          <label className="toggle-row">
+            <span>Show color in preview</span>
+            <Tooltip text="Toggle color use in preview mode">
+              <label className="switch">
+                <input
+                  type="checkbox"
+                  checked={showColorInPreview}
+                  onChange={() => toggleShowColorInPreview()}
+                />
+                <span className="slider" />
+              </label>
+            </Tooltip>
+          </label>
         </div>
 
         {/* Add more settings here */}
