@@ -96,6 +96,8 @@
     --panel-bg: var(--background-color);
 
     --text-cell-color: #000000;
+
+    --selected-cell-bar: #4ec9b0;
   
   }
   
@@ -164,6 +166,8 @@
     --panel-bg: var(--background-color);
 
     --text-cell-color: #d4d4d4;
+
+    --selected-cell-bar: #4ec9b0;
   }
 
   html, body {

@@ -1,8 +1,8 @@
 .cell-list {
     display: flex;
     flex-direction: column;
-    padding: 1rem;
     overflow-y: auto;
+    padding: 1px;
   }
 
   /* add/insert cell buttons */
@@ -46,18 +46,71 @@
     border-radius: 6px;
     box-shadow: 0 0 4px var(--math-editor-shadow); */
 
-  .cell {
-    height: fit-content;
-    padding: 0.6em 0.8em;
-    position: relative;
-    background: var(--math-editor-bg);
-    border: 1px solid var(--math-editor-border);
-    border-radius: 6px;
-    box-shadow: 0 0 4px var(--math-editor-shadow);
-    color: var(--math-text-color);
 
-    margin: 0em 0em 0em 1em;
-  }
+    .cell-inner { /* Actual cell box */
+      width: 100%;
+      height: fit-content;
+      padding: 0.6em 0.8em;
+      position: relative;
+      background: var(--math-editor-bg);
+      border: 1px solid var(--math-editor-border);
+      border-radius: 6px;
+      box-shadow: 0 0 4px var(--math-editor-shadow);
+      color: var(--math-text-color);  
+    }
+  
+    .cell {
+      display: flex;
+      flex-direction: row;
+      color: var(--math-text-color);
+      margin: 0rem 1rem 0rem 0.1rem;
+      position: relative;
+      outline: none;
+    }
+    
+    /* Left margin for drag handle and indicator */
+    .cell-margin {
+      width: 3rem;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    /* Vertical colored line shown when selected */
+    .selected-indicator {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background-color: var(--selected-cell-bar); /* blue or your chosen color */
+      border-radius: 2px;
+    }
+    
+    /* The drag spot — smaller clickable area instead of big hamburger */
+    .drag-spot {
+      width: 100%;
+      height: 100%;
+      cursor: grab;
+      user-select: none;
+    }
+    
+    .drag-spot:active {
+      cursor: grabbing;
+      background-color: #555;
+    }
+    
+    /* Outline cell with the same color when selected */
+    .cell.selected .cell-inner {
+      /* outline: 2px solid #007bff; */
+    }
+    
+    /* Remove old drag handle styles */
+    .drag-handle {
+      display: none;
+    }
+
 
   .cell-type-info {
     position: absolute;
@@ -121,7 +174,7 @@
     text-align: left;
   }
 
-  .cell.preview {
+  .cell.preview .cell-inner {
     border: none;
     box-shadow: none;
     background: transparent;
@@ -165,12 +218,12 @@
     cursor: pointer;
   }
 
-  .cell-inner {
+  /* .cell-inner {
     display: flex;
     flex-direction: row;
     align-items: flex-start;
-  }
-  
+  } */
+/*   
   .drag-handle {
     cursor: grab;
     padding: 0.4rem;
@@ -179,7 +232,7 @@
     color: gray;
     min-width: 2rem;
     text-align: center;
-  }
+  } */
   
   .cell-main-content {
     flex: 1;

@@ -28,6 +28,7 @@ const TextCell: React.FC<TextCellProps> = ({
     <textarea
       ref={textareaRef}
       value={inputValue}
+      spellCheck={`${isPreviewMode ? false : true}`}
       onChange={(e) => {
         setInputValue(e.target.value);
         onChange(e.target.value);

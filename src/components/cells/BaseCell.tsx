@@ -40,14 +40,13 @@ const BaseCell: React.FC<BaseCellProps> = ({
       onMouseLeave={() => setHovered(false)}
       onClick={onClick}
     >
+      <div className="cell-margin">
+        {isSelected && <div className="selected-indicator" />}
+        <div className="drag-spot" onPointerDown={handlePointerDown} />
+      </div>
+  
       <div className="cell-inner">
-        {/* Drag Handle */}
-        <div className="drag-handle" onPointerDown={handlePointerDown}>
-          ☰
-        </div>
-
         <div className="cell-main-content">
-          {/* Toolbar */}
           {(isSelected || hovered) && (
             <div className="cell-toolbar">
               {toolbarExtras}
@@ -56,13 +55,13 @@ const BaseCell: React.FC<BaseCellProps> = ({
               </button>
             </div>
           )}
-
+  
           <div className="cell-content">{children}</div>
           <div className="cell-type-info">{typeLabel}</div>
         </div>
       </div>
     </div>
-  );
+  );  
 };
 
 export default BaseCell;

@@ -164,8 +164,19 @@ const App: React.FC = () => {
     setCells((prev) => prev.filter((cell) => cell.id !== id));
   };
 
+  const handleClick = (e: React.MouseEvent) => {
+    // If click is outside any cell, deselect.
+    // Cells have the class "cell" (in BaseCell's top div), so check if click target is inside a .cell
+  
+    // We can use e.target and traverse up with .closest()
+    const target = e.target as HTMLElement;
+    if (!target.closest(".cell")) {
+      setSelectedCellId(null);
+    }
+  };
+
   return (
-    <div className="app-container">
+    <div className="app-container" onClick={handleClick}>
       <HeaderBar
         isDarkMode={isDarkMode}
         toggleDarkMode={toggleDarkMode}

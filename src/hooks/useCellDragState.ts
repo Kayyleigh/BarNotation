@@ -18,25 +18,19 @@ export function useCellDragState() {
   }, [dragOverInsertIndex]);
 
   const startDrag = (id: string, index: number) => {
-    console.log("[startDrag] dragging cell id:", id, "at index:", index);
     setDraggingCellId(id);
     initialIndexRef.current = index;
   };
 
   function updateDragOver(index: number | null) {
     if (draggingCellIdRef.current !== null) {
-      console.log("[updateDragOver] drag over insert index:", index, "And the start id was", draggingCellIdRef.current);
       setDragOverInsertIndex(index);
-    } else {
-      console.log("now we do nothing?", dragOverInsertIndexRef.current, "And the start id was", draggingCellIdRef.current);
     }
   }
 
   const endDrag = () => {
     const startIndex = initialIndexRef.current;
     const endIndex = dragOverInsertIndexRef.current;
-    console.log("[endDrag] from", startIndex, "to", endIndex);
-
     const result = { from: startIndex, to: endIndex };
 
     setDraggingCellId(null);
