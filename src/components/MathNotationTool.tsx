@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
-import HotkeyOverlay from "./HotkeyOverlay";
-import HeaderBar from "./HeaderBar";
+import HotkeyOverlay from "./modals/HotkeyOverlay";
+import HeaderBar from "./layout/HeaderBar";
 import "../styles/themes.css";
 import "../styles/styles.css";
 import "../styles/math-node.css";
 import "../styles/cells.css";
 import MathCell from "./cells/MathCell";
 import TextCell from "./cells/TextCell";
-import InsertCellButtons from "./InsertCellButtons";
-import SettingsModal from "./SettingsModal";
+import InsertCellButtons from "./cells/InsertCellButtons";
+import SettingsModal from "./modals/SettingsModal";
 import BaseCell from "./cells/BaseCell";
 import { useCellDragState } from "../hooks/useCellDragState";
 

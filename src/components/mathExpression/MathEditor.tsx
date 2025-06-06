@@ -1,21 +1,21 @@
 import React, { useEffect, useRef, useState } from "react";
-import { createRootWrapper } from "../models/nodeFactories";
-import { createEditorState, setCursor } from "../logic/editor-state";
-import { handleKeyDown } from "../logic/handle-keydown";
+import { createRootWrapper } from "../../models/nodeFactories";
+import { createEditorState, setCursor } from "../../logic/editor-state";
+import { handleKeyDown } from "../../logic/handle-keydown";
 import { MathRenderer } from "./MathRenderer";
 import LatexViewer from "./LatexViewer";
-import { useEditorHistory } from "../hooks/useEditorHistory";
-import { useDragState } from "../hooks/useDragState";
-import { useHoverState } from "../hooks/useHoverState";
-import { useZoom } from "../hooks/useZoom";
+import { useEditorHistory } from "../../hooks/useEditorHistory";
+import { useDragState } from "../../hooks/useDragState";
+import { useHoverState } from "../../hooks/useHoverState";
+import { useZoom } from "../../hooks/useZoom";
 import {
   insertNodeAtCursor,
   deleteSelectedNode,
   getSelectedNode,
-} from "../logic/node-manipulation";
-import { parseLatex } from "../models/mathNodeParser";
-import { findNodeById } from "../utils/treeUtils";
-import { nodeToLatex } from "../models/nodeToLatex";
+} from "../../logic/node-manipulation";
+import { parseLatex } from "../../models/mathNodeParser";
+import { findNodeById } from "../../utils/treeUtils";
+import { nodeToLatex } from "../../models/nodeToLatex";
 
 const initialState = createEditorState(createRootWrapper());
 

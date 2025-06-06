@@ -1,5 +1,5 @@
 import React from "react";
-import MathEditor from "../MathEditor";
+import MathEditor from "../mathExpression/MathEditor";
 
 type MathCellProps = {
   resetZoomSignal: number;

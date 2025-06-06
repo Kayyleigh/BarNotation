@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { nodeToLatex } from "../models/nodeToLatex";
-import type { MathNode } from "../models/types"; // Replace with your actual Node type
+import { nodeToLatex } from "../../models/nodeToLatex";
+import type { MathNode } from "../../models/types"; // Replace with your actual Node type
 
 interface LatexViewerProps {
   rootNode: MathNode;

@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import React from "react";
-import Tooltip from "./Tooltip";
+import Tooltip from "../tooltips/Tooltip";
 
 interface HeaderBarProps {
   isDarkMode: boolean;
@@ -92,14 +92,17 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
 
 
           <div className="zoom-dropdown-wrapper" ref={dropdownRef}>
-            <button
-              onClick={() => setShowZoomDropdown((v) => !v)}
-              className={clsx("button", "zoom-dropdown-toggle")}
-            >
-              <span>
-                {showZoomDropdown ? "▴" : "▾"}
-              </span>
-            </button>
+            <Tooltip text="Change default zoom level">
+              <button
+                onClick={() => setShowZoomDropdown((v) => !v)}
+                className={clsx("button", "zoom-dropdown-toggle")}
+              >
+                <span>
+                  {showZoomDropdown ? "▴" : "▾"}
+                </span>
+              </button>
+            </Tooltip>
+
 
             {showZoomDropdown && (
               <div className="zoom-dropdown-panel">

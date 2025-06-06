@@ -1,5 +1,5 @@
 import { useState } from "react";
-import MathEditor from "./MathEditor";
+import MathEditor from "../mathExpression/MathEditor";
 import clsx from "clsx";
 
 interface MathCellProps {

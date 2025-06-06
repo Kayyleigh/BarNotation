@@ -14,7 +14,7 @@
   }
 
   .insert-zone {
-    height: 2.8rem;
+    height: 1.8rem;
     position: relative;
   }
   
@@ -59,12 +59,8 @@
       color: var(--math-text-color);  
     }
 
-    .cell-inner:not(:has(>.math-cell)) {
+    .cell-inner:has(.math-cell) {
       padding: 0em;
-    }
-
-    .cell-inner:not(:has(>.math-cell)) .math-editor {
-      padding: 0.6em 0.8em;
     }
   
     .cell {

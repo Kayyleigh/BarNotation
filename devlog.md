@@ -2270,3 +2270,91 @@ Feeling a little demotivated because soon the logical next step is database stuf
 Moved cells to separate folder and made shared BaseCell but now LatexViewer should really be moved 1 lvl up at least (?), and the old .tsx for cells should be deleted later when I am sure the new ones are perfect
 
 added option to (not) use color in preview but still need to use it in the actual code. Atm it does nothin
+
+![alt text](image-38.png)
+Oops, right now when doing +Math with tab it will select the new one so it will have the wrong cell outlined because the outlining is by mouse
+```
+|   App.tsx                        # div with main component loaded in (for maintainability)
+|   index.css                      # @import "tailwindcss", (hopefully) unused for the remainder
+|   main.tsx                       # Loads App in React.StrictMode
+|   vite-env.d.ts                  
+|                                 
++---assets                         
+|       logo.svg                   # svg with the full logo (used in the header bar)
+|                                 
++---components                     
+|   |   BarNotation.tsx            # main app component
+|   |   LatexViewer.tsx            # little box in MathEditor for viewing latex of 1 expression
+|   |   MathEditor.tsx             # used in MathCell, holds 1 math expression (and a bunch of state)
+|   |   MathNotationTool.tsx       # (outdated full app:) list of cells (+ header bar that will change)
+|   |   MathRenderer.tsx           # recursively called to render expression, + wraps in draggable
+|   |   MathRenderers.tsx          # called by MathRenderer, holds renderers for each MathNode type
+|   |                              
+|   +---cells                      
+|   |       BaseCell.tsx           # Basic Cell stuff
+|   |       InsertCellButtons.tsx  # Insert Math Cell / Text Cell buttons (re-used a lot)
+|   |       MathCell.tsx           # Cell containing MathEditor
+|   |       TextCell.tsx           # Cell containing simple textarea
+|   |                              
+|   +---layout                     
+|   |       HeaderBar.tsx          # Main header bar (curr outdated; holds logo, settins, cell options)
+|   |       MainLayout.tsx         # Main layout (Header, Note History, Note Editor, Library)
+|   |                              
+|   +---modals                     
+|   |       HotkeyOverlay.tsx      # Overlay of hotkey info    
+|   |       SettingsModal.tsx      # Overlay of settings (options/preferences, e.g. light vs dark theme)
+|   |                              
+|   +---tooltips                   
+|   |       tooltip.css            # styling for tooltips
+|   |       Tooltip.tsx            # tooltip wrapper to show text on hover of other components
+|   |                              
+|   \---zOutdated                  # Outdated stuff that I am keeping for now, just in case
+|           MathCell.tsx           
+|           TextCell.tsx           
+|           Toolbar.tsx            
+|                                 
++---hooks                          
+|       useCellDragState.ts        # Hook for dragging cells (for re-ordering in MathNotationTool)  
+|       useDragState.ts            # Hook for dragging MathNodes within the MathEditors 
+|       useEditorHistory.ts        # Hook for history of single MathEditor (may move to top-level)
+|       useHoverState.ts           # Hook for hover of MathNode in a MathEditor
+|       useZoom.ts                 # Hook for zooming of MathEditor (may move higher as well)
+|                                 
++---logic                          
+|       cursor.ts                  # CursorPosition (in MathEditor): curr InlineContainer + idx within 
+|       deletion.ts                # Backspace handler (in MathEditor)
+|       editor-state.ts            # EditorState: rootNode and CursorPosition (in MathEditor)
+|       handle-keydown.ts          # Keydown handler for MathEditor
+|       history.ts                 # HistoryState (same format as EditorState) used in history hook
+|       insertion.ts               # Handle character insertion into MathEditor
+|       navigation.ts              # Handle arrow navigation in MathEditor
+|       node-manipulation.ts       # Node insertion/deletion, at cursor or by index/id, in MathEditor
+|       transformations.ts         # Transform nodes, e.g. into numerator of new FractionNode
+|                                 
++---models                         
+|       mathNodeParser.ts          # (Will rename) parse LaTeX, to obtain MathNode
+|       nodeFactories.ts           # Factories for all Math Node types
+|       nodeToLatex.ts             # input MathNode, output LaTeX string
+|       specialSequences.ts        # mappings from escape sequences to `() => StructureNode` 
+|       transformations.ts         # more "boilerplate" transforms (might remove, similar to factories)
+|       types.ts                   # MathNode = .. | InlineContainer | StructureNode (fraction, bigOp, group, ...)
+|                                 
++---styles                         
+|       accents.css                # ::before and ::after for rendering accented math nodes 
+|       cells.css                  # styling for MathCell, TextCell, cell list itself, and insert zones
+|       hotkeyOverlay.css          # styling for HotkeyOverlay (also used by SettingsModal)
+|       math-node-old.css          # outdated styling
+|       math-node.css              # styling for math node types and MathEditor
+|       math.css                   # outdated styling (I think)
+|       settings.css               # Styling for toggles in settings 
+|       styles.css                 # Styling for header bar, settings overlay, LatexViewer, and .app-container 
+|       themes.css                 # :root, .dark (theme, will add more themes later), and predefined DOM stuff (h1, html, body, label)
+|                                 
+\---utils                          
+        accentUtils.ts             # define NodeDecoration names and map to Latex, keep track of required LaTeX packages
+        bracketUtils.ts            # define BracketStyle and each style's opening and closing bracket character
+        navigationUtils.ts         # define directional order of MathNodes' children, function for flattening CursorPosition
+        subsupUtils.ts             # define "CornerPosition" type, only used once in transformations.ts
+        textContainerUtils.ts      # (unused, might use later) splitting MultiDigit mathnode into multiple (curr not implemented feature)
+        treeUtils.ts               # find nodes, update tree, get logical children of nodes, etc.
+```

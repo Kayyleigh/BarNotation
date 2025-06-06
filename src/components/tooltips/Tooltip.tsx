@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import "../styles/tooltip.css";
+import "./tooltip.css";
 
 type TooltipProps = {
   text: string;

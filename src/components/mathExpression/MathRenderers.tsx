@@ -17,12 +17,12 @@ import type {
   BigOperatorNode,
   RootWrapperNode,
   NthRootNode,
-} from '../models/types';
+} from '../../models/types';
 import clsx from 'clsx';
-import type { CursorPosition } from '../logic/cursor';
-import '../styles/math-node.css';
-import '../styles/accents.css';
-import { getCloseSymbol, getOpenSymbol, isClosingBracket, isOpeningBracket } from '../utils/bracketUtils';
+import type { CursorPosition } from '../../logic/cursor';
+import '../../styles/math-node.css';
+import '../../styles/accents.css';
+import { getCloseSymbol, getOpenSymbol, isClosingBracket, isOpeningBracket } from '../../utils/bracketUtils';
 
 type RenderProps = {
   isActive: boolean;

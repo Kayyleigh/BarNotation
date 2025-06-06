@@ -1,7 +1,7 @@
 import React from "react";
 import clsx from "clsx";
-import type { MathNode, TextStyle } from "../models/types";
-import type { CursorPosition } from "../logic/cursor";
+import type { MathNode, TextStyle } from "../../models/types";
+import type { CursorPosition } from "../../logic/cursor";
 
 import {
   renderTextNode,

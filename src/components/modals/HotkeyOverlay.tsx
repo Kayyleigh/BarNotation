@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
-import "../styles/hotkeyOverlay.css";
-import Tooltip from "./Tooltip";
+import "../../styles/hotkeyOverlay.css";
+import Tooltip from "../tooltips/Tooltip";
 
 interface HotkeyOverlayProps {
   onClose: () => void;

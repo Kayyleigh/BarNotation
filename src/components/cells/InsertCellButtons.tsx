@@ -1,6 +1,6 @@
 import React from "react";
 import clsx from "clsx";
-import Tooltip from "./Tooltip";
+import Tooltip from "../tooltips/Tooltip";
 
 interface InsertCellButtonsProps {
   onInsert: (type: "math" | "text") => void;

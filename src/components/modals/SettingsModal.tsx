@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
-import Tooltip from "./Tooltip";
-import "../styles/settings.css";
+import Tooltip from "../tooltips/Tooltip";
+import "../../styles/settings.css";
 
 const SettingsModal: React.FC<{ 
   onClose: () => void; 

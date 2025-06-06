@@ -48,7 +48,7 @@
   
   /* Checked state */
   .switch input:checked + .slider {
-    background-color: #4caf50;
+    background-color: #4ec9b0;
   }
   
   .switch input:checked + .slider::before {
