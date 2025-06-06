@@ -2242,3 +2242,29 @@ next step for the header:
 - add "Add cell" button for both cell types
 - theme toggling should go into "settings" popup/overlay/page/whatever
 - "Hide all latex"
+
+### 05/06/2025
+
+![alt text](image-37.png)
+That should totally be the logo
+
+Cool logo stuff today
+still todo tonight: 
+- make a basic menu at the left, or on the right, so at least I have some overall layout to work with that is placeholder for final node library and notation history list
+
+things that need fixing or implementing:
+- in preview mode, childed is always slightly overflowing in y
+- ffs move the hover bar of math cells away from the hovered node info 
+- make hover bar not hover bar but active bar. Just like jupyter notebook
+- always print the type of cell in the lower right corner
+- also make the text cell zoomable
+- ctrl + or - should zoom not only the math (/text) cells but also the size of the header text. But maybe zooming by touchpad should actually keep the "move closer" type of zoom rather than the "enlarge text"?
+- no toggle button for theme in settings. Make it a dropdown, or horizontal list of radio-button-like use. (i.e. only 1 can be selected at once) 
+
+editor stuff:
+- nested brackets must take other colors, just like vsc
+
+### 06/06/2025
+Feeling a little demotivated because soon the logical next step is database stuff 😭
+
+Moved cells to separate folder and made shared BaseCell but now LatexViewer should really be moved 1 lvl up at least (?), and the old .tsx for cells should be deleted later when I am sure the new ones are perfect

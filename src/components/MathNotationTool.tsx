@@ -1,39 +1,100 @@
 import React, { useState, useEffect, useRef } from "react";
-import HotkeyOverlay from "./HotkeyOverlay"; 
+import HotkeyOverlay from "./HotkeyOverlay";
 import HeaderBar from "./HeaderBar";
-import "../styles/themes.css"; // includes theme classes (i.e. dark mode)
-import "../styles/styles.css"; // styling for the main app
-import "../styles/math-node.css"; // styling for the main app
-import "../styles/cells.css"; // styling for the main app
-import MathCell from "./MathCell";
-import TextCell from "./TextCell";
+import "../styles/themes.css";
+import "../styles/styles.css";
+import "../styles/math-node.css";
+import "../styles/cells.css";
+import MathCell from "./cells/MathCell";
+import TextCell from "./cells/TextCell";
 import InsertCellButtons from "./InsertCellButtons";
 import SettingsModal from "./SettingsModal";
+import BaseCell from "./cells/BaseCell";
+import { useCellDragState } from "../hooks/useCellDragState";
 
 const App: React.FC = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     return localStorage.getItem("mathEditorTheme") === "dark";
   });
 
+  const [selectedCellId, setSelectedCellId] = useState<string | null>(null);
+
+  const {
+    draggingCellId,
+    dragOverInsertIndex,
+    draggingCellIdRef,
+    startDrag,
+    updateDragOver,
+    endDrag,
+  } = useCellDragState();
+  
+  const handlePointerDown = (e: React.PointerEvent, id: string, index: number) => {
+    e.preventDefault();
+    startDrag(id, index);
+  
+    const handlePointerMove = (moveEvent: PointerEvent) => {
+      moveEvent.preventDefault();
+  
+      const rects = cellRefs.current.map((ref) => ref?.getBoundingClientRect());
+      const cursorY = moveEvent.clientY;
+  
+      const overIndex = rects.findIndex((rect) => {
+        if (!rect) return false;
+        return cursorY < rect.top + rect.height / 2;
+      });
+  
+      if (draggingCellIdRef.current !== null) {
+        updateDragOver(overIndex === -1 ? cells.length : overIndex);
+      }
+    };
+  
+    const handlePointerUp = () => {
+      const { from, to } = endDrag();
+      if (from !== null && to !== null && from !== to) {
+        setCells((prev) => {
+          const updated = [...prev];
+          const [moved] = updated.splice(from, 1);
+          const insertIndex = from < to ? to - 1 : to;
+          updated.splice(insertIndex, 0, moved);
+          return updated;
+        });
+      }
+  
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerup", handlePointerUp);
+    };
+  
+    window.addEventListener("pointermove", handlePointerMove);
+    window.addEventListener("pointerup", handlePointerUp);
+  };
+
+  const [cells, setCells] = useState<Array<{ id: string; type: "math" | "text"; content: string }>>([]);
+  const cellRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  const [showLatexMap, setShowLatexMap] = useState<Record<string, boolean>>({});
   const [showHotkeys, setShowHotkeys] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [hoveredInsertIndex, setHoveredInsertIndex] = useState<number | null>(null);
 
   const [isPreviewMode, setIsPreviewMode] = useState(() => {
     return localStorage.getItem("previewMode") === "on";
   });
 
-  // Use a simple number state to trigger reset zooms
   const [resetZoomSignal, setResetZoomSignal] = useState(0);
-
-  // Load defaultZoom from localStorage or fallback to 1
   const [defaultZoom, setDefaultZoom] = useState(() => {
     const stored = localStorage.getItem("defaultZoom");
     return stored ? parseFloat(stored) : 1;
   });
 
   const [showZoomDropdown, setShowZoomDropdown] = useState(false);
-
   const dropdownRef = useRef<HTMLDivElement | null>(null);
+
+  const toggleShowLatex = (cellId: string) => {
+    setShowLatexMap((prev) => ({
+      ...prev,
+      [cellId]: !prev[cellId],
+    }));
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -41,16 +102,26 @@ const App: React.FC = () => {
         setShowZoomDropdown(false);
       }
     };
-  
+
     if (showZoomDropdown) {
       document.addEventListener("mousedown", handleClickOutside);
     }
-  
+
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showZoomDropdown]);
-  
+
+  useEffect(() => {
+    document.body.classList.toggle("dark", isDarkMode);
+    localStorage.setItem("mathEditorTheme", isDarkMode ? "dark" : "light");
+  }, [isDarkMode]);
+
+  useEffect(() => {
+    document.body.classList.toggle("on", isPreviewMode);
+    localStorage.setItem("previewMode", isPreviewMode ? "on" : "off");
+  }, [isPreviewMode]);
+
   const resetAllZooms = () => {
     setResetZoomSignal((n) => n + 1);
     localStorage.setItem("defaultZoom", String(defaultZoom));
@@ -63,26 +134,9 @@ const App: React.FC = () => {
     resetAllZooms();
   };
 
-  useEffect(() => {
-    document.body.classList.toggle("dark", isDarkMode);
-    localStorage.setItem("mathEditorTheme", isDarkMode ? "dark" : "light");
-  }, [isDarkMode]);
-
-  useEffect(() => {
-    document.body.classList.toggle("on", isPreviewMode);
-    localStorage.setItem("previewMode", isPreviewMode ? "on" : "off");
-  }, [isPreviewMode]);
-
   const toggleDarkMode = () => setIsDarkMode(prev => !prev);
   const toggleHotkeyOverlay = () => setShowHotkeys(prev => !prev);
   const togglePreviewMode = () => setIsPreviewMode(prev => !prev);
-
-  const [cells, setCells] = useState<Array<{ id: string; type: "math" | "text"; content: string }>>([
-    { id: "1", type: "math", content: "" },
-  ]);
-
-  const [hoveredInsertIndex, setHoveredInsertIndex] = useState<number | null>(null);
-
 
   const updateCellContent = (id: string, newContent: string) => {
     setCells((prev) =>
@@ -99,18 +153,16 @@ const App: React.FC = () => {
     const newCell = { id: Date.now().toString(), type, content: "" };
     setCells((prev) => {
       if (index === undefined || index < 0 || index > prev.length) {
-        // Append to end
         return [...prev, newCell];
       } else {
-        // Insert at specific index
         return [...prev.slice(0, index), newCell, ...prev.slice(index)];
       }
     });
   };
-  
+
   const deleteCell = (id: string) => {
     setCells((prev) => prev.filter((cell) => cell.id !== id));
-  };  
+  };
 
   return (
     <div className="app-container">
@@ -133,55 +185,81 @@ const App: React.FC = () => {
 
       <main className="editor-layout">
         <div className="cell-list">
-        {cells.map((cell, index) => (
-          <React.Fragment key={cell.id}>
-            <div
-              className="insert-zone"
-              onMouseEnter={() => setHoveredInsertIndex(index)}
-              onMouseLeave={() => setHoveredInsertIndex(null)}
-            >
-              <InsertCellButtons
-                onInsert={(type) => addCell(type, index)}
-                isVisible={hoveredInsertIndex === index}
-              />
-            </div>
+          {cells.map((cell, index) => (
+            <React.Fragment key={cell.id}>
+              <div
+                className={`insert-zone ${dragOverInsertIndex === index ? "drag-over" : ""}`}
+                onMouseEnter={() => setHoveredInsertIndex(index)}
+                onMouseLeave={() => setHoveredInsertIndex(null)}
+                onPointerEnter={() => {
+                  if (draggingCellId !== null) {
+                    updateDragOver(index);
+                  }
+                }}
+              >
+                <InsertCellButtons
+                  onInsert={(type) => addCell(type, index)}
+                  isVisible={hoveredInsertIndex === index}
+                />
+              </div>
 
-          {cell.type === "math" ? (
-            <MathCell
-              key={cell.id}
-              resetZoomSignal={resetZoomSignal}
-              defaultZoom={defaultZoom}
-              onDelete={() => deleteCell(cell.id)}
-              isPreviewMode={isPreviewMode}
-              // pass content & onChange if MathCell supports editing content
-            />
-          ) : (
-            <TextCell
-              key={cell.id}
-              value={cell.content}
-              onChange={(val) => updateCellContent(cell.id, val)}
-              placeholder="Enter text here..."
-              onDelete={() => deleteCell(cell.id)}
-              isPreviewMode={isPreviewMode}
-            />
-          )}
-          </React.Fragment>
-          )
-        )}
+              <div
+                ref={(el) => {
+                  if (el) cellRefs.current[index] = el;
+                }}
+              >
+                <BaseCell
+                  key={cell.id}
+                  typeLabel={cell.type === "math" ? "Math" : "Text"}
+                  isSelected={selectedCellId === cell.id}
+                  isPreviewMode={isPreviewMode}
+                  isDragging={draggingCellId === cell.id}
+                  onClick={() => setSelectedCellId(cell.id)}
+                  onDelete={() => deleteCell(cell.id)}
+                  handlePointerDown={(e) => handlePointerDown(e, cell.id, index)}
+                  toolbarExtras={
+                    cell.type === "math" ? (
+                      <button className="preview-button" onClick={() => toggleShowLatex(cell.id)}>
+                        {showLatexMap[cell.id] ? "🙈 Hide Latex" : "👁️ Show Latex"}
+                      </button>
+                    ) : null
+                  }
+                >
+                  {cell.type === "text" ? (
+                    <TextCell
+                      value={cell.content}
+                      isPreviewMode={isPreviewMode}
+                      onChange={(newValue) => updateCellContent(cell.id, newValue)}
+                    />
+                  ) : (
+                    <MathCell
+                      resetZoomSignal={resetZoomSignal}
+                      defaultZoom={defaultZoom}
+                      showLatex={showLatexMap[cell.id] ?? false}
+                      isPreviewMode={isPreviewMode}
+                    />
+                  )}
+                </BaseCell>
+              </div>
+            </React.Fragment>
+          ))}
         </div>
 
-        {/* Insert buttons at end */}
         <div
-          className="insert-zone"
+          className={`insert-zone ${dragOverInsertIndex === cells.length ? "drag-over" : ""}`}
           onMouseEnter={() => setHoveredInsertIndex(cells.length)}
           onMouseLeave={() => setHoveredInsertIndex(null)}
+          onPointerEnter={() => {
+            if (draggingCellId !== null) {
+              updateDragOver(cells.length);
+            }
+          }}
         >
           <InsertCellButtons
             onInsert={(type) => addCell(type)}
-            isVisible={true} // To always enable Tabbing to add cell
+            isVisible={true}
           />
         </div>
-
       </main>
 
       {showHotkeys && <HotkeyOverlay onClose={() => setShowHotkeys(false)} />}

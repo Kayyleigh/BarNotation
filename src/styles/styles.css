@@ -167,9 +167,9 @@
   }
 
   .math-editor {
-    max-width: 100%;
+    /* max-width: 100%;
     height: fit-content;
-    padding: 1em;
+    padding: 0.6em 0.8em;
     position: relative;
     font-size: var(--editor-font-size);
     overflow: auto;
@@ -177,19 +177,11 @@
     color: var(--math-text-color);
     border: 1px solid var(--math-editor-border);
     border-radius: 6px;
-    box-shadow: 0 0 4px var(--math-editor-shadow);
-    cursor: text; /* By default, should feel typable */
-  }
+    box-shadow: 0 0 4px var(--math-editor-shadow); */
+    font-size: var(--editor-font-size);
+    color: var(--math-text-color);
 
-  .hover-type-info {
-    position: absolute;
-    top: 0.5em;
-    right: 0.9em;
-    pointer-events: none;
-    opacity: 0.3;
-    font-size: 0.4em;
-    font-family: monospace;
-    user-select: none;
+    cursor: text; /* By default, should feel typable */
   }
 
   .latex-viewer {

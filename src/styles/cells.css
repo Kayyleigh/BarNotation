@@ -33,13 +33,56 @@
   
   /* Cells */
 
+
+    /* max-width: 100%;
+    height: fit-content;
+    padding: 0.6em 0.8em;
+    position: relative;
+    font-size: var(--editor-font-size);
+    overflow: auto;
+    background: var(--math-editor-bg);
+    color: var(--math-text-color);
+    border: 1px solid var(--math-editor-border);
+    border-radius: 6px;
+    box-shadow: 0 0 4px var(--math-editor-shadow); */
+
   .cell {
-    padding: 0em 0em;
+    height: fit-content;
+    padding: 0.6em 0.8em;
+    position: relative;
+    background: var(--math-editor-bg);
+    border: 1px solid var(--math-editor-border);
+    border-radius: 6px;
+    box-shadow: 0 0 4px var(--math-editor-shadow);
+    color: var(--math-text-color);
+
     margin: 0em 0em 0em 1em;
+  }
+
+  .cell-type-info {
+    position: absolute;
+    bottom: 0.5em;
+    right: 0.9em;
+    pointer-events: none;
+    opacity: 0.3;
+    font-size: 0.8rem;
+    font-family: monospace;
+    user-select: none;
   }
   
   .math-cell {
     position: relative;
+  }
+
+  .hover-type-info {
+    position: absolute;
+    top: 0.5em;
+    right: 0.9em;
+    pointer-events: none;
+    opacity: 0.3;
+    font-size: 0.8rem;
+    font-family: monospace;
+    user-select: none;
   }
 
   .text-cell {
@@ -76,7 +119,12 @@
   
   .text-cell-input.preview {
     text-align: left;
-    pointer-events: none;
+  }
+
+  .cell.preview {
+    border: none;
+    box-shadow: none;
+    background: transparent;
   }
 
   .text-cell.preview {
@@ -92,13 +140,14 @@
     padding: 0;
   }
 
-  .cell.preview .hover-type-info {
+  .cell.preview .hover-type-info,
+  .cell.preview .cell-type-info {
     opacity: 0;
   }
   
   .cell-toolbar {
     position: absolute;
-    top: -0.4em;
+    top: -1.1em;
     right: 1em;
     display: flex;
     gap: 0.5rem;
@@ -114,4 +163,39 @@
     font-size: 12px;
     border-radius: 4px;
     cursor: pointer;
+  }
+
+  .cell-inner {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+  }
+  
+  .drag-handle {
+    cursor: grab;
+    padding: 0.4rem;
+    user-select: none;
+    font-size: 1.2rem;
+    color: gray;
+    min-width: 2rem;
+    text-align: center;
+  }
+  
+  .cell-main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .cell.dragging {
+    opacity: 0.5;
+    cursor: grabbing;
+    /* optionally */
+    position: relative;
+    z-index: 10;
+  }
+  
+  .insert-zone.drag-over {
+    background-color: rgba(0, 123, 255, 0.15);
+    transition: background-color 0.15s ease;
   }

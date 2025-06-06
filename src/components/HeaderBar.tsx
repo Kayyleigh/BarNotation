@@ -82,7 +82,7 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
 
           <Tooltip text="Reset all zoom levels">
             <button onClick={resetAllZooms} className={clsx("button", "zoom-button")}>
-                ⛶ Reset Zoom
+                ⛶   Reset Zoom
             </button>
           </Tooltip>
 
