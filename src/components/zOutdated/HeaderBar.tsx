@@ -86,11 +86,6 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
             </button>
           </Tooltip>
 
-          {/* <button onClick={toggleDarkMode} className={clsx("button", "theme-toggle-button")}>
-            {isDarkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
-          </button> */}
-
-
           <div className="zoom-dropdown-wrapper" ref={dropdownRef}>
             <Tooltip text="Change default zoom level">
               <button
@@ -102,7 +97,6 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
                 </span>
               </button>
             </Tooltip>
-
 
             {showZoomDropdown && (
               <div className="zoom-dropdown-panel">
