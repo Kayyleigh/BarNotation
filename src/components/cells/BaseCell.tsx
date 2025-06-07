@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import clsx from "clsx";
+import Tooltip from "../tooltips/Tooltip";
 
 export type BaseCellProps = {
   typeLabel: string;
@@ -50,9 +51,11 @@ const BaseCell: React.FC<BaseCellProps> = ({
           {(isSelected || hovered) && (
             <div className="cell-toolbar">
               {toolbarExtras}
-              <button className="delete-button" onClick={onDelete}>
-                🗑️
-              </button>
+              <Tooltip text="Delete cell">
+                <button className={clsx("button", "delete-button")} onClick={onDelete}>
+                  🗑️
+                </button>
+              </Tooltip>
             </div>
           )}
   

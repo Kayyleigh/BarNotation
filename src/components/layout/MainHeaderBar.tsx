@@ -1,5 +1,6 @@
 import React from "react";
 import clsx from "clsx";
+import Tooltip from "../tooltips/Tooltip";
 
 interface HeaderBarProps {
   onOpenSettings: () => void;
@@ -16,8 +17,12 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
         <img className="app-logo" src="src/assets/logo.svg" alt="Logo" />
       </div>
       <div className="header-right">
-        <button onClick={onOpenHotkeys} className={clsx("button")}>⌨️ Hotkeys</button>
-        <button onClick={onOpenSettings} className={clsx("button")}>⚙️ Settings</button>
+        <Tooltip text="Show hotkey overview">
+            <button onClick={onOpenHotkeys} className={clsx("button")}>⌨️ Hotkeys</button>
+        </Tooltip>
+        <Tooltip text="Change your settings">
+            <button onClick={onOpenSettings} className={clsx("button")}>⚙️ Settings</button>
+        </Tooltip>
       </div>
     </header>
   );

@@ -5,6 +5,8 @@ import BaseCell from "../cells/BaseCell";
 import TextCell from "../cells/TextCell";
 import MathCell from "../cells/MathCell";
 import { useCellDragState } from "../../hooks/useCellDragState";
+import styles from "./Editor.module.css";
+import Tooltip from "../tooltips/Tooltip";
 
 interface NotationEditorProps {
   isPreviewMode: boolean;
@@ -101,12 +103,12 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
   };
 
   return (
-    <main className="editor-layout" onClick={(e) => {
+    <main className={styles.editorLayout} onClick={(e) => {
       if (!(e.target as HTMLElement).closest(".cell")) {
         setSelectedCellId(null);
       }
     }}>
-      <div className="cell-list">
+      <div className={styles.cellList}>
         {cells.map((cell, index) => (
           <React.Fragment key={cell.id}>
             <div
@@ -137,9 +139,11 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
                 handlePointerDown={(e) => handlePointerDown(e, cell.id, index)}
                 toolbarExtras={
                   cell.type === "math" ? (
-                    <button onClick={() => toggleShowLatex(cell.id)}>
-                      {showLatexMap[cell.id] ? "🙈 Hide LaTeX" : "👁️ Show LaTeX"}
-                    </button>
+                    <Tooltip text={showLatexMap[cell.id] ? "Hide LaTeX output" : "Show LaTeX output for this cell"}>
+                      <button className="button" onClick={() => toggleShowLatex(cell.id)}>
+                        {showLatexMap[cell.id] ? "🙈 Hide LaTeX" : "👁️ Show LaTeX"}
+                      </button>
+                    </Tooltip>
                   ) : null
                 }
               >

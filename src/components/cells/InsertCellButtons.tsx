@@ -10,12 +10,12 @@ interface InsertCellButtonsProps {
 const InsertCellButtons: React.FC<InsertCellButtonsProps> = ({ onInsert, isVisible }) => {
   return (
     <div className={clsx("add-buttons insert-between", { visible: isVisible })}>
-      <Tooltip text="Add new math cell">
+      <Tooltip text="Add math cell">
         <button className={clsx("button", "math-cell-button")} onClick={() => onInsert("math")}>
           + Math
         </button>
       </Tooltip>
-      <Tooltip text="Add new text cell">
+      <Tooltip text="Add text cell">
         <button className={clsx("button", "text-cell-button")} onClick={() => onInsert("text")}>
           + Text
         </button>

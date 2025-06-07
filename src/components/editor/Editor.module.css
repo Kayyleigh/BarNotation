@@ -1,0 +1,16 @@
+.editorPane {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+  
+.cellList {
+  display: flex;
+  flex-direction: column;
+  padding: 1px;
+}
+
+.editorLayout {
+  position: relative;
+  overflow-y: auto;
+}

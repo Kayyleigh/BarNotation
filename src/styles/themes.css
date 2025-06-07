@@ -6,6 +6,14 @@
 
 :root {
 
+    /* Logo colors */
+    --logo-color-1: #4ec9b0;
+    --logo-color-1-dark: #3a9583;
+    --logo-color-2: #c586c0;
+    --logo-color-2-light: #ecd7ea;
+
+
+    /* Other */
     --editor-font-size: 2.4em;
   
     --main-text-color: #000000;
@@ -98,10 +106,24 @@
     --text-cell-color: #000000;
 
     --selected-cell-bar: #4ec9b0;
+
+
+    /* Sidebar panels */
+    --sidebar-resizer-bg: var(--logo-color-2-light);
+
+    --sidebar-toggle: white;
+    --sidebar-toggle-bg: var(--logo-color-2);
+    --sidebar-toggle-bg-hover: var(--logo-color-1-dark);
+
+    --sidebar-panel-bg: white;
+    --sidebar-panel-edge: var(--app-background);
+
+    --sidebar-text: black;
   
   }
   
   .dark {
+        
     --main-text-color: #ffffff;
   
     --background-color: #252526;
@@ -168,6 +190,18 @@
     --text-cell-color: #d4d4d4;
 
     --selected-cell-bar: #4ec9b0;
+
+    /* Sidebar panels */
+    --sidebar-resizer-bg: #2e2e2e;
+
+    --sidebar-toggle: black;
+    --sidebar-toggle-bg: #6e6e6e;
+    --sidebar-toggle-bg-hover: var(--logo-color-1);
+
+    --sidebar-panel-bg: #1e1e1e;
+    --sidebar-panel-edge: var(--app-background);
+
+    --sidebar-text: #eeeeee;
   }
 
   html, body {
@@ -182,6 +216,7 @@
     font-family: sans-serif;
     height: 100vh;
     background-color: var(--background-color);
+    overflow-y: hidden;
   }
 
   h1 {

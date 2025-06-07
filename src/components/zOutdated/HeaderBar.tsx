@@ -38,13 +38,13 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
         <img className="app-logo" src="src/assets/logo.svg" alt="Logo" />
 
         <div className="button-bar">
-          <Tooltip text="Add new math cell">
+          <Tooltip text="Add math cell">
             <button onClick={() => onAddCell("math")} className={clsx("button")}>
                 + Math
             </button>
           </Tooltip>
 
-          <Tooltip text="Add new text cell">
+          <Tooltip text="Add text cell">
             <button onClick={() => onAddCell("text")} className={clsx("button")}>
                 + Text
             </button>

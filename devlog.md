@@ -2358,3 +2358,26 @@ Oops, right now when doing +Math with tab it will select the new one so it will 
         textContainerUtils.ts      # (unused, might use later) splitting MultiDigit mathnode into multiple (curr not implemented feature)
         treeUtils.ts               # find nodes, update tree, get logical children of nodes, etc.
 ```
+
+![alt text](image-39.png)
+Starting to look like a real app :D
+TODO:
+- make add cell buttons visible w/o hover at the end of non-preview-mode cell list
+- fix the weirdass overflow-y (on short cell list, should not overflow)
+- fix the way overflow-y works: only the editor pane should be scrollable (if that is the one that is overflowing)
+- make note menu also resizable and collabpsible
+- Remember width of un-collapsed menus, so it can go back to that after uncollapsing again
+
+2nd level priority:
+- move LatexViewer OUT of the MathEditor cell thing. Make it go under. Kinda like running a code cell in jupyter notebook
+- hover of delete buttons should be red
+- fix the "+Math"/"+Text" buttons in EditorHeaderBAr
+- wrap Reset Zoom with its arrow, so they don't break up during squishing
+
+Cool things that will happen afterwards:
+- add "export to Latex" button in EditorHeaderBar (with cool logic to actually do that -- math editors give the blocks, text goes between. BUT I think I can also infer which packages are needed. And with date info and metadata like the name of the notation and the user, I can make the whole dang latex, ready for pdf when pasting it into overleaf!)
+- The library!!!! So much work
+- Saving notations
+- search logic in both the compoennts ^^ 
+- Right-click(?) on a tab inside the MathLibrary should enable "Split Library" - which will then split that component into 2 collections being shown and usable at the same time, taking both the half of the library's width. The user can drag math cells from one collection to the other (this is important cuz they might want to have a collection per course, and re-use things from similar courses from the past)
+- in the main header should be options to chnage the global layout (e.g. move the library to be horizontal, under the editor pane)  

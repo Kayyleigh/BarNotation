@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import EditorHeaderBar from "./EditorHeaderBar";
 import NotationEditor from "./NotationEditor";
+import styles from "./Editor.module.css";
 
 // Assume you already have a CellData type elsewhere
 type CellData = {
@@ -71,7 +72,7 @@ const EditorPane: React.FC<{ noteId: string | null; style?: React.CSSProperties 
   };
 
   return (
-    <div className="editor-pane" style={style}>
+    <div className={styles.editorPane} style={style}>
       <EditorHeaderBar
         isPreviewMode={isPreviewMode}
         togglePreviewMode={() => setIsPreviewMode((p) => !p)}

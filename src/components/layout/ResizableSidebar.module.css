@@ -1,0 +1,60 @@
+:root {
+    --sidebar-edge-width: 8px;
+    --sidebar-collapser-height: calc(var(--sidebar-edge-width) * 8);
+}
+
+.sidebar {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    color: var(--sidebar-text);
+    background: var(--sidebar-panel-bg);
+    border: none;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  .left {
+    flex-direction: row-reverse;
+  }
+  
+  .right {
+    flex-direction: row;
+  }
+  
+  .resizer {
+    width: var(--sidebar-edge-width);
+    cursor: ew-resize;
+    position: relative;
+    background: var(--sidebar-resizer-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    flex-shrink: 0;
+  }
+  
+  .toggleButton {
+    transform: rotate(180deg);
+    color: var(--sidebar-toggle);
+    background: var(--sidebar-toggle-bg);
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    height: var(--sidebar-collapser-height);
+    max-width: var(--sidebar-edge-width);
+    align-items: center;
+    justify-content: center;
+  }
+
+  .toggleButton:hover {
+    background: var(--sidebar-toggle-bg-hover);
+  }
+  
+  .content {
+    padding: 1rem;
+    overflow-y: auto;
+    height: 100%;
+    flex-grow: 1;
+  }
+  

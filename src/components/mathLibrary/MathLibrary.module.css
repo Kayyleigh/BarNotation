@@ -1,0 +1,9 @@
+.libraryContainer {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  border-left: 1px solid #ccc;
+  background: #f0f0ff;
+  position: relative;
+  overflow: hidden;
+}

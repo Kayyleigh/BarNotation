@@ -29,13 +29,13 @@ const EditorHeaderBar: React.FC<EditorHeaderBarProps> = ({
   return (
     <div className="editor-header-bar">
       <div className="button-bar">
-        <Tooltip text="Add new math cell">
+        <Tooltip text="Add math cell">
           <button onClick={() => onAddCell("math")} className={clsx("button")}>
               + Math
           </button>
         </Tooltip>
 
-        <Tooltip text="Add new text cell">
+        <Tooltip text="Add text cell">
           <button onClick={() => onAddCell("text")} className={clsx("button")}>
               + Text
           </button>
