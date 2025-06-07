@@ -1,0 +1,19 @@
+.latex-cmd {
+  color: var(--latex-text-color-command);
+}
+
+.latex-bracket {
+  color: var(--latex-text-color-bracket);
+}
+
+.latex-text {
+  color: var(--latex-text-color-other);
+}
+
+.latex-actuarialsymbol {
+  border-bottom: 1px dashed var(--math-color-actuarial-text);
+}  
+
+.latex-actuarialangle {
+  border-bottom: 1px dashed var(--math-color-actuarial-text);
+}

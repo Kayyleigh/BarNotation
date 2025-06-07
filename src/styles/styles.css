@@ -11,7 +11,7 @@
     position: sticky;
     top: 0;
     z-index: 10;
-    background-color: var(--app-background);
+    background-color: var(--main-header-bg);
     padding: 0.5rem 0.5rem 0.5rem 0.5rem;
     display: flex;
     justify-content: space-between;
@@ -67,7 +67,8 @@
   
 
   .button {
-    background: var(--app-background);
+    /* background: var(--app-background); */
+    background: inherit;
     color: var(--button-color);
     /* border: 1px solid var(--button-bg); */
     border: none;
@@ -179,125 +180,4 @@
 
 
     cursor: text; /* By default, should feel typable */
-  }
-
-  .latex-viewer {
-    padding: 0.75em;
-    color: var(--math-text-color);
-    border-radius: 6px;
-    font-family: monospace;
-  }
-  
-  .latex-header {
-    display: flex;
-    gap: 1em;
-    align-items: center;
-    margin-bottom: 0.5em;
-  }
-  
-  .refresh-button {
-    padding: 0.4em 0.8em;
-    border: none;
-    border-radius: 4px;
-    font-size: 0.85em;
-    cursor: pointer;
-    font-weight: bold;
-    transition: background 0.1s ease;
-  }
-  
-  .refresh-button.fresh {
-    background-color: var(--latex-refresh-button-color-updated);
-    color: white;
-  }
-  .refresh-button.fresh:hover {
-    background-color: var(--latex-refresh-button-color-updated-hover);
-  }
-  .refresh-button.fresh:active {
-    background-color: var(--latex-refresh-button-color-updated-active);
-  }
-
-  .refresh-button.outdated {
-    background-color: var(--latex-refresh-button-color-outdated);
-    color: white;
-  }
-  .refresh-button.outdated:hover {
-    background-color: var(--latex-refresh-button-color-outdated-hover);
-  }
-  .refresh-button.outdated:active {
-    background-color: var(--latex-refresh-button-color-outdated-active);
-  }
-
-  .latex-timestamp {
-    font-size: 0.75em;
-    opacity: 0.6;
-  }
-  
-  .latex-box-wrapper {
-    position: relative;
-    display: flex;
-  }
-  
-  .latex-box {
-    width: 100%;
-    text-align: left;
-    overflow: auto;
-    height: auto;
-    resize: none;
-    background: inherit;
-    color: inherit;
-    border: 1px solid var(--math-editor-border);
-    color: var(--latex-text-color);
-    border-radius: 4px;
-    padding: 0.5em 10em 0.5em 0.5em;
-    margin: 0;
-    font-family: inherit;
-    font-size: 1em;
-    outline: none;
-    overflow-wrap: normal;
-    white-space: pre-wrap;
-  }
-  
-  .copy-button {
-    position: absolute;
-    top: 0.5em;
-    right: 1em;
-    opacity: 0;
-    transition: opacity 0.1s ease;
-    background: var(--math-editor-border);
-    color: var(--math-text-color);
-    border: none;
-    border-radius: 4px;
-    padding: 0.2em 0.6em;
-    font-size: 1em;
-    cursor: pointer;
-  }
-  
-  .latex-box-wrapper:hover .copy-button {
-    opacity: 1;
-  }
-  
-  .latex-output {
-    font-family: monospace;
-    white-space: pre-wrap;
-    word-break: break-word;
-  }
-  
-  .latex-cmd {
-    color: var(--latex-text-color-command);
-  }
-  
-  .latex-bracket {
-    color: var(--latex-text-color-bracket);
-  }
-  
-  .latex-text {
-    color: var(--latex-text-color-other);
-  }
-
-  .latex-actuarialsymbol {
-    border-bottom: 1px dashed var(--math-color-actuarial-text);
-  }  
-
-  .latex-actuarialangle {
-    border-bottom: 1px dashed var(--math-color-actuarial-text);
   }

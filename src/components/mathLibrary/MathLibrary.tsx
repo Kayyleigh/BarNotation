@@ -21,7 +21,7 @@ const MathLibrary: React.FC<MathLibraryProps> = ({ width, onWidthChange }) => {
         You will be able to make collections of math snippets, so you can re-use common expressions
         very quickly.
       </p>
-      <div style={{ height: "1500px" }}>📏 Scroll me to test</div>
+      <div style={{ height: "1500px" }}>Scroll me to test that scrolling works</div>
     </ResizableSidebar>
   );
 };

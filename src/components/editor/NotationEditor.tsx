@@ -16,6 +16,8 @@ interface NotationEditorProps {
   cells: CellData[];
   setCells: React.Dispatch<React.SetStateAction<CellData[]>>;
   addCell: (type: "math" | "text", index?: number) => void;
+  showLatexMap: Record<string, boolean>;
+  setShowLatexMap: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;  
 }
 
 // TODO: also defined in EditorPane, maybe move elsewhere or reuse from one of the two in the other
@@ -29,17 +31,19 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
   isPreviewMode,
   defaultZoom,
   resetZoomSignal,
+  cells,
+  setCells,
+  addCell,
+  showLatexMap,
+  setShowLatexMap
   // noteId,
 }) => {
-  const [cells, setCells] = useState<Array<{ id: string; type: "math" | "text"; content: string }>>([]);
   const [selectedCellId, setSelectedCellId] = useState<string | null>(null);
-  const [showLatexMap, setShowLatexMap] = useState<Record<string, boolean>>({});
   const [hoveredInsertIndex, setHoveredInsertIndex] = useState<number | null>(null);
 
   const {
     draggingCellId,
     dragOverInsertIndex,
-    // draggingCellIdRef,
     startDrag,
     updateDragOver,
     endDrag,
@@ -56,13 +60,13 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
   };
 
   // TODO: use the one from EditorPane (cuz header also needs access to cell setting)
-  const addCell = (type: "math" | "text", index?: number) => {
-    const newCell = { id: Date.now().toString(), type, content: "" };
-    setCells((prev) => {
-      if (index === undefined) return [...prev, newCell];
-      return [...prev.slice(0, index), newCell, ...prev.slice(index)];
-    });
-  };
+  // const addCell = (type: "math" | "text", index?: number) => {
+  //   const newCell = { id: Date.now().toString(), type, content: "" };
+  //   setCells((prev) => {
+  //     if (index === undefined) return [...prev, newCell];
+  //     return [...prev.slice(0, index), newCell, ...prev.slice(index)];
+  //   });
+  // };
 
   const deleteCell = (id: string) => {
     setCells((prev) => prev.filter((cell) => cell.id !== id));
@@ -175,7 +179,7 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
       >
         <InsertCellButtons
           onInsert={(type) => addCell(type)}
-          isVisible={hoveredInsertIndex === cells.length}
+          isVisible={isPreviewMode ? (hoveredInsertIndex === cells.length) : true}
         />
       </div>
     </main>

@@ -20,6 +20,8 @@
   
     --background-color: white;
     --app-background: var(--background-color);
+
+    --main-header-bg: var(--background-color);
   
     /* ===== Typography & Scaling ===== */
     --math-font-family: 'STIX Two Math', 'Cambria Math', 'Times New Roman', serif;
@@ -126,8 +128,10 @@
         
     --main-text-color: #ffffff;
   
-    --background-color: #252526;
+    --background-color: #1e1e1e;
     --app-background: var(--background-color);
+
+    --main-header-bg: #323233;
   
     --math-cursor-color: white;
     --math-drop-cursor-color: white;
@@ -135,7 +139,7 @@
     --math-text-color: white;
     --math-selection-bg: rgba(255, 255, 255, 0.1);
     --math-hover-bg: #1ba0ff2c;
-    --math-editor-bg: #1e1e1e;
+    --math-editor-bg: #252526;
     --math-editor-border: #444;
     --math-editor-shadow: rgba(0, 0, 0, 0.3);
     --math-accent-color: #ce9178;
@@ -198,7 +202,7 @@
     --sidebar-toggle-bg: #6e6e6e;
     --sidebar-toggle-bg-hover: var(--logo-color-1);
 
-    --sidebar-panel-bg: #1e1e1e;
+    --sidebar-panel-bg: #252526;
     --sidebar-panel-edge: var(--app-background);
 
     --sidebar-text: #eeeeee;

@@ -2381,3 +2381,47 @@ Cool things that will happen afterwards:
 - search logic in both the compoennts ^^ 
 - Right-click(?) on a tab inside the MathLibrary should enable "Split Library" - which will then split that component into 2 collections being shown and usable at the same time, taking both the half of the library's width. The user can drag math cells from one collection to the other (this is important cuz they might want to have a collection per course, and re-use things from similar courses from the past)
 - in the main header should be options to chnage the global layout (e.g. move the library to be horizontal, under the editor pane)  
+
+### 07/06/2025
+
+![alt text](image-40.png)
+IT LOOKS LIKE AN APP
+
+bugs:
+- zoom preference resizes parts of the app so it moves itself, leading to horrible epileptic danger stuff
+
+![alt text](image-41.png)
+
+many bugs still but I gotta slow down and do my real uni stuff
+
+things to do:
+- Editor panel stuff
+  - add Export to Latex for full note (with bunch of stuff to implement e.g. package requirement logic, preamble building, can have Author and Date if I have the user fill in their name somewhere in the app. Perhaps lower left corner?)
+  - fix buttons in editor header
+  - move Latex previews out of the cell visual background, put it under (with normal editor bg color, so it does not actually "live in the math block")
+  - group the zoom button and dropdown to never break up
+  - Make Header (mandatory; synced with Note name in notes menu)
+  - enable (sub)sections (as a type of cell)
+  - enable collapsing of (sub)sections
+  - enable dragging between math cells
+- Math AST stuff
+  - add binom, vector and matrix
+  - add Precedences into predef accents
+  - add MultiLine
+  - add Cases
+  - add Arrow (? the auto resize one)
+  - fancily deal with \left and \right
+  - implement on-hover actions
+  - fix MultiCharacter stuff
+- Math Library
+  - enable drag-and-drop back and forth between library and math cells
+  - make header bar and multi-collection support 
+  - enable "split library" for viewing multiple collections at once
+  - enable dragging between collections (for deep copying)
+  - persistent storage
+- Notes Menu
+  - make into nice list
+  - persistent storage
+  - enable delete & view details: time created, modified, other relevant metadata (about courses? idk yet)
+- Main layout
+  - enable customizing the layout (maybe just current 3 vertical, versus left stays but editor and library go under each other). It may be nice also to enable "popup view" for library collections, so the user can drag it to the left for faster accessibility as well.

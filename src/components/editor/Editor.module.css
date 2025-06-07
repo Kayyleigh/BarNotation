@@ -13,4 +13,5 @@
 .editorLayout {
   position: relative;
   overflow-y: auto;
+  padding-bottom: 2em;
 }

@@ -57,7 +57,7 @@ const MainLayout: React.FC = () => {
           style={{ flexGrow: 1 }}
           noteId={selectedNoteId}
         />
-
+{/* These 2 need some interaction... Put hover state all the way up? */}
         <MathLibrary
           width={rightWidth}
           onWidthChange={setRightWidth}

@@ -163,9 +163,10 @@ const MathEditor: React.FC<MathEditorProps> = ({ resetZoomSignal, defaultZoom, s
           </div>
         )}
       </div>
-      {showLatex && (
-        <LatexViewer rootNode={editorState.rootNode} />
-      )}
+      <LatexViewer 
+        rootNode={editorState.rootNode} 
+        showLatex={showLatex}
+      />
     </div>
   );
 };

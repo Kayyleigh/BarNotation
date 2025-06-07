@@ -8,6 +8,8 @@ interface EditorHeaderBarProps {
   togglePreviewMode: () => void;
   defaultZoom: number;
   resetAllZooms: () => void;
+  showAllLatex: () => void;
+  hideAllLatex: () => void;
   handleZoomChange: (value: number) => void;
   showZoomDropdown: boolean;
   setShowZoomDropdown: React.Dispatch<React.SetStateAction<boolean>>;
@@ -20,6 +22,8 @@ const EditorHeaderBar: React.FC<EditorHeaderBarProps> = ({
   togglePreviewMode,
   defaultZoom,
   resetAllZooms,
+  showAllLatex,
+  hideAllLatex,
   handleZoomChange,
   showZoomDropdown,
   setShowZoomDropdown,
@@ -48,13 +52,13 @@ const EditorHeaderBar: React.FC<EditorHeaderBarProps> = ({
         </Tooltip>
 
         <Tooltip text="Show all LaTeX">
-          <button onClick={() => console.log("placeholder for button 4")} className={clsx("button")}>
+          <button onClick={showAllLatex} className={clsx("button")}>
               👁️ Show LaTeX
           </button>
         </Tooltip>
 
         <Tooltip text="Hide all LaTeX">
-          <button onClick={() => console.log("placeholder for button 4")} className={clsx("button")}>
+          <button onClick={hideAllLatex} className={clsx("button")}>
               🙈 Hide LaTeX
           </button>
         </Tooltip>

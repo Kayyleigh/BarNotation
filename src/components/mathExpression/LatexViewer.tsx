@@ -1,18 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { nodeToLatex } from "../../models/nodeToLatex";
 import type { MathNode } from "../../models/types"; // Replace with your actual Node type
+import styles from "./LatexViewer.module.css";
+import "../../styles/latexOutputColoring.css";
 
 interface LatexViewerProps {
   rootNode: MathNode;
+  showLatex: boolean;
 }
 
-const LatexViewer: React.FC<LatexViewerProps> = ({ rootNode }) => {
+const LatexViewer: React.FC<LatexViewerProps> = ({ rootNode, showLatex }) => {
   const [latex, setLatex] = useState<string>("");
   const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
   const [isOutdated, setIsOutdated] = useState(true);
   const [copied, setCopied] = useState(false);
 
-  const refreshLatex = () => {
+  const refreshLatex = useCallback(() => {
     setLatex("Refreshing...");
     setTimeout(() => {
       try {
@@ -25,12 +28,19 @@ const LatexViewer: React.FC<LatexViewerProps> = ({ rootNode }) => {
         console.warn("LaTeX generation failed:", err);
         setLatex("⚠ Error generating LaTeX");
       }
-    }, 250); // short feedback delay
-  };  
-
+    }, 250);
+  }, [rootNode]);
+  
   useEffect(() => {
     setIsOutdated(true);
   }, [rootNode]);
+
+  //// UGGH I cannot get it to only refresh ON TOGGLE (without lot of coding for so small shit)
+  // useEffect(() => {
+  //   if (showLatex) {
+  //     refreshLatex();
+  //   }
+  // }, [showLatex, refreshLatex]);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(nodeToLatex(rootNode, false)); // Non-styled version
@@ -48,20 +58,20 @@ const LatexViewer: React.FC<LatexViewerProps> = ({ rootNode }) => {
     : "Never";
 
     return (
-      <div className="latex-viewer">
-        <div className="latex-header">
+      <div className={`${styles.latexViewer} ${showLatex ? "" : styles.hide}`}>
+        <div className={styles.latexHeader}>
           <button
             onClick={refreshLatex}
-            className={`refresh-button ${isOutdated ? "outdated" : "fresh"}`}
+            className={`${styles.refreshButton} ${isOutdated ? styles.outdated : styles.fresh}`}
           >
             {isOutdated ? "⟲ Refresh LaTeX*" : "✓ Refreshed LaTeX"}
           </button>
-          <span className="latex-timestamp">Last refreshed: {timeString}</span>
+          <span className={styles.latexTimestamp}>Last refreshed: {timeString}</span>
         </div>
     
-        <div className="latex-box-wrapper">
+        <div className={styles.latexBoxWrapper}>
           <pre
-            className={`latex-box ${latex === "Refreshing..." ? "latex-refreshing" : ""}`}
+            className={`${styles.latexBox} ${latex === "Refreshing..." ? styles.latexRefreshing : ""}`}
             dangerouslySetInnerHTML={{
               __html:
                 latex === "Refreshing..."
@@ -69,7 +79,7 @@ const LatexViewer: React.FC<LatexViewerProps> = ({ rootNode }) => {
                   : latex,
             }}
           />
-          <button className="copy-button" onClick={handleCopy}>
+          <button className={styles.copyButton} onClick={handleCopy}>
             {copied ? "✔ Copied" : "📋 Copy"}
           </button>
         </div>

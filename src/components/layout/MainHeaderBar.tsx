@@ -20,6 +20,12 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
         <Tooltip text="Show hotkey overview">
             <button onClick={onOpenHotkeys} className={clsx("button")}>⌨️ Hotkeys</button>
         </Tooltip>
+        <Tooltip text="Go to GitHub page">
+            <button onClick={() => console.log("Not yet implemented")} className={clsx("button")}>👩🏻‍🦰 GitHub</button>
+        </Tooltip>
+        <Tooltip text="Open user guide">
+            <button onClick={() => console.log("Not yet implemented")} className={clsx("button")}>📚 User Guide</button>
+        </Tooltip>
         <Tooltip text="Change your settings">
             <button onClick={onOpenSettings} className={clsx("button")}>⚙️ Settings</button>
         </Tooltip>

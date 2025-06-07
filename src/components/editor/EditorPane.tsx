@@ -69,6 +69,29 @@ const EditorPane: React.FC<{ noteId: string | null; style?: React.CSSProperties 
       if (index === undefined) return [...prev, newCell];
       return [...prev.slice(0, index), newCell, ...prev.slice(index)];
     });
+    addShowLatexEntry(newCell.id);
+  };
+
+  const addShowLatexEntry = (cellId: string) => {
+    setShowLatexMap((prev) => ({ ...prev, [cellId]: false }));
+  };
+
+  // Latex view map
+  const [showLatexMap, setShowLatexMap] = useState<Record<string, boolean>>({});
+
+  // Set all values in showLatexMap to true
+  const showAllLatex = () => {
+    setShowLatexMap((prev) =>
+      Object.fromEntries(Object.keys(prev).map((key) => [key, true]))
+    );
+    console.log(showLatexMap)
+  };
+
+  // Set all values in showLatexMap to false
+  const hideAllLatex = () => {
+    setShowLatexMap((prev) =>
+      Object.fromEntries(Object.keys(prev).map((key) => [key, false]))
+    );
   };
 
   return (
@@ -78,6 +101,8 @@ const EditorPane: React.FC<{ noteId: string | null; style?: React.CSSProperties 
         togglePreviewMode={() => setIsPreviewMode((p) => !p)}
         defaultZoom={defaultZoom}
         resetAllZooms={resetAllZooms}
+        showAllLatex={showAllLatex}
+        hideAllLatex={hideAllLatex}
         handleZoomChange={handleZoomChange}
         showZoomDropdown={showZoomDropdown}
         setShowZoomDropdown={setShowZoomDropdown}
@@ -93,6 +118,8 @@ const EditorPane: React.FC<{ noteId: string | null; style?: React.CSSProperties 
         cells={cells}
         setCells={setCells}
         addCell={addCell}
+        showLatexMap={showLatexMap}
+        setShowLatexMap={setShowLatexMap}
       />
     </div>
   );
