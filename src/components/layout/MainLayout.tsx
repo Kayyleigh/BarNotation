@@ -29,6 +29,14 @@ const MainLayout: React.FC = () => {
   const toggleDarkMode = () => setIsDarkMode(prev => !prev);
   const toggleShowColorInPreview = () => setShowColorInPreview(prev => !prev);
 
+  const [authorName, setAuthorName] = useState(() => {
+    return localStorage.getItem("defaultAuthor") || "";
+  });
+  
+  useEffect(() => {
+    localStorage.setItem("defaultAuthor", authorName);
+  }, [authorName]);
+
   useEffect(() => {
     document.body.classList.toggle("dark", isDarkMode);
     localStorage.setItem("mathEditorTheme", isDarkMode ? "dark" : "light");
@@ -73,6 +81,8 @@ const MainLayout: React.FC = () => {
           toggleDarkMode={toggleDarkMode}
           showColorInPreview={showColorInPreview}
           toggleShowColorInPreview={toggleShowColorInPreview}
+          authorName={authorName}
+          setAuthorName={setAuthorName}
         />
       )}
     </div>

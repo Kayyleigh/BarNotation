@@ -53,12 +53,22 @@ const EditorPane: React.FC<{ noteId: string | null; style?: React.CSSProperties 
   // ---- Cell logic ----
   const [cells, setCells] = useState<CellData[]>([]);
 
-  const [metadata, setMetadata] = useState<NoteMetadata>({
+  // const [metadata, setMetadata] = useState<NoteMetadata>({
+  //   title: "My New Notation",
+  //   // courseCode: "",
+  //   // author: "",
+  //   // dateOrPeriod: ""
+  // });
+
+  const getInitialAuthor = () => {
+    const stored = localStorage.getItem("defaultAuthor");
+    return stored?.trim() || undefined;
+  };
+  
+  const [metadata, setMetadata] = useState<NoteMetadata>(() => ({
     title: "My New Notation",
-    // courseCode: "",
-    // author: "",
-    // dateOrPeriod: ""
-  });
+    ...(getInitialAuthor() ? { author: getInitialAuthor() } : {}),
+  }));
 
   const addCell = (type: "math" | "text", index?: number) => {
     const newCell: CellData = {

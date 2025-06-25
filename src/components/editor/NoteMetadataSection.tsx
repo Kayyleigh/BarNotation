@@ -48,7 +48,7 @@ const NoteMetaDataSection: React.FC<Props> = ({ metadata, setMetadata, isPreview
           <input
             type="text"
             placeholder="Course Code"
-            value={metadata.courseCode}
+            value={metadata.courseCode ?? ""}
             onChange={(e) => setMetadata((prev) => ({ ...prev, courseCode: e.target.value }))}
             className={styles.metaInput}
           />
@@ -57,7 +57,7 @@ const NoteMetaDataSection: React.FC<Props> = ({ metadata, setMetadata, isPreview
           <input
             type="text"
             placeholder="Author"
-            value={metadata.author}
+            value={metadata.author ?? ""}
             onChange={(e) => setMetadata((prev) => ({ ...prev, author: e.target.value }))}
             className={styles.metaInput}
           />
@@ -66,7 +66,7 @@ const NoteMetaDataSection: React.FC<Props> = ({ metadata, setMetadata, isPreview
           <input
             type="text"
             placeholder="Date or Period"
-            value={metadata.dateOrPeriod}
+            value={metadata.dateOrPeriod ?? ""}
             onChange={(e) => setMetadata((prev) => ({ ...prev, dateOrPeriod: e.target.value }))}
             className={styles.metaInput}
           />
