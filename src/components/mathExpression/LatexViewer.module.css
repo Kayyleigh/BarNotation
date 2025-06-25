@@ -93,7 +93,7 @@
     cursor: pointer;
   }
   
-  .latexBoxWrapper:hover .copy-button {
+  .latexBoxWrapper:hover .copyButton {
     opacity: 1;
   }
   

@@ -1,6 +1,8 @@
 import type { NodeDecoration } from "../utils/accentUtils";
 import type { BracketStyle } from "../utils/bracketUtils";
 
+// TODO: rename to mathtypes? 
+
 export type MathNode =
   | MultilineEquationNode
   | RootWrapperNode

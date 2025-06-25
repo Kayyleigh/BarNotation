@@ -6,7 +6,9 @@ import TextCell from "../cells/TextCell";
 import MathCell from "../cells/MathCell";
 import { useCellDragState } from "../../hooks/useCellDragState";
 import styles from "./Editor.module.css";
-import Tooltip from "../tooltips/Tooltip";
+import Tooltip from "../tooltips/Tooltip"
+import type { CellData, NoteMetadata } from "../../models/noteTypes";
+import NoteMetaDataSection from "./NoteMetadataSection";
 
 interface NotationEditorProps {
   isPreviewMode: boolean;
@@ -17,15 +19,10 @@ interface NotationEditorProps {
   setCells: React.Dispatch<React.SetStateAction<CellData[]>>;
   addCell: (type: "math" | "text", index?: number) => void;
   showLatexMap: Record<string, boolean>;
-  setShowLatexMap: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;  
+  setShowLatexMap: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
+  metadata: NoteMetadata;
+  setMetadata: React.Dispatch<React.SetStateAction<NoteMetadata>>;
 }
-
-// TODO: also defined in EditorPane, maybe move elsewhere or reuse from one of the two in the other
-type CellData = {
-  id: string;
-  type: "math" | "text";
-  content: string;
-};
 
 const NotationEditor: React.FC<NotationEditorProps> = ({
   isPreviewMode,
@@ -35,7 +32,9 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
   setCells,
   addCell,
   showLatexMap,
-  setShowLatexMap
+  setShowLatexMap,
+  metadata,
+  setMetadata
   // noteId,
 }) => {
   const [selectedCellId, setSelectedCellId] = useState<string | null>(null);
@@ -58,15 +57,6 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
       )
     );
   };
-
-  // TODO: use the one from EditorPane (cuz header also needs access to cell setting)
-  // const addCell = (type: "math" | "text", index?: number) => {
-  //   const newCell = { id: Date.now().toString(), type, content: "" };
-  //   setCells((prev) => {
-  //     if (index === undefined) return [...prev, newCell];
-  //     return [...prev.slice(0, index), newCell, ...prev.slice(index)];
-  //   });
-  // };
 
   const deleteCell = (id: string) => {
     setCells((prev) => prev.filter((cell) => cell.id !== id));
@@ -112,6 +102,11 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
         setSelectedCellId(null);
       }
     }}>
+      <NoteMetaDataSection
+        metadata={metadata}
+        setMetadata={setMetadata}
+        isPreviewMode={isPreviewMode}
+      />
       <div className={styles.cellList}>
         {cells.map((cell, index) => (
           <React.Fragment key={cell.id}>

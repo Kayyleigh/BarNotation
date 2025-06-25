@@ -2425,3 +2425,261 @@ things to do:
   - enable delete & view details: time created, modified, other relevant metadata (about courses? idk yet)
 - Main layout
   - enable customizing the layout (maybe just current 3 vertical, versus left stays but editor and library go under each other). It may be nice also to enable "popup view" for library collections, so the user can drag it to the left for faster accessibility as well.
+
+### 25/06/2025
+Time to get back to this wonderful project
+
+I think I need to move all cell content upward in the architecture, to implement dragging between cells and between the editor and the library
+
+Also I should add some fields at the top of any notebook that contain the title, author name, date (?) and maybe a short "abstract/summary" to put also in the notes menu for displaying. 
+
+#### Ideas for the metadata at top of notebook
+**What would *I* need?**
+1. Title
+2. course code
+3. course period ((Y/Q) or start date - end date?) 
+
+TU Delft names courses like this in Brightspace:
+> DSAIT4070 Designing Human-Centred AI Systems (2024/25 Q4)
+
+I.e.,
+
+> {course_code} {course_title} ({course_period})
+
+**What does latex benefit from?** (I.e. things in preamble)
+- \title{My Bar Notation}
+- \author{Kayyleigh the Evil Genius}
+- \date{May 2025} (or even \date{Y1Q4})
+
+Other things that go in preamble:
+- later auto-inferred \usepackage 😃
+
+**Combining these 2**:
+1. (Required) Title
+2. (Optional) Author name - taken from within my app (some field in settings that is your "account". Only used for this purpose)
+3. (Optional) course code
+4. (Optional) course period - could have auto "today" button? With setting of what format that would use
+5. auto-inferred \usepackage
+
+1 and 3 merged in latex conversion into "Title" field
+
+Thus, required implementation:
+- Make account name field (in settings)
+- Make: title, cc, cp, author fields
+- Auto-fill author field to account name
+- Other stuff is for later (like datetime format etc)
+
+Current filetree
+```
+.
+├── App.tsx                        # div with main component loaded in (for maintainability)
+├── index.css                      # @import "tailwindcss", (hopefully) unused for the remainder
+├── main.tsx                       # Loads App in React.StrictMode
+├── vite-env.d.ts                  # Vite environment type declarations (default)
+│
+├── assets
+│   └── logo.svg                   # svg with the full logo (used in the header bar)
+│
+├── components
+│   ├── cells
+│   │   ├── BaseCell.tsx           # Basic Cell stuff
+│   │   ├── InsertCellButtons.tsx  # Insert Math Cell / Text Cell buttons (re-used a lot)
+│   │   ├── MathCell.tsx           # Cell containing MathEditor
+│   │   └── TextCell.tsx           # Cell containing simple textarea
+│   │
+│   ├── editor
+│   │   ├── Editor.module.css      # Styling for EditorPane and NotationEditor
+│   │   ├── EditorHeaderBar.tsx    # Header bar for EditorPane (may show breadcrumbs or tools)
+│   │   ├── EditorPane.tsx         # Main pane containing the math/text cells
+│   │   └── NotationEditor.tsx     # Main app component (used in MainLayout)
+│   │
+│   ├── icons
+│   │   └── CollapseIcon.tsx       # Collapse arrow icon (for UI collapsing)
+│   │
+│   ├── layout
+│   │   ├── MainHeaderBar.tsx      # Main header bar (curr outdated; holds logo, settings, cell options)
+│   │   ├── MainLayout.tsx         # Main layout (Header, Note History, Note Editor, Library)
+│   │   ├── ResizableSidebar.module.css  # CSS for resizable sidebar styling
+│   │   └── ResizableSidebar.tsx   # Sidebar that can be resized (e.g. for note history)
+│   │
+│   ├── mathExpression
+│   │   ├── LatexViewer.module.css # Styling for LatexViewer
+│   │   ├── LatexViewer.tsx        # Little box in MathEditor for viewing LaTeX of 1 expression
+│   │   ├── MathEditor.tsx         # Used in MathCell, holds 1 math expression (and a bunch of state)
+│   │   ├── MathRenderer.tsx       # Recursively called to render expression, + wraps in draggable
+│   │   └── MathRenderers.tsx      # Called by MathRenderer, holds renderers for each MathNode type
+│   │
+│   ├── mathLibrary
+│   │   ├── MathLibrary.module.css # Styling for math library pane
+│   │   └── MathLibrary.tsx        # Panel showing predefined or saved expressions
+│   │
+│   ├── modals
+│   │   ├── HotkeyOverlay.tsx      # Overlay of hotkey info
+│   │   └── SettingsModal.tsx      # Overlay of settings (options/preferences, e.g. light vs dark theme)
+│   │
+│   ├── notesMenu
+│   │   └── NotesMenu.tsx          # Menu for switching between notes (or opening new ones)
+│   │
+│   └── tooltips
+│       ├── tooltip.css            # Styling for tooltips
+│       └── Tooltip.tsx            # Tooltip wrapper to show text on hover of other components
+│
+├── hooks
+│   ├── useCellDragState.ts        # Hook for dragging cells (for re-ordering in MathNotationTool)
+│   ├── useDragState.ts            # Hook for dragging MathNodes within the MathEditors 
+│   ├── useEditorHistory.ts        # Hook for history of single MathEditor (may move to top-level)
+│   ├── useHoverState.ts           # Hook for hover of MathNode in a MathEditor
+│   └── useZoom.ts                 # Hook for zooming of MathEditor (may move higher as well)
+│
+├── logic
+│   ├── cursor.ts                  # CursorPosition (in MathEditor): curr InlineContainer + idx within 
+│   ├── deletion.ts                # Backspace handler (in MathEditor)
+│   ├── editor-state.ts            # EditorState: rootNode and CursorPosition (in MathEditor)
+│   ├── handle-keydown.ts          # Keydown handler for MathEditor
+│   ├── history.ts                 # HistoryState (same format as EditorState) used in history hook
+│   ├── insertion.ts               # Handle character insertion into MathEditor
+│   ├── navigation.ts              # Handle arrow navigation in MathEditor
+│   ├── node-manipulation.ts       # Node insertion/deletion, at cursor or by index/id, in MathEditor
+│   └── transformations.ts         # Transform nodes, e.g. into numerator of new FractionNode
+│
+├── models
+│   ├── mathNodeParser.ts          # (Will rename) parse LaTeX, to obtain MathNode
+│   ├── nodeFactories.ts           # Factories for all Math Node types
+│   ├── nodeToLatex.ts             # input MathNode, output LaTeX string
+│   ├── specialSequences.ts        # mappings from escape sequences to `() => StructureNode` 
+│   ├── transformations.ts         # more "boilerplate" transforms (might remove, similar to factories)
+│   └── types.ts                   # MathNode = .. | InlineContainer | StructureNode (fraction, bigOp, group, ...)
+│
+├── styles
+│   ├── accents.css                # ::before and ::after for rendering accented math nodes 
+│   ├── cells.css                  # Styling for MathCell, TextCell, cell list itself, and insert zones
+│   ├── hotkeyOverlay.css          # Styling for HotkeyOverlay (also used by SettingsModal)
+│   ├── latexOutputColoring.css    # Styling for LaTeX viewer's text coloring
+│   ├── math-node.css              # Styling for math node types and MathEditor
+│   ├── math.css                   # Outdated styling (I think)
+│   ├── settings.css               # Styling for toggles in settings 
+│   ├── styles.css                 # Styling for header bar, settings overlay, LatexViewer, and .app-container 
+│   └── themes.css                 # :root, .dark theme, and predefined DOM stuff (h1, html, body, label)
+│
+└── utils
+    ├── accentUtils.ts             # Define NodeDecoration names and map to LaTeX, track required LaTeX packages
+    ├── bracketUtils.ts            # Define BracketStyle and its opening/closing characters
+    ├── navigationUtils.ts         # Define directional order of children, flatten CursorPosition
+    ├── subsupUtils.ts             # Define "CornerPosition" type, only used once in transformations.ts
+    ├── textContainerUtils.ts      # (Unused) possibly to split MultiDigit mathnode into multiple (not yet implemented)
+    └── treeUtils.ts               # Find nodes, update tree, get logical children of nodes, etc.
+
+```
+
+
+#### Project Overview
+##### Purpose
+An accessible math note-taking app designed specifically for actuarial science students with chronic hand pain. It enables users to:
+
+Take real-time math notes during fast-paced lectures.
+
+Avoid traditional LaTeX command typing.
+
+Use hotkeys and intuitive actions to build and transform expressions.
+
+Work within a Jupyter-style notebook interface, with cells that can be text or math.
+
+Reuse and organize expressions using a Math Library.
+
+##### Core Concepts & Design Philosophy
+1. Reverse LaTeX Input Model
+    Instead of writing LaTeX strings (\frac{a}{b}), users directly edit the visual math expression.
+
+    Special keyboard hotkeys / actions convert part of the expression tree into different node types.
+
+    Internally, the system models math similar to LaTeX: an expression tree of nodes with types, children, and rendering rules.
+
+2. Notebook Interface with Cells
+    Cells are either MathCell (editable math expression) or TextCell (simple textarea).
+
+    Cells live in a linear list, allowing users to take notes sequentially like a notebook.
+
+    Cells are draggable and reorderable, providing flexibility in organizing lecture notes.
+
+3. Three Main UI Areas
+    Editor: The main notebook interface where the user writes math/text.
+
+    Menu / Notes System: For switching between saved notes (each is a different notebook instance).
+
+    Math Library: A dockable panel where users can drag math subtrees from any cell to reuse them. Includes tabbed collections for organization.
+
+##### File Architecture Summary
+This is a bird's-eye view of how the codebase implements the app features.
+
+1. components/
+    a. Notebook System
+      - cells/ — MathCell.tsx and TextCell.tsx for editable blocks; InsertCellButtons.tsx to add new cells.
+      - Drag and cell state logic is supported by hooks (see hooks/).
+
+    b. Math Editor & Rendering
+      - mathExpression/:
+      - MathEditor.tsx: Core math input editor, maintains local expression tree and cursor.
+      - MathRenderer.tsx: Recursive render tree component, visualizes MathNodes.
+      - LatexViewer.tsx: Shows real-time LaTeX output for current expression.
+
+    c. Layout and Navigation
+      - layout/ includes MainLayout.tsx, MainHeaderBar.tsx, and ResizableSidebar.tsx, which scaffold the entire page structure.
+      - EditorPane.tsx and NotationEditor.tsx form the heart of the editable cell view.
+
+    d. Modals & Settings: Includes overlays like HotkeyOverlay.tsx and SettingsModal.tsx for toggles, theme switching, etc.
+
+    e. Notes Menu & Math Library
+      - notesMenu/NotesMenu.tsx: Sidebar to switch between notes.
+      - mathLibrary/MathLibrary.tsx: Organize reusable expressions by dragging into tabs.
+
+2. models/ (MathNode Data Layer). This layer defines and manages the underlying math expression tree, including:
+  - Node types and factories (nodeFactories.ts, types.ts).
+  - Transformations and parsing (transformations.ts, mathNodeParser.ts).
+  - Export helpers (nodeToLatex.ts, specialSequences.ts).
+
+3. logic/ (Editor Behavior Layer). Handles all interactive editor logic:
+  - editor-state.ts: Manages cursor and expression tree state.
+  - navigation.ts: Arrow key behavior.
+  - deletion.ts, insertion.ts, transformations.ts: Modify the expression tree.
+  - handle-keydown.ts: Maps hotkeys to math actions.
+  - history.ts: Local undo/redo system.
+
+4. hooks/ (UI State Hooks). Examples:
+  - useCellDragState.ts, useDragState.ts: Drag/drop logic for cells and nodes.
+  - useHoverState.ts: Track hover state for nodes.
+  - useEditorHistory.ts: Per-editor undo/redo tracking.
+  - useZoom.ts: Zoom logic for math display.
+
+5. utils/ (Helpers for Node Logic). Utility modules like:
+  - accentUtils.ts: Handles accents like hats, overlines.
+  - bracketUtils.ts: Styling logic for brackets.
+  - treeUtils.ts: Tree traversal helpers.
+  - navigationUtils.ts: Cursor movement helpers.
+
+6. styles/ (CSS Layer) Organized by purpose: cells.css, math-node.css, styles.css, themes.css.
+
+Most components use either global styles or module.css.
+
+##### Data Flow Summary
+Here's a simplified flow of how the app works:
+```
+User Action (e.g. keypress, drag, insert cell)
+        ↓
+Editor Logic (handle-keydown.ts, insertion.ts, etc.)
+        ↓
+Expression Tree Updated (MathNode[])
+        ↓
+React Components (MathEditor, MathRenderer) rerender
+        ↓
+View Updates (DOM + CSS), LaTeX preview updated
+```
+
+Note-level data is stored in a tree of cells (each with type, content, etc.). Math expressions are stored in custom MathNode structures and transformed via hotkeys.
+
+---
+
+Implemented the 4 fields plus their preview modes. 
+New Files: 
+- components/editor/NoteMetadata.tsx - defines NoteMetadataSection (TODO rename?)
+- components/editor/NoteMetadata.module.css
+- models/noteTypes: types NoteMetadata, CellData, and Note 

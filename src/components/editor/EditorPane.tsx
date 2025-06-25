@@ -2,13 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import EditorHeaderBar from "./EditorHeaderBar";
 import NotationEditor from "./NotationEditor";
 import styles from "./Editor.module.css";
-
-// Assume you already have a CellData type elsewhere
-type CellData = {
-  id: string;
-  type: "math" | "text";
-  content: string;
-};
+import type { CellData, NoteMetadata } from "../../models/noteTypes";
 
 const EditorPane: React.FC<{ noteId: string | null; style?: React.CSSProperties }> = ({
   noteId,
@@ -59,6 +53,13 @@ const EditorPane: React.FC<{ noteId: string | null; style?: React.CSSProperties 
   // ---- Cell logic ----
   const [cells, setCells] = useState<CellData[]>([]);
 
+  const [metadata, setMetadata] = useState<NoteMetadata>({
+    title: "My New Notation",
+    // courseCode: "",
+    // author: "",
+    // dateOrPeriod: ""
+  });
+
   const addCell = (type: "math" | "text", index?: number) => {
     const newCell: CellData = {
       id: Date.now().toString(),
@@ -107,9 +108,8 @@ const EditorPane: React.FC<{ noteId: string | null; style?: React.CSSProperties 
         showZoomDropdown={showZoomDropdown}
         setShowZoomDropdown={setShowZoomDropdown}
         dropdownRef={dropdownRef}
-        onAddCell={() => addCell("math")} // optional: expose for header buttons
+        onAddCell={addCell}
       />
-
       <NotationEditor
         noteId={noteId}
         isPreviewMode={isPreviewMode}
@@ -120,6 +120,8 @@ const EditorPane: React.FC<{ noteId: string | null; style?: React.CSSProperties 
         addCell={addCell}
         showLatexMap={showLatexMap}
         setShowLatexMap={setShowLatexMap}
+        metadata={metadata}
+        setMetadata={setMetadata}
       />
     </div>
   );

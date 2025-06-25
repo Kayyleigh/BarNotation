@@ -175,7 +175,7 @@
     --latex-text-color-other: #6a9955;    /* cool green, consistent with code editors */
     
     /* Hotkey Overlay */
-    --hotkey-overlay-bg: var(--background-color);
+    --hotkey-overlay-bg: #252526;
     --hotkey-overlay-color: var(--main-text-color);
   
     --hotkey-key-bg: #444;
