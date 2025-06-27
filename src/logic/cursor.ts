@@ -10,6 +10,11 @@ export const createInitialCursor = (root: MathNode): CursorPosition => {
   return { containerId: root.child.id, index: 0 };
 };
 
+export const dummyCursorPosition = {
+  containerId: "",
+  index: -1,
+};
+
 export const getNodeAtCursor = (
   container: InlineContainerNode,
   cursor: CursorPosition

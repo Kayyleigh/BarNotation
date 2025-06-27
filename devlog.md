@@ -2985,3 +2985,9 @@ Fix: Passed updateOrder={updateOrder} explicitly in EditorPane.
 
 👓 Improve UI polish: animations, insert cell transitions, drag handles.
 
+Note to self; why tf does deletion of math cell lead to a text cell? Not critical but very weird
+cursor control by mouse is not the same as by arrows. Not too critical atm but def annoying when trying to get to start of inline container
+
+![alt text](image-44.png)
+
+WORKING MATH LIBRARY

@@ -1,9 +1,41 @@
-.libraryContainer {
+.libraryDropZone {
   display: flex;
-  flex-direction: row;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 12px;
+  padding: 12px;
+  overflow-y: auto;
   height: 100%;
-  border-left: 1px solid #ccc;
-  background: #f0f0ff;
+}
+
+.libraryEntry {
   position: relative;
-  overflow: hidden;
+  width: fit-content;
+  border: 1px solid var(--math-editor-border);
+  border-radius: 8px;
+  padding: 8px 20px 8px 8px;
+  background-color: var(--math-editor-bg);
+  cursor: grab;
+  align-content: center;
+}
+
+.deleteButton {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: transparent;
+  border: none;
+  color: var(--math-text-color);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.deleteButton:hover {
+  color: #e00;
+}
+
+.empty {
+  text-align: center;
+  color: var(--math-text-color);
+  font-style: italic;
 }

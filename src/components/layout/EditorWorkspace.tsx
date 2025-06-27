@@ -164,34 +164,6 @@
 
 // export default EditorWorkspace;
 
-// components/layout/EditorWorkspace.tsx
-import React, { useCallback, useEffect } from "react";
-import EditorPane from "../editor/EditorPane";
-import MathLibrary from "../mathLibrary/MathLibrary";
-import type { MathNode } from "../../models/types";
-import { deleteNodeById, insertNodeAtIndex } from "../../logic/node-manipulation";
-import { cloneTreeWithNewIds, isDescendantOrSelf } from "../../utils/treeUtils";
-import { useEditorHistory } from "../../hooks/EditorHistoryContext";
-
-interface EditorWorkspaceProps {
-  noteId: string | null;
-  rightWidth: number;
-  setRightWidth: (width: number) => void;
-}
-
-type DropSource = {
-  sourceType: "cell" | "library";
-  cellId?: string;
-  containerId: string;
-  index: number;
-  node: MathNode;
-};
-
-type DropTarget = {
-  cellId: string;
-  containerId: string;
-  index: number;
-};
 
 // const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({
 //   noteId,
@@ -283,6 +255,36 @@ type DropTarget = {
 
 // export default EditorWorkspace;
 
+// components/layout/EditorWorkspace.tsx
+import React, { useCallback, useEffect, useRef } from "react";
+import EditorPane from "../editor/EditorPane";
+import MathLibrary from "../mathLibrary/MathLibrary";
+import type { MathNode } from "../../models/types";
+import { deleteNodeById, insertNodeAtIndex } from "../../logic/node-manipulation";
+import { cloneTreeWithNewIds, isDescendantOrSelf } from "../../utils/treeUtils";
+import { useEditorHistory } from "../../hooks/EditorHistoryContext";
+import type { LibraryEntry } from "../../models/libraryTypes";
+
+interface EditorWorkspaceProps {
+  noteId: string | null;
+  rightWidth: number;
+  setRightWidth: (width: number) => void;
+}
+
+type DropSource = {
+  sourceType: "cell" | "library";
+  cellId?: string;
+  containerId: string;
+  index: number;
+  node: MathNode;
+};
+
+type DropTarget = {
+  cellId: string;
+  containerId: string;
+  index: number;
+};
+
 const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({ noteId, rightWidth, setRightWidth }) => {
   const { history, updateState } = useEditorHistory();
   // const editorStates = history.present;
@@ -291,7 +293,22 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({ noteId, rightWidth, s
   const onDropNode = useCallback(
     (from: DropSource, to: DropTarget) => {
       const sourceState = from.cellId ? editorStates[from.cellId] : null;
+
+      // Handle library case first, since it will NOT find an editorState for the so-called "library cell"
+      if (to.cellId === "library" && from.sourceType !== "library") {
+        // Special case: dropping to the library
+        const cloned = cloneTreeWithNewIds(from.node);
+        const newEntry = {
+          id: crypto.randomUUID(),
+          node: cloned,
+        };
+      
+        addEntryToLibraryRef.current?.(newEntry);
+        return;
+      }
+
       const destState = editorStates[to.cellId];
+
       if (!destState) return;
 
       const updatedEditorStates = { ...editorStates };
@@ -317,6 +334,10 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({ noteId, rightWidth, s
         updatedEditorStates[to.cellId] = updated;
       }
 
+      else {
+        console.log(`You done fucked up`)
+      }
+
       updateState({
         states: updatedEditorStates,
         order, // reuse the current order for now
@@ -326,6 +347,8 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({ noteId, rightWidth, s
   );
 
   const { undo, redo } = useEditorHistory();
+
+  const addEntryToLibraryRef = useRef<(entry: LibraryEntry) => void>(() => {});
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -352,7 +375,8 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({ noteId, rightWidth, s
       <MathLibrary
         width={rightWidth}
         onWidthChange={setRightWidth}
-        onDropNode={() => {}}
+        onDropNode={(from, to) => onDropNode(from, to)}
+        addEntryRef={addEntryToLibraryRef}
       />
     </div>
   );

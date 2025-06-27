@@ -1,8 +1,13 @@
-import React from "react";
+// components/mathLibrary/MathLibrary.tsx
+import React, { useEffect, useState } from "react";
 import ResizableSidebar from "../layout/ResizableSidebar";
 import type { MathNode } from "../../models/types";
+import styles from "./MathLibrary.module.css";
+import type { LibraryEntry } from "../../models/libraryTypes";
+import { MathView } from "../mathExpression/MathView";
+import { parseLatex } from "../../models/mathNodeParser";
+import { useDragContext } from "../../hooks/useDragContext";
 
-// The type definition of a drop event -- //TODO define these elsewhere (used in here and in workspace/)
 type DropSource = {
   sourceType: "cell" | "library";
   cellId?: string;
@@ -21,24 +26,129 @@ interface MathLibraryProps {
   width: number;
   onWidthChange: (width: number) => void;
   onDropNode: (from: DropSource, to: DropTarget) => void;
+  addEntryRef?: React.MutableRefObject<(entry: LibraryEntry) => void>;
 }
 
-const MathLibrary: React.FC<MathLibraryProps> = ({ width, onWidthChange }) => {
+const STORAGE_KEY = "mathLibrary";
+
+const MathLibrary: React.FC<MathLibraryProps> = ({ width, onWidthChange, onDropNode, addEntryRef }) => {
+  const [entries, setEntries] = useState<LibraryEntry[]>([]);
+  const { draggingNode, setDraggingNode, setDropTarget } = useDragContext();
+
+  // Load from localStorage on mount
+  useEffect(() => {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        setEntries(parsed);
+      } catch (e) {
+        console.warn("Failed to parse math library from storage", e);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (addEntryRef) {
+      addEntryRef.current = (entry: LibraryEntry) => {
+        setEntries((prev) => [...prev, entry]);
+      };
+    }
+  }, [addEntryRef]);
+
+  // Save to localStorage on change
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+  }, [entries]);
+
+  const handleDelete = (id: string) => {
+    setEntries((prev) => prev.filter((entry) => entry.id !== id));
+  };
+
   return (
     <ResizableSidebar
       side="right"
-      title="math library"
+      title="Math Library"
       width={width}
       onWidthChange={onWidthChange}
       storageKey="mathLibraryWidth"
     >
-      <h3>Math Library (WIP)</h3>
-      <p>
-        Later, you will be able to drag math back and forth between the math cells and the library.
-        You will be able to make collections of math snippets, so you can re-use common expressions
-        very quickly.
-      </p>
-      <div style={{ height: "1500px" }}>Scroll me to test that scrolling works</div>
+      <div
+        className={styles.libraryDropZone}
+        onDragOver={(e) => {
+          e.preventDefault();
+          setDropTarget({
+            cellId: "library",
+            containerId: "library",
+            index: entries.length, // drop to end
+          });
+        }}
+        onDrop={(e) => {
+          e.preventDefault();
+          if (draggingNode) {
+            onDropNode(draggingNode, {
+              cellId: "library",
+              containerId: "library",
+              index: entries.length,
+            });
+            setDraggingNode(null);
+            setDropTarget(null);
+            return;
+          }
+
+          // Fallback for text/plain or legacy drops (e.g. LaTeX string)
+          try {
+            const latex = e.dataTransfer.getData("text/plain");
+            if (latex) {
+              const node = parseLatex(latex);
+              if (node) {
+                const newEntry = {
+                  id: crypto.randomUUID(),
+                  node,
+                };
+                setEntries((prev) => [...prev, newEntry]);
+              }
+            }
+          } catch (err) {
+            console.warn("Failed to parse fallback LaTeX drop data", err);
+          }
+        }}
+      >
+        {entries.length === 0 && (
+          <p className={styles.empty}>Drag math expressions here!</p>
+        )}
+
+        {entries.map((entry, idx) => (
+          <div
+            key={entry.id}
+            className={styles.libraryEntry}
+            draggable
+            onDragStart={(e) => {
+              const dragData: DropSource = {
+                sourceType: "library",
+                containerId: "library",
+                index: idx,
+                node: entry.node,
+              };
+              setDraggingNode(dragData);
+              e.dataTransfer.effectAllowed = "copyMove";
+            }}
+            onDragEnd={() => {
+              setDraggingNode(null);
+              setDropTarget(null);
+            }}
+          >
+            <MathView node={entry.node} />
+            <button
+              className={styles.deleteButton}
+              onClick={() => handleDelete(entry.id)}
+              title="Delete"
+            >
+              ✕
+            </button>
+          </div>
+        ))}
+      </div>
     </ResizableSidebar>
   );
 };
