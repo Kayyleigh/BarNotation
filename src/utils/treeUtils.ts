@@ -1,11 +1,65 @@
 // utils/treeUtils.ts
 import { type CommandInputNode, type InlineContainerNode, type MathNode, type MultiDigitNode, type RootWrapperNode, type StructureNode, type TextNode } from "../models/types";
+import { directionalChildOrder } from "./navigationUtils";
 
 export type TreePath = {
   parent: MathNode;
   index: number;
   path: MathNode[];
 };
+
+/**
+ * Determines whether the target container is a descendant of the given parent container.
+ * Returns true if they are identical or if the target is a nested child within the parent.
+ */
+export function isDescendantOrSelf(
+  parentContainer: MathNode,
+  targetContainerId: string
+): boolean {
+  if (parentContainer.id === targetContainerId) return true;
+
+  const children = getLogicalChildren(parentContainer);
+  for (const child of children) {
+    if (isDescendantOrSelf(child, targetContainerId)) return true;
+  }
+
+  return false;
+}
+
+export function cloneTreeWithNewIds(node: MathNode): MathNode {
+  const newId = crypto.randomUUID();
+  const clone: any = { ...node, id: newId };
+
+  const childKeys = directionalChildOrder[node.type] || [];
+
+  for (const key of childKeys) {
+    if (node.type === "accented" && key === "accent" && node.accent.type === "custom") {
+      clone.accent = {
+        ...node.accent,
+        content: cloneTreeWithNewIds(node.accent.content),
+      };
+    } else {
+      const child = (node as any)[key];
+      if (child) {
+        clone[key] = cloneTreeWithNewIds(child);
+      }
+    }
+  }
+
+  // Handle child arrays (inline-container, multi-digit, command-input, etc.)
+  if (node.type === "inline-container" || node.type === "multi-digit" || node.type === "command-input") {
+    clone.children = node.children.map(cloneTreeWithNewIds);
+  }
+
+  // Handle matrix and vector
+  if (node.type === "matrix") {
+    clone.rows = node.rows.map((row) => row.map(cloneTreeWithNewIds));
+  } else if (node.type === "vector") {
+    clone.elements = node.elements.map(cloneTreeWithNewIds);
+  }
+
+  return clone as MathNode;
+}
 
 export const findNodeById = (node: MathNode, targetId: string): MathNode | null => {
     if (node.id === targetId) return node;

@@ -35,6 +35,20 @@ export function insertNodeAtIndex(
 
   if (!container || container.type !== "inline-container") return state;
 
+  // Flatten if inserting an inline-container (i.e. insert each child individually)
+  if (newNode.type === "inline-container") {
+    let newState = state;
+    let currentIndex = index;
+
+    for (const child of newNode.children) {
+      newState = insertNodeAtIndex(newState, containerId, currentIndex, child);
+      currentIndex += 1;
+    }
+
+    return newState;
+  }
+
+  // Normal insert
   const newChildren = [...container.children];
   newChildren.splice(index, 0, newNode);
 

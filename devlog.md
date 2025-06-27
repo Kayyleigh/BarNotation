@@ -2687,3 +2687,301 @@ New Files:
 ![alt text](image-42.png)
 
 🔥🔥🔥🔥 HOT^
+
+Time to plan that HUGE update that needs to happen regarding multi-mathcell-state.
+
+Goals:
+- allow dragging between cells to deep-copy
+- allow dragging between a cell and the math library to make entries into math library or deep-copy from library into math cells
+
+Currently, I do this:
+- MathEditor has `const initialState = createEditorState(createRootWrapper());`. This creates a math expression (EditorState has: rootNode, cursor; cursor is current InlineContainerNode and position within it. Nodes can be InlineContainer (i.e. list of other nodes) or specific structure such as fraction or bigOperator).
+- MathEditor is inside MathCell
+- MathEditor uses useEditorHistory hook (has past, present, and future EditorState)
+- MathCells (as many as you want) are loaded inside NotationEditor into a cell list (cells can be other cell types than math too!)
+- NotationEditor is loaded into EditorPane
+- EditorPane is where the cells list is initialised
+- EditorPane and MathLibrary are both loaded into MainLayout
+- MathLibrary is still mostly a placeholder.
+
+Drag state (DragContext):
+draggedNode: MathNode | null — the whole node being dragged (deep clone or original depending on source).
+
+sourceCellId: string | null — which math cell the drag originated from (null if from library).
+
+dropTargetCellId: string | null — target math cell (or library) id for drop.
+
+dropTargetIndex: number | null — position within target cell container to insert node.
+
+dragSourceType: "mathcell" | "library" — so drop handler knows whether to move or deep-copy.
+
+Things that are now broken:
+- History of Math stuff
+- Dragging of Math stuff
+(so like, everything. Surely I made space for an improvement but everything now is just worse-looking than when I had it single-cell defined)
+
+Ctrl+C still works, but not together with the multi-select that I somehow got from today's additions. So either remove multi-select or use it and have it work like I already do with "do action (cut/copy) on the current node (i.e. the one to your left)"
+
+### 26/06/2025
+Goal: fix that mess I made yesterday
+
+```
+- App.tsx wraps MainLayout in DragProvider
+- MainLayout contains:
+  -- MainHeaderBar (settings, user guide, hotkeys modals)
+  -- NotesMenu (WIP; will have list of all notes; notes are meant to support e.g. all lecture notes of an entire university course)
+  -- EditorPane: represents currently opened note. Already holds state regarding cells and math editor states. EditorPane contains the following:
+    --- EditorHeaderBar: add cell, show/hide latex, set zoom level, etc (actions to do stuff to/with current note and/or underlying cell list)
+    --- NotationEditor: Represents content of note, incl cell list (but cell list is passed on from EditorPane so header buttons can add cells too). NotationEditor contains:
+      ---- NoteMetadataSection: similar to latex preamble metadata (note title, author name, date)
+      ---- List of alternating BaseCell and InsertCellButtons (latter appear on hover). BaseCell wraps MathCell or TextCell. 
+        ----- TextCell is simply holding text input
+        ----- MathCell is for mathematical expressions. It wraps around MathEditor:
+          ------ MathEditor handles math of a single cell. Handles keydowns for that cell, and copy-paste logic. Then calls MathRenderer:
+            ------- MathRenderer contains a switch to find the MathNode type so it can recursively render nodes' individual correct type of renderer function. These functions are defined in MathRenderers.tsx, to keep the recursive renderer itself separate in the codebase.
+  -- MathLibrary (WIP; will contain tabs corresponding to predefined and custom-made collections of re-usable math expression to drag into the math cells)
+```
+
+Goals:
+- Dragging a sub-expression within a MathEditor will move the sub-expression
+- Dragging a (sub-)expression from one MathEditor (i.e. math cell) to another will deep-copy the source (sub-)expression into the target location
+- Dragging a (sub-)expression from a MathEditor (i.e. math cell) to the library will deep-copy the source (sub-)expression into a new library (collection) entry
+- Dragging an expression (i.e. entry) from the library to a MathEditor will deep-copy the source entry's underlying expression into the target location in the MathEditor (i.e. in a math cell)
+
+
+| Source               | Target               | Outcome                     |
+| -------------------- | -------------------- | --------------------------- |
+| MathNode in Cell A   | MathNode in Cell A   | Move node within same cell  |
+| MathNode in Cell A   | MathNode in Cell B   | Move node between cells     |
+| MathLibrary item     | MathNode in any Cell | Insert a clone of that node |
+| MathNode in any Cell | MathLibrary          | Create entry (clone node)   |
+
+#### List of tiny things that would be nice to change at some point
+- Rename GroupNode to something like BracketedNode. Reason: GroupNode kinda implies that there are multiple children. That confuses chatGPT so probably also other people and my future self.
+- Move component-specific css into the .module.css way rather than having a mix of that and the css/ folder (at least for the settings modal)
+- Rename "types.ts" to somethign that clarifies that it's math types (used to not be an issue because all was math, now app is big enough for noteTypes to also exist...)
+- make scrollbars dark in dark mode
+
+Bigger things:
+- make the hotkeys bindable by user
+
+
+
+Current filetree
+```
+.
+├── App.tsx                        # div with main component loaded in (for maintainability)
+├── index.css                      # @import "tailwindcss", (hopefully) unused for the remainder
+├── main.tsx                       # Loads App in React.StrictMode
+├── vite-env.d.ts                  # Vite environment type declarations (default)
+│
+├── assets
+│   └── logo.svg                   # svg with the full logo (used in the header bar)
+│
+├── components
+│   ├── cells
+│   │   ├── BaseCell.tsx           # Basic Cell stuff
+│   │   ├── InsertCellButtons.tsx  # Insert Math Cell / Text Cell buttons (re-used a lot)
+│   │   ├── MathCell.tsx           # Cell containing MathEditor
+│   │   └── TextCell.tsx           # Cell containing simple textarea
+│   │
+│   ├── editor
+│   │   ├── Editor.module.css      # Styling for EditorPane and NotationEditor
+│   │   ├── EditorHeaderBar.tsx    # Header bar for EditorPane (add cell, show/hide all latex, zoom control, etc)
+│   │   ├── EditorPane.tsx         # Initializes cells, controls interaction between editor header and NotationEditor
+│   │   ├── NotationEditor.tsx     # Render cell list (of a single Math "Notebook") 
+│   │   ├── NoteMetadataSection.module.css # CSS for note metadata 
+│   │   └── NoteMetadataSection.tsx # Title, Author, Date fields of a note
+│   │
+│   ├── icons
+│   │   └── CollapseIcon.tsx       # Collapse arrow icon (for UI collapsing)
+│   │
+│   ├── layout
+│   │   ├── EditorWorkspace.tsx    # Wraps EditorPane and MathLibrary. This is where gloabl drag lives
+│   │   ├── MainHeaderBar.tsx      # Main header bar (curr outdated; holds logo, settings, cell options)
+│   │   ├── MainLayout.tsx         # Main layout (Header, Note History, Note Editor, Library)
+│   │   ├── ResizableSidebar.module.css  # CSS for resizable sidebar styling
+│   │   └── ResizableSidebar.tsx   # Sidebar that can be resized (e.g. for note history)
+│   │
+│   ├── mathExpression
+│   │   ├── LatexViewer.module.css # Styling for LatexViewer
+│   │   ├── LatexViewer.tsx        # Little box in MathEditor for viewing LaTeX of 1 expression
+│   │   ├── MathEditor.tsx         # Used in MathCell, holds 1 math expression (and a bunch of state)
+│   │   ├── MathRenderer.tsx       # Recursively called to render expression, + wraps in draggable
+│   │   └── MathRenderers.tsx      # Called by MathRenderer, holds renderers for each MathNode type
+│   │
+│   ├── mathLibrary
+│   │   ├── MathLibrary.module.css # Styling for math library pane
+│   │   └── MathLibrary.tsx        # Panel showing predefined or saved expressions
+│   │
+│   ├── modals
+│   │   ├── HotkeyOverlay.tsx      # Overlay of hotkey info
+│   │   └── SettingsModal.tsx      # Overlay of settings (options/preferences, e.g. light vs dark theme)
+│   │
+│   ├── notesMenu
+│   │   └── NotesMenu.tsx          # Menu for switching between notes (or opening new ones)
+│   │
+│   └── tooltips
+│       ├── tooltip.css            # Styling for tooltips
+│       └── Tooltip.tsx            # Tooltip wrapper to show text on hover of other components
+│
+├── hooks
+│   ├── DragContext.ts             # Global Drag stuff (NEW)
+│   ├── useDragContext.tsx         # Global Drag stuff (NEW)
+│   ├── DragProvider.tsx           # Global Drag stuff (NEW)
+│   ├── EditorHistoryContext.tsx   # Global History stuff (NEW)
+│   ├── EditorHistoryProvider.tsx  # Global History stuff (NEW)
+│   ├── useCellDragState.ts        # Hook for dragging cells (for re-ordering in MathNotationTool)
+│   ├── useDragState.ts            # Hook for dragging MathNodes within the MathEditors (OUTDATED)
+│   ├── useEditorHistory.ts        # Hook for history of single MathEditor (OUTDATED)
+│   ├── useHoverState.ts           # Hook for hover of MathNode in a MathEditor
+│   └── useZoom.ts                 # Hook for zooming of MathEditor (may move higher later)
+│
+├── logic
+│   ├── cursor.ts                  # CursorPosition (in MathEditor): curr InlineContainer + idx within 
+│   ├── deletion.ts                # Backspace handler (in MathEditor)
+│   ├── editor-state.ts            # EditorState: rootNode and CursorPosition (in MathEditor)
+│   ├── handle-keydown.ts          # Keydown handler for MathEditor
+│   ├── global-history.ts          # states: Record<string, EditorState>; order: string[]; // the order of cell IDs
+│   ├── history.ts                 # HistoryState (same format as EditorState) used in history hook (OUTDATED)
+│   ├── insertion.ts               # Handle character insertion into MathEditor
+│   ├── navigation.ts              # Handle arrow navigation in MathEditor
+│   ├── node-manipulation.ts       # Node insertion/deletion, at cursor or by index/id, in MathEditor
+│   └── transformations.ts         # Transform nodes, e.g. into numerator of new FractionNode
+│
+├── models
+│   ├── mathNodeParser.ts          # (Will rename) parse LaTeX, to obtain MathNode
+│   ├── nodeFactories.ts           # Factories for all Math Node types
+│   ├── nodeToLatex.ts             # input MathNode, output LaTeX string
+│   ├── noteTypes.ts               # define CellData, NoteMetadata, and Note (CellData[], NoteMetadata, and an ID) 
+│   ├── specialSequences.ts        # mappings from escape sequences to `() => StructureNode` 
+│   ├── transformations.ts         # more "boilerplate" transforms (might remove, similar to factories)
+│   └── types.ts                   # MathNode = .. | InlineContainer | StructureNode (fraction, bigOp, group, ...)
+│
+├── styles
+│   ├── accents.css                # ::before and ::after for rendering accented math nodes 
+│   ├── cells.css                  # Styling for MathCell, TextCell, cell list itself, and insert zones
+│   ├── hotkeyOverlay.css          # Styling for HotkeyOverlay (also used by SettingsModal)
+│   ├── latexOutputColoring.css    # Styling for LaTeX viewer's text coloring
+│   ├── math-node.css              # Styling for math node types and MathEditor
+│   ├── math.css                   # Outdated styling (I think)
+│   ├── settings.css               # Styling for toggles in settings 
+│   ├── styles.css                 # Styling for header bar, settings overlay, LatexViewer, and .app-container 
+│   └── themes.css                 # :root, .dark theme, and predefined DOM stuff (h1, html, body, label)
+│
+└── utils
+    ├── accentUtils.ts             # Define NodeDecoration names and map to LaTeX, track required LaTeX packages
+    ├── bracketUtils.ts            # Define BracketStyle and its opening/closing characters
+    ├── mathHoverUtils.ts          # handleMouseEnter and handleMouseLeave for Math nodes
+    ├── navigationUtils.ts         # Define directional order of children, flatten CursorPosition
+    ├── subsupUtils.ts             # Define "CornerPosition" type, only used once in transformations.ts
+    ├── textContainerUtils.ts      # (Unused) possibly to split MultiDigit mathnode into multiple (not yet implemented)
+    └── treeUtils.ts               # Find nodes, update tree, get logical children of nodes, etc.
+```
+
+Very fast summary of the day:
+![alt text](image-43.png)
+🔥 WORKING DRAG WITHIN AND BETWEEN CELLS!!
+🆗 Broke and then Fixed click-based cursor control  
+⚠️ Broken hover highlighting
+⚠️ Some rendering broken as well (but old ones are still there, commented out, for recovering parts later)
+
+Should move hoveredId stuff to MathRenderer wrapper since it's not node-specific?
+
+Fixed hover highlighting!!!!!!!!!!!!!! Next step is to maybe highlight IC as red
+Ensure that dragging IC will flatten the copy
+Also there are many bugs in the dropping cuz many "unhandled cases"
+
+Also next step: LIBRARY!!!!!! Quick idea: must make colored borders corresp to diff node types since it will be hard to display full expressions in tiled view w/o truncation. Maybe should also allow switching betw tiled and list view. But imo tiled view is better for not feeling like you lose track of wtf the collection is, unless there is search logic (which could be cool to add anyway, but is bad for the purpose of the app, since the whole point is extremely quick usage)  
+
+- fix the subsup (WTF happened to that omg)
+
+end of day 03:43
+
+PS I think I broke the menu's drag sizing
+
+### 27/06/2025
+
+🧠 Project Overview: Math/Notation Editor App
+We are building a React-based mathematical notation editor that lets users create and organize math and text cells interactively. The editor includes features like drag-and-drop cell reordering, zoom controls, LaTeX output toggling, metadata editing, and undo/redo state history management. The goal of the app is to enable real-time math notations during fast-paced lectures for actuarial sciences students with chronic hand pain.
+
+🧱 Key Architectural Concepts
+1. Cell Types
+TextCell: Plain text editing.
+
+MathCell: Math expression editing via a structured EditorState and MathNode tree.
+
+Cells are stored in a list (cells: CellData[]) and are draggable and reorderable.
+
+2. State Management
+Uses a custom EditorHistoryProvider context (useEditorHistory) to track:
+
+past, present, and future states.
+
+Each present state holds:
+
+states: a record of editor states per math cell.
+
+order: current order of cell IDs.
+
+Actions like adding, deleting, or reordering cells update this history.
+
+3. Zoom + LaTeX View
+defaultZoom applies across all math cells.
+
+resetZoomSignal forces re-render on zoom reset.
+
+showLatexMap tracks which math cells have LaTeX output toggled on/off.
+
+4. Metadata
+Each note has editable metadata (e.g. title, author).
+
+Initial author is read from localStorage.
+
+🧪 Features Implemented / Challenges Resolved
+✅ Implemented
+Dynamic add/delete of text or math cells with history tracking.
+
+Drag-and-drop reordering of cells with correct index resolution.
+
+Zoom control across math cells using a shared signal.
+
+Per-cell LaTeX output toggling with persistent state map.
+
+Full metadata section with editable title/author.
+
+History-based undo logic (undo(history)), including:
+
+Logging of human-readable past state info (Undoing to state with N cells: [ids]).
+
+⚠️ Issues Resolved
+🔁 Improper state updates during render:
+
+You encountered the error:
+"Cannot update a component (EditorHistoryProvider) while rendering a different component (EditorPane)"
+
+Cause: Calling updateState() inside setCells() (a render path) in EditorPane.
+
+Fix: Rewrote addCell() logic to extract state update logic outside of setCells() to avoid cascading state updates during render.
+
+🧩 Missing prop (updateOrder):
+
+NotationEditor was using updateOrder, but EditorPane wasn't passing it as a prop.
+
+Fix: Passed updateOrder={updateOrder} explicitly in EditorPane.
+
+🔧 Next Steps / To-Dos
+✅ Improve undo/redo debugging visibility (done).
+
+🛠️ Consider adding redo support (you already have future in HistoryState).
+
+🧪 Write tests for undo, addCell, and drag-drop ordering behavior.
+
+🔄 Save/load notes from persistent storage (database or localStorage).
+
+💾 Optional: persist cells, editorStates, and metadata to backend or local file.
+
+🧹 Debounce or throttle heavy updates (e.g., editorState serialization).
+
+👓 Improve UI polish: animations, insert cell transitions, drag handles.
+

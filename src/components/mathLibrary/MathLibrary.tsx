@@ -1,9 +1,26 @@
 import React from "react";
 import ResizableSidebar from "../layout/ResizableSidebar";
+import type { MathNode } from "../../models/types";
+
+// The type definition of a drop event -- //TODO define these elsewhere (used in here and in workspace/)
+type DropSource = {
+  sourceType: "cell" | "library";
+  cellId?: string;
+  containerId: string;
+  index: number;
+  node: MathNode;
+};
+
+type DropTarget = {
+  cellId: string;
+  containerId: string;
+  index: number;
+};
 
 interface MathLibraryProps {
   width: number;
   onWidthChange: (width: number) => void;
+  onDropNode: (from: DropSource, to: DropTarget) => void;
 }
 
 const MathLibrary: React.FC<MathLibraryProps> = ({ width, onWidthChange }) => {

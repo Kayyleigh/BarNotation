@@ -8,15 +8,19 @@ const SettingsModal: React.FC<{
   toggleDarkMode: () => void;
   showColorInPreview: boolean;
   toggleShowColorInPreview: () => void;
+  authorName: string;
+  setAuthorName: (name: string) => void;
 }> = ({
   onClose,
   isDarkMode,
   toggleDarkMode,
   showColorInPreview,
   toggleShowColorInPreview,
+  authorName,
+  setAuthorName,
 }) => {
   const contentRef = useRef<HTMLDivElement>(null);
-  const [authorName, setAuthorName] = React.useState(() => localStorage.getItem("defaultAuthor") || "");
+  // const [authorName, setAuthorName] = React.useState(() => localStorage.getItem("defaultAuthor") || "");
 
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
