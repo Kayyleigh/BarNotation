@@ -317,7 +317,15 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({ noteId, rightWidth, s
         if (isDescendantOrSelf(from.node, to.containerId)) return;
         const node = cloneTreeWithNewIds(from.node);
         let updated = deleteNodeById(destState, from.node.id);
-        updated = insertNodeAtIndex(updated, to.containerId, to.index, node);
+
+        //index + 1 if to the left within same container(?), else index 
+        if (from.containerId === to.containerId && to.index < from.index) {
+          updated = insertNodeAtIndex(updated, to.containerId, to.index + 1, node);
+        } 
+        else {
+          updated = insertNodeAtIndex(updated, to.containerId, to.index, node);
+
+        }
         updatedEditorStates[to.cellId] = updated;
       }
 
@@ -330,7 +338,7 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({ noteId, rightWidth, s
 
       else if (from.sourceType === "library") {
         const cloned = cloneTreeWithNewIds(from.node);
-        const updated = insertNodeAtIndex(destState, to.containerId, to.index, cloned);
+        const updated = insertNodeAtIndex(destState, to.containerId, to.index + 1, cloned);
         updatedEditorStates[to.cellId] = updated;
       }
 

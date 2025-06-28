@@ -6,6 +6,8 @@
 
 :root {
 
+    --empty-math-inline-container-width: 0.3em;
+
     /* Logo colors */
     --logo-color-1: #4ec9b0;
     --logo-color-1-dark: #3a9583;

@@ -19,6 +19,29 @@
     padding: 0.1em 0.15em;
     position: relative;
   }
+
+  .math-node-wrapper {
+    /* line-height: var(--math-line-height); */
+    display: inline-block;
+    min-width: var(--empty-math-inline-container-width);
+    min-height: 1em;
+    vertical-align: middle;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .start-interaction-point {
+    display: inline-block;
+    width: var(--empty-math-inline-container-width);
+    height: 1em;
+    cursor: text;
+  }
+  .math-node-wrapper:empty.hovered::before {
+    content: "•";
+    width: var(--empty-math-inline-container-width);
+    display: inline-block;
+    color: #87878733;
+  }
   
   .type-command-input .math-node,
   .type-multi-digit .math-node {
@@ -27,6 +50,11 @@
 
   .root-wrapper {
     display: inline-flex;
+  }
+
+  .type-root-wrapper {
+    cursor: text;
+    padding: 0;
   }
 
   .bracket-node {
@@ -98,12 +126,13 @@
   
   .type-inline-container {
     display: inline-flex;
-    min-width: 0.5em;
+    min-width: var(--empty-math-inline-container-width);;
     min-height: 1em;
     justify-content: flex-end;
     flex-wrap: nowrap;
     align-items: center;
-    padding: 0.1em 0em 0.1em 0.1em;
+    /* padding: 0.1em 0em 0.1em 0.1em; */
+    padding: 0;
   }
 
   .type-multi-digit {
@@ -325,11 +354,10 @@
     50% { opacity: 0; }
   }
   
-  .drop-target-cursor {
+  /* .drop-target-cursor {
     display: inline-block;
     width: 3px;
     height: 1em;
-    /* vertical-align: baseline;  */
     background-image: repeating-linear-gradient(
       to bottom,
       var(--math-drop-cursor-color),
@@ -337,7 +365,25 @@
       transparent 3px,
       transparent 6px
     );
-    background-color: transparent; /* fall back */
+    background-color: transparent;
+  } */
+
+  .draggable-node-wrapper {
+    position: relative;
+  }
+
+  .drop-target-cursor {
+    position: absolute; 
+    width: 3px;
+    height: 1em;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      var(--math-drop-cursor-color),
+      var(--math-drop-cursor-color) 3px,
+      transparent 3px,
+      transparent 6px
+    );
+    background-color: transparent;
   }
 
   .type-nth-root {

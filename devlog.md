@@ -2991,3 +2991,45 @@ cursor control by mouse is not the same as by arrows. Not too critical atm but d
 ![alt text](image-44.png)
 
 WORKING MATH LIBRARY
+library entry creation is not part of history state
+
+![alt text](image-45.png)
+
+Current issues:
+- angl (and probably others) are not rendered
+- containers are dropped in reverse order
+- drop cursor vs drop location is one index off
+- curr not allowign index 0 drop on non-same-cell inserts
+- children of non-containers not clickable (must wrap clickable around all MathRenderer instance?)
+
+Things that should be implemented afterwards:
+- custom collections
+- predefined collections
+- search bar for within a collection (perhaps that will search on corresponding latex strings?)
+- on drag into wherever else, make it paste latex (so user can use the library even on Overleaf!!)
+- Maybe even enable pasting INTO the library with latex? TODO look into if I need to detect latex or if I already assume latex, or if better to just have special input field option somehwere
+- On hover (or (double) click?!) of node, allow deletion (so no many backspace for big node del)
+- Maybe cool: when shift+arrow, do "breadth-first" (first-layer-only) multi-select and give options for "group", bulk delete, and maybe more stuff if I think of more useful things to do to groups  
+
+Welcome to BarNotation, the mathematical note-taking app that truly raises the bar! Here's how it works: your notebook is a list of cells. Currently, the existing cell types are "Math" and "Text". This one is "Text". The "Math" ones have a tree structure inside consisting of so-called "math nodes", of which different sub-types exist for different unique visual structures in mathematics. Just typing leads to the basic math-text type, but different actions (currently: hotkeys and special "command sequences") transform your node into more complex types such as fractions, actuarial symbols, or big operators. 
+
+The app also supports drag-and-drop within a math cell to move nodes around, as well as from one math cell to another to copy a node. And to top it all off, you can also drag math nodes to the "Library", the panel to the right of this one, to create your collection of commonly-used snippets. These can be dragged back into math cells whenever, and are saved across the whole app rather than just this notebook! 
+
+And there is more! If you want to re-order your lecture notebook cells, just drag the space to the left of a cell to insert it elsewhere. You can also get LaTeX translations of math nodes by clicking "show latex" options, and even by Ctrl+C within a math cell to copy the LaTeX string of the node to the left of your cursor!
+
+Future improvements: custom collections (tabs within the library); predefined collections to get you started; LaTeX export option for full notebook; custom hotkey binding; (sub(sub))section text cell types (to turn notebook from flat list into tree, how you would make it in a LaTeX editor); and many more tiny fixes and improvements! Of course I will also implement the actual saving and retrieving of notebooks, and would like to add search bars in all kinds of places.
+
+Some other small design choices I made for this app, which may be less important for a basic user to explicitly know about:
+- Easy zooming per math cell since some expressions can get huge and others tiny within the same lecture notes. zooming in and out should (in my opinion) thus be flexible and local, so you can reach deeply nested math AND zoom way out to see the full expression whenever you want, without needlessly messing up the rest of your notebook.
+
+### 28/06/2025
+
+Fixing Current Issues:
+✅  angl (and probably others) are now rendered again (I just returned the old way of rendering accented nodes in MathRenderers.tsx)
+✅ RootWrapperNode is not draggable nor hoverable (by conditioning in MathRenderer, and removing the "hovered" class from its renderer in MathRenderers)
+- containers are dropped in reverse order (sometimes??!)
+- drop cursor vs drop location is one index off
+- curr not allowign index 0 drop on non-same-cell inserts
+- Dropping carelessly into a cell does not drop anything (into curr pos or final pos)
+- children of non-containers not clickable (must wrap clickable around all MathRenderer instance?)
+- empty inlinecontainers in library are hard to understand, and should instead be filled in with placeholder squares ⬚

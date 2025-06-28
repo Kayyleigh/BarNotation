@@ -100,6 +100,7 @@ export function useDragState(
   
     newState = insertNodeAtIndex(newState, container.id, dropTargetIndex, draggedNode);
     updateEditorState(newState);
+    
     clearDrag();
   }
   

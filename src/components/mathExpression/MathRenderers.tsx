@@ -553,504 +553,6 @@
 // );
 
 
-
-
-
-// import React from "react";
-// import clsx from "clsx";
-// import type {
-//   TextNode,
-//   InlineContainerNode,
-//   GroupNode,
-//   FractionNode,
-//   ChildedNode,
-//   AccentedNode,
-//   StyledNode,
-//   TextStyle,
-//   MultiDigitNode,
-//   CommandInputNode,
-//   BigOperatorNode,
-//   RootWrapperNode,
-//   NthRootNode,
-//   MathNode,
-// } from "../../models/types";
-// import { MathRenderer, type BaseRenderProps, type MathRendererProps } from "./MathRenderer";
-// import { isOpeningBracket, isClosingBracket, getCloseSymbol, getOpenSymbol } from "../../utils/bracketUtils";
-
-// // baseProps only has inheritedStyle here
-// type BaseProps = {
-//   inheritedStyle: TextStyle;
-// };
-
-// // Helper to get CSS classes for font styles
-// function getStyleClass(style: TextStyle) {
-//   return clsx({
-//     "math-style-normal": style.fontStyling?.fontStyle === "normal",
-//     "math-style-upright": style.fontStyling?.fontStyle === "upright",
-//     "math-style-command": style.fontStyling?.fontStyle === "command",
-//     "math-style-bold": style.fontStyling?.fontStyle === "bold",
-//     "math-style-calligraphic": style.fontStyling?.fontStyle === "calligraphic",
-//     "math-style-blackboard": style.fontStyling?.fontStyle === "blackboard",
-//   });
-// }
-
-// function getInlineStyle(style: TextStyle): React.CSSProperties {
-//   return {
-//     color: style.color,
-//     fontSize: style.fontSize ? `${style.fontSize}px` : undefined,
-//   };
-// }
-
-// // function renderContainerChildren(
-// //   children: MathNode[],
-// //   containerId: string,
-// //   props: BaseProps & MathRendererProps,
-// //   inheritedStyle?: TextStyle
-// // ): React.ReactNode {
-// //   // const { isActive, cursor, dropTargetCursor, hoveredId, 
-// //   //   onCursorChange, onRootChange, onHoverChange, 
-// //   //   //onClearDrag, onHandleDrop, onStartDrag, onUpdateDropTarget, 
-// //   //   ancestorIds } = props;
-// //   const isCursorInThisContainer = cursor.containerId === containerId;
-// //   //const inDragState = dropTargetCursor.containerId !== null && dropTargetCursor.index !== null;
-// //   const inDragState = false
-// //   const newAncestorIds = [containerId, ...(ancestorIds ?? [])];
-
-// //   return (
-// //     <>
-// //       {children.map((child, i) => {
-// //         const elements: React.ReactNode[] = [];
-
-// //         for (let i = 0; i <= children.length; i++) {
-// //           if (isActive && !inDragState && isCursorInThisContainer && cursor.index === i) {
-// //             elements.push(<span key={`cursor-${i}`} className="cursor" />);
-// //           }
-        
-// //           if (i < children.length) {
-// //             const child = children[i];
-// //             elements.push(
-// //               <span
-// //                 key={`clickable-${i}`}
-// //                 onClick={(e) => {
-// //                   e.stopPropagation();
-// //                   onCursorChange({ containerId, index: i + 1 });
-// //                 }}
-// //               >
-// //                 <MathRenderer
-// //                   {...props}
-// //                   node={child}
-// //                   index={i + 1}
-// //                   containerId={containerId}
-// //                   inheritedStyle={inheritedStyle}
-// //                 />
-// //               </span>
-// //             );
-// //           }
-// //         }
-// //         return <>{elements}</>;
-// //       })}
-// //       {isActive && !inDragState && isCursorInThisContainer && cursor.index === children.length && (
-// //         <span className="cursor" />
-// //       )}
-// //     </>
-// //   );
-// // }
-
-// // --- Renderers ---
-
-// // 1. Text Node
-// export function renderTextNode(
-//   node: TextNode,
-//   baseProps: BaseRenderProps
-// ): React.ReactNode {
-//   const styleClass = getStyleClass(baseProps.inheritedStyle);
-//   return (
-//     <span
-//       data-nodeid={node.id}
-//       className={clsx("math-node", "type-text", styleClass, {
-//         "bracket-node": isOpeningBracket(node.content) || isClosingBracket(node.content),
-//       })}
-//       style={getInlineStyle(baseProps.inheritedStyle)}
-//     >
-//       {node.content}
-//     </span>
-//   );
-// }
-
-// // 2. Multi Digit Node (renders as sequence of digits)
-// export function renderMultiDigitNode(
-//   node: MultiDigitNode,
-//   baseProps: BaseRenderProps & MathRendererProps
-// ): React.ReactNode {
-//   const styleClass = getStyleClass(baseProps.inheritedStyle);
-//   return (
-//     <span
-//       data-nodeid={node.id}
-//       className={clsx("math-node", "type-multidigit", styleClass, { hovered: getIsHovered(node, baseProps.hoveredId) })}
-//       style={getInlineStyle(baseProps.inheritedStyle)}
-//     >
-//       {/* {node.digits} */}
-//       {/* {renderContainerChildren(node.children, node.id, props, props.inheritedStyle)} */}
-//       {node.children.map((child, i) => (
-//         <MathRenderer
-//           key={child.id}
-//           node={child}
-//           cellId={baseProps.cellId}
-//           containerId={node.id}
-//           index={i}
-//           inheritedStyle={baseProps.inheritedStyle}
-//           onDropNode={baseProps.onDropNode}
-//         />
-//       ))}
-//     </span>
-//   );
-// }
-
-// // 3. Command Input Node
-// export function renderCommandInputNode(
-//   node: CommandInputNode,
-//   baseProps: BaseRenderProps & MathRendererProps
-// ): React.ReactNode {
-//   const styleClass = getStyleClass(baseProps.inheritedStyle);
-//   return (
-//     <span
-//       data-nodeid={node.id}
-//       className={clsx("math-node", "type-command-input", styleClass, { hovered: getIsHovered(node, baseProps.hoveredId) })}
-//       style={getInlineStyle(baseProps.inheritedStyle)}
-//     >
-//       {/* {node.command} */}
-//       {/* {renderContainerChildren(node.children, node.id, props, props.inheritedStyle)} */}
-//       {node.children.map((child, i) => (
-//         <MathRenderer
-//           key={child.id}
-//           node={child}
-//           cellId={baseProps.cellId}
-//           containerId={node.id}
-//           index={i}
-//           inheritedStyle={baseProps.inheritedStyle}
-//           onDropNode={baseProps.onDropNode}
-//         />
-//       ))}
-//     </span>
-//   );
-// }
-
-// // 4. Inline Container Node (has children)
-// export function renderInlineContainerNode(
-//   node: InlineContainerNode,
-//   baseProps: BaseRenderProps & MathRendererProps
-// ): React.ReactNode {
-//   const styleClass = getStyleClass(baseProps.inheritedStyle);
-//   return (
-//     <span
-//       data-nodeid={node.id}
-//       className={clsx("math-node", "type-inline-container", styleClass, { hovered: getIsHovered(node, baseProps.hoveredId) })}
-//       style={getInlineStyle(baseProps.inheritedStyle)}
-//     >
-//       {node.children.map((child, i) => (
-//         <MathRenderer
-//           key={child.id}
-//           node={child}
-//           cellId={baseProps.cellId}
-//           containerId={node.id}
-//           index={i}
-//           inheritedStyle={baseProps.inheritedStyle}
-//           onDropNode={baseProps.onDropNode}
-//         />
-//       ))}
-//     </span>
-//   );
-// }
-
-// // 5. Group Node (has children)
-// export function renderGroupNode(
-//   node: GroupNode,
-//   baseProps: BaseRenderProps & MathRendererProps
-// ): React.ReactNode {
-//   const styleClass = getStyleClass(baseProps.inheritedStyle);
-//   return (
-//     <span
-//       data-nodeid={node.id}
-//       className={clsx("math-node", "type-group", styleClass, { hovered: getIsHovered(node, baseProps.hoveredId) })}
-//       style={getInlineStyle(baseProps.inheritedStyle)}
-//     >
-//       <span className="bracket bracket-open">{getOpenSymbol(node.bracketStyle)}</span>
-//       <span
-//         className="group-contents"
-//         // onClick={(e) => {
-//         //   e.stopPropagation();
-//         //   if (node.child.children.length === 0) {
-//         //     props.onCursorChange({ containerId: node.child.id, index: 0 });
-//         //   }
-//         // }}
-//       >
-//         <MathRenderer
-//           node={node.child}
-//           cellId={baseProps.cellId}
-//           containerId={node.id}
-//           index={0}
-//           inheritedStyle={baseProps.inheritedStyle}
-//           onDropNode={baseProps.onDropNode}
-
-//           // {...props} 
-//           // ancestorIds={[node.id, ...(props.ancestorIds ?? [])]} 
-//         />
-//       </span>
-//       <span className="bracket bracket-close">{getCloseSymbol(node.bracketStyle)}</span>
-//     </span>
-//   );
-// }
-
-// // 6. Fraction Node (has numerator and denominator)
-// export function renderFractionNode(
-//   node: FractionNode,
-//   baseProps: BaseRenderProps & MathRendererProps
-// ): React.ReactNode {
-//   const styleClass = getStyleClass(baseProps.inheritedStyle);
-//   return (
-//     <span
-//       data-nodeid={node.id}
-//       className={clsx("math-node", "type-fraction", styleClass, { hovered: getIsHovered(node, baseProps.hoveredId) })}
-//       style={getInlineStyle(baseProps.inheritedStyle)}
-//     >
-//       <span className="numerator">
-//         <MathRenderer
-//           node={node.numerator}
-//           cellId={baseProps.cellId}
-//           containerId={node.id}
-//           index={0}
-//           inheritedStyle={baseProps.inheritedStyle}
-//           onDropNode={baseProps.onDropNode}
-//         />
-//       </span>
-//       <div className="line"></div>
-//       <span className="denominator">
-//         <MathRenderer
-//           node={node.denominator}
-//           cellId={baseProps.cellId}
-//           containerId={node.id}
-//           index={1}
-//           inheritedStyle={baseProps.inheritedStyle}
-//           onDropNode={baseProps.onDropNode}
-//         />
-//       </span>
-//     </span>
-//   );
-// }
-
-// // 7. Nth Root Node (has root and radicand)
-// export function renderNthRootNode(
-//   node: NthRootNode,
-//   baseProps: BaseRenderProps & MathRendererProps
-// ): React.ReactNode {
-//   const styleClass = getStyleClass(baseProps.inheritedStyle);
-//   return (
-//     <span
-//       data-nodeid={node.id}
-//       className={clsx("math-node", "type-nth-root", styleClass, { hovered: getIsHovered(node, baseProps.hoveredId) })}
-//       style={getInlineStyle(baseProps.inheritedStyle)}
-//     >
-//       <span className="nth-root-wrapper">
-
-//         <span className="nth-index">
-//           <MathRenderer
-//             node={node.index}
-//             cellId={baseProps.cellId}
-//             containerId={node.id}
-//             index={0}
-//             inheritedStyle={baseProps.inheritedStyle}
-//             onDropNode={baseProps.onDropNode}
-//           />
-//         </span>
-//         <span className="radical-symbol"></span>
-//         <span className="radicand">
-//           <MathRenderer
-//             node={node.base}
-//             cellId={baseProps.cellId}
-//             containerId={node.id}
-//             index={1}
-//             inheritedStyle={baseProps.inheritedStyle}
-//             onDropNode={baseProps.onDropNode}
-//           />
-//         </span>
-//       </span>
-//     </span>
-//   );
-// }
-
-// // 8. Big Operator Node (has children)
-// export function renderBigOperatorNode(
-//   node: BigOperatorNode,
-//   baseProps: BaseRenderProps & MathRendererProps
-// ): React.ReactNode {
-//   const styleClass = getStyleClass(baseProps.inheritedStyle);
-//   return (
-//     <span
-//       data-nodeid={node.id}
-//       className={clsx("math-node", "type-big-operator", styleClass, { hovered: getIsHovered(node, baseProps.hoveredId) })}
-//       style={getInlineStyle(baseProps.inheritedStyle)}
-//     >
-//       <div className="big-operator-wrapper">
-//         <div className="big-operator-upper">
-//           <MathRenderer
-//             node={node.upper}
-//             cellId={baseProps.cellId}
-//             containerId={node.id}
-//             index={0}
-//             inheritedStyle={baseProps.inheritedStyle}
-//             onDropNode={baseProps.onDropNode}
-//           />
-//         </div>
-//         <div className="big-operator-symbol">{node.operator}</div>
-//         <div className="big-operator-lower">
-//           <MathRenderer
-//             node={node.lower}
-//             cellId={baseProps.cellId}
-//             containerId={node.id}
-//             index={1}
-//             inheritedStyle={baseProps.inheritedStyle}
-//             onDropNode={baseProps.onDropNode}
-//           />
-//         </div>
-//       </div>
-//     </span>
-//   );
-// }
-
-// // 9. Childed Node (has child)
-// export function renderChildedNode(
-//   node: ChildedNode,
-//   baseProps: BaseRenderProps & MathRendererProps
-// ): React.ReactNode {
-//   const styleClass = getStyleClass(baseProps.inheritedStyle);
-//   return (
-//     <span
-//       data-nodeid={node.id}
-//       className={clsx("math-node", "type-childed", styleClass, { hovered: getIsHovered(node, baseProps.hoveredId) })}
-//       style={getInlineStyle(baseProps.inheritedStyle)}
-//     >
-//       <MathRenderer
-//         node={node.supLeft}
-//         cellId={baseProps.cellId}
-//         containerId={node.id}
-//         index={0}
-//         inheritedStyle={baseProps.inheritedStyle}
-//         onDropNode={baseProps.onDropNode}
-//       />
-//       <MathRenderer
-//         node={node.subLeft}
-//         cellId={baseProps.cellId}
-//         containerId={node.id}
-//         index={0}
-//         inheritedStyle={baseProps.inheritedStyle}
-//         onDropNode={baseProps.onDropNode}
-//       />
-//       <MathRenderer
-//         node={node.base}
-//         cellId={baseProps.cellId}
-//         containerId={node.id}
-//         index={0}
-//         inheritedStyle={baseProps.inheritedStyle}
-//         onDropNode={baseProps.onDropNode}
-//       />
-//       <MathRenderer
-//         node={node.subRight}
-//         cellId={baseProps.cellId}
-//         containerId={node.id}
-//         index={0}
-//         inheritedStyle={baseProps.inheritedStyle}
-//         onDropNode={baseProps.onDropNode}
-//       />
-//       <MathRenderer
-//         node={node.supRight}
-//         cellId={baseProps.cellId}
-//         containerId={node.id}
-//         index={0}
-//         inheritedStyle={baseProps.inheritedStyle}
-//         onDropNode={baseProps.onDropNode}
-//       />
-//     </span>
-//   );
-// }
-
-// // 10. Accented Node (has base)
-// export function renderAccentedNode(
-//   node: AccentedNode,
-//   baseProps: BaseRenderProps & MathRendererProps
-// ): React.ReactNode {
-//   const styleClass = getStyleClass(baseProps.inheritedStyle);
-//   return (
-//     <span
-//       data-nodeid={node.id}
-//       className={clsx("math-node", "type-accented", styleClass, { hovered: getIsHovered(node, baseProps.hoveredId) })}
-//       style={getInlineStyle(baseProps.inheritedStyle)}
-//     >
-//       <MathRenderer
-//         node={node.base}
-//         cellId={baseProps.cellId}
-//         containerId={node.id}
-//         index={0}
-//         inheritedStyle={baseProps.inheritedStyle}
-//         onDropNode={baseProps.onDropNode}
-//       />
-//       <span className={`accent ${node.accent}`} />
-//     </span>
-//   );
-// }
-
-// // 11. Styled Node (has child)
-// export function renderStyledNode(
-//   node: StyledNode,
-//   baseProps: BaseRenderProps & MathRendererProps
-// ): React.ReactNode {
-//   // Combine inherited styles carefully (you may want to customize merging logic)
-//   const combinedStyle: TextStyle = {
-//     ...baseProps.inheritedStyle,
-//     ...node.style,
-//   };
-//   const styleClass = getStyleClass(combinedStyle);
-//   return (
-//     <span
-//       data-nodeid={node.id}
-//       className={clsx("math-node", "type-styled", styleClass, { hovered: getIsHovered(node, baseProps.hoveredId) })}
-//       style={getInlineStyle(combinedStyle)}
-//     >
-//       <MathRenderer
-//         node={node.child}
-//         cellId={baseProps.cellId}
-//         containerId={node.id}
-//         index={0}
-//         inheritedStyle={combinedStyle}
-//         onDropNode={baseProps.onDropNode}
-//       />
-//     </span>
-//   );
-// }
-
-// // 12. Root Wrapper Node (has child)
-// export function renderRootWrapperNode(
-//   node: RootWrapperNode,
-//   baseProps: BaseRenderProps & MathRendererProps
-// ): React.ReactNode {
-//   const styleClass = getStyleClass(baseProps.inheritedStyle);
-//   return (
-//     <span
-//       data-nodeid={node.id}
-//       className={clsx("math-node", "type-root-wrapper", styleClass, { hovered: getIsHovered(node, baseProps.hoveredId) })}
-//       style={getInlineStyle(baseProps.inheritedStyle)}
-//     >
-//       <MathRenderer
-//         node={node.child}
-//         cellId={baseProps.cellId}
-//         containerId={node.id}
-//         index={0}
-//         inheritedStyle={baseProps.inheritedStyle}
-//         onDropNode={baseProps.onDropNode}
-//       />
-//     </span>
-//   );
-// }
-
 import React from "react";
 import clsx from "clsx";
 import type {
@@ -1069,9 +571,12 @@ import type {
   MathNode,
   TextStyle,
 } from "../../models/types";
+import '../../styles/math-node.css';
+import '../../styles/accents.css';
 import { MathRenderer, type BaseRenderProps, type MathRendererProps } from "./MathRenderer";
 import { getCloseSymbol, getOpenSymbol, isClosingBracket, isOpeningBracket } from "../../utils/bracketUtils";
 import { getIsHovered, handleMouseEnter, handleMouseLeave } from "../../utils/mathHoverUtils";
+import { DummyStartNodeRenderer } from "./DummyStartNodeRenderer";
 
 // Helper to get CSS classes for font styles
 function getStyleClass(style: TextStyle) {
@@ -1092,67 +597,6 @@ function getInlineStyle(style: TextStyle): React.CSSProperties {
   };
 }
 
-// export function renderContainerChildren(
-//   children: MathNode[],
-//   baseProps: BaseRenderProps
-// ): React.ReactNode[] {
-//   const {
-//     cursor,
-//     containerId,
-//     hoveredId,
-//     onCursorChange,
-//     onHoverChange,
-//     inheritedStyle,
-//     cellId,
-//     isActive,
-//     onDropNode,
-//   } = baseProps;
-
-//   const nodes: React.ReactNode[] = [];
-
-//   for (let i = 0; i <= children.length; i++) {
-//     // Render cursor before each node
-//     if (isActive && cursor.containerId === containerId && cursor.index === i) {
-//       nodes.push(
-//         <span key={`cursor-${i}`} className="cursor" />
-//       );
-//     }
-
-//     if (i < children.length) {
-//       const child = children[i];
-
-//       // Wrap the MathRenderer with a clickable span
-//       nodes.push(
-//         <span
-//           key={`clickable-${i}`}
-//           onClick={(e) => {
-//             e.stopPropagation();
-//             if (containerId != null && i + 1) {
-//               onCursorChange({ containerId, index: i + 1});
-//             }
-//           }}
-//         >
-//           <MathRenderer
-//             key={child.id}
-//             node={child}
-//             cellId={cellId}
-//             isActive={isActive}
-//             containerId={containerId}
-//             index={i}
-//             inheritedStyle={inheritedStyle}
-//             cursor={cursor}
-//             hoveredId={hoveredId}
-//             onCursorChange={onCursorChange}
-//             onHoverChange={onHoverChange}
-//             onDropNode={onDropNode}
-//           />
-//         </span>
-//       );
-//     }
-//   }
-
-//   return nodes;
-// }
 export function renderContainerChildren(
   children: MathNode[],
   baseProps: BaseRenderProps
@@ -1172,7 +616,43 @@ export function renderContainerChildren(
 
   const nodes: React.ReactNode[] = [];
 
+  // nodes.push(
+  //   <div
+  //     key={`clickable-start`}
+  //     onClick={(e) => {
+  //       e.stopPropagation();
+  //       if (containerId != null) {
+  //         onCursorChange({ containerId, index: 0});
+  //       }
+  //     }}
+  //     onMouseEnter={() => handleMouseEnter(containerId, onHoverChange)}
+  //     onMouseLeave={(e) =>
+  //       handleMouseLeave(e, ancestorIds, onHoverChange)
+  //     }
+  //     className={clsx("math-node-wrapper", {
+  //       hovered: hoveredId === containerId,
+  //     })}
+  //   >
+  //   </div>
+  // )
+
+  nodes.push(
+    <DummyStartNodeRenderer
+      key={`start-point-${containerId}`}
+      containerId={containerId}
+      cellId={cellId}
+      isActive={isActive}
+      cursor={cursor}
+      hoveredId={hoveredId}
+      onCursorChange={onCursorChange}
+      onHoverChange={onHoverChange}
+      onDropNode={onDropNode}
+      ancestorIds={ancestorIds}
+    />
+  );
+
   for (let i = 0; i <= children.length; i++) {
+    // if cell active AND in this position
     if (isActive && cursor.containerId === containerId && cursor.index === i) {
       nodes.push(<span key={`cursor-${i}`} className="cursor" />);
     }
@@ -1212,7 +692,7 @@ export function renderContainerChildren(
             onDropNode={onDropNode}
             ancestorIds={ancestorIds}
           />
-        </span>
+        </span>        
       );
     }
   }
@@ -1308,7 +788,12 @@ export function renderInlineContainerNode(
   return (
     <span
       data-nodeid={node.id}
-      className={clsx("math-node", "type-inline-container", styleClass, { hovered: getIsHovered(node, baseProps.hoveredId) })}
+      className={clsx(
+        "math-node", 
+        "type-inline-container", 
+        styleClass, 
+        { hovered: getIsHovered(node, baseProps.hoveredId) }
+      )}
       style={getInlineStyle(baseProps.inheritedStyle)}
       onMouseEnter={() => handleMouseEnter(node.id, baseProps.onHoverChange)}
       onMouseLeave={(e) =>
@@ -1468,35 +953,6 @@ export function renderNthRootNode(
     </span>
   );
 }
-// export const renderBigOperatorNode = (
-//   node: BigOperatorNode,
-//   props: RenderProps
-// ) => (
-//   <span
-//     data-nodeid={node.id}
-//     className={clsx(
-//       "math-node", 
-//       "type-big-operator",
-//       { hovered: getIsHovered(node, props) },
-//     )}
-//     onMouseEnter={() => handleMouseEnter(node.id, props.onHoverChange!)}
-//     onMouseLeave={(e) => handleMouseLeave(e, node.id, props.ancestorIds, props.onHoverChange!)}
-
-//   >
-//     <div className="big-operator-wrapper">
-//       <div className="big-operator-upper">
-//         <MathRenderer
-// 					node={node.upper} {...props} ancestorIds={[node.id, ...(props.ancestorIds ?? [])]} />
-//       </div>
-//       <div className="big-operator-symbol">{node.operator}</div>
-//       <div className="big-operator-lower">
-//         <MathRenderer
-// 					node={node.lower} {...props} ancestorIds={[node.id, ...(props.ancestorIds ?? [])]} />
-//       </div>
-//     </div>
-//   </span>
-// );
-
 
 // 8. Big Operator Node (has lower and upper)
 export function renderBigOperatorNode(
@@ -1659,31 +1115,78 @@ export function renderAccentedNode(
   baseProps: BaseRenderProps & MathRendererProps
 ): React.ReactNode {
   const styleClass = getStyleClass(baseProps.inheritedStyle);
+  const isCustom = node.accent.type === "custom";
+  const above = isCustom && node.accent.position === "above";
+  const below = isCustom && node.accent.position === "below";
+
+  const commonProps = {
+    cellId: baseProps.cellId,
+    isActive: baseProps.isActive,
+    cursor: baseProps.cursor,
+    hoveredId: baseProps.hoveredId,
+    onCursorChange: baseProps.onCursorChange,
+    onHoverChange: baseProps.onHoverChange,
+    inheritedStyle: baseProps.inheritedStyle,
+    onDropNode: baseProps.onDropNode,
+  };
+
+  const updatedAncestors = [node.id, ...(baseProps.ancestorIds ?? [])];
+
   return (
     <span
       data-nodeid={node.id}
-      className={clsx("math-node", "type-accented", styleClass, { hovered: getIsHovered(node, baseProps.hoveredId) })}
+      className={clsx(
+        "math-node",
+        "type-accented",
+        isCustom ? "decoration-custom" : `decoration-${node.accent.decoration}`,
+        styleClass,
+        { hovered: getIsHovered(node, baseProps.hoveredId) }
+      )}
       style={getInlineStyle(baseProps.inheritedStyle)}
+      onClick={(e) => {
+        e.stopPropagation();
+        if (node.base.children.length === 0) {
+          baseProps.onCursorChange({ containerId: node.base.id, index: 0 });
+        }
+      }}
       onMouseEnter={() => handleMouseEnter(node.id, baseProps.onHoverChange)}
       onMouseLeave={(e) =>
-        handleMouseLeave(e, baseProps.ancestorIds, baseProps.onHoverChange)
+        handleMouseLeave(e, updatedAncestors, baseProps.onHoverChange)
       }
     >
-      <MathRenderer
-        node={node.base}
-        cellId={baseProps.cellId}
-        isActive={baseProps.isActive}
-        containerId={node.base.id}
-        index={0}
-        cursor={baseProps.cursor}
-        hoveredId={baseProps.hoveredId}
-        onCursorChange={baseProps.onCursorChange}
-        onHoverChange={baseProps.onHoverChange}
-        inheritedStyle={baseProps.inheritedStyle}
-        onDropNode={baseProps.onDropNode}
-        ancestorIds={baseProps.ancestorIds}
-      />
-      <span className={`accent ${node.accent}`} />
+      {above && (
+        <div className="accent-content accent-above">
+          <MathRenderer
+            node={node.accent.content}
+            {...commonProps}
+            ancestorIds={updatedAncestors}
+            containerId={node.accent.content.id}
+            index={0}
+          />
+        </div>
+      )}
+
+      <span className="accent-base">
+        <MathRenderer
+          node={node.base}
+          {...commonProps}
+          ancestorIds={updatedAncestors}
+          containerId={node.base.id}
+          index={0}
+        />
+      </span>
+
+      {below && (
+        <div className="accent-content accent-below">
+          <MathRenderer
+            node={node.accent.content}
+            {...commonProps}
+            ancestorIds={updatedAncestors}
+            containerId={node.accent.content.id}
+            index={0}
+          />
+        </div>
+      )}
     </span>
   );
 }
@@ -1712,7 +1215,7 @@ export function renderStyledNode(
         node={node.child}
         cellId={baseProps.cellId}
         isActive={baseProps.isActive}
-        containerId={node.id}
+        containerId={node.child.id}
         index={0}
         cursor={baseProps.cursor}
         hoveredId={baseProps.hoveredId}
@@ -1735,7 +1238,7 @@ export function renderRootWrapperNode(
   return (
     <span
       data-nodeid={node.id}
-      className={clsx("math-node", "type-root-wrapper", styleClass, { hovered: getIsHovered(node, baseProps.hoveredId) })}
+      className={clsx("math-node", "type-root-wrapper", styleClass)}
       style={getInlineStyle(baseProps.inheritedStyle)}
       onMouseEnter={() => handleMouseEnter(node.id, baseProps.onHoverChange)}
       onMouseLeave={(e) =>
@@ -1747,7 +1250,7 @@ export function renderRootWrapperNode(
         cellId={baseProps.cellId}
         isActive={baseProps.isActive}
         containerId={node.child.id}
-        index={-1}
+        index={0} //TODO maybe bad
         cursor={baseProps.cursor}
         hoveredId={baseProps.hoveredId}
         onCursorChange={baseProps.onCursorChange}

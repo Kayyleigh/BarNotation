@@ -353,24 +353,25 @@ export const MathRenderer: React.FC<MathRendererProps> = ({
   }
 
   const isDropTarget =
+    node.type !== "root-wrapper" && node.type !== "inline-container" &&
     dropTarget?.cellId === cellId && 
     dropTarget?.containerId === containerId && 
     dropTarget?.index === index;
 
+  const isDraggable = node.type !== "root-wrapper";
+
   return (
     <span
       className={clsx("draggable-node-wrapper")}
-      draggable
+      draggable={isDraggable}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
       data-nodeid={node.id}
-      // onMouseEnter={() => onHoverChange?.(node.id)}
-      // onMouseLeave={() => onHoverChange?.(null)}
     >
       {content}
-      {isDropTarget && (<span className="drop-target-cursor" />)}
+      {isDropTarget && <span className="drop-target-cursor" />}
     </span>
   );
 };

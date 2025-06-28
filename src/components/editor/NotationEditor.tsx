@@ -624,7 +624,8 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
       const overIndex = rects.findIndex(
         (rect) => rect && cursorY < rect.top + rect.height / 2
       );
-      updateDragOver(overIndex === -1 ? cells.length : overIndex);
+      // updateDragOver(overIndex === -1 ? cells.length : overIndex);
+      updateDragOver(overIndex);
     };
 
     const handlePointerUp = () => {
