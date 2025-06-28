@@ -26,7 +26,7 @@ interface MathLibraryProps {
   width: number;
   onWidthChange: (width: number) => void;
   onDropNode: (from: DropSource, to: DropTarget) => void;
-  addEntryRef?: React.MutableRefObject<(entry: LibraryEntry) => void>;
+  addEntryRef?: React.RefObject<(entry: LibraryEntry) => void>;
 }
 
 const STORAGE_KEY = "mathLibrary";

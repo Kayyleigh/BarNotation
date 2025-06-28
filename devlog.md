@@ -3039,3 +3039,13 @@ Things that must be fixed at some point later:
 - handle drop within multidigit and command
 - IC^supleftright: drop IC into child copies instead of disallows (good? bad? hmm)
 - ensure groupnode wraps around when IC of size >1 in base of childed (or not? depends; less user freedom but if user does it "wrong" then user gets confused. Check how latex does it!)
+
+Next big step: 
+- probably actual database stuff. Since I need to really have a grasp of that before I do what's after:
+- allow custom (and add predefined) collections!
+
+💡 Idea: for all library entries, keep track of #times dragged out. Library collections will get big, so probably good to have sortBy options, and frequency of use is probably a useful thing to sort on! (as well as most/least recently added, size, and "root" node type) 
+
+Think about how to implement the toggle color in preview option that is still just placeholder. Possibilities:
+- everywhere where a color is put, have a boolean to check if it should be given a color (probably bad)
+- create a new "theme" that simply has tons of lines in css where I just set the vars to the main math color. must somehow be selectable as sub-theme...

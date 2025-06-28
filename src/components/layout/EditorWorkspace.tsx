@@ -374,18 +374,32 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({ noteId, rightWidth, s
   }, [undo, redo]);
 
   return (
-    <div className="editor-workspace" style={{ display: "flex", flexGrow: 1 }}>
-      <EditorPane
-        style={{ flexGrow: 1 }}
-        noteId={noteId}
-        onDropNode={(from, to) => onDropNode(from, to)}
-      />
-      <MathLibrary
-        width={rightWidth}
-        onWidthChange={setRightWidth}
-        onDropNode={(from, to) => onDropNode(from, to)}
-        addEntryRef={addEntryToLibraryRef}
-      />
+    <div 
+      className="editor-workspace" 
+      style={{ 
+        display: "flex", 
+        height: "100%",
+        width: "100%",
+      }}
+    >
+      {/* Center editor: flexible */}
+      <div style={{ flexGrow: 1, minWidth: 0 }}>
+        <EditorPane
+          style={{ width: "100%", height: "100%" }}
+          noteId={noteId}
+          onDropNode={(from, to) => onDropNode(from, to)}
+        />
+      </div>
+
+      {/* Right sidebar: fixed width */}
+      <div style={{ flex: "0 0 auto", width: `${rightWidth}px` }}>
+        <MathLibrary
+          width={rightWidth}
+          onWidthChange={setRightWidth}
+          onDropNode={(from, to) => onDropNode(from, to)}
+          addEntryRef={addEntryToLibraryRef}
+        />
+      </div>
     </div>
   );
 };
