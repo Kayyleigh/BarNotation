@@ -77,6 +77,7 @@ export const DummyStartNodeRenderer: React.FC<Props> = ({
           if (!draggingNode) return;
           onDropNode(draggingNode, { cellId, containerId, index: -1 });
           setDraggingNode(null);
+          setDropTarget(null);
         }}
       />
       {isDropTarget && <span className="drop-target-cursor" />}

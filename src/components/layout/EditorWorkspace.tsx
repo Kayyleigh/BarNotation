@@ -319,11 +319,11 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({ noteId, rightWidth, s
         let updated = deleteNodeById(destState, from.node.id);
 
         //index + 1 if to the left within same container(?), else index 
-        if (from.containerId === to.containerId && to.index < from.index) {
-          updated = insertNodeAtIndex(updated, to.containerId, to.index + 1, node);
+        if (from.containerId === to.containerId && to.index >= from.index) {
+          updated = insertNodeAtIndex(updated, to.containerId, to.index, node);
         } 
         else {
-          updated = insertNodeAtIndex(updated, to.containerId, to.index, node);
+          updated = insertNodeAtIndex(updated, to.containerId, to.index + 1, node);
 
         }
         updatedEditorStates[to.cellId] = updated;
