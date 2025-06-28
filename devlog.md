@@ -3028,8 +3028,14 @@ Fixing Current Issues:
 ✅  angl (and probably others) are now rendered again (I just returned the old way of rendering accented nodes in MathRenderers.tsx)
 ✅ RootWrapperNode is not draggable nor hoverable (by conditioning in MathRenderer, and removing the "hovered" class from its renderer in MathRenderers)
 - containers are dropped in reverse order (sometimes??!)
-- drop cursor vs drop location is one index off
-- curr not allowign index 0 drop on non-same-cell inserts
-- Dropping carelessly into a cell does not drop anything (into curr pos or final pos)
-- children of non-containers not clickable (must wrap clickable around all MathRenderer instance?)
+✅ drop cursor vs drop location is one index off
+✅ curr not allowign index 0 drop on non-same-cell inserts
+✅ Dropping carelessly into a cell does not drop anything (into curr pos or final pos)
+✅ children of non-containers not clickable (must wrap clickable around all MathRenderer instance?)
 - empty inlinecontainers in library are hard to understand, and should instead be filled in with placeholder squares ⬚
+
+DAMN so many bugs fixed from those drag changes
+Things that must be fixed at some point later:
+- handle drop within multidigit and command
+- IC^supleftright: drop IC into child copies instead of disallows (good? bad? hmm)
+- ensure groupnode wraps around when IC of size >1 in base of childed (or not? depends; less user freedom but if user does it "wrong" then user gets confused. Check how latex does it!)

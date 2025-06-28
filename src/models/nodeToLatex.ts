@@ -137,19 +137,19 @@ export const nodeToLatex = (node: MathNode, highlighted = false): string => {
         } else {
           const subLeft = highlighted
             ? wrapBracket("[") + (node.subLeft ? nodeToLatex(node.subLeft, highlighted) : "") + wrapBracket("]")
-            : node.subLeft ? nodeToLatex(node.subLeft, highlighted) : "";
+            : "[" + (node.subLeft ? nodeToLatex(node.subLeft, highlighted) : "") + "]";
           const supLeft = highlighted
             ? wrapBracket("[") + (node.supLeft ? nodeToLatex(node.supLeft, highlighted) : "") + wrapBracket("]")
-            : node.supLeft ? nodeToLatex(node.supLeft, highlighted) : "";
+            : "[" + (node.supLeft ? nodeToLatex(node.supLeft, highlighted) : "") + "]";
           const base = highlighted
             ? wrapBracket("{") + nodeToLatex(node.base, highlighted) + wrapBracket("}")
-            : nodeToLatex(node.base, highlighted);
+            : "{" + nodeToLatex(node.base, highlighted) + "}";
           const subRight = highlighted
             ? wrapBracket("{") + (node.subRight ? nodeToLatex(node.subRight, highlighted) : "") + wrapBracket("}")
-            : node.subRight ? nodeToLatex(node.subRight, highlighted) : "";
+            : "{" + (node.subRight ? nodeToLatex(node.subRight, highlighted) : "") + "}";
           const supRight = highlighted
             ? wrapBracket("[") + (node.supRight ? nodeToLatex(node.supRight, highlighted) : "") + wrapBracket("]")
-            : node.supRight ? nodeToLatex(node.supRight, highlighted) : "";
+            : "[" + (node.supRight ? nodeToLatex(node.supRight, highlighted) : "") + "]";
   
           const content = wrapCmd("\\actsymb") + `${subLeft}${supLeft}${base}${subRight}${supRight}`;
           return highlighted ? wrapActsymb(content) : content;
