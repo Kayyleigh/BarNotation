@@ -16,7 +16,7 @@ export const MathView: React.FC<MathViewProps> = ({ node, className }) => {
     <div className={className} style={{ pointerEvents: "none" }}>
       <MathRenderer
         node={node}
-        cellId={"readonly"} // can be any dummy value
+        cellId={"readonly"} // dummy value
         containerId={"readonly-container"}
         index={0}
         isActive={false}

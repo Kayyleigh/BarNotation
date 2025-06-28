@@ -616,26 +616,6 @@ export function renderContainerChildren(
 
   const nodes: React.ReactNode[] = [];
 
-  // nodes.push(
-  //   <div
-  //     key={`clickable-start`}
-  //     onClick={(e) => {
-  //       e.stopPropagation();
-  //       if (containerId != null) {
-  //         onCursorChange({ containerId, index: 0});
-  //       }
-  //     }}
-  //     onMouseEnter={() => handleMouseEnter(containerId, onHoverChange)}
-  //     onMouseLeave={(e) =>
-  //       handleMouseLeave(e, ancestorIds, onHoverChange)
-  //     }
-  //     className={clsx("math-node-wrapper", {
-  //       hovered: hoveredId === containerId,
-  //     })}
-  //   >
-  //   </div>
-  // )
-
   nodes.push(
     <DummyStartNodeRenderer
       key={`start-point-${containerId}`}
@@ -785,6 +765,10 @@ export function renderInlineContainerNode(
   baseProps: BaseRenderProps & MathRendererProps
 ): React.ReactNode {
   const styleClass = getStyleClass(baseProps.inheritedStyle);
+
+  // Warning: might be super dirty way to implement this... I thought of it a little late
+  const isPartOfLibraryEntry = baseProps.cellId === "readonly";
+
   return (
     <span
       data-nodeid={node.id}
@@ -800,10 +784,12 @@ export function renderInlineContainerNode(
         handleMouseLeave(e, baseProps.ancestorIds, baseProps.onHoverChange)
       }
     >
-      {renderContainerChildren(node.children, {
-        ...baseProps,
-        containerId: node.id,
-      })}
+      {node.children.length < 1 && isPartOfLibraryEntry
+        ? "⬚"
+        : renderContainerChildren(node.children, {
+            ...baseProps,
+            containerId: node.id,
+          })}
     </span>
   );
 }

@@ -3032,7 +3032,7 @@ Fixing Current Issues:
 ✅ curr not allowign index 0 drop on non-same-cell inserts
 ✅ Dropping carelessly into a cell does not drop anything (into curr pos or final pos)
 ✅ children of non-containers not clickable (must wrap clickable around all MathRenderer instance?)
-- empty inlinecontainers in library are hard to understand, and should instead be filled in with placeholder squares ⬚
+✅ empty inlinecontainers in library are hard to understand, and should instead be filled in with placeholder squares ⬚. NOTE: I decided only to put the placeholder IN the library (so the dragged math is still truly empty) since e.g. childed nodes would clutter the notebook and confuse the user (since an exponent does not feel like a 4-childed node, unless you built this app.)
 
 DAMN so many bugs fixed from those drag changes
 Things that must be fixed at some point later:
