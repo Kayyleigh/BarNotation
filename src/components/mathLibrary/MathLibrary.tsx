@@ -218,6 +218,8 @@ const MathLibrary: React.FC<{
 
   const [collections, setCollections] = useState<LibraryCollection[]>([]);
   const [activeColl, setActiveColl] = useState<string>("");
+  const [hoveredTab, setHoveredTab] = useState<string | null>(null);
+
   const [editingCollId, setEditingCollId] = useState<string | null>(null);
   const renameInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -321,15 +323,17 @@ const MathLibrary: React.FC<{
     e.dataTransfer.setData("text/plain", entry.latex);
   };
 
-  const onDropEntry = (e?: React.DragEvent) => {
+  const onDropEntry = (e?: React.DragEvent, targetCollectionId?: string) => {
     e?.preventDefault();
 
+    const targetId = targetCollectionId || activeColl;
+    const to: DropTarget = {
+      cellId: "library",
+      containerId: targetId,
+      index: dropInsertionRef.current ?? entries.length,
+    };
+
     if (draggingNode) {
-      const to: DropTarget = {
-        cellId: "library",
-        containerId: activeColl,
-        index: dropInsertionRef.current ?? entries.length,
-      };
 
       // Drop from editor or elsewhere
       if (draggingNode.sourceType === "cell") {
@@ -354,6 +358,38 @@ const MathLibrary: React.FC<{
         setDraggingNode(null);
         setDropTarget(null);
         return;
+      }
+
+      // Copying into another collection
+      if (draggingNode?.sourceType === "library") {
+        const fromCollId = draggingNode.cellId;
+
+        // Deep-copy into different tab
+        if (fromCollId !== targetId) {
+          const sourceColl = collections.find(c => c.id === fromCollId);
+          const sourceEntry = sourceColl?.entries.find(e => e.node.id === draggingNode.node.id);
+
+          if (sourceEntry) {
+            const newEntry = {
+              ...sourceEntry,
+              id: crypto.randomUUID(),
+              addedAt: Date.now(),
+              draggedCount: 0,
+            };
+            setCollections(colls =>
+              colls.map(c =>
+                c.id === targetId
+                  ? { ...c, entries: [...c.entries, newEntry] }
+                  : c
+              )
+            );
+          }
+          setDraggingNode(null);
+          setDropTarget(null);
+          return;
+        } 
+        // Do not attempt further duplication if into own collection
+        else return;
       }
     }
 
@@ -419,7 +455,10 @@ const MathLibrary: React.FC<{
         {collections.map(c => (
           <div
             key={c.id}
-            className={clsx(styles.tab, { [styles.active]: c.id === activeColl })}
+            className={clsx(styles.tab, { 
+              [styles.active]: c.id === activeColl, 
+              [styles.hovered]: c.id === hoveredTab,
+            })}
           >
             {editingCollId === c.id ? (
               <div className={styles.collectionNameInput}>
@@ -431,11 +470,31 @@ const MathLibrary: React.FC<{
                     if (e.key === "Enter") renameCollection(c.id, (e.target as HTMLInputElement).value);
                     if (e.key === "Escape") setEditingCollId(null);
                   }}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    onDropEntry(e, c.id); // pass the target collection ID
+                  }}
                   autoFocus
                 />
               </div>
             ) : (
-              <span className={styles.collectionTab} onClick={() => setActiveColl(c.id)}>{c.name}</span>
+              <span 
+                className={styles.collectionTab} 
+                onClick={() => setActiveColl(c.id)}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  setHoveredTab(c.id);
+                }}
+                onDragLeave={() => setHoveredTab(null)}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  setHoveredTab(null);
+                  onDropEntry(e, c.id);
+                }}
+              >
+                {c.name}
+              </span>
             )}
 
             {(c.id === activeColl && editingCollId !== c.id) && (
@@ -492,7 +551,7 @@ const MathLibrary: React.FC<{
                 )}
               </div>
             </Tooltip>
-            <select value={sortBy} onChange={(e) => setSortBy(e.target.value as SortOption)}>
+            <select className={styles.sortDropdown} value={sortBy} onChange={(e) => setSortBy(e.target.value as SortOption)}>
               <option value="date">Newest</option>
               <option value="date-asc">Oldest</option>
               <option value="usage">Most Used</option>
