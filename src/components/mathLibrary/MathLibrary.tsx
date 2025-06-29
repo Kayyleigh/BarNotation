@@ -1,12 +1,14 @@
 // components/mathLibrary/MathLibrary.tsx
 import React, { useEffect, useState } from "react";
 import ResizableSidebar from "../layout/ResizableSidebar";
-import type { MathNode } from "../../models/types";
+import type { MathNode, StructureNode } from "../../models/types";
 import styles from "./MathLibrary.module.css";
 import type { LibraryEntry } from "../../models/libraryTypes";
 import { MathView } from "../mathExpression/MathView";
 import { parseLatex } from "../../models/mathNodeParser";
 import { useDragContext } from "../../hooks/useDragContext";
+import { nodeToLatex } from "../../models/nodeToLatex";
+import { createInlineContainer, createRootWrapper } from "../../models/nodeFactories";
 
 type DropSource = {
   sourceType: "cell" | "library";
@@ -130,8 +132,23 @@ const MathLibrary: React.FC<MathLibraryProps> = ({ width, onWidthChange, onDropN
                 index: idx,
                 node: entry.node,
               };
+
+              // Internal use
               setDraggingNode(dragData);
               e.dataTransfer.effectAllowed = "copyMove";
+
+              // External drag support: provide LaTeX version
+              try {
+                  // RECOVER THIS IF I DECIDE THAT "LATEX VERSION" REQUIRES THE BLOCK WRAP `\[ ... \]`
+                  // const rootWrappedNode = (entry.node.type === "inline-container") 
+                  //   ? createRootWrapper(entry.node)
+                  //   : createRootWrapper(createInlineContainer([entry.node as StructureNode]))
+                  // const latex = nodeToLatex(rootWrappedNode);
+                  const latex = nodeToLatex(entry.node)
+                  e.dataTransfer.setData("text/plain", latex);
+                } catch (err) {
+                  console.warn("Failed to convert node to LaTeX during drag:", err);
+                }
             }}
             onDragEnd={() => {
               setDraggingNode(null);

@@ -3046,6 +3046,16 @@ Next big step:
 
 💡 Idea: for all library entries, keep track of #times dragged out. Library collections will get big, so probably good to have sortBy options, and frequency of use is probably a useful thing to sort on! (as well as most/least recently added, size, and "root" node type) 
 
+Tiny todo: when clicking outside a cell, un-select it. So user is allowed to see their notebook without seeing the cell option buttons and selection marker 
+
 Think about how to implement the toggle color in preview option that is still just placeholder. Possibilities:
 - everywhere where a color is put, have a boolean to check if it should be given a color (probably bad)
 - create a new "theme" that simply has tons of lines in css where I just set the vars to the main math color. must somehow be selectable as sub-theme...
+
+Next step: fix this:
+![alt text](image-46.png)
+
+TODO: fix the way I parse sqrt from latex, since it does not initialize a container when `[]` is missing (and check if it also happens when `[]` is not missing...) 
+
+### 29/06/2025
+Fixed math cell zoom stuff 

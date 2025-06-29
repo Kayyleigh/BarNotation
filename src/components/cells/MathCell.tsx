@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import MathEditor from "../mathExpression/MathEditor";
 import type { MathNode } from "../../models/types";
 import type { EditorState } from "../../logic/editor-state";
@@ -44,17 +44,30 @@ const MathCell: React.FC<MathCellProps> = ({
     border: isPreviewMode ? "none" : undefined,
   };
 
+  const [hoverInfo, setHoverInfo] = useState<{ hoveredType: string; zoomLevel: number }>({
+    hoveredType: "",
+    zoomLevel: defaultZoom,
+  });
+
   return (
-    <div className="math-cell" style={style}>
-      <MathEditor
-        resetZoomSignal={resetZoomSignal}
-        defaultZoom={defaultZoom}
-        showLatex={showLatex}
-        cellId={cellId}
-        editorState={editorState}
-        updateEditorState={updateEditorState}
-        onDropNode={onDropNode}
-      />
+    <div className="math-cell">
+      <div className="math-editor-scroll-container" style={style}>
+        <MathEditor
+          resetZoomSignal={resetZoomSignal}
+          defaultZoom={defaultZoom}
+          showLatex={showLatex}
+          cellId={cellId}
+          editorState={editorState}
+          updateEditorState={updateEditorState}
+          onDropNode={onDropNode}
+          onHoverInfoChange={setHoverInfo}
+        />
+      </div>
+      {hoverInfo.hoveredType && !isPreviewMode && (
+        <div className="hover-type-info">
+          {hoverInfo.hoveredType} • {Math.round(hoverInfo.zoomLevel * 100)}%
+        </div>
+      )}
     </div>
   );
 };

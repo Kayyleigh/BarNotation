@@ -201,7 +201,7 @@
 
 // export default MathEditor;
 
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { setCursor } from "../../logic/editor-state";
 import { handleKeyDown } from "../../logic/handle-keydown";
 import { MathRenderer } from "./MathRenderer";
@@ -241,110 +241,8 @@ interface MathEditorProps {
       index: number;
     }
   ) => void;
+  onHoverInfoChange?: (info: { hoveredType: string; zoomLevel: number }) => void;
 }
-
-// const MathEditor: React.FC<MathEditorProps> = ({
-//   resetZoomSignal,
-//   defaultZoom,
-//   showLatex,
-//   cellId,
-//   editorState,
-//   updateEditorState,
-//   onDropNode,
-// }) => {
-//   const editorRef = useRef<HTMLDivElement>(null);
-//   const zoomLevel = useZoom(editorRef, resetZoomSignal, defaultZoom);
-
-//   // TODO maybe somehow check if this can be better synced with curr active cell id?
-//   const [isActive, setIsActive] = useState(false);
-
-//   const { hoveredNodeId, setHoveredNodeId } = useHoverState();
-
-//   const hoveredNode = hoveredNodeId
-//     ? findNodeById(editorState.rootNode, hoveredNodeId)
-//     : null;
-//   const hoveredType = hoveredNode?.type ?? "";
-
-//   const onKeyDown = (e: React.KeyboardEvent) => {
-//     const updated = handleKeyDown(e, editorState);
-//     if (updated) updateEditorState(updated);
-//   };
-
-//   const onCopy = (e: React.ClipboardEvent) => {
-//     const selectedNode = getSelectedNode(editorState);
-//     if (selectedNode) {
-//       e.clipboardData.setData("text/plain", nodeToLatex(selectedNode, false));
-//       e.preventDefault();
-//     }
-//   };
-
-//   const onCut = (e: React.ClipboardEvent) => {
-//     const selectedNode = getSelectedNode(editorState);
-//     if (selectedNode) {
-//       e.clipboardData.setData("text/plain", nodeToLatex(selectedNode, false));
-//       const updated = deleteSelectedNode(editorState);
-//       updateEditorState(updated);
-//       e.preventDefault();
-//     }
-//   };
-
-//   const onPaste = (e: React.ClipboardEvent) => {
-//     const pastedText = e.clipboardData.getData("text/plain");
-//     if (!pastedText) return;
-
-//     try {
-//       const pastedNode = parseLatex(pastedText);
-//       const updated = insertNodeAtCursor(editorState, pastedNode);
-//       updateEditorState(updated);
-//       e.preventDefault();
-//     } catch (err) {
-//       console.warn("Paste failed:", err);
-//     }
-//   };
-
-//   return (
-//     <div>
-//       <div
-//         ref={editorRef}
-//         className="math-editor"
-//         tabIndex={0}
-//         onKeyDown={onKeyDown}
-//         onCopy={onCopy}
-//         onCut={onCut}
-//         onPaste={onPaste}
-//         onFocus={() => setIsActive(true)}
-//         onBlur={(e) => {
-//           if (!e.currentTarget.contains(e.relatedTarget as Node)) {
-//             setIsActive(false);
-//           }
-//         }}
-//       >
-//         <MathRenderer
-//           cellId={cellId}
-//           node={editorState.rootNode}
-//           cursor={editorState.cursor}
-//           hoveredId={hoveredNodeId}
-//           containerId="root"
-//           index={0}
-//           onHoverChange={setHoveredNodeId}
-//           onCursorChange={(cursor) => updateEditorState(setCursor(editorState, cursor))}
-//           onDropNode={onDropNode}
-//           isActive={isActive} 
-//           ancestorIds={[]}        
-//         />
-//           {hoveredType && (
-//             <div className="hover-type-info">
-//               {hoveredType} • {Math.round(zoomLevel * 100)}%
-//             </div>
-//           )}
-//         </div>
-
-//       <LatexViewer rootNode={editorState.rootNode} showLatex={showLatex} />
-//     </div>
-//   );
-// };
-
-// export default MathEditor;
 
 const MathEditor: React.FC<MathEditorProps> = ({
   resetZoomSignal,
@@ -354,6 +252,7 @@ const MathEditor: React.FC<MathEditorProps> = ({
   editorState,
   updateEditorState,
   onDropNode,
+  onHoverInfoChange,
 }) => {
   const editorRef = useRef<HTMLDivElement>(null);
   const zoomLevel = useZoom(editorRef, resetZoomSignal, defaultZoom);
@@ -367,6 +266,12 @@ const MathEditor: React.FC<MathEditorProps> = ({
     ? findNodeById(editorState.rootNode, hoveredNodeId)
     : null;
   const hoveredType = hoveredNode?.type ?? "";
+
+  useEffect(() => {
+    if (onHoverInfoChange) {
+      onHoverInfoChange({ hoveredType, zoomLevel });
+    }
+  }, [hoveredType, zoomLevel, onHoverInfoChange]);
 
   const onKeyDown = (e: React.KeyboardEvent) => {
     const updated = handleKeyDown(e, editorState);
@@ -427,50 +332,47 @@ const MathEditor: React.FC<MathEditorProps> = ({
             setIsActive(false);
           }
         }}
-
         onDragOver={(e) => {
-          e.preventDefault(); // necessary to show drop cursor
+          e.preventDefault();
           e.stopPropagation();
-          // Optional: fallback drop target (e.g. index 0)
           if (draggingNode && dropTarget?.cellId !== cellId) {
             setDropTarget({
               cellId,
-              containerId: rootChildContainerId, //TODO make cleaner way to achieve
+              containerId: rootChildContainerId,
               index: 0,
             });
           }
         }}
-
         onDrop={(e) => {
           e.preventDefault();
           e.stopPropagation();
-
           if (draggingNode && dropTarget) {
             onDropNode(draggingNode, dropTarget);
           }
-
-          // Reset state
           setDropTarget(null);
         }}
       >
-        <MathRenderer
-          cellId={cellId}
-          node={editorState.rootNode}
-          cursor={editorState.cursor}
-          hoveredId={hoveredNodeId}
-          containerId="root"
-          index={0}
-          onHoverChange={setHoveredNodeId}
-          onCursorChange={(cursor) => updateEditorState(setCursor(editorState, cursor))}
-          onDropNode={onDropNode}
-          isActive={isActive}
-          ancestorIds={[]}
-        />
-        {hoveredType && (
+        <div className="math-editor-scroll-inner">
+          <MathRenderer
+            cellId={cellId}
+            node={editorState.rootNode}
+            cursor={editorState.cursor}
+            hoveredId={hoveredNodeId}
+            containerId="root"
+            index={0}
+            onHoverChange={setHoveredNodeId}
+            onCursorChange={(cursor) => updateEditorState(setCursor(editorState, cursor))}
+            onDropNode={onDropNode}
+            isActive={isActive}
+            ancestorIds={[]}
+          />
+        </div>
+
+        {/* {hoveredType && (
           <div className="hover-type-info">
             {hoveredType} • {Math.round(zoomLevel * 100)}%
           </div>
-        )}
+        )} */}
       </div>
 
       <LatexViewer rootNode={editorState.rootNode} showLatex={showLatex} />

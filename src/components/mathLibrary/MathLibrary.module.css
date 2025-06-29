@@ -2,8 +2,8 @@
   display: flex;
   flex-wrap: wrap;
   align-content: flex-start;
-  gap: 12px;
-  padding: 12px;
+  gap: 8px;
+  padding: 8px;
   overflow-y: auto;
   height: calc(100% - 2rem);
 }

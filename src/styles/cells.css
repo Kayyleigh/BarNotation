@@ -26,7 +26,7 @@
     opacity: 1;
   }
     .cell-inner { /* Actual cell box */
-      width: 100%;
+      width: calc(100% - 2.5em); /* minus the size of the drag spot */
       height: fit-content;
       padding: 0.6em 0.8em;
       position: relative;
@@ -72,7 +72,7 @@
     
     /* The drag spot — smaller clickable area instead of big hamburger */
     .drag-spot {
-      width: 100%;
+      width: 2.5em;
       height: 100%;
       cursor: grab;
       user-select: none;
@@ -84,10 +84,10 @@
     }
     
     /* Outline cell with the same color when selected */
-    .cell.selected .cell-inner {
-      /* outline: 2px solid #007bff; */
+    /* .cell.selected .cell-inner {
+      outline: 2px solid #007bff;
     }
-    
+     */
     /* Remove old drag handle styles */
     .drag-handle {
       display: none;
@@ -219,3 +219,29 @@
     background-color: rgba(0, 123, 255, 0.5);
     transition: background-color 0.15s ease;
   }
+
+  .math-editor-scroll-container {
+    overflow-x: auto;
+    /* overflow-y: hidden; */
+    white-space: nowrap;
+    width: 100%;
+    /* Makes scrolling possible */
+    display: block;
+    position: relative;
+  }
+  
+  /* Hide scrollbars (cross-browser) */
+  .math-editor-scroll-container::-webkit-scrollbar {
+    display: none;
+  }
+  .math-editor-scroll-container {
+    -ms-overflow-style: none; /* IE/Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+  
+  /* Ensure MathEditor does not shrink or wrap */
+  .math-editor-scroll-container > * {
+    display: inline-block;
+    min-width: 100%;
+  }
+  

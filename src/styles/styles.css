@@ -177,7 +177,56 @@
     font-size: var(--editor-font-size);
     color: var(--math-text-color);
     padding: 0.6em 0.8em;
+    outline: none;
+
+    cursor: text; /* By default, should feel typable */
+  }
+
+  .math-editor {
+    position: relative;
+    overflow: hidden;
+    font-size: var(--editor-font-size);
+    color: var(--math-text-color);
+    padding: 0.6em 0.8em;
 
 
     cursor: text; /* By default, should feel typable */
   }
+  
+  /* Inner scrollable area */
+  .math-editor-scroll-inner {
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    width: 100%;
+    display: block;
+  }
+  
+  /* Hide scrollbar (all major browsers) */
+  .math-editor-scroll-inner::-webkit-scrollbar {
+    display: none;
+  }
+  .math-editor-scroll-inner {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;     /* Firefox */
+  }
+  
+  /* Content in MathEditor should not shrink */
+  .math-editor-scroll-inner > * {
+    display: inline-block;
+    min-width: 100%;
+  }
+  
+  /* Make zoom/type info fixed in top-right */
+  .hover-type-info {
+    position: absolute;
+    top: 0.5em;
+    right: 0.9em;
+    pointer-events: none;
+    opacity: 0.3;
+    font-size: 0.8rem;
+    font-family: monospace;
+    user-select: none;
+    z-index: 2;
+  }
+  

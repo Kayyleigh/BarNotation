@@ -93,11 +93,13 @@ export const nodeToLatex = (node: MathNode, highlighted = false): string => {
       }
   
       case "nth-root": {
-        if (node.index) {
+        const hasIndex = nodeToLatex(node.index, highlighted) !== "";
+
+        if (hasIndex) {
           if (highlighted) {
-            return wrapCmd("\\sqrt") + wrapBracket("[") +
-              nodeToLatex(node.index, highlighted) + wrapBracket("]") + wrapBracket("{") +
-              nodeToLatex(node.base, highlighted) + wrapBracket("}");
+            return wrapCmd("\\sqrt") + 
+              wrapBracket("[") + nodeToLatex(node.index, highlighted) + wrapBracket("]") + 
+              wrapBracket("{") + nodeToLatex(node.base, highlighted) + wrapBracket("}");
           }
           return `\\sqrt[${nodeToLatex(node.index, highlighted)}]{${nodeToLatex(node.base, highlighted)}}`;
         }
