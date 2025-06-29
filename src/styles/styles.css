@@ -181,7 +181,7 @@
 
     cursor: text; /* By default, should feel typable */
   }
-
+/* 
   .math-editor {
     position: relative;
     overflow: hidden;
@@ -190,13 +190,13 @@
     padding: 0.6em 0.8em;
 
 
-    cursor: text; /* By default, should feel typable */
-  }
+    cursor: text; 
+  } */
   
   /* Inner scrollable area */
   .math-editor-scroll-inner {
-    overflow-x: auto;
-    overflow-y: hidden;
+    /* overflow-x: auto;
+    overflow-y: hidden; */
     white-space: nowrap;
     width: 100%;
     display: block;

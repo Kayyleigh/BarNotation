@@ -79,7 +79,8 @@
     display: inline;
   }
   
-  .math-node .math-style-normal {
+  /* NOTE: removed .math-node to avoid bad render in MathView. TODO make clean solution*/
+  .math-style-normal {
     text-transform: math-auto; /* No-op, but placeholder */
     font-family: var(--math-font-family);
   }
