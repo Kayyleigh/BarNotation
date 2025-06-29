@@ -591,6 +591,15 @@ const MathLibrary: React.FC<{
                 <div className={styles.meta}>
                   <span title="Used">{entry.draggedCount}×</span>
                 </div>
+                <button
+                  className={styles.entryDeleteButton}
+                  title="Delete entry"
+                  onClick={() =>
+                    updateCollectionEntries(entries.filter(e => e.id !== entry.id))
+                  }
+                >
+                  ✕
+                </button>
               </div>
             ))}
             {sorted.length === 0 && <p className={styles.empty}>Drag math expression here</p>}

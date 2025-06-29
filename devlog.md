@@ -3189,8 +3189,8 @@ Steps to fix things and make it all even better:
 - enable library entry deletion
 - allow re-ordering of the library tabs
 - keep track of the custom manual order of library entries (also put it in the sortBy dropdown options?)
-- style the sortBy dropdown
-- enable dragging a library entry into another **tab** to deep-copy it
+✅ style the sortBy dropdown
+✅ enable dragging a library entry into another **tab** to deep-copy it
 - bulk-select mode for deletion and bulk-copy to other collection tab
 - remove collection rename button, instead click on collection name to enter rename mode (show text cursor for clarity that that features exists)
 - make "are you sure?" popup for tab deletion
@@ -3201,3 +3201,7 @@ Design choice I just made:
 > On hover of MathView, tooltip display of the corresponding latex. Might need to truncate if too long, allow disabling its visibility in settings, and change the styling of the text to be less overwhelming.
 
 > Using `const cleanLatex = (s: string) => s.replace(/[\\{}[\]]/g, "");` to ignore some special characters when sorting library entries alphabetically
+
+Made duplicate-to-other-tab
+
+TODO: make search bar clear when dropping new nodes because otherwise it feels like the app is broken because you don't see your new node unless it matches your current search
