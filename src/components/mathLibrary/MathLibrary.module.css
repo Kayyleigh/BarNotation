@@ -1,4 +1,4 @@
-.libraryDropZone {
+/* .libraryDropZone {
   display: flex;
   flex-wrap: wrap;
   align-content: flex-start;
@@ -38,4 +38,174 @@
   text-align: center;
   color: var(--math-text-color);
   font-style: italic;
+} */
+
+.tabRow {
+  display: flex;
+  overflow-x: auto;
+  align-items: center;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--library-tabs-inactive-bg);
+  scrollbar-width: none; /* Firefox */
+}
+
+.tabRow::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
+}
+
+.tab {
+  /* padding: 4px 8px; */
+  display: flex;
+  cursor: pointer;
+  user-select: none;
+  align-items: baseline;
+}
+
+.tab.active {
+  background: var(--math-editor-bg);
+  cursor: default;
+}
+
+.collectionTab {
+  padding: 0.4em 0.8em;
+}
+
+.collectionTabButton {
+  background: inherit;
+  color: var(--button-color);
+  border: none;
+  padding: 0.4rem;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.collectionTabButton:hover {
+  background: var(--button-bg);
+}
+
+
+.collectionNameInput input {
+  flex: 1;
+  padding: 0.35em;
+  font-size: 1em;
+  border: 1px solid var(--math-editor-border);
+  border-radius: 6px;
+  box-shadow: 0 0 4px var(--math-editor-shadow);
+  background-color: var(--math-editor-bg);
+  color: var(--math-text-color);
+  box-sizing: border-box;
+}
+
+.collectionNameInput input:focus {
+  outline: none;
+  border-color: var(--selected-cell-bar);
+  box-shadow: 0 0 6px var(--selected-cell-bar);
+}
+
+.tabAdd {
+  background: none;
+  border: none;
+  color: var(--math-text-color);
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.controls {
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  align-items: baseline;
+  margin: 0.5em 0.25em 1em 0.25em;
+}
+
+.controls input {
+  flex: 1;
+  padding: 4px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+}
+.controls select {
+  padding: 4px;
+}
+
+.libraryDropZone {
+  flex: 1;
+  height: calc(83.94%);
+  align-content: flex-start;
+  overflow-y: auto;
+  padding: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.libraryEntry {
+  position: relative;
+  /* height: fit-content; */
+  align-content: center;
+  padding: 8px;
+  background: var(--math-editor-bg);
+  border: 1px solid var(--math-editor-border);
+  border-radius: 8px;
+  cursor: grab;
+}
+.libraryEntry:hover {
+  box-shadow: 0 0 4px rgba(0,0,0,0.2);
+}
+
+.meta {
+  position: absolute;
+  bottom: 4px;
+  right: 8px;
+  font-size: 0.8rem;
+  color: var(--math-text-color);
+}
+
+.empty {
+  padding: 1rem;
+  color: var(--math-text-color);
+  font-style: italic;
+}
+
+.searchBar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+}
+
+.searchBar input {
+  flex: 1;
+  width: 100%;
+  padding: 0.5em;
+  font-size: 1em;
+  border: 1px solid var(--math-editor-border);
+  border-radius: 6px;
+  box-shadow: 0 0 4px var(--math-editor-shadow);
+  background-color: var(--math-editor-bg);
+  color: var(--math-text-color);
+  box-sizing: border-box;
+  /* margin-top: 0.25em;
+  margin-bottom: 1em; */
+}
+
+.clearButton {
+  position: absolute;
+  right: 4px;
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: #888;
+}
+
+.clearButton:hover {
+  color: #333;
+}
+
+.meta {
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
 }

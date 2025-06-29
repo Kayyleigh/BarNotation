@@ -52,7 +52,6 @@
   }
   
   .content {
-    padding: 1rem;
     overflow-y: auto;
     height: 100%;
     flex-grow: 1;

@@ -3,10 +3,11 @@ import "./tooltip.css";
 
 type TooltipProps = {
   text: string;
+  style?: React.CSSProperties;
   children: React.ReactNode;
 };
 
-const Tooltip: React.FC<TooltipProps> = ({ text, children }) => {
+const Tooltip: React.FC<TooltipProps> = ({ text, children, style }) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [coords, setCoords] = useState<{ top: number; left: number } | null>(null);
 
@@ -28,6 +29,7 @@ const Tooltip: React.FC<TooltipProps> = ({ text, children }) => {
     <>
       <div
         className="tooltip-wrapper"
+        style={style}
         ref={wrapperRef}
         onMouseEnter={showTooltip}
         onMouseLeave={hideTooltip}

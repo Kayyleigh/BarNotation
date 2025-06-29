@@ -123,6 +123,9 @@
     --sidebar-panel-edge: var(--app-background);
 
     --sidebar-text: black;
+
+    /* Math Library */
+    --library-tabs-inactive-bg: var(--logo-color-2);
   
   }
   
@@ -208,6 +211,9 @@
     --sidebar-panel-edge: var(--app-background);
 
     --sidebar-text: #eeeeee;
+
+    /* Math Library */
+    --library-tabs-inactive-bg: #000000;
   }
 
   html, body {

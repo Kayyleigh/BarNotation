@@ -3059,3 +3059,145 @@ TODO: fix the way I parse sqrt from latex, since it does not initialize a contai
 
 ### 29/06/2025
 Fixed math cell zoom stuff 
+
+WEEEE TIME TO BUFF UP THE LIBRARYYYYY
+
+Current filetree
+```
+.
+├── App.tsx                        # div with main component loaded in (for maintainability)
+├── index.css                      # @import "tailwindcss", (hopefully) unused for the remainder
+├── main.tsx                       # Loads App in React.StrictMode
+├── vite-env.d.ts                  # Vite environment type declarations (default)
+│
+├── assets
+│   └── logo.svg                   # svg with the full logo (used in the header bar)
+│
+├── components
+│   ├── cells
+│   │   ├── BaseCell.tsx           # Basic Cell stuff
+│   │   ├── InsertCellButtons.tsx  # Insert Math Cell / Text Cell buttons (re-used a lot)
+│   │   ├── MathCell.tsx           # Cell containing MathEditor
+│   │   └── TextCell.tsx           # Cell containing simple textarea
+│   │
+│   ├── editor
+│   │   ├── Editor.module.css      # Styling for EditorPane and NotationEditor
+│   │   ├── EditorHeaderBar.tsx    # Header bar for EditorPane (add cell, show/hide all latex, zoom control, etc)
+│   │   ├── EditorPane.tsx         # Initializes cells, controls interaction between editor header and NotationEditor
+│   │   ├── NotationEditor.tsx     # Render cell list (of a single Math "Notebook") 
+│   │   ├── NoteMetadataSection.module.css # CSS for note metadata 
+│   │   └── NoteMetadataSection.tsx # Title, Author, Date fields of a note
+│   │
+│   ├── icons
+│   │   └── CollapseIcon.tsx       # Collapse arrow icon (for UI collapsing)
+│   │
+│   ├── layout
+│   │   ├── EditorWorkspace.module.css # CSS for workspace styling
+│   │   ├── EditorWorkspace.tsx    # Wraps EditorPane and MathLibrary. This is where gloabl drag lives
+│   │   ├── MainHeaderBar.tsx      # Main header bar (curr outdated; holds logo, settings, cell options)
+│   │   ├── MainLayout.tsx         # Main layout (Header, Note History, Note Editor, Library)
+│   │   ├── ResizableSidebar.module.css  # CSS for resizable sidebar styling
+│   │   └── ResizableSidebar.tsx   # Sidebar that can be resized (e.g. for note history)
+│   │
+│   ├── mathExpression
+│   │   ├── DummyStartNodeRenderer.tsx # Dummy node for start of InlineContainers enabling click and drop into 0th positions
+│   │   ├── LatexViewer.module.css # Styling for LatexViewer
+│   │   ├── LatexViewer.tsx        # Little box in MathEditor for viewing LaTeX of 1 expression
+│   │   ├── MathEditor.tsx         # Used in MathCell, holds 1 math expression (and a bunch of state)
+│   │   ├── MathRenderer.tsx       # Recursively called to render expression, + wraps in draggable
+│   │   ├── MathRenderers.tsx      # Called by MathRenderer, holds renderers for each MathNode type
+│   │   └── MathView.tsx           # Calls MathRenderer but removes interactivity, used to display math in MathLibrary  
+│   │
+│   ├── mathLibrary
+│   │   ├── MathLibrary.module.css # Styling for math library pane
+│   │   └── MathLibrary.tsx        # Panel showing predefined or saved math nodes
+│   │
+│   ├── modals
+│   │   ├── HotkeyOverlay.tsx      # Overlay of hotkey info
+│   │   └── SettingsModal.tsx      # Overlay of settings (options/preferences, e.g. light vs dark theme)
+│   │
+│   ├── notesMenu
+│   │   └── NotesMenu.tsx          # Menu for switching between notes (or opening new ones)
+│   │
+│   └── tooltips
+│       ├── tooltip.css            # Styling for tooltips
+│       └── Tooltip.tsx            # Tooltip wrapper to show text on hover of other components
+│
+├── hooks
+│   ├── DragContext.ts             # Global Drag stuff 
+│   ├── useDragContext.tsx         # Global Drag stuff 
+│   ├── DragProvider.ts            # Global Drag stuff 
+│   ├── EditorHistoryContext.tsx   # Global History stuff 
+│   ├── EditorHistoryProvider.tsx  # Global History stuff 
+│   ├── useCellDragState.ts        # Hook for dragging cells (for re-ordering in MathNotationTool)
+│   ├── useDragState.ts            # Hook for dragging MathNodes within the MathEditors (OUTDATED)
+│   ├── useEditorHistory.ts        # Hook for history of single MathEditor (OUTDATED)
+│   ├── useHoverState.ts           # Hook for hover of MathNode in a MathEditor
+│   └── useZoom.ts                 # Hook for zooming of endividual MathEditor
+│
+├── logic
+│   ├── cursor.ts                  # CursorPosition (in MathEditor): curr InlineContainer + idx within 
+│   ├── deletion.ts                # Backspace handler (in MathEditor)
+│   ├── editor-state.ts            # EditorState: rootNode and CursorPosition (in MathEditor)
+│   ├── handle-keydown.ts          # Keydown handler for MathEditor
+│   ├── global-history.ts          # states: Record<string, EditorState>; order: string[]; // the order of cell IDs
+│   ├── history.ts                 # HistoryState (same format as EditorState) used in history hook (OUTDATED)
+│   ├── insertion.ts               # Handle character insertion into MathEditor
+│   ├── navigation.ts              # Handle arrow navigation in MathEditor
+│   ├── node-manipulation.ts       # Node insertion/deletion, at cursor or by index/id, in MathEditor
+│   └── transformations.ts         # Transform nodes, e.g. into numerator of new FractionNode
+│
+├── models
+│   ├── libraryTypes.ts            # export interfact LibraryEntry with fields like dateAdded, corresponding latex, etc
+│   ├── mathNodeParser.ts          # (Will rename) parse LaTeX, to obtain MathNode
+│   ├── nodeFactories.ts           # Factories for all Math Node types
+│   ├── nodeToLatex.ts             # input MathNode, output LaTeX string
+│   ├── noteTypes.ts               # define CellData, NoteMetadata, and Note (CellData[], NoteMetadata, and an ID) 
+│   ├── specialSequences.ts        # mappings from escape sequences to `() => StructureNode` 
+│   ├── transformations.ts         # more "boilerplate" transforms (might remove, similar to factories)
+│   └── types.ts                   # MathNode = .. | InlineContainer | StructureNode (fraction, bigOp, group, ...)
+│
+├── styles
+│   ├── accents.css                # ::before and ::after for rendering accented math nodes 
+│   ├── cells.css                  # Styling for MathCell, TextCell, cell list itself, and insert zones
+│   ├── hotkeyOverlay.css          # Styling for HotkeyOverlay (also used by SettingsModal)
+│   ├── latexOutputColoring.css    # Styling for LaTeX viewer's text coloring
+│   ├── math-node.css              # Styling for math node types and MathEditor
+│   ├── math.css                   # Outdated styling (I think)
+│   ├── settings.css               # Styling for toggles in settings 
+│   ├── styles.css                 # Styling for header bar, settings overlay, LatexViewer, and .app-container 
+│   └── themes.css                 # :root, .dark theme, and predefined DOM stuff (h1, html, body, label)
+│
+└── utils
+    ├── accentUtils.ts             # Define NodeDecoration names and map to LaTeX, track required LaTeX packages
+    ├── bracketUtils.ts            # Define BracketStyle and its opening/closing characters
+    ├── mathHoverUtils.ts          # handleMouseEnter and handleMouseLeave for Math nodes
+    ├── navigationUtils.ts         # Define directional order of children, flatten CursorPosition
+    ├── noop.ts                    # `export const noop = () => {};`
+    ├── subsupUtils.ts             # Define "CornerPosition" type, only used once in transformations.ts
+    ├── textContainerUtils.ts      # (Unused) possibly to split MultiDigit mathnode into multiple (not yet implemented)
+    └── treeUtils.ts               # Find nodes, update tree, get logical children of nodes, etc.
+```
+
+DOing soooo much today for library collections
+current issues:
+- no deletion of entries
+- no reorder
+- trying to reorder instead pastes raw text, weirdly?
+
+Steps to fix things and make it all even better:
+- enable library entry deletion
+- allow re-ordering of the library tabs
+- keep track of the custom manual order of library entries (also put it in the sortBy dropdown options?)
+- style the sortBy dropdown
+- enable dragging a library entry into another **tab** to deep-copy it
+- bulk-select mode for deletion and bulk-copy to other collection tab
+- remove collection rename button, instead click on collection name to enter rename mode (show text cursor for clarity that that features exists)
+- make "are you sure?" popup for tab deletion
+- make library state part of global history
+- eventually hide the frequency counts (not yet; need to verify that it works while I'm developing)
+
+Design choice I just made: 
+> On hover of MathView, tooltip display of the corresponding latex. Might need to truncate if too long, allow disabling its visibility in settings, and change the styling of the text to be less overwhelming.
+
+> Using `const cleanLatex = (s: string) => s.replace(/[\\{}[\]]/g, "");` to ignore some special characters when sorting library entries alphabetically

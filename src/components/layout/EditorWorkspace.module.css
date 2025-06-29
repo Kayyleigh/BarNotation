@@ -1,0 +1,11 @@
+.libraryContent {
+    width: 100%;
+  }
+  .zoomControls {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .zoomControls button {
+    font-size: 1em;
+  }

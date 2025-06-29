@@ -1,7 +1,8 @@
 .tooltip-wrapper {
   position: relative;
-  display: inline-block;
-  cursor: pointer;
+  display: inline; /* or block/flex depending on context */
+  /* width: 100%; */
+  cursor: inherit;
 }
 
 .tooltip-text {
