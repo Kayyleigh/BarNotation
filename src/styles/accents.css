@@ -1,14 +1,9 @@
-.decorated-node {
-    position: relative;
-    display: inline-block;
-  }
-
 /* Hat, bar, tilde, widehat, ddot, mathring */
-.decorated-node::before {
+.type-accented::before {
     position: absolute;
     top: -0.1em;
-    left: 50%;
-    transform: translateX(-50%);
+    left: calc(50% + 0.5 * var(--empty-math-inline-container-width));
+    /* transform: calc(translateX(-50%) + var(--empty-math-inline-container-width)); Shift by width of dummy */
     font-size: 0.7em;
     pointer-events: none;
   }

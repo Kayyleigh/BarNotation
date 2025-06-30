@@ -784,12 +784,14 @@ export function renderInlineContainerNode(
         handleMouseLeave(e, baseProps.ancestorIds, baseProps.onHoverChange)
       }
     >
-      {node.children.length < 1 && isPartOfLibraryEntry
-        ? "⬚"
-        : renderContainerChildren(node.children, {
-            ...baseProps,
-            containerId: node.id,
-          })}
+      {node.children.length < 1 && isPartOfLibraryEntry ? (
+        <span className="placeholder-square">⬚</span>
+      ) : (
+        renderContainerChildren(node.children, {
+          ...baseProps,
+          containerId: node.id,
+        })
+      )}
     </span>
   );
 }
@@ -1094,6 +1096,53 @@ export function renderChildedNode(
     </span>
   );
 }
+
+// export const renderAccentedNode = (
+//   node: AccentedNode,
+//   props: RenderProps
+// ) => {
+//   const renderCustomAccent = (position: "above" | "below") => (
+//     <div className={`accent-content accent-${position}`}>
+//       <MathRenderer
+//         node={node.accent.content}
+//         {...props} 
+//         ancestorIds={[node.id, ...(props.ancestorIds ?? [])]}
+//         parentContainerId={node.accent.content.id}
+//         index={0}
+//       />
+//     </div>
+//   );
+
+//   const isCustom = node.accent.type === "custom";
+
+//   return (
+//     <span
+//       data-nodeid={node.id}
+//       className={clsx(
+//         "math-node decorated-node",
+//         isCustom ? "decoration-custom" : `decoration-${node.accent.decoration}`,
+//         { hovered: getIsHovered(node, props) },
+//       )}
+//       onClick={(e) => {
+//         e.stopPropagation();
+//         if (node.base.children.length === 0) {
+//           props.onCursorChange({ containerId: node.base.id, index: 0 });
+//         }
+//       }}
+//       onMouseEnter={() => handleMouseEnter(node.id, props.onHoverChange!)}
+//       onMouseLeave={(e) => handleMouseLeave(e, node.id, props.ancestorIds, props.onHoverChange!)}
+//     >
+//       {isCustom && node.accent.position === "above" && renderCustomAccent("above")}
+//       <span className="accent-base">
+//         <MathRenderer
+// 					node={node.base} 
+//           {...props} 
+//           ancestorIds={[node.id, ...(props.ancestorIds ?? [])]} 
+//         /></span>
+//       {isCustom && node.accent.position === "below" && renderCustomAccent("below")}
+//     </span>
+//   );
+// };
 
 // 10. Accented Node (has base)
 export function renderAccentedNode(

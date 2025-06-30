@@ -119,7 +119,11 @@
     text-transform: none;
     font-family: 'Courier New', Courier, monospace;
   }
-  
+
+  .placeholder-square {
+    opacity: 0.3;
+    pointer-events: none; /* optional: prevents interaction */
+  }  
   
   /* ============================================= */
   /* =============== INLINE & GROUPS ============= */
@@ -309,7 +313,7 @@
   /* =============== DECORATIONS ================= */
   /* ============================================= */
   
-  .decorated-node {
+  .type-accented {
     display: inline-block;
     position: relative;
   }

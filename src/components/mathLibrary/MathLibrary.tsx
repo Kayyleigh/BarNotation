@@ -97,8 +97,6 @@ const MathLibrary: React.FC<{
   useEffect(() => {
     if (updateEntryRef) {
       updateEntryRef.current = (id) => {
-        console.log(`we are? to be using it! ${id}`)
-
         setCollections(colls =>
           colls.map(coll => ({
             ...coll,

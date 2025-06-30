@@ -3241,3 +3241,7 @@ another possible sorting: by most recently used
 Premade expressions that are handled the absolute worst (others are just slow to parse, but these really fuck it up):
 - `\\top`
 - `\\bot`
+
+Progress:
+- added missing sequences to make all the premades work. 
+- made "delete entry" button appear only on hover of library entry. Reason: otherwise small entries are blocked by the button, so you can never really see what is in the entry. On hover, this issue still appears in the sense that you cannot easily see the underlying latex because the tooltip for that is only on the math itself. The reason for that is because I believe conceptually, latex truly is bound to the expression. Not the library entry.
