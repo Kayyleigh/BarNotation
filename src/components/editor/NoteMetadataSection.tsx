@@ -1,20 +1,11 @@
 import React from "react";
 import styles from "./NoteMetadataSection.module.css";
 import clsx from "clsx";
+import type { NoteMetadata } from "../../models/noteTypes";
 
 interface Props {
-  metadata: {
-    title: string;
-    courseCode?: string;
-    author?: string;
-    dateOrPeriod?: string;
-  };
-  setMetadata: React.Dispatch<React.SetStateAction<{
-    title: string;
-    courseCode?: string;
-    author?: string;
-    dateOrPeriod?: string;
-  }>>;
+  metadata: NoteMetadata;
+  setMetadata: (metadata: Partial<NoteMetadata>) => void;
   isPreviewMode: boolean;
 }
 
@@ -38,7 +29,7 @@ const NoteMetaDataSection: React.FC<Props> = ({ metadata, setMetadata, isPreview
           type="text"
           placeholder="Untitled Note"
           value={metadata.title}
-          onChange={(e) => setMetadata((prev) => ({ ...prev, title: e.target.value }))}
+          onChange={(e) => setMetadata({ title: e.target.value })}
           className={styles.titleInput}
         />
       </div>
@@ -49,7 +40,7 @@ const NoteMetaDataSection: React.FC<Props> = ({ metadata, setMetadata, isPreview
             type="text"
             placeholder="Course Code"
             value={metadata.courseCode ?? ""}
-            onChange={(e) => setMetadata((prev) => ({ ...prev, courseCode: e.target.value }))}
+            onChange={(e) => setMetadata({ courseCode: e.target.value })}
             className={styles.metaInput}
           />
         </div>
@@ -58,7 +49,7 @@ const NoteMetaDataSection: React.FC<Props> = ({ metadata, setMetadata, isPreview
             type="text"
             placeholder="Author"
             value={metadata.author ?? ""}
-            onChange={(e) => setMetadata((prev) => ({ ...prev, author: e.target.value }))}
+            onChange={(e) => setMetadata({ author: e.target.value })}
             className={styles.metaInput}
           />
         </div>
@@ -67,7 +58,7 @@ const NoteMetaDataSection: React.FC<Props> = ({ metadata, setMetadata, isPreview
             type="text"
             placeholder="Date or Period"
             value={metadata.dateOrPeriod ?? ""}
-            onChange={(e) => setMetadata((prev) => ({ ...prev, dateOrPeriod: e.target.value }))}
+            onChange={(e) => setMetadata({ dateOrPeriod: e.target.value })}
             className={styles.metaInput}
           />
         </div>

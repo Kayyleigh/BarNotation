@@ -1,11 +1,15 @@
-import React from "react";
+import React, { useState, useMemo } from "react";
 import ResizableSidebar from "../layout/ResizableSidebar";
+import styles from "./NotesMenu.module.css";
+import type { Note } from "../../models/noteTypes";
 
 interface NotesMenuProps {
   width: number;
   onWidthChange: (width: number) => void;
   selectedNoteId: string | null;
   onSelectNote: (id: string) => void;
+  notes: Note[];
+  onCreateNote: () => void;
 }
 
 const NotesMenu: React.FC<NotesMenuProps> = ({
@@ -13,37 +17,67 @@ const NotesMenu: React.FC<NotesMenuProps> = ({
   onWidthChange,
   selectedNoteId,
   onSelectNote,
+  notes,
+  onCreateNote,
 }) => {
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // Filter notes by search term (case-insensitive)
+  const filteredNotes = useMemo(() => {
+    const lower = searchTerm.toLowerCase();
+    return notes.filter(
+      (note) => !note.metadata.archived && note.metadata.title.toLowerCase().includes(lower)
+    );
+  }, [notes, searchTerm]);
+
   return (
     <ResizableSidebar
       side="left"
-      title="notes menu"
+      title="Notes"
       width={width}
       onWidthChange={onWidthChange}
       storageKey="notesMenuWidth"
     >
-      <h3>Notes</h3>
-        <p>
-        Later, this will hold all your notes. 
-        You will be able to open the notes by clicking them, or delete them by a button that appears on hover. 
-        Also, there will be extra options available on hover such as export to LaTeX, and See Info.
-        
-        The bar will have a "New Note" button at the top, and hopefully a search bar as well, and ways to sort (by date created, last modified, title, size, ...)
-        </p>
-      <ul>
-        <li
-          onClick={() => onSelectNote("note-1")}
-          style={{ fontWeight: selectedNoteId === "note-1" ? "bold" : "normal" }}
+      <div className={styles.notesMenu}>
+        <button
+          className={styles.newNoteButton}
+          onClick={onCreateNote}
+          aria-label="Create new note"
         >
-          Note 1
-        </li>
-        <li
-          onClick={() => onSelectNote("note-2")}
-          style={{ fontWeight: selectedNoteId === "note-2" ? "bold" : "normal" }}
-        >
-          Note 2
-        </li>
-      </ul>
+          + New Note
+        </button>
+        <input
+          type="search"
+          placeholder="Search notes..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className={styles.searchInput}
+          aria-label="Search notes"
+        />
+        <ul className={styles.notesList}>
+          {filteredNotes.length === 0 && (
+            <li className={styles.noteItem}>No notes found</li>
+          )}
+          {filteredNotes.map((note) => (
+            <li
+              key={note.id}
+              onClick={() => onSelectNote(note.id)}
+              className={`${styles.noteItem} ${
+                selectedNoteId === note.id ? styles.selected : ""
+              }`}
+              tabIndex={0}
+              role="button"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  onSelectNote(note.id);
+                }
+              }}
+            >
+              {note.metadata.title}
+            </li>
+          ))}
+        </ul>
+      </div>
     </ResizableSidebar>
   );
 };

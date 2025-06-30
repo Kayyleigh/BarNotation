@@ -42,7 +42,8 @@ interface NotationEditorProps {
 
   /** Note metadata */
   metadata: NoteMetadata;
-  setMetadata: React.Dispatch<React.SetStateAction<NoteMetadata>>;
+  // setMetadata: React.Dispatch<React.SetStateAction<NoteMetadata>>;
+  setMetadata: (noteId: string, metadata: Partial<NoteMetadata>) => void;
 
   /** Drag-and-drop math node handler */
   onDropNode: (
@@ -75,6 +76,7 @@ const reconstructCells = (
 };
 
 const NotationEditor: React.FC<NotationEditorProps> = ({
+  noteId,
   isPreviewMode,
   defaultZoom,
   resetZoomSignal,
@@ -94,6 +96,12 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
 }) => {
   const [selectedCellId, setSelectedCellId] = useState<string | null>(null);
   const [hoveredInsertIndex, setHoveredInsertIndex] = useState<number | null>(null);
+
+  const handleMetadataUpdate = (partialMetadata: Partial<NoteMetadata>) => {
+    if (noteId) {
+      setMetadata(noteId, partialMetadata);
+    }
+  };
 
   const {
     draggingCellId,
@@ -164,7 +172,7 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
     >
       <NoteMetaDataSection
         metadata={metadata}
-        setMetadata={setMetadata}
+        setMetadata={handleMetadataUpdate} //??? TODO
         isPreviewMode={isPreviewMode}
       />
 

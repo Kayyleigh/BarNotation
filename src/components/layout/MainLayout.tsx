@@ -1,5 +1,386 @@
-// components/layout/MainLayout.tsx
-import React, { useState, useEffect } from "react";
+// // components/layout/MainLayout.tsx
+// import React, { useState, useEffect } from "react";
+// import HeaderBar from "./MainHeaderBar";
+// import NotesMenu from "../notesMenu/NotesMenu";
+// import EditorWorkspace from "./EditorWorkspace";
+// import HotkeyOverlay from "../modals/HotkeyOverlay";
+// import SettingsModal from "../modals/SettingsModal";
+// import "../../styles/themes.css";
+// import "../../styles/styles.css";
+// import "../../styles/math-node.css";
+// import "../../styles/cells.css";
+// import { DragProvider } from "../../hooks/DragProvider";
+// import { EditorHistoryProvider } from "../../hooks/EditorHistoryProvider";
+// import { createInitialCursor } from "../../logic/cursor";
+// import { createRootWrapper } from "../../models/nodeFactories";
+// import type { EditorSnapshot } from "../../logic/global-history";
+
+// // 🔧 TEMP: Replace this with actual loading logic later
+// // function loadEditorStatesForNote(noteId: string): Record<string, EditorState> {
+// //   const rootNode = createRootWrapper();
+
+// //   return {
+// //     [noteId]: {
+// //       rootNode,
+// //       cursor: createInitialCursor(rootNode),
+// //     },
+// //   };
+// // }
+// function loadEditorSnapshotForNote(noteId: string): EditorSnapshot {
+//   const rootNode = createRootWrapper();
+
+//   return {
+//     states: {
+//       [noteId]: {
+//         rootNode,
+//         cursor: createInitialCursor(rootNode),
+//       },
+//     },
+//     order: [noteId],
+//     textContents: {},
+//   };
+// }
+
+// // function loadNewEmptyNote(): EditorSnapshot {
+// //   return {
+// //     states: {},
+// //     order: [],
+// //   };
+// // }
+
+// const MainLayout: React.FC = () => {
+//   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
+//   const [leftWidth, setLeftWidth] = useState(200);
+//   const [rightWidth, setRightWidth] = useState(600);
+//   const [showSettings, setShowSettings] = useState(false);
+//   const [showHotkeys, setShowHotkeys] = useState(false);
+
+//   const [initialSnapshot, setInitialSnapshot] = useState<EditorSnapshot | null>(null);
+
+//   // === Settings state ===
+//   const [isDarkMode, setIsDarkMode] = useState(() => {
+//     return localStorage.getItem("mathEditorTheme") === "dark";
+//   });
+
+//   const [showColorInPreview, setShowColorInPreview] = useState(() => {
+//     return localStorage.getItem("showColorInPreview") === "true";
+//   });
+
+//   const toggleDarkMode = () => setIsDarkMode(prev => !prev);
+//   const toggleShowColorInPreview = () => setShowColorInPreview(prev => !prev);
+
+//   const [authorName, setAuthorName] = useState(() => {
+//     return localStorage.getItem("defaultAuthor") || "";
+//   });
+
+//   useEffect(() => {
+//     localStorage.setItem("defaultAuthor", authorName);
+//   }, [authorName]);
+
+//   useEffect(() => {
+//     document.body.classList.toggle("dark", isDarkMode);
+//     localStorage.setItem("mathEditorTheme", isDarkMode ? "dark" : "light");
+//   }, [isDarkMode]);
+
+//   useEffect(() => {
+//     localStorage.setItem("showColorInPreview", showColorInPreview ? "true" : "false");
+//   }, [showColorInPreview]);
+
+//   // === Load note when selected ===
+//   // useEffect(() => {
+//   //   if (selectedNoteId) {
+//   //     const loadedStates = loadEditorStatesForNote(selectedNoteId);
+//   //     setInitialEditorStates(loadedStates);
+//   //   } else {
+//   //     setInitialEditorStates(null);
+//   //   }
+//   // }, [selectedNoteId]);
+
+//   useEffect(() => {
+//     if (selectedNoteId) {
+//       const loadedSnapshot = loadEditorSnapshotForNote(selectedNoteId);
+//       setInitialSnapshot(loadedSnapshot);
+//     } else {
+//       setInitialSnapshot(null);
+//     }
+//   }, [selectedNoteId]);
+
+//   return (
+//     <div className="main-layout">
+//       <HeaderBar
+//         onOpenSettings={() => setShowSettings(true)}
+//         onOpenHotkeys={() => setShowHotkeys(true)}
+//       />
+//       <div style={{ display: "flex", height: "calc(100vh - 50px)", width: "100%" }}>
+//         {/* Left sidebar */}
+//         <div style={{ flex: "0 0 auto", width: `${leftWidth}px` }}>
+//           <NotesMenu
+//             width={leftWidth}
+//             onWidthChange={setLeftWidth}
+//             selectedNoteId={selectedNoteId}
+//             onSelectNote={setSelectedNoteId}
+//           />
+//           </div>
+//           {/* Center area */}
+//           <div style={{ flexGrow: 1, display: "flex", minWidth: 0 }}>
+//             {selectedNoteId && initialSnapshot ? (
+//               <EditorHistoryProvider initialSnapshot={initialSnapshot}>
+//                 <DragProvider>
+//                   <EditorWorkspace
+//                     noteId={selectedNoteId}
+//                     rightWidth={rightWidth}
+//                     setRightWidth={setRightWidth}
+//                   />
+//                 </DragProvider>
+//               </EditorHistoryProvider>
+//             ) : (
+//               <div style={{ padding: "2rem" }}>
+//                 <h2>Select a note or create a new one</h2>
+//                 <button className="button primary" onClick={() => setSelectedNoteId("note-4")}>
+//                   Create Temporary Note
+//                 </button>
+//               </div>
+//             )}
+//           </div>
+//         </div>
+//       {/* Modals */}
+//       {showHotkeys && <HotkeyOverlay onClose={() => setShowHotkeys(false)} />}
+//       {showSettings && (
+//         <SettingsModal
+//           onClose={() => setShowSettings(false)}
+//           isDarkMode={isDarkMode}
+//           toggleDarkMode={toggleDarkMode}
+//           showColorInPreview={showColorInPreview}
+//           toggleShowColorInPreview={toggleShowColorInPreview}
+//           authorName={authorName}
+//           setAuthorName={setAuthorName}
+//         />
+//       )}
+//     </div>
+//   );
+// };
+
+// export default MainLayout;
+
+// import React, { useState, useEffect } from "react";
+// import HeaderBar from "./MainHeaderBar";
+// import NotesMenu from "../notesMenu/NotesMenu";
+// import EditorWorkspace from "./EditorWorkspace";
+// import HotkeyOverlay from "../modals/HotkeyOverlay";
+// import SettingsModal from "../modals/SettingsModal";
+// import "../../styles/themes.css";
+// import "../../styles/styles.css";
+// import "../../styles/math-node.css";
+// import "../../styles/cells.css";
+// import { DragProvider } from "../../hooks/DragProvider";
+// import { EditorHistoryProvider } from "../../hooks/EditorHistoryProvider";
+// import { createInitialCursor } from "../../logic/cursor";
+// import { createRootWrapper } from "../../models/nodeFactories";
+// import type { EditorSnapshot } from "../../logic/global-history";
+// import type { CellData, NoteMetadata } from "../../models/noteTypes";
+
+// interface Note {
+//   id: string;
+//   metadata: NoteMetadata;
+//   cells: CellData[];
+// }
+
+// function loadEditorSnapshotForNote(noteId: string): EditorSnapshot {
+//   const rootNode = createRootWrapper();
+
+//   return {
+//     states: {
+//       [noteId]: {
+//         rootNode,
+//         cursor: createInitialCursor(rootNode),
+//       },
+//     },
+//     order: [noteId],
+//     textContents: {},
+//   };
+// }
+
+// const LOCAL_STORAGE_KEY = "notes";
+
+// const MainLayout: React.FC = () => {
+//   // const [notes, setNotes] = useState<Note[]>([]);
+//   // const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
+//   const [leftWidth, setLeftWidth] = useState(200);
+//   const [rightWidth, setRightWidth] = useState(600);
+//   const [showSettings, setShowSettings] = useState(false);
+//   const [showHotkeys, setShowHotkeys] = useState(false);
+
+
+//   const [notes, setNotes] = useState<Note[]>([]);
+//   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(notes.length ? notes[0].id : null);
+
+
+//   const [initialSnapshot, setInitialSnapshot] = useState<EditorSnapshot | null>(null);
+
+
+//   // === Settings state ===
+//   const [isDarkMode, setIsDarkMode] = useState(() => {
+//     return localStorage.getItem("mathEditorTheme") === "dark";
+//   });
+
+//   const [showColorInPreview, setShowColorInPreview] = useState(() => {
+//     return localStorage.getItem("showColorInPreview") === "true";
+//   });
+
+//   const toggleDarkMode = () => setIsDarkMode(prev => !prev);
+//   const toggleShowColorInPreview = () => setShowColorInPreview(prev => !prev);
+
+//   const [authorName, setAuthorName] = useState(() => {
+//     return localStorage.getItem("defaultAuthor") || "";
+//   });
+
+//   useEffect(() => {
+//     localStorage.setItem("defaultAuthor", authorName);
+//   }, [authorName]);
+
+//   useEffect(() => {
+//     document.body.classList.toggle("dark", isDarkMode);
+//     localStorage.setItem("mathEditorTheme", isDarkMode ? "dark" : "light");
+//   }, [isDarkMode]);
+
+//   useEffect(() => {
+//     localStorage.setItem("showColorInPreview", showColorInPreview ? "true" : "false");
+//   }, [showColorInPreview]);
+
+//   // Load notes from localStorage on mount
+//   useEffect(() => {
+//     const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+//     if (saved) {
+//       try {
+//         const parsed: Note[] = JSON.parse(saved);
+//         setNotes(parsed);
+//         if (parsed.length > 0) {
+//           setSelectedNoteId(parsed[0].id); // Select first note by default
+//         }
+//       } catch {
+//         // Ignore parse errors, start fresh
+//       }
+//     }
+//   }, []);
+
+//   // Save notes to localStorage on change
+//   useEffect(() => {
+//     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(notes));
+//   }, [notes]);
+
+
+//   // Get currently selected note data:
+//   const selectedNote = notes.find(note => note.id === selectedNoteId) ?? null;
+
+//   // Handler to update metadata (like title) of a note:
+//   const updateNoteMetadata = (noteId: string, newMetadata: Partial<NoteMetadata>) => {
+//     setNotes((prevNotes) =>
+//       prevNotes.map(note =>
+//         note.id === noteId ? { ...note, metadata: { ...note.metadata, ...newMetadata } } : note
+//       )
+//     );
+//   };
+
+//     // Handler to update cells of a note:
+//     const updateNoteCells = (noteId: string, newCells: CellData[]) => {
+//       setNotes((prevNotes) =>
+//         prevNotes.map(note =>
+//           note.id === noteId ? { ...note, cells: newCells } : note
+//         )
+//       );
+//     };
+
+//   // Load editor snapshot when note selected
+//   useEffect(() => {
+//     if (selectedNoteId) {
+//       const loadedSnapshot = loadEditorSnapshotForNote(selectedNoteId);
+//       setInitialSnapshot(loadedSnapshot);
+//     } else {
+//       setInitialSnapshot(null);
+//     }
+//   }, [selectedNoteId]);
+
+//   const createNewNote = () => {
+//     const newId = `note-${Date.now()}`;
+//     const newNote: Note = {
+//       id: newId,
+//       metadata: {
+//         title: "Untitled Note",
+//         courseCode: "",
+//         author: authorName,   // optionally use default author
+//         dateOrPeriod: "",
+//         archived: false,
+//       },
+//       cells: [],
+//     };
+//     setNotes((prev) => [newNote, ...prev]);
+//     setSelectedNoteId(newId);
+//   };
+
+//   return (
+//     <div className="main-layout">
+//       <HeaderBar
+//         onOpenSettings={() => setShowSettings(true)}
+//         onOpenHotkeys={() => setShowHotkeys(true)}
+//       />
+//       <div style={{ display: "flex", height: "calc(100vh - 50px)", width: "100%" }}>
+//         <div style={{ flex: "0 0 auto", width: `${leftWidth}px` }}>
+//           <NotesMenu
+//             width={leftWidth}
+//             onWidthChange={setLeftWidth}
+//             selectedNoteId={selectedNoteId}
+//             onSelectNote={setSelectedNoteId}
+//             notes={notes}
+//             onCreateNote={createNewNote}
+//           />
+//         </div>
+//         <div style={{ flexGrow: 1, display: "flex", minWidth: 0 }}>
+//           {selectedNoteId && selectedNote && initialSnapshot ? (
+//             <EditorHistoryProvider initialSnapshot={initialSnapshot}>
+//               <DragProvider>
+//                 <EditorWorkspace
+//                   noteId={selectedNoteId}
+//                   rightWidth={rightWidth}
+//                   setRightWidth={setRightWidth}
+//                   noteMetadata={selectedNote?.metadata}
+//                   setNoteMetadata={updateNoteMetadata}
+//                   noteCells={selectedNote?.cells}
+//                   setNoteCells={updateNoteCells}
+//                 />
+//               </DragProvider>
+//             </EditorHistoryProvider>
+//           ) : (
+//             <div style={{ padding: "2rem" }}>
+//               <h2>Select a note or create a new one</h2>
+//               <button className="button primary" onClick={() => {
+//                 createNewNote();
+//               }}>
+//                 Create Temporary Note
+//               </button>
+//             </div>
+//           )}
+//         </div>
+//       </div>
+
+//       {showHotkeys && <HotkeyOverlay onClose={() => setShowHotkeys(false)} />}
+//       {showSettings && (
+//         <SettingsModal
+//           onClose={() => setShowSettings(false)}
+//           isDarkMode={isDarkMode}
+//           toggleDarkMode={toggleDarkMode}
+//           showColorInPreview={showColorInPreview}
+//           toggleShowColorInPreview={toggleShowColorInPreview}
+//           authorName={authorName}
+//           setAuthorName={setAuthorName}
+//         />
+//       )}
+//     </div>
+//   );
+// };
+
+// export default MainLayout;
+
+import React, { useState, useEffect } from "react"; 
 import HeaderBar from "./MainHeaderBar";
 import NotesMenu from "../notesMenu/NotesMenu";
 import EditorWorkspace from "./EditorWorkspace";
@@ -14,18 +395,14 @@ import { EditorHistoryProvider } from "../../hooks/EditorHistoryProvider";
 import { createInitialCursor } from "../../logic/cursor";
 import { createRootWrapper } from "../../models/nodeFactories";
 import type { EditorSnapshot } from "../../logic/global-history";
+import type { CellData, NoteMetadata } from "../../models/noteTypes";
 
-// 🔧 TEMP: Replace this with actual loading logic later
-// function loadEditorStatesForNote(noteId: string): Record<string, EditorState> {
-//   const rootNode = createRootWrapper();
+interface Note {
+  id: string;
+  metadata: NoteMetadata;
+  cells: CellData[];
+}
 
-//   return {
-//     [noteId]: {
-//       rootNode,
-//       cursor: createInitialCursor(rootNode),
-//     },
-//   };
-// }
 function loadEditorSnapshotForNote(noteId: string): EditorSnapshot {
   const rootNode = createRootWrapper();
 
@@ -41,19 +418,16 @@ function loadEditorSnapshotForNote(noteId: string): EditorSnapshot {
   };
 }
 
-// function loadNewEmptyNote(): EditorSnapshot {
-//   return {
-//     states: {},
-//     order: [],
-//   };
-// }
+const LOCAL_STORAGE_KEY = "notes";
 
 const MainLayout: React.FC = () => {
-  const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
   const [leftWidth, setLeftWidth] = useState(200);
   const [rightWidth, setRightWidth] = useState(600);
   const [showSettings, setShowSettings] = useState(false);
   const [showHotkeys, setShowHotkeys] = useState(false);
+
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [selectedNoteId, setSelectedNoteId] = useState<string | null>(notes.length ? notes[0].id : null);
 
   const [initialSnapshot, setInitialSnapshot] = useState<EditorSnapshot | null>(null);
 
@@ -86,16 +460,49 @@ const MainLayout: React.FC = () => {
     localStorage.setItem("showColorInPreview", showColorInPreview ? "true" : "false");
   }, [showColorInPreview]);
 
-  // === Load note when selected ===
-  // useEffect(() => {
-  //   if (selectedNoteId) {
-  //     const loadedStates = loadEditorStatesForNote(selectedNoteId);
-  //     setInitialEditorStates(loadedStates);
-  //   } else {
-  //     setInitialEditorStates(null);
-  //   }
-  // }, [selectedNoteId]);
+  // Load notes from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed: Note[] = JSON.parse(saved);
+        setNotes(parsed);
+        if (parsed.length > 0) {
+          setSelectedNoteId(parsed[0].id); // Select first note by default
+        }
+      } catch {
+        // Ignore parse errors, start fresh
+      }
+    }
+  }, []);
 
+  // Save notes to localStorage on change
+  useEffect(() => {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(notes));
+  }, [notes]);
+
+  // Get currently selected note data:
+  const selectedNote = notes.find(note => note.id === selectedNoteId) ?? null;
+
+  // Handler to update metadata (like title) of a note:
+  const updateNoteMetadata = (noteId: string, newMetadata: Partial<NoteMetadata>) => {
+    setNotes((prevNotes) =>
+      prevNotes.map(note =>
+        note.id === noteId ? { ...note, metadata: { ...note.metadata, ...newMetadata } } : note
+      )
+    );
+  };
+
+  // Handler to update cells of a note:
+  const updateNoteCells = (noteId: string, newCells: CellData[]) => {
+    setNotes((prevNotes) =>
+      prevNotes.map(note =>
+        note.id === noteId ? { ...note, cells: newCells } : note
+      )
+    );
+  };
+
+  // Load editor snapshot when note selected
   useEffect(() => {
     if (selectedNoteId) {
       const loadedSnapshot = loadEditorSnapshotForNote(selectedNoteId);
@@ -105,6 +512,23 @@ const MainLayout: React.FC = () => {
     }
   }, [selectedNoteId]);
 
+  const createNewNote = () => {
+    const newId = `note-${Date.now()}`;
+    const newNote: Note = {
+      id: newId,
+      metadata: {
+        title: "My New Note",
+        courseCode: "",
+        author: authorName,
+        dateOrPeriod: "",
+        archived: false,
+      },
+      cells: [],
+    };
+    setNotes((prev) => [newNote, ...prev]);
+    setSelectedNoteId(newId);
+  };
+
   return (
     <div className="main-layout">
       <HeaderBar
@@ -112,38 +536,42 @@ const MainLayout: React.FC = () => {
         onOpenHotkeys={() => setShowHotkeys(true)}
       />
       <div style={{ display: "flex", height: "calc(100vh - 50px)", width: "100%" }}>
-        {/* Left sidebar */}
         <div style={{ flex: "0 0 auto", width: `${leftWidth}px` }}>
           <NotesMenu
             width={leftWidth}
             onWidthChange={setLeftWidth}
             selectedNoteId={selectedNoteId}
             onSelectNote={setSelectedNoteId}
+            notes={notes}
+            onCreateNote={createNewNote}
           />
-          </div>
-          {/* Center area */}
-          <div style={{ flexGrow: 1, display: "flex", minWidth: 0 }}>
-            {selectedNoteId && initialSnapshot ? (
-              <EditorHistoryProvider initialSnapshot={initialSnapshot}>
-                <DragProvider>
-                  <EditorWorkspace
-                    noteId={selectedNoteId}
-                    rightWidth={rightWidth}
-                    setRightWidth={setRightWidth}
-                  />
-                </DragProvider>
-              </EditorHistoryProvider>
-            ) : (
-              <div style={{ padding: "2rem" }}>
-                <h2>Select a note or create a new one</h2>
-                <button className="button primary" onClick={() => setSelectedNoteId("note-4")}>
-                  Create Temporary Note
-                </button>
-              </div>
-            )}
-          </div>
         </div>
-      {/* Modals */}
+        <div style={{ flexGrow: 1, display: "flex", minWidth: 0 }}>
+          {selectedNoteId && selectedNote && initialSnapshot ? (
+            <EditorHistoryProvider initialSnapshot={initialSnapshot}>
+              <DragProvider>
+                <EditorWorkspace
+                  noteId={selectedNoteId}
+                  rightWidth={rightWidth}
+                  setRightWidth={setRightWidth}
+                  noteMetadata={selectedNote.metadata}
+                  setNoteMetadata={updateNoteMetadata}
+                  noteCells={selectedNote.cells}
+                  setNoteCells={updateNoteCells}
+                />
+              </DragProvider>
+            </EditorHistoryProvider>
+          ) : (
+            <div style={{ padding: "2rem" }}>
+              <h2>Select a note or create a new one</h2>
+              <button className="button primary" onClick={createNewNote}>
+                Create Temporary Note
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
       {showHotkeys && <HotkeyOverlay onClose={() => setShowHotkeys(false)} />}
       {showSettings && (
         <SettingsModal
@@ -161,3 +589,4 @@ const MainLayout: React.FC = () => {
 };
 
 export default MainLayout;
+

@@ -937,16 +937,502 @@
 
 
 
+// // components/editor/EditorPane.tsx
+// import React, { useState, useRef, useEffect } from "react";
+// import EditorHeaderBar from "./EditorHeaderBar";
+// import NotationEditor from "./NotationEditor";
+// import styles from "./Editor.module.css";
+// import type { CellData, NoteMetadata } from "../../models/noteTypes";
+// import type { MathNode } from "../../models/types";
+// import { useEditorHistory } from "../../hooks/EditorHistoryContext";
+// import { createRootWrapper } from "../../models/nodeFactories";
+// import { createEditorState } from "../../logic/editor-state";
+
+// type DropSource = {
+//   sourceType: "cell" | "library";
+//   cellId?: string;
+//   containerId: string;
+//   index: number;
+//   node: MathNode;
+// };
+
+// type DropTarget = {
+//   cellId: string;
+//   containerId: string;
+//   index: number;
+// };
+
+// interface EditorPaneProps {
+//   noteId: string | null;
+//   noteMetadata: NoteMetadata;
+//   // updateNoteMetadata: Dispatch<SetStateAction<NoteMetadata>>;
+//   setNoteMetadata: (noteId: string, metadata: Partial<NoteMetadata>) => void;
+//   noteCells: CellData[];
+//   setNoteCells: (noteId: string, newCells: CellData[]) => void;
+//   style?: React.CSSProperties;
+//   onDropNode: (from: DropSource, to: DropTarget) => void;
+// }
+
+// const EditorPane: React.FC<EditorPaneProps> = ({
+//   noteId,
+//   noteMetadata,
+//   setNoteMetadata,
+//   noteCells,
+//   setNoteCells,
+//   style,
+//   onDropNode,
+// }) => {
+//   const { history, updateState } = useEditorHistory();
+//   const { states: editorStates, order, textContents } = history.present;
+
+//   // update text contents
+//   const setTextContents = (value: React.SetStateAction<typeof textContents>) => {
+//     console.log(`trreachted with ${value} ${typeof value === "function" ? value(textContents) : "problem"}`)
+//     if (typeof value === "function") {
+//       const newContents = value(textContents);
+//       updateState({ states: editorStates, order, textContents: newContents });
+//     } else {
+//       updateState({ states: editorStates, order, textContents: value });
+//     }
+//   };
+
+//   // update editorStates safely
+//   const setEditorStates = (value: React.SetStateAction<typeof editorStates>) => {
+//     if (typeof value === "function") {
+//       const newStates = value(editorStates);
+//       updateState({ states: newStates, order, textContents });
+//     } else {
+//       updateState({ states: value, order, textContents });
+//     }
+//   };
+
+//   // Removed cells state and syncing effects
+
+//   const addShowLatexEntry = (cellId: string) => {
+//     setShowLatexMap((prev) => ({ ...prev, [cellId]: false }));
+//   };
+
+//   const addCell = (type: "math" | "text", index?: number) => {
+//     const newCell: CellData = {
+//       id: Date.now().toString(),
+//       type,
+//       content: "",
+//     };
+
+//     // Insert new cell ID into the order array at specified index or at the end
+//     const newOrder = [...order];
+//     if (index === undefined) {
+//       newOrder.push(newCell.id);
+//     } else {
+//       newOrder.splice(index, 0, newCell.id);
+//     }
+
+//     // If math cell, create initial editor state for it
+//     const newStates = { ...editorStates };
+//     if (type === "math") {
+//       const root = createRootWrapper();
+//       const editorState = createEditorState(root);
+//       newStates[newCell.id] = editorState;
+//     }
+
+//     updateState({
+//       order: newOrder,
+//       states: newStates,
+//       textContents: textContents,
+//     });
+
+//     addShowLatexEntry(newCell.id);
+//   };
+
+//   const deleteCell = (id: string) => {
+//     const newOrder = order.filter((cellId) => cellId !== id);
+//     const newStates = { ...editorStates };
+//     delete newStates[id];
+//     const newTextContents = { ...textContents };
+//     delete newTextContents[id];
+  
+//     setShowLatexMap((prev) => {
+//       const copy = { ...prev };
+//       delete copy[id];
+//       return copy;
+//     });
+  
+//     updateState({
+//       order: newOrder,
+//       states: newStates,
+//       textContents: newTextContents,
+//     });
+//   };
+
+//   // Implement updateOrder to update just the order array:
+//   const updateOrder = (newOrder: string[]) => {
+//     updateState({
+//       order: newOrder,
+//       states: editorStates,
+//       textContents: textContents,
+//     });
+//   };
+
+//   // Preview mode toggle
+//   const [isPreviewMode, setIsPreviewMode] = useState(() => {
+//     return localStorage.getItem("previewMode") === "on";
+//   });
+
+//   // Default zoom state
+//   const [defaultZoom, setDefaultZoom] = useState(() => {
+//     const stored = localStorage.getItem("defaultZoom");
+//     return stored ? parseFloat(stored) : 1;
+//   });
+
+//   const [resetZoomSignal, setResetZoomSignal] = useState(0);
+//   const [showZoomDropdown, setShowZoomDropdown] = useState(false);
+//   const dropdownRef = useRef<HTMLDivElement | null>(null);
+
+//   useEffect(() => {
+//     // reload editor state for new noteId
+//   }, [noteId]);
+
+//   useEffect(() => {
+//     const handleClickOutside = (event: MouseEvent) => {
+//       if (
+//         dropdownRef.current &&
+//         !dropdownRef.current.contains(event.target as Node)
+//       ) {
+//         setShowZoomDropdown(false);
+//       }
+//     };
+//     if (showZoomDropdown) {
+//       document.addEventListener("mousedown", handleClickOutside);
+//     }
+//     return () => {
+//       document.removeEventListener("mousedown", handleClickOutside);
+//     };
+//   }, [showZoomDropdown]);
+
+//   const resetAllZooms = () => {
+//     setResetZoomSignal((n) => n + 1);
+//     localStorage.setItem("defaultZoom", String(defaultZoom));
+//   };
+
+//   const handleZoomChange = (value: number) => {
+//     const clamped = Math.max(0.5, Math.min(2, value));
+//     setDefaultZoom(clamped);
+//     localStorage.setItem("defaultZoom", clamped.toString());
+//     resetAllZooms();
+//   };
+
+//   // Metadata state and initialization
+//   // const getInitialAuthor = () => {
+//   //   const stored = localStorage.getItem("defaultAuthor");
+//   //   return stored?.trim() || undefined;
+//   // };
+
+//   // const [metadata, setMetadata] = useState<NoteMetadata>(() => ({
+//   //   title: "My New Notation",
+//   //   ...(getInitialAuthor() ? { author: getInitialAuthor() } : {}),
+//   // }));
+
+//   // Show/hide LaTeX map
+//   const [showLatexMap, setShowLatexMap] = useState<Record<string, boolean>>({});
+
+//   const showAllLatex = () => {
+//     setShowLatexMap((prev) =>
+//       Object.fromEntries(Object.keys(prev).map((key) => [key, true]))
+//     );
+//   };
+
+//   const hideAllLatex = () => {
+//     setShowLatexMap((prev) =>
+//       Object.fromEntries(Object.keys(prev).map((key) => [key, false]))
+//     );
+//   };
+
+//   return (
+//     <div className={styles.editorPane} style={style}>
+//       <EditorHeaderBar
+//         isPreviewMode={isPreviewMode}
+//         togglePreviewMode={() => setIsPreviewMode((p) => !p)}
+//         defaultZoom={defaultZoom}
+//         resetAllZooms={resetAllZooms}
+//         showAllLatex={showAllLatex}
+//         hideAllLatex={hideAllLatex}
+//         handleZoomChange={handleZoomChange}
+//         showZoomDropdown={showZoomDropdown}
+//         setShowZoomDropdown={setShowZoomDropdown}
+//         dropdownRef={dropdownRef}
+//         onAddCell={addCell}
+//       />
+
+//       <NotationEditor
+//         noteId={noteId}
+//         isPreviewMode={isPreviewMode}
+//         resetZoomSignal={resetZoomSignal}
+//         defaultZoom={defaultZoom}
+//         order={order}
+//         addCell={addCell}
+//         deleteCell={deleteCell}
+//         updateOrder={updateOrder}
+//         editorStates={editorStates}
+//         setEditorStates={setEditorStates}
+//         textContents={textContents}
+//         setTextContents={setTextContents}
+//         showLatexMap={showLatexMap}
+//         setShowLatexMap={setShowLatexMap}
+//         metadata={noteMetadata}
+//         setMetadata={setNoteMetadata}
+//         onDropNode={onDropNode}
+//       />
+//     </div>
+//   );
+// };
+
+// export default EditorPane;
+
+// // components/editor/EditorPane.tsx
+// import React, { useState, useRef, useEffect } from "react";
+// import EditorHeaderBar from "./EditorHeaderBar";
+// import NotationEditor from "./NotationEditor";
+// import styles from "./Editor.module.css";
+// import type { CellData, NoteMetadata } from "../../models/noteTypes";
+// import type { MathNode } from "../../models/types";
+// import { useEditorHistory } from "../../hooks/EditorHistoryContext";
+// import { createRootWrapper } from "../../models/nodeFactories";
+// import { createEditorState } from "../../logic/editor-state";
+
+// type DropSource = {
+//   sourceType: "cell" | "library";
+//   cellId?: string;
+//   containerId: string;
+//   index: number;
+//   node: MathNode;
+// };
+
+// type DropTarget = {
+//   cellId: string;
+//   containerId: string;
+//   index: number;
+// };
+
+// interface EditorPaneProps {
+//   noteId: string | null;
+//   noteMetadata: NoteMetadata;
+//   setNoteMetadata: (noteId: string, metadata: Partial<NoteMetadata>) => void;
+//   style?: React.CSSProperties;
+//   onDropNode: (from: DropSource, to: DropTarget) => void;
+// }
+
+// const EditorPane: React.FC<EditorPaneProps> = ({
+//   noteId,
+//   noteMetadata,
+//   setNoteMetadata,
+//   style,
+//   onDropNode,
+// }) => {
+//   const { history, updateState } = useEditorHistory();
+//   const { states: editorStates, order, textContents } = history.present;
+
+//   // Update textContents safely
+//   const setTextContents = (value: React.SetStateAction<typeof textContents>) => {
+//     if (typeof value === "function") {
+//       const newContents = value(textContents);
+//       updateState({ states: editorStates, order, textContents: newContents });
+//     } else {
+//       updateState({ states: editorStates, order, textContents: value });
+//     }
+//   };
+
+//   // Update editorStates safely
+//   const setEditorStates = (value: React.SetStateAction<typeof editorStates>) => {
+//     if (typeof value === "function") {
+//       const newStates = value(editorStates);
+//       updateState({ states: newStates, order, textContents });
+//     } else {
+//       updateState({ states: value, order, textContents });
+//     }
+//   };
+
+//   // Add new showLatex entry when adding new cell
+//   const addShowLatexEntry = (cellId: string) => {
+//     setShowLatexMap((prev) => ({ ...prev, [cellId]: false }));
+//   };
+
+//   // Add a new cell (math or text) at optional index
+//   const addCell = (type: "math" | "text", index?: number) => {
+//     const newCell: CellData = {
+//       id: Date.now().toString(),
+//       type,
+//       content: "",
+//     };
+
+//     // Insert new cell ID into order array
+//     const newOrder = [...order];
+//     if (index === undefined) {
+//       newOrder.push(newCell.id);
+//     } else {
+//       newOrder.splice(index, 0, newCell.id);
+//     }
+
+//     // If math cell, create initial editor state
+//     const newStates = { ...editorStates };
+//     if (type === "math") {
+//       const root = createRootWrapper();
+//       const editorState = createEditorState(root);
+//       newStates[newCell.id] = editorState;
+//     }
+
+//     updateState({
+//       order: newOrder,
+//       states: newStates,
+//       textContents,
+//     });
+
+//     addShowLatexEntry(newCell.id);
+//   };
+
+//   // Delete a cell by id
+//   const deleteCell = (id: string) => {
+//     const newOrder = order.filter((cellId) => cellId !== id);
+//     const newStates = { ...editorStates };
+//     delete newStates[id];
+//     const newTextContents = { ...textContents };
+//     delete newTextContents[id];
+
+//     setShowLatexMap((prev) => {
+//       const copy = { ...prev };
+//       delete copy[id];
+//       return copy;
+//     });
+
+//     updateState({
+//       order: newOrder,
+//       states: newStates,
+//       textContents: newTextContents,
+//     });
+//   };
+
+//   // Update order only
+//   const updateOrder = (newOrder: string[]) => {
+//     updateState({
+//       order: newOrder,
+//       states: editorStates,
+//       textContents,
+//     });
+//   };
+
+//   // Preview mode state with localStorage persistence
+//   const [isPreviewMode, setIsPreviewMode] = useState(() => {
+//     return localStorage.getItem("previewMode") === "on";
+//   });
+
+//   // Default zoom state with persistence
+//   const [defaultZoom, setDefaultZoom] = useState(() => {
+//     const stored = localStorage.getItem("defaultZoom");
+//     return stored ? parseFloat(stored) : 1;
+//   });
+
+//   const [resetZoomSignal, setResetZoomSignal] = useState(0);
+//   const [showZoomDropdown, setShowZoomDropdown] = useState(false);
+//   const dropdownRef = useRef<HTMLDivElement | null>(null);
+
+//   useEffect(() => {
+//     // Placeholder: reload editor state for new noteId if needed
+//   }, [noteId]);
+
+//   useEffect(() => {
+//     const handleClickOutside = (event: MouseEvent) => {
+//       if (
+//         dropdownRef.current &&
+//         !dropdownRef.current.contains(event.target as Node)
+//       ) {
+//         setShowZoomDropdown(false);
+//       }
+//     };
+//     if (showZoomDropdown) {
+//       document.addEventListener("mousedown", handleClickOutside);
+//     }
+//     return () => {
+//       document.removeEventListener("mousedown", handleClickOutside);
+//     };
+//   }, [showZoomDropdown]);
+
+//   const resetAllZooms = () => {
+//     setResetZoomSignal((n) => n + 1);
+//     localStorage.setItem("defaultZoom", String(defaultZoom));
+//   };
+
+//   const handleZoomChange = (value: number) => {
+//     const clamped = Math.max(0.5, Math.min(2, value));
+//     setDefaultZoom(clamped);
+//     localStorage.setItem("defaultZoom", clamped.toString());
+//     resetAllZooms();
+//   };
+
+//   // Show/hide LaTeX map per cell
+//   const [showLatexMap, setShowLatexMap] = useState<Record<string, boolean>>({});
+
+//   const showAllLatex = () => {
+//     setShowLatexMap((prev) =>
+//       Object.fromEntries(Object.keys(prev).map((key) => [key, true]))
+//     );
+//   };
+
+//   const hideAllLatex = () => {
+//     setShowLatexMap((prev) =>
+//       Object.fromEntries(Object.keys(prev).map((key) => [key, false]))
+//     );
+//   };
+
+//   return (
+//     <div className={styles.editorPane} style={style}>
+//       <EditorHeaderBar
+//         isPreviewMode={isPreviewMode}
+//         togglePreviewMode={() => setIsPreviewMode((p) => !p)}
+//         defaultZoom={defaultZoom}
+//         resetAllZooms={resetAllZooms}
+//         showAllLatex={showAllLatex}
+//         hideAllLatex={hideAllLatex}
+//         handleZoomChange={handleZoomChange}
+//         showZoomDropdown={showZoomDropdown}
+//         setShowZoomDropdown={setShowZoomDropdown}
+//         dropdownRef={dropdownRef}
+//         onAddCell={addCell}
+//       />
+
+//       <NotationEditor
+//         noteId={noteId}
+//         isPreviewMode={isPreviewMode}
+//         resetZoomSignal={resetZoomSignal}
+//         defaultZoom={defaultZoom}
+//         order={order}
+//         addCell={addCell}
+//         deleteCell={deleteCell}
+//         updateOrder={updateOrder}
+//         editorStates={editorStates}
+//         setEditorStates={setEditorStates}
+//         textContents={textContents}
+//         setTextContents={setTextContents}
+//         showLatexMap={showLatexMap}
+//         setShowLatexMap={setShowLatexMap}
+//         metadata={noteMetadata}
+//         setMetadata={setNoteMetadata}
+//         onDropNode={onDropNode}
+//       />
+//     </div>
+//   );
+// };
+
+// export default EditorPane;
+
 // components/editor/EditorPane.tsx
 import React, { useState, useRef, useEffect } from "react";
 import EditorHeaderBar from "./EditorHeaderBar";
 import NotationEditor from "./NotationEditor";
 import styles from "./Editor.module.css";
-import type { CellData, NoteMetadata } from "../../models/noteTypes";
+import type { NoteMetadata } from "../../models/noteTypes";
 import type { MathNode } from "../../models/types";
 import { useEditorHistory } from "../../hooks/EditorHistoryContext";
 import { createRootWrapper } from "../../models/nodeFactories";
-import { createEditorState } from "../../logic/editor-state";
+import { createEditorState, type EditorState } from "../../logic/editor-state";
 
 type DropSource = {
   sourceType: "cell" | "library";
@@ -964,112 +1450,168 @@ type DropTarget = {
 
 interface EditorPaneProps {
   noteId: string | null;
+  noteMetadata: NoteMetadata;
+  setNoteMetadata: (noteId: string, metadata: Partial<NoteMetadata>) => void;
   style?: React.CSSProperties;
   onDropNode: (from: DropSource, to: DropTarget) => void;
 }
 
+/** 
+ * Load the editor state JSON from localStorage by noteId.
+ * Returns parsed state or null if none saved yet.
+ */
+function loadNoteState(noteId: string) {
+  try {
+    const saved = localStorage.getItem(`note-editor-state-${noteId}`);
+    if (!saved) return null;
+    return JSON.parse(saved) as {
+      order: string[];
+      states: Record<string, EditorState>; // loosely typed EditorState, adjust as needed
+      textContents: Record<string, string>;
+    };
+  } catch {
+    return null;
+  }
+}
+
+/** 
+ * Save the editor state JSON to localStorage by noteId.
+ */
+function saveNoteState(
+  noteId: string,
+  state: {
+    order: string[];
+    states: Record<string, EditorState>;
+    textContents: Record<string, string>;
+  }
+) {
+  try {
+    localStorage.setItem(`note-editor-state-${noteId}`, JSON.stringify(state));
+  } catch {
+    // ignore write errors (quota, etc)
+  }
+}
+
 const EditorPane: React.FC<EditorPaneProps> = ({
   noteId,
+  noteMetadata,
+  setNoteMetadata,
   style,
   onDropNode,
 }) => {
   const { history, updateState } = useEditorHistory();
   const { states: editorStates, order, textContents } = history.present;
 
-  // update text contents
+  // Update textContents safely
   const setTextContents = (value: React.SetStateAction<typeof textContents>) => {
-    console.log(`trreachted with ${value} ${typeof value === "function" ? value(textContents) : "problem"}`)
     if (typeof value === "function") {
       const newContents = value(textContents);
       updateState({ states: editorStates, order, textContents: newContents });
+      if (noteId) saveNoteState(noteId, { order, states: editorStates, textContents: newContents });
     } else {
       updateState({ states: editorStates, order, textContents: value });
+      if (noteId) saveNoteState(noteId, { order, states: editorStates, textContents: value });
     }
   };
 
-  // update editorStates safely
+  // Update editorStates safely
   const setEditorStates = (value: React.SetStateAction<typeof editorStates>) => {
     if (typeof value === "function") {
       const newStates = value(editorStates);
       updateState({ states: newStates, order, textContents });
+      if (noteId) saveNoteState(noteId, { order, states: newStates, textContents });
     } else {
       updateState({ states: value, order, textContents });
+      if (noteId) saveNoteState(noteId, { order, states: value, textContents });
     }
   };
 
-  // Removed cells state and syncing effects
-
-  const addShowLatexEntry = (cellId: string) => {
-    setShowLatexMap((prev) => ({ ...prev, [cellId]: false }));
-  };
-
+  // Add a new cell (math or text) at optional index
   const addCell = (type: "math" | "text", index?: number) => {
-    const newCell: CellData = {
-      id: Date.now().toString(),
-      type,
-      content: "",
-    };
+    const newCellId = Date.now().toString();
 
-    // Insert new cell ID into the order array at specified index or at the end
+    // Insert new cell ID into order array
     const newOrder = [...order];
     if (index === undefined) {
-      newOrder.push(newCell.id);
+      newOrder.push(newCellId);
     } else {
-      newOrder.splice(index, 0, newCell.id);
+      newOrder.splice(index, 0, newCellId);
     }
 
-    // If math cell, create initial editor state for it
+    // If math cell, create initial editor state
     const newStates = { ...editorStates };
     if (type === "math") {
       const root = createRootWrapper();
       const editorState = createEditorState(root);
-      newStates[newCell.id] = editorState;
+      newStates[newCellId] = editorState;
+    }
+
+    const newTextContents = { ...textContents };
+    if (type === "text") {
+      newTextContents[newCellId] = "";
     }
 
     updateState({
       order: newOrder,
       states: newStates,
-      textContents: textContents,
+      textContents: newTextContents,
     });
 
-    addShowLatexEntry(newCell.id);
+    if (noteId) {
+      saveNoteState(noteId, {
+        order: newOrder,
+        states: newStates,
+        textContents: newTextContents,
+      });
+    }
   };
 
+  // Delete a cell by id
   const deleteCell = (id: string) => {
     const newOrder = order.filter((cellId) => cellId !== id);
     const newStates = { ...editorStates };
     delete newStates[id];
     const newTextContents = { ...textContents };
     delete newTextContents[id];
-  
-    setShowLatexMap((prev) => {
-      const copy = { ...prev };
-      delete copy[id];
-      return copy;
-    });
-  
+
     updateState({
       order: newOrder,
       states: newStates,
       textContents: newTextContents,
     });
+
+    if (noteId) {
+      saveNoteState(noteId, {
+        order: newOrder,
+        states: newStates,
+        textContents: newTextContents,
+      });
+    }
   };
 
-  // Implement updateOrder to update just the order array:
+  // Update order only
   const updateOrder = (newOrder: string[]) => {
     updateState({
       order: newOrder,
       states: editorStates,
-      textContents: textContents,
+      textContents,
     });
+
+    if (noteId) {
+      saveNoteState(noteId, {
+        order: newOrder,
+        states: editorStates,
+        textContents,
+      });
+    }
   };
 
-  // Preview mode toggle
+  // Preview mode state with localStorage persistence
   const [isPreviewMode, setIsPreviewMode] = useState(() => {
     return localStorage.getItem("previewMode") === "on";
   });
 
-  // Default zoom state
+  // Default zoom state with persistence
   const [defaultZoom, setDefaultZoom] = useState(() => {
     const stored = localStorage.getItem("defaultZoom");
     return stored ? parseFloat(stored) : 1;
@@ -1078,6 +1620,27 @@ const EditorPane: React.FC<EditorPaneProps> = ({
   const [resetZoomSignal, setResetZoomSignal] = useState(0);
   const [showZoomDropdown, setShowZoomDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!noteId) return;
+
+    // Load saved editor state for new noteId, or empty fallback
+    const loadedState = loadNoteState(noteId);
+    if (loadedState) {
+      updateState({
+        order: loadedState.order,
+        states: loadedState.states,
+        textContents: loadedState.textContents,
+      });
+    } else {
+      // No saved state - clear editor for this note
+      updateState({
+        order: [],
+        states: {},
+        textContents: {},
+      });
+    }
+  }, [noteId, updateState]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -1108,18 +1671,7 @@ const EditorPane: React.FC<EditorPaneProps> = ({
     resetAllZooms();
   };
 
-  // Metadata state and initialization
-  const getInitialAuthor = () => {
-    const stored = localStorage.getItem("defaultAuthor");
-    return stored?.trim() || undefined;
-  };
-
-  const [metadata, setMetadata] = useState<NoteMetadata>(() => ({
-    title: "My New Notation",
-    ...(getInitialAuthor() ? { author: getInitialAuthor() } : {}),
-  }));
-
-  // Show/hide LaTeX map
+  // Show/hide LaTeX map per cell
   const [showLatexMap, setShowLatexMap] = useState<Record<string, boolean>>({});
 
   const showAllLatex = () => {
@@ -1165,8 +1717,8 @@ const EditorPane: React.FC<EditorPaneProps> = ({
         setTextContents={setTextContents}
         showLatexMap={showLatexMap}
         setShowLatexMap={setShowLatexMap}
-        metadata={metadata}
-        setMetadata={setMetadata}
+        metadata={noteMetadata}
+        setMetadata={setNoteMetadata}
         onDropNode={onDropNode}
       />
     </div>

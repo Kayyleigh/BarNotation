@@ -1,15 +1,20 @@
-export type NoteMetadata = {
-  title: string;
+export interface NoteMetadata {
+  title: string;        // The displayed title of the note
+  author?: string;      // Optional author name
   courseCode?: string;
-  author?: string;
   dateOrPeriod?: string;
-};
-
-export type Note = {
+  createdAt?: number;   // Timestamp (ms since epoch) when the note was created
+  updatedAt?: number;   // Timestamp when the note was last updated
+  archived: boolean;
+  // can add more fields as needed, for example:
+  // tags?: string[];
+  // description?: string;
+}
+export interface Note {
   id: string;
   metadata: NoteMetadata;
   cells: CellData[];
-};
+}
 
 export type CellData = {
   id: string;

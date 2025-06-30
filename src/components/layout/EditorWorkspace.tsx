@@ -407,6 +407,181 @@
 
 // export default EditorWorkspace;
 
+// import React, { useCallback, useEffect, useRef } from "react";
+// import EditorPane from "../editor/EditorPane";
+// import MathLibrary from "../mathLibrary/MathLibrary";
+// import type { MathNode } from "../../models/types";
+// import { deleteNodeById, insertNodeAtIndex } from "../../logic/node-manipulation";
+// import { cloneTreeWithNewIds, isDescendantOrSelf } from "../../utils/treeUtils";
+// import { useEditorHistory } from "../../hooks/EditorHistoryContext";
+// import type { LibraryEntry } from "../../models/libraryTypes";
+// import { nodeToLatex } from "../../models/nodeToLatex"; // Needed for metadata
+// import type { CellData, NoteMetadata } from "../../models/noteTypes";
+
+// interface EditorWorkspaceProps {
+//   noteId: string | null;
+//   rightWidth: number;
+//   setRightWidth: (width: number) => void;
+//   noteMetadata: NoteMetadata;
+//   setNoteMetadata: (noteId: string, metadata: Partial<NoteMetadata>) => void; //TODO
+//   noteCells: CellData[];
+//   setNoteCells: (noteId: string, newCells: CellData[]) => void;
+// }
+
+// type DropSource = {
+//   sourceType: "cell" | "library";
+//   cellId?: string;
+//   containerId: string;
+//   index: number;
+//   node: MathNode;
+// };
+
+// type DropTarget = {
+//   cellId: string;
+//   containerId: string;
+//   index: number;
+// };
+
+// const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({ 
+//   noteId, 
+//   rightWidth, 
+//   setRightWidth, 
+//   noteMetadata, 
+//   setNoteMetadata,
+//   noteCells,
+//   setNoteCells,
+// }) => {
+//   const { history, updateState } = useEditorHistory();
+//   const { states: editorStates, order, textContents } = history.present;
+
+//   const addEntryToLibraryRef = useRef<(entry: LibraryEntry) => void>(() => {});
+//   const updateLibraryEntryRef = useRef<(id: string) => void>(() => {});
+
+//   const onDropNode = useCallback(
+//     (from: DropSource, to: DropTarget) => {
+//       const sourceState = from.cellId ? editorStates[from.cellId] : null;
+  
+//       // Drop from editor to library
+//       if (to.cellId === "library" && from.sourceType === "cell") {
+//         const cloned = cloneTreeWithNewIds(from.node);
+//         const newEntry: LibraryEntry = {
+//           id: crypto.randomUUID(),
+//           node: cloned,
+//           addedAt: Date.now(),
+//           draggedCount: 0,
+//           latex: nodeToLatex(cloned),
+//         };
+//         addEntryToLibraryRef.current?.(newEntry);
+//         return;
+//       }
+
+
+//       const destState = editorStates[to.cellId];
+//       if (!destState) return;
+  
+//       // Redirect drop if container is the root-wrapper node
+//       if (to.containerId === "root") {
+//         // Find the inline-container child of rootNode
+//         const inlineContainerChild = destState.rootNode.child;
+
+//         if (inlineContainerChild) {
+//           to = {
+//             ...to,
+//             containerId: inlineContainerChild.id,
+//             index: inlineContainerChild.children?.length ?? 0, // drop at the end
+//           };
+//         }
+//       }
+  
+//       const updatedEditorStates = { ...editorStates };
+  
+//       // Drag within same cell
+//       if (from.sourceType === "cell" && from.cellId === to.cellId) {
+//         if (isDescendantOrSelf(from.node, to.containerId)) return;
+//         const node = cloneTreeWithNewIds(from.node);
+//         let updated = deleteNodeById(destState, from.node.id);
+  
+//         if (from.containerId === to.containerId && to.index >= from.index) {
+//           updated = insertNodeAtIndex(updated, to.containerId, to.index, node);
+//         } else {
+//           updated = insertNodeAtIndex(updated, to.containerId, to.index + 1, node);
+//         }
+//         updatedEditorStates[to.cellId] = updated;
+//       }
+//       // Drag from one cell to another
+//       else if (from.sourceType === "cell" && from.cellId !== to.cellId && sourceState) {
+//         const node = cloneTreeWithNewIds(from.node);
+//         const updatedDest = insertNodeAtIndex(destState, to.containerId, to.index + 1, node);
+//         updatedEditorStates[to.cellId] = updatedDest;
+//       }
+//       // From library to editor
+//       else if (from.sourceType === "library") {
+//         const cloned = cloneTreeWithNewIds(from.node);
+//         const updated = insertNodeAtIndex(destState, to.containerId, to.index + 1, cloned);
+//         const dropFailed = updated === destState;
+  
+//         if (dropFailed) return; // no update if drop failed
+  
+//         updatedEditorStates[to.cellId] = updated;
+  
+//         // Increment drag count in the library
+//         updateLibraryEntryRef.current?.(from.containerId);
+//       }
+  
+//       updateState({
+//         states: updatedEditorStates,
+//         order: order,
+//         textContents: textContents,
+//       });
+//     },
+//     [editorStates, order, textContents, updateState]
+//   );
+
+//   const { undo, redo } = useEditorHistory();
+
+//   useEffect(() => {
+//     const handleKeyDown = (e: KeyboardEvent) => {
+//       if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key === "z") {
+//         e.preventDefault();
+//         undo();
+//       } else if ((e.ctrlKey || e.metaKey) && (e.key === "y" || (e.shiftKey && e.key === "Z"))) {
+//         e.preventDefault();
+//         redo();
+//       }
+//     };
+//     window.addEventListener("keydown", handleKeyDown);
+//     return () => window.removeEventListener("keydown", handleKeyDown);
+//   }, [undo, redo]);
+
+//   return (
+//     <div className="editor-workspace" style={{ display: "flex", height: "100%", width: "100%" }}>
+//       <div style={{ flexGrow: 1, minWidth: 0 }}>
+//         <EditorPane
+//           style={{ width: "100%", height: "100%" }}
+//           noteId={noteId}
+//           onDropNode={onDropNode}
+//           noteMetadata={noteMetadata}
+//           setNoteMetadata={setNoteMetadata}
+//           noteCells={noteCells}
+//           setNoteCells={setNoteCells}
+//         />
+//       </div>
+
+//       <div style={{ flex: "0 0 auto", width: `${rightWidth}px` }}>
+//         <MathLibrary
+//           width={rightWidth}
+//           onWidthChange={setRightWidth}
+//           onDropNode={onDropNode}
+//           addEntryRef={addEntryToLibraryRef}
+//           updateEntryRef={updateLibraryEntryRef} // Pass update hook
+//         />
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default EditorWorkspace;
+
 import React, { useCallback, useEffect, useRef } from "react";
 import EditorPane from "../editor/EditorPane";
 import MathLibrary from "../mathLibrary/MathLibrary";
@@ -416,11 +591,16 @@ import { cloneTreeWithNewIds, isDescendantOrSelf } from "../../utils/treeUtils";
 import { useEditorHistory } from "../../hooks/EditorHistoryContext";
 import type { LibraryEntry } from "../../models/libraryTypes";
 import { nodeToLatex } from "../../models/nodeToLatex"; // Needed for metadata
+import type { CellData, NoteMetadata } from "../../models/noteTypes";
 
 interface EditorWorkspaceProps {
   noteId: string | null;
   rightWidth: number;
   setRightWidth: (width: number) => void;
+  noteMetadata: NoteMetadata;
+  setNoteMetadata: (noteId: string, metadata: Partial<NoteMetadata>) => void;
+  noteCells: CellData[];
+  setNoteCells: (noteId: string, newCells: CellData[]) => void;
 }
 
 type DropSource = {
@@ -437,7 +617,13 @@ type DropTarget = {
   index: number;
 };
 
-const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({ noteId, rightWidth, setRightWidth }) => {
+const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({
+  noteId,
+  rightWidth,
+  setRightWidth,
+  noteMetadata,
+  setNoteMetadata,
+}) => {
   const { history, updateState } = useEditorHistory();
   const { states: editorStates, order, textContents } = history.present;
 
@@ -447,7 +633,7 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({ noteId, rightWidth, s
   const onDropNode = useCallback(
     (from: DropSource, to: DropTarget) => {
       const sourceState = from.cellId ? editorStates[from.cellId] : null;
-  
+
       // Drop from editor to library
       if (to.cellId === "library" && from.sourceType === "cell") {
         const cloned = cloneTreeWithNewIds(from.node);
@@ -462,15 +648,12 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({ noteId, rightWidth, s
         return;
       }
 
-
       const destState = editorStates[to.cellId];
       if (!destState) return;
-  
+
       // Redirect drop if container is the root-wrapper node
       if (to.containerId === "root") {
-        // Find the inline-container child of rootNode
         const inlineContainerChild = destState.rootNode.child;
-
         if (inlineContainerChild) {
           to = {
             ...to,
@@ -479,15 +662,15 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({ noteId, rightWidth, s
           };
         }
       }
-  
+
       const updatedEditorStates = { ...editorStates };
-  
+
       // Drag within same cell
       if (from.sourceType === "cell" && from.cellId === to.cellId) {
         if (isDescendantOrSelf(from.node, to.containerId)) return;
         const node = cloneTreeWithNewIds(from.node);
         let updated = deleteNodeById(destState, from.node.id);
-  
+
         if (from.containerId === to.containerId && to.index >= from.index) {
           updated = insertNodeAtIndex(updated, to.containerId, to.index, node);
         } else {
@@ -506,19 +689,19 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({ noteId, rightWidth, s
         const cloned = cloneTreeWithNewIds(from.node);
         const updated = insertNodeAtIndex(destState, to.containerId, to.index + 1, cloned);
         const dropFailed = updated === destState;
-  
+
         if (dropFailed) return; // no update if drop failed
-  
+
         updatedEditorStates[to.cellId] = updated;
-  
+
         // Increment drag count in the library
         updateLibraryEntryRef.current?.(from.containerId);
       }
-  
+
       updateState({
         states: updatedEditorStates,
-        order: order,
-        textContents: textContents,
+        order,
+        textContents,
       });
     },
     [editorStates, order, textContents, updateState]
@@ -547,6 +730,8 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({ noteId, rightWidth, s
           style={{ width: "100%", height: "100%" }}
           noteId={noteId}
           onDropNode={onDropNode}
+          noteMetadata={noteMetadata}
+          setNoteMetadata={setNoteMetadata}
         />
       </div>
 
@@ -556,7 +741,7 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({ noteId, rightWidth, s
           onWidthChange={setRightWidth}
           onDropNode={onDropNode}
           addEntryRef={addEntryToLibraryRef}
-          updateEntryRef={updateLibraryEntryRef} // Pass update hook
+          updateEntryRef={updateLibraryEntryRef}
         />
       </div>
     </div>

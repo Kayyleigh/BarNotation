@@ -260,7 +260,7 @@ const MathLibrary: React.FC<{
   };
   
   const onTabDragOver = (e: React.DragEvent, idx: number) => {
-    if (!draggingTabIdx) return; // Do not treat as dragOver when source is not a tab
+    if (draggingTabIdx === null) return; // Do not treat as dragOver when source is not a tab
 
     e.preventDefault();
   
