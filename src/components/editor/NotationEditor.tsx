@@ -413,7 +413,7 @@ interface NotationEditorProps {
 const reconstructCells = (
   order: string[],
   editorStates: Record<string, EditorState>,
-  textContents: Record<string, string>,
+  textContents: Record<string, string> = {},
 ): CellData[] => {
   return order.map((id) =>
     editorStates[id]

@@ -3268,8 +3268,8 @@ Big-ish TODOs for the app atm:
 - [MATH LIBRARY] (Maybe just somehow have a library collection component or  something, which lets me control whether it is custom/normal-predefined or perma-predefined)
 - [MATH LIBRARY] make special filter button for advanced node-type search?
 - [MATH LIBRARY] make library entry size change on zoom of the library (indep from rest of app?)
-- [NOTE EDITOR] keep track of text cell state as well, to prevent full deletion (instead normal per-token or word)
-- [NOTE EDITOR] ensure deletion of match cell does not turn it into text cell
+- ✅ [NOTE EDITOR] keep track of text cell state as well, to prevent full deletion (instead normal per-token or word)
+- ✅ [NOTE EDITOR] ensure deletion of match cell does not turn it into text cell
 - [NOTE EDITOR] implement (sub(sub))sectioning of text cells (or new cell type but imo text is cleaner; just keep 2 cell types for user to not have an overwhelming menu)
 - [MATH EDITOR] force hovered node jump to parent (when valid) when user presses shift(?). Reason: nodes could be hard to pick when it's only like 1 pixel and you're in a hurry and your hand is hurting
 - [MATH LOGIC] handle splitting of CommandInput and MultiDigit when typing or dropping something else in the middle
