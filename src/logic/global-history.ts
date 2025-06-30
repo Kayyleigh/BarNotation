@@ -94,7 +94,8 @@ import type { EditorState } from "./editor-state";
 
 export interface EditorSnapshot {
   states: Record<string, EditorState>;
-  order: string[]; // the order of cell IDs
+  order: string[];
+  textContents: Record<string, string>;
 }
 
 export interface HistoryState {

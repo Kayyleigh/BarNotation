@@ -35,35 +35,35 @@ const EditorHeaderBar: React.FC<EditorHeaderBarProps> = ({
       <div className="button-bar">
         <Tooltip text="Add math cell">
           <button onClick={() => onAddCell("math")} className={clsx("button")}>
-              + Math
+            ➕ Math
           </button>
         </Tooltip>
 
         <Tooltip text="Add text cell">
           <button onClick={() => onAddCell("text")} className={clsx("button")}>
-              + Text
+            ➕ Text
           </button>
         </Tooltip>
 
         <Tooltip text="Remove empty cells">
           <button onClick={() => console.log("placeholder for button 3")} className={clsx("button")}>
-              🧹 Clean
+            🧹 Clean
           </button>
         </Tooltip>
 
         <Tooltip text="Show all LaTeX">
           <button onClick={showAllLatex} className={clsx("button")}>
-              👁️ Show LaTeX
+            👁️ LaTeX
           </button>
         </Tooltip>
 
         <Tooltip text="Hide all LaTeX">
           <button onClick={hideAllLatex} className={clsx("button")}>
-              🙈 Hide LaTeX
+            🙈 LaTeX
           </button>
         </Tooltip>
 
-        <Tooltip text="Toggle preview/edit mode">
+        <Tooltip text={isPreviewMode ? "Return to edit mode" : "Enter preview mode"}>
           <button onClick={togglePreviewMode} className={clsx("button", "preview-toggle-button")}>
               {isPreviewMode ? "✏️ Edit" : "📜 Preview"}
           </button>

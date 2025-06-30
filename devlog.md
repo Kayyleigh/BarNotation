@@ -3181,7 +3181,7 @@ Current filetree
 │
 ├── models
 │   ├── libraryTypes.ts            # export interfact LibraryEntry with fields like dateAdded, corresponding latex, etc
-│   ├── latexParser.ts          # (Will rename) parse LaTeX, to obtain MathNode
+│   ├── latexParser.ts             # parse LaTeX, to obtain MathNode
 │   ├── nodeFactories.ts           # Factories for all Math Node types
 │   ├── nodeToLatex.ts             # input MathNode, output LaTeX string
 │   ├── noteTypes.ts               # define CellData, NoteMetadata, and Note (CellData[], NoteMetadata, and an ID) 
@@ -3198,11 +3198,12 @@ Current filetree
 │   ├── math.css                   # Outdated styling (I think)
 │   ├── settings.css               # Styling for toggles in settings 
 │   ├── styles.css                 # Styling for header bar, settings overlay, LatexViewer, and .app-container 
-│   └── themes.css                 # :root, .dark theme, and predefined DOM stuff (h1, html, body, label)
+│   └── themes.css                 # :root, .dark theme, and predefined DOM stuff (h1, html, body, label) and scrollbars 
 │
 └── utils
     ├── accentUtils.ts             # Define NodeDecoration names and map to LaTeX, track required LaTeX packages
     ├── bracketUtils.ts            # Define BracketStyle and its opening/closing characters
+    ├── collectionUtils.ts         # function to initialize premade collections
     ├── mathHoverUtils.ts          # handleMouseEnter and handleMouseLeave for Math nodes
     ├── navigationUtils.ts         # Define directional order of children, flatten CursorPosition
     ├── noop.ts                    # `export const noop = () => {};`
@@ -3285,7 +3286,7 @@ Big-ish TODOs for the app atm:
 - [ADDITIONAL MODALS] make "are you sure?" on deletion of collections
 - [ADDITIONAL MODALS] make overview of existing special sequences
 - [MULTIPLE PLACES] make proper search bar component, reusable, with fancy logic like "match whole word" and "regex"
-- [BUG FIX] fix parser to get IC whenever needed
+- ✅ [BUG FIX] fix parser to get IC whenever needed
 - [BUG FIX] properly parse "{}" and "||" pairs
 - ... and of course the notes menu!!!!!!!!!!!!
 

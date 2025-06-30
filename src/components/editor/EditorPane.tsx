@@ -974,15 +974,26 @@ const EditorPane: React.FC<EditorPaneProps> = ({
   onDropNode,
 }) => {
   const { history, updateState } = useEditorHistory();
-  const { states: editorStates, order } = history.present;
+  const { states: editorStates, order, textContents } = history.present;
 
-  // Helper to update editorStates safely
+  // update text contents
+  const setTextContents = (value: React.SetStateAction<typeof textContents>) => {
+    console.log(`trreachted with ${value} ${typeof value === "function" ? value(textContents) : "problem"}`)
+    if (typeof value === "function") {
+      const newContents = value(textContents);
+      updateState({ states: editorStates, order, textContents: newContents });
+    } else {
+      updateState({ states: editorStates, order, textContents: value });
+    }
+  };
+
+  // update editorStates safely
   const setEditorStates = (value: React.SetStateAction<typeof editorStates>) => {
     if (typeof value === "function") {
       const newStates = value(editorStates);
-      updateState({ states: newStates, order });
+      updateState({ states: newStates, order, textContents });
     } else {
-      updateState({ states: value, order });
+      updateState({ states: value, order, textContents });
     }
   };
 
@@ -1018,9 +1029,30 @@ const EditorPane: React.FC<EditorPaneProps> = ({
     updateState({
       order: newOrder,
       states: newStates,
+      textContents: textContents,
     });
 
     addShowLatexEntry(newCell.id);
+  };
+
+  const deleteCell = (id: string) => {
+    const newOrder = order.filter((cellId) => cellId !== id);
+    const newStates = { ...editorStates };
+    delete newStates[id];
+    const newTextContents = { ...textContents };
+    delete newTextContents[id];
+  
+    setShowLatexMap((prev) => {
+      const copy = { ...prev };
+      delete copy[id];
+      return copy;
+    });
+  
+    updateState({
+      order: newOrder,
+      states: newStates,
+      textContents: newTextContents,
+    });
   };
 
   // Implement updateOrder to update just the order array:
@@ -1028,6 +1060,7 @@ const EditorPane: React.FC<EditorPaneProps> = ({
     updateState({
       order: newOrder,
       states: editorStates,
+      textContents: textContents,
     });
   };
 
@@ -1124,9 +1157,12 @@ const EditorPane: React.FC<EditorPaneProps> = ({
         defaultZoom={defaultZoom}
         order={order}
         addCell={addCell}
+        deleteCell={deleteCell}
         updateOrder={updateOrder}
         editorStates={editorStates}
         setEditorStates={setEditorStates}
+        textContents={textContents}
+        setTextContents={setTextContents}
         showLatexMap={showLatexMap}
         setShowLatexMap={setShowLatexMap}
         metadata={metadata}
