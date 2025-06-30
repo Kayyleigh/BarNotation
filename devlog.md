@@ -3210,3 +3210,13 @@ Current filetree
     ├── textContainerUtils.ts      # (Unused) possibly to split MultiDigit mathnode into multiple (not yet implemented)
     └── treeUtils.ts               # Find nodes, update tree, get logical children of nodes, etc.
 ```
+
+Archiving of collection is kinda done. These are some things that are nice to add still:
+- date archived or date of creation of the collection. Reason: user can remember wtf that collection even is, after not using it for a semester and then needing it again because courses can be similar to ones from a while ago
+- renaming option in archive. Reason: at start of usage, user may just name something "math" or sth else very basic like keeping the placeholder. After not using a collection for a while, their library environment may have gotten much bigger and it's nice to be able to prepare your to-be-recovered collection so you don't lose it in the current setup
+
+Added some premade structures (as a premade collection). But the parser is apparently kinda crap. I need to not make it fill every IC with an empty text, and I need to make sure that everything does wrap in an IC.
+TODO: also ensure that user can archive the premade one and the app will remember that instead of on every time opening the app, reload it in
+AND probably (?) make an exceptional setting for premade ones to not be allowed to be deleted. Bad for freedom but good for recovery in case they accidentally delete the structures.
+
+made premade ones just skip entry if parser fails. That's good. But holy damn it takes long to load in predefined ones now. Surely the parser is just really bad

@@ -4,6 +4,7 @@ import { nodeToLatex } from "./nodeToLatex";
 import { createAccentedNode, createChildedNode, createFraction, createGroupNode, createInlineContainer, createNthRoot, createStyledNode, createTextNode } from "./nodeFactories";
 import { getBigOpNodeFromAlias, getStyledNodeFromAlias, getSymbolNodeFromAlias, symbolToLatex } from "./specialSequences";
 import type { GroupNode, InlineContainerNode, MathNode, StructureNode } from "./types";
+import { ensureInContainerNode } from "./transformations";
 
 type Token =
   | { type: "command", name: string }
@@ -294,7 +295,9 @@ export function parseLatex(input: string): MathNode {
         else if (name === "sqrt") {
           // your sqrt parsing logic here ...
           const indexString = parseOptionalBracketString();
-          const index = parseLatex(indexString ? (" " + indexString + "") : " ") as InlineContainerNode;
+          const indexNode = parseLatex(indexString ? (" " + indexString + "") : " ");
+          const index = indexNode.type === "inline-container" ? indexNode : createInlineContainer([indexNode as StructureNode])
+          console.log(`index is ${index.type}`)
           const radicand = parseGroup();
           base = createNthRoot(
             radicand,

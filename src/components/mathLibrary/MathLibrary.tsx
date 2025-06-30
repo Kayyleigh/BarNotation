@@ -11,6 +11,7 @@ import clsx from "clsx";
 import Tooltip from "../tooltips/Tooltip";
 import TabDropdownPortal from "./TabDropdownPortal";
 import LibCollectionArchiveModal from "../modals/LibCollectionArchiveModal";
+import { createPremadeCollections } from "../../utils/collectionUtils";
 
 // storage key per collection set
 const STORAGE_KEY = "mathLibraryCollections";
@@ -40,27 +41,39 @@ const MathLibrary: React.FC<{
   type SortOption = "date" | "date-asc" | "usage" | "usage-asc" | "latex" | "latex-desc";
   const [sortBy, setSortBy] = useState<SortOption>("date");
 
-  // Load from storage
   useEffect(() => {
+    const premade = createPremadeCollections(); // your premade collections creator
+  
     const raw = localStorage.getItem(STORAGE_KEY);
+    let savedCollections: LibraryCollection[] = [];
+  
     if (raw) {
       try {
-        const parsed = JSON.parse(raw);
-        setCollections(parsed);
-        if (parsed.length > 0) {
-          setActiveColl(parsed[0].id);
-        }
+        savedCollections = JSON.parse(raw);
       } catch {
         console.warn("Failed to parse library data.");
+        savedCollections = [];
       }
+    }
+  
+    // Merge premade + saved, avoiding duplicates by id
+    const mergedCollections = [
+      ...premade,
+      ...savedCollections.filter(sc => !premade.some(pc => pc.id === sc.id))
+    ];
+  
+    setCollections(mergedCollections);
+  
+    if (mergedCollections.length > 0) {
+      setActiveColl(mergedCollections[0].id);
     } else {
+      // fallback if nothing at all
       const defaultId = crypto.randomUUID();
       setCollections([{ id: defaultId, name: "Default", entries: [] }]);
       setActiveColl(defaultId);
     }
   }, []);
-
-  // Save to storage
+  
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(collections));
     if (!collections.find(c => c.id === activeColl) && collections.length > 0) {

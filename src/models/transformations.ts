@@ -67,5 +67,5 @@ export const transformToNthRootNode = (index: InlineContainerNode): NthRootNode 
   index: index,
 });
 
-const ensureInContainerNode = (node: StructureNode | InlineContainerNode): InlineContainerNode =>
+export const ensureInContainerNode = (node: StructureNode | InlineContainerNode): InlineContainerNode =>
   node.type === 'inline-container' ? node : createInlineContainer([node as StructureNode]);
