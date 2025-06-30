@@ -37,6 +37,7 @@ function loadEditorSnapshotForNote(noteId: string): EditorSnapshot {
       },
     },
     order: [noteId],
+    textContents: {},
   };
 }
 

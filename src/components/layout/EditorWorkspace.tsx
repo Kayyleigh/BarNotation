@@ -439,7 +439,7 @@ type DropTarget = {
 
 const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({ noteId, rightWidth, setRightWidth }) => {
   const { history, updateState } = useEditorHistory();
-  const { states: editorStates, order } = history.present;
+  const { states: editorStates, order, textContents } = history.present;
 
   const addEntryToLibraryRef = useRef<(entry: LibraryEntry) => void>(() => {});
   const updateLibraryEntryRef = useRef<(id: string) => void>(() => {});
@@ -447,7 +447,27 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({ noteId, rightWidth, s
   const onDropNode = useCallback(
     (from: DropSource, to: DropTarget) => {
       const sourceState = from.cellId ? editorStates[from.cellId] : null;
+      console.log(`${to.cellId} ${to.containerId} ${to.index}`);
+  
+      const destState = editorStates[to.cellId];
+      if (!destState) return;
+  
+      // Redirect drop if container is the root-wrapper node
+      console.log(`${destState.rootNode.child.id} vs ${to.containerId}`)
+      if (to.containerId === "root") {
+        console.log(`We are doing ok`)
+        // Find the inline-container child of rootNode
+        const inlineContainerChild = destState.rootNode.child;
 
+        if (inlineContainerChild) {
+          to = {
+            ...to,
+            containerId: inlineContainerChild.id,
+            index: inlineContainerChild.children?.length ?? 0, // drop at the end
+          };
+        }
+      }
+  
       // Drop from editor to library
       if (to.cellId === "library" && from.sourceType === "cell") {
         const cloned = cloneTreeWithNewIds(from.node);
@@ -461,18 +481,15 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({ noteId, rightWidth, s
         addEntryToLibraryRef.current?.(newEntry);
         return;
       }
-
-      const destState = editorStates[to.cellId];
-      if (!destState) return;
-
+  
       const updatedEditorStates = { ...editorStates };
-
+  
       // Drag within same cell
       if (from.sourceType === "cell" && from.cellId === to.cellId) {
         if (isDescendantOrSelf(from.node, to.containerId)) return;
         const node = cloneTreeWithNewIds(from.node);
         let updated = deleteNodeById(destState, from.node.id);
-
+  
         if (from.containerId === to.containerId && to.index >= from.index) {
           updated = insertNodeAtIndex(updated, to.containerId, to.index, node);
         } else {
@@ -480,34 +497,33 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({ noteId, rightWidth, s
         }
         updatedEditorStates[to.cellId] = updated;
       }
-
       // Drag from one cell to another
       else if (from.sourceType === "cell" && from.cellId !== to.cellId && sourceState) {
         const node = cloneTreeWithNewIds(from.node);
         const updatedDest = insertNodeAtIndex(destState, to.containerId, to.index + 1, node);
         updatedEditorStates[to.cellId] = updatedDest;
       }
-
       // From library to editor
       else if (from.sourceType === "library") {
         const cloned = cloneTreeWithNewIds(from.node);
         const updated = insertNodeAtIndex(destState, to.containerId, to.index + 1, cloned);
         const dropFailed = updated === destState;
-
+  
         if (dropFailed) return; // no update if drop failed
-
+  
         updatedEditorStates[to.cellId] = updated;
-
+  
         // Increment drag count in the library
         updateLibraryEntryRef.current?.(from.containerId);
       }
-
+  
       updateState({
         states: updatedEditorStates,
-        order,
+        order: order,
+        textContents: textContents,
       });
     },
-    [editorStates, order, updateState]
+    [editorStates, order, textContents, updateState]
   );
 
   const { undo, redo } = useEditorHistory();

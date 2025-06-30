@@ -362,9 +362,19 @@ const MathEditor: React.FC<MathEditorProps> = ({
             index={0}
             onHoverChange={setHoveredNodeId}
             onCursorChange={(cursor) => updateEditorState(setCursor(editorState, cursor))}
-            onDropNode={onDropNode}
             isActive={isActive}
             ancestorIds={[]}
+            onDropNode={(from, to) => {
+              // Check if dropping onto root-wrapper container
+              if (to.containerId === editorState.rootNode.id) {
+                // Find the inline-container child (assuming first child)
+                const child = editorState.rootNode.child;
+                // Redirect the drop target to the inline-container child with index 0
+                to = { ...to, containerId: child.id, index: 0 };
+                
+              }
+              onDropNode(from, to); // call original onDropNode with redirected target
+            }}
           />
         </div>
 

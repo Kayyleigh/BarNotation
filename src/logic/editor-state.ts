@@ -1,8 +1,8 @@
 import { type CursorPosition, createInitialCursor } from "./cursor";
-import { type MathNode, type RootWrapperNode } from "../models/types";
+import { type RootWrapperNode } from "../models/types";
 
 export interface EditorState {
-  rootNode: MathNode;
+  rootNode: RootWrapperNode;
   cursor: CursorPosition;
 }
 

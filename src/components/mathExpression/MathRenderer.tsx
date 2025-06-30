@@ -275,10 +275,19 @@ export const MathRenderer: React.FC<MathRendererProps> = ({
     e.stopPropagation();
     if (!draggingNode) return;
   
+    let dropContainerId = containerId;
+    let dropIndex = index;
+  
+    // If current node is root-wrapper, redirect drop to its first (or only) child
+    if (node.type === "root-wrapper" && node.child) {
+      dropContainerId = node.child.id;
+      dropIndex = node.child.children.length - 1; 
+    }
+  
     onDropNode(draggingNode, {
       cellId,
-      containerId,
-      index,
+      containerId: dropContainerId,
+      index: dropIndex,
     });
   
     setDraggingNode(null);
@@ -353,7 +362,8 @@ export const MathRenderer: React.FC<MathRendererProps> = ({
   }
 
   const isDropTarget =
-    node.type !== "root-wrapper" && node.type !== "inline-container" &&
+    //node.type !== "root-wrapper" && 
+    node.type !== "inline-container" &&
     dropTarget?.cellId === cellId && 
     dropTarget?.containerId === containerId && 
     dropTarget?.index === index;
