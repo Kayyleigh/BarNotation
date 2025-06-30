@@ -1,6 +1,6 @@
 import { PREMADE_COLLECTIONS_RAW } from "../constants/premadeMathCollections";
 import type { LibraryCollection, LibraryEntry } from "../models/libraryTypes";
-import { parseLatex } from "../models/mathNodeParser";
+import { parseLatex } from "../models/latexParser";
 
 export function createPremadeCollections(): LibraryCollection[] {
     return PREMADE_COLLECTIONS_RAW.map(col => {

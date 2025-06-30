@@ -13,7 +13,7 @@
 //   deleteSelectedNode,
 //   getSelectedNode,
 // } from "../../logic/node-manipulation";
-// import { parseLatex } from "../../models/mathNodeParser";
+// import { parseLatex } from "../../models/latexParser";
 // import { findNodeById } from "../../utils/treeUtils";
 // import { nodeToLatex } from "../../models/nodeToLatex";
 // import type { MathNode } from "../../models/types";
@@ -213,7 +213,7 @@ import {
   deleteSelectedNode,
   getSelectedNode,
 } from "../../logic/node-manipulation";
-import { parseLatex } from "../../models/mathNodeParser";
+import { parseLatex } from "../../models/latexParser";
 import { nodeToLatex } from "../../models/nodeToLatex";
 import { findNodeById } from "../../utils/treeUtils";
 import type { MathNode } from "../../models/types";

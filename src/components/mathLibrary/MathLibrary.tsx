@@ -5,7 +5,7 @@ import { MathView } from "../mathExpression/MathView";
 import { useDragContext } from "../../hooks/useDragContext";
 import styles from "./MathLibrary.module.css";
 import type { LibraryEntry, LibraryCollection } from "../../models/libraryTypes";
-import { parseLatex } from "../../models/mathNodeParser";
+import { parseLatex } from "../../models/latexParser";
 import type { DropTarget } from "../../hooks/DragContext";
 import clsx from "clsx";
 import Tooltip from "../tooltips/Tooltip";

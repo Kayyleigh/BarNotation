@@ -2332,7 +2332,7 @@ Oops, right now when doing +Math with tab it will select the new one so it will 
 |       transformations.ts         # Transform nodes, e.g. into numerator of new FractionNode
 |                                 
 +---models                         
-|       mathNodeParser.ts          # (Will rename) parse LaTeX, to obtain MathNode
+|       latexParser.ts          # (Will rename) parse LaTeX, to obtain MathNode
 |       nodeFactories.ts           # Factories for all Math Node types
 |       nodeToLatex.ts             # input MathNode, output LaTeX string
 |       specialSequences.ts        # mappings from escape sequences to `() => StructureNode` 
@@ -2543,7 +2543,7 @@ Current filetree
 │   └── transformations.ts         # Transform nodes, e.g. into numerator of new FractionNode
 │
 ├── models
-│   ├── mathNodeParser.ts          # (Will rename) parse LaTeX, to obtain MathNode
+│   ├── latexParser.ts          # (Will rename) parse LaTeX, to obtain MathNode
 │   ├── nodeFactories.ts           # Factories for all Math Node types
 │   ├── nodeToLatex.ts             # input MathNode, output LaTeX string
 │   ├── specialSequences.ts        # mappings from escape sequences to `() => StructureNode` 
@@ -2634,7 +2634,7 @@ This is a bird's-eye view of how the codebase implements the app features.
 
 2. models/ (MathNode Data Layer). This layer defines and manages the underlying math expression tree, including:
   - Node types and factories (nodeFactories.ts, types.ts).
-  - Transformations and parsing (transformations.ts, mathNodeParser.ts).
+  - Transformations and parsing (transformations.ts, latexParser.ts).
   - Export helpers (nodeToLatex.ts, specialSequences.ts).
 
 3. logic/ (Editor Behavior Layer). Handles all interactive editor logic:
@@ -2850,7 +2850,7 @@ Current filetree
 │   └── transformations.ts         # Transform nodes, e.g. into numerator of new FractionNode
 │
 ├── models
-│   ├── mathNodeParser.ts          # (Will rename) parse LaTeX, to obtain MathNode
+│   ├── latexParser.ts          # (Will rename) parse LaTeX, to obtain MathNode
 │   ├── nodeFactories.ts           # Factories for all Math Node types
 │   ├── nodeToLatex.ts             # input MathNode, output LaTeX string
 │   ├── noteTypes.ts               # define CellData, NoteMetadata, and Note (CellData[], NoteMetadata, and an ID) 
@@ -3181,7 +3181,7 @@ Current filetree
 │
 ├── models
 │   ├── libraryTypes.ts            # export interfact LibraryEntry with fields like dateAdded, corresponding latex, etc
-│   ├── mathNodeParser.ts          # (Will rename) parse LaTeX, to obtain MathNode
+│   ├── latexParser.ts          # (Will rename) parse LaTeX, to obtain MathNode
 │   ├── nodeFactories.ts           # Factories for all Math Node types
 │   ├── nodeToLatex.ts             # input MathNode, output LaTeX string
 │   ├── noteTypes.ts               # define CellData, NoteMetadata, and Note (CellData[], NoteMetadata, and an ID) 
@@ -3265,12 +3265,15 @@ Big-ish TODOs for the app atm:
 - [MATH LIBRARY] disable deletion and addition of entries of predefined structure collection
 - [MATH LIBRARY] ...and disable perma deletion of structure collection
 - [MATH LIBRARY] (Maybe just somehow have a library collection component or  something, which lets me control whether it is custom/normal-predefined or perma-predefined)
+- [MATH LIBRARY] make special filter button for advanced node-type search?
+- [MATH LIBRARY] make library entry size change on zoom of the library (indep from rest of app?)
 - [NOTE EDITOR] keep track of text cell state as well, to prevent full deletion (instead normal per-token or word)
 - [NOTE EDITOR] ensure deletion of match cell does not turn it into text cell
 - [NOTE EDITOR] implement (sub(sub))sectioning of text cells (or new cell type but imo text is cleaner; just keep 2 cell types for user to not have an overwhelming menu)
 - [MATH EDITOR] force hovered node jump to parent (when valid) when user presses shift(?). Reason: nodes could be hard to pick when it's only like 1 pixel and you're in a hurry and your hand is hurting
 - [MATH LOGIC] handle splitting of CommandInput and MultiDigit when typing or dropping something else in the middle
 - [MATH LOGIC] implement matrix, vector, and binom
+- [MATH LOGIC] change way I delete GroupNode (i.e., allow reverting to IC with 1 bracket left, rather than delete inside first and then both brackets)
 - [MATH LOGIC] feedback predict-completion list of existing sequences when user is in command-input
 - [MATH LOGIC] add on-hover actions (maybe with delay) to do things to the node, depending on the node type
 - [APP SETTINGS] enable custom key binds for shortcuts
@@ -3281,5 +3284,9 @@ Big-ish TODOs for the app atm:
 - [ADDITIONAL MODALS] write user guide
 - [ADDITIONAL MODALS] make "are you sure?" on deletion of collections
 - [ADDITIONAL MODALS] make overview of existing special sequences
+- [MULTIPLE PLACES] make proper search bar component, reusable, with fancy logic like "match whole word" and "regex"
+- [BUG FIX] fix parser to get IC whenever needed
+- [BUG FIX] properly parse "{}" and "||" pairs
+- ... and of course the notes menu!!!!!!!!!!!!
 
-But first, lemme make that scrollbar prettyyyyy
+But first, lemme make that scrollbar prettyyyyy. OK done 
