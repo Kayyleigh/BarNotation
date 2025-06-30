@@ -1,53 +1,13 @@
-/* .libraryDropZone {
-  display: flex;
-  flex-wrap: wrap;
-  align-content: flex-start;
-  gap: 8px;
-  padding: 8px;
-  overflow-y: auto;
-  height: calc(100% - 2rem);
-}
-
-.libraryEntry {
-  position: relative;
-  width: fit-content;
-  border: 1px solid var(--math-editor-border);
-  border-radius: 8px;
-  padding: 8px 20px 8px 8px;
-  background-color: var(--math-editor-bg);
-  cursor: grab;
-  align-content: center;
-}
-
-.deleteButton {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  background: transparent;
-  border: none;
-  color: var(--math-text-color);
-  font-size: 14px;
-  cursor: pointer;
-}
-
-.deleteButton:hover {
-  color: #e00;
-}
-
-.empty {
-  text-align: center;
-  color: var(--math-text-color);
-  font-style: italic;
-} */
-
 .tabRow {
   display: flex;
   overflow-x: auto;
   align-items: center;
+  justify-content: space-between;
   white-space: nowrap;
   border-bottom: 1px solid var(--border-color);
   background-color: var(--library-tabs-inactive-bg);
   scrollbar-width: none; /* Firefox */
+  overflow-x: scroll; /* needed to not cut off the dropdowns */
 }
 
 .tabRow::-webkit-scrollbar {
@@ -55,7 +15,7 @@
 }
 
 .tab {
-  /* padding: 4px 8px; */
+  position: relative;
   display: flex;
   cursor: pointer;
   user-select: none;
@@ -76,16 +36,21 @@
 }
 
 .collectionTabButton {
-  background: inherit;
-  color: var(--button-color);
+  opacity: 0;
+  transition: opacity 0.2s;
+  background: none;
   border: none;
-  padding: 0.4rem;
-  border-radius: 5px;
   cursor: pointer;
+  color: var(--math-text-color);
+  font-size: 16px;
 }
 
-.collectionTabButton:hover {
-  background: var(--button-bg);
+.tab:hover .collectionTabButton {
+  opacity: 1;
+}
+
+.active .collectionTabButton {
+  opacity: 1 !important;
 }
 
 
@@ -105,6 +70,16 @@
   outline: none;
   border-color: var(--selected-cell-bar);
   box-shadow: 0 0 6px var(--selected-cell-bar);
+}
+
+.tabHeaderLeft {
+  display: flex;
+  align-items: center;
+}
+
+.tabHeaderRight {
+  display: flex;
+  align-items: center;
 }
 
 .tabAdd {
@@ -158,6 +133,10 @@
   box-shadow: 0 0 4px rgba(0,0,0,0.2);
 }
 
+.tabActions {
+  position: relative;
+}
+
 .entryDeleteButton {
   position: absolute;
   top: 4px;
@@ -171,6 +150,40 @@
 
 .entryDeleteButton:hover {
   color: #e00;
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: 100%; /* 👈 just below the button */
+  right: 0;  /* 👈 align to the right edge of the menu button */
+  background: white;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  z-index: 100;
+  border-radius: 4px;
+  padding: 4px 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.dropdownMenu button {
+  background: none;
+  border: none;
+  text-align: left;
+  padding: 6px 12px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.dropdownMenu button:hover {
+  background-color: #eee;
+}
+
+.archiveButton {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  margin-left: auto;
+  cursor: pointer;
 }
 
 .meta {

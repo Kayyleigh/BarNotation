@@ -13,4 +13,5 @@ export type LibraryCollection = {
   id: string;
   name: string;
   entries: LibraryEntry[];
+  archived?: boolean;
 };

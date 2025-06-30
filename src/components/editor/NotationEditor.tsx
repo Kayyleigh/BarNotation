@@ -432,6 +432,7 @@ import NoteMetaDataSection from "./NoteMetadataSection";
 import type { CellData, NoteMetadata } from "../../models/noteTypes";
 import type { EditorState } from "../../logic/editor-state";
 import type { MathNode } from "../../models/types";
+import clsx from "clsx";
 
 interface NotationEditorProps {
   isPreviewMode: boolean;
@@ -702,7 +703,7 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
                       }
                     >
                       <button
-                        className="button"
+                        className={clsx("button", "preview-button")}
                         onClick={() => toggleShowLatex(cell.id)}
                       >
                         {showLatexMap[cell.id] ? "🙈 Hide LaTeX" : "👁️ Show LaTeX"}

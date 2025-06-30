@@ -127,6 +127,7 @@
     /* Math Library */
     --library-tabs-inactive-bg: var(--logo-color-2);
     --library-tabs-hover-bg: var(--logo-color-1);
+    --delete-button-hover-bg: #ff8e97;
 
   }
   
@@ -216,6 +217,7 @@
     /* Math Library */
     --library-tabs-inactive-bg: #000000;
     --library-tabs-hover-bg: #c586c040;
+    --delete-button-hover-bg: #980a16;
 
   }
 

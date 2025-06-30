@@ -3062,6 +3062,33 @@ Fixed math cell zoom stuff
 
 WEEEE TIME TO BUFF UP THE LIBRARYYYYY
 
+DOing soooo much today for library collections
+current issues:
+- no deletion of entries
+- no reorder
+- trying to reorder instead pastes raw text, weirdly?
+
+Steps to fix things and make it all even better:
+- enable library entry deletion
+- allow re-ordering of the library tabs
+- keep track of the custom manual order of library entries (also put it in the sortBy dropdown options?)
+✅ style the sortBy dropdown
+✅ enable dragging a library entry into another **tab** to deep-copy it
+- bulk-select mode for deletion and bulk-copy to other collection tab
+- remove collection rename button, instead click on collection name to enter rename mode (show text cursor for clarity that that features exists)
+- make "are you sure?" popup for tab deletion
+- make library state part of global history
+- eventually hide the frequency counts (not yet; need to verify that it works while I'm developing)
+
+Design choice I just made: 
+> On hover of MathView, tooltip display of the corresponding latex. Might need to truncate if too long, allow disabling its visibility in settings, and change the styling of the text to be less overwhelming.
+
+> Using `const cleanLatex = (s: string) => s.replace(/[\\{}[\]]/g, "");` to ignore some special characters when sorting library entries alphabetically
+
+Made duplicate-to-other-tab
+
+TODO: make search bar clear when dropping new nodes because otherwise it feels like the app is broken because you don't see your new node unless it matches your current search
+
 Current filetree
 ```
 .
@@ -3110,9 +3137,14 @@ Current filetree
 │   │
 │   ├── mathLibrary
 │   │   ├── MathLibrary.module.css # Styling for math library pane
-│   │   └── MathLibrary.tsx        # Panel showing predefined or saved math nodes
+│   │   ├── MathLibrary.tsx        # Panel showing predefined or saved math nodes
+│   │   ├── TabDropdownPortal.module.css # Styling for library collection tab dropdown 
+│   │   └── TabDropdownPortal.tsx  # Dropdown for rename, archive, or delete collection 
 │   │
 │   ├── modals
+│   │   ├── HotkeyOverlay.tsx      # Overlay of hotkey info
+│   │   ├── LibCollectionArchive.module.css # Styling of archive modal
+│   │   ├── LibCollectionArchive.tsx # Library collection archive, options for preview, recover and delete
 │   │   ├── HotkeyOverlay.tsx      # Overlay of hotkey info
 │   │   └── SettingsModal.tsx      # Overlay of settings (options/preferences, e.g. light vs dark theme)
 │   │
@@ -3178,30 +3210,3 @@ Current filetree
     ├── textContainerUtils.ts      # (Unused) possibly to split MultiDigit mathnode into multiple (not yet implemented)
     └── treeUtils.ts               # Find nodes, update tree, get logical children of nodes, etc.
 ```
-
-DOing soooo much today for library collections
-current issues:
-- no deletion of entries
-- no reorder
-- trying to reorder instead pastes raw text, weirdly?
-
-Steps to fix things and make it all even better:
-- enable library entry deletion
-- allow re-ordering of the library tabs
-- keep track of the custom manual order of library entries (also put it in the sortBy dropdown options?)
-✅ style the sortBy dropdown
-✅ enable dragging a library entry into another **tab** to deep-copy it
-- bulk-select mode for deletion and bulk-copy to other collection tab
-- remove collection rename button, instead click on collection name to enter rename mode (show text cursor for clarity that that features exists)
-- make "are you sure?" popup for tab deletion
-- make library state part of global history
-- eventually hide the frequency counts (not yet; need to verify that it works while I'm developing)
-
-Design choice I just made: 
-> On hover of MathView, tooltip display of the corresponding latex. Might need to truncate if too long, allow disabling its visibility in settings, and change the styling of the text to be less overwhelming.
-
-> Using `const cleanLatex = (s: string) => s.replace(/[\\{}[\]]/g, "");` to ignore some special characters when sorting library entries alphabetically
-
-Made duplicate-to-other-tab
-
-TODO: make search bar clear when dropping new nodes because otherwise it feels like the app is broken because you don't see your new node unless it matches your current search

@@ -1,198 +1,4 @@
-// // components/mathLibrary/MathLibrary.tsx
-// import React, { useEffect, useState } from "react";
-// import ResizableSidebar from "../layout/ResizableSidebar";
-// import type { MathNode, StructureNode } from "../../models/types";
-// import styles from "./MathLibrary.module.css";
-// import type { LibraryEntry } from "../../models/libraryTypes";
-// import { MathView } from "../mathExpression/MathView";
-// import { parseLatex } from "../../models/mathNodeParser";
-// import { useDragContext } from "../../hooks/useDragContext";
-// import { nodeToLatex } from "../../models/nodeToLatex";
-// import { createInlineContainer, createRootWrapper } from "../../models/nodeFactories";
-
-// type DropSource = {
-//   sourceType: "cell" | "library";
-//   cellId?: string;
-//   containerId: string;
-//   index: number;
-//   node: MathNode;
-// };
-
-// type DropTarget = {
-//   cellId: string;
-//   containerId: string;
-//   index: number;
-// };
-
-// interface MathLibraryProps {
-//   width: number;
-//   onWidthChange: (width: number) => void;
-//   onDropNode: (from: DropSource, to: DropTarget) => void;
-//   addEntryRef?: React.RefObject<(entry: LibraryEntry) => void>;
-// }
-
-// const STORAGE_KEY = "mathLibrary";
-
-// const MathLibrary: React.FC<MathLibraryProps> = ({ width, onWidthChange, onDropNode, addEntryRef }) => {
-//   const [entries, setEntries] = useState<LibraryEntry[]>([]);
-//   const [filter, setFilter] = useState('');
-//   const [sortBy, setSortBy] = useState<'date' | 'usage' | 'latex'>('date');
-//   const { draggingNode, setDraggingNode, setDropTarget } = useDragContext();
-
-//   // Load from localStorage on mount
-//   useEffect(() => {
-//     const stored = localStorage.getItem(STORAGE_KEY);
-//     if (stored) {
-//       try {
-//         const parsed = JSON.parse(stored);
-//         setEntries(parsed);
-//       } catch (e) {
-//         console.warn("Failed to parse math library from storage", e);
-//       }
-//     }
-//   }, []);
-
-//   useEffect(() => {
-//     if (addEntryRef) {
-//       addEntryRef.current = (entry: LibraryEntry) => {
-//         setEntries((prev) => [...prev, entry]);
-//       };
-//     }
-//   }, [addEntryRef]);
-
-//   // Save to localStorage on change
-//   useEffect(() => {
-//     localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-//   }, [entries]);
-
-//   const handleDelete = (id: string) => {
-//     setEntries((prev) => prev.filter((entry) => entry.id !== id));
-//   };
-
-//   const addEntry = (node: MathNode) => {
-//     const entry: LibraryEntry = {
-//       id: crypto.randomUUID(),
-//       node,
-//       addedAt: Date.now(),
-//       draggedCount: 0,
-//       latex: nodeToLatex(node), // You’ll need to import this
-//     };
-//     setEntries(prev => [...prev, entry]);
-//   };
-
-//   const onLibraryItemDragged = (entryId: string) => {
-//     setEntries(prev =>
-//       prev.map(entry =>
-//         entry.id === entryId ? { ...entry, draggedCount: entry.draggedCount + 1 } : entry
-//       )
-//     );
-//   };
-
-//   return (
-//     <ResizableSidebar
-//       side="right"
-//       title="Math Library"
-//       width={width}
-//       onWidthChange={onWidthChange}
-//       storageKey="mathLibraryWidth"
-//     >
-//       <div
-//         className={styles.libraryDropZone}
-//         onDragOver={(e) => {
-//           e.preventDefault();
-//           setDropTarget({
-//             cellId: "library",
-//             containerId: "library",
-//             index: entries.length, // drop to end
-//           });
-//         }}
-//         onDrop={(e) => {
-//           e.preventDefault();
-//           if (draggingNode) {
-//             onDropNode(draggingNode, {
-//               cellId: "library",
-//               containerId: "library",
-//               index: entries.length,
-//             });
-//             setDraggingNode(null);
-//             setDropTarget(null);
-//             return;
-//           }
-
-//           // Fallback for text/plain or legacy drops (e.g. LaTeX string)
-//           try {
-//             const latex = e.dataTransfer.getData("text/plain");
-//             if (latex) {
-//               const node = parseLatex(latex);
-//               if (node) {
-//                 const newEntry = {
-//                   id: crypto.randomUUID(),
-//                   node,
-//                 };
-//                 setEntries((prev) => [...prev, newEntry]);
-//               }
-//             }
-//           } catch (err) {
-//             console.warn("Failed to parse fallback LaTeX drop data", err);
-//           }
-//         }}
-//       >
-//         {entries.length === 0 && (
-//           <p className={styles.empty}>Drag math expressions here!</p>
-//         )}
-
-//         {entries.map((entry, idx) => (
-//           <div
-//             key={entry.id}
-//             className={styles.libraryEntry}
-//             draggable
-//             onDragStart={(e) => {
-//               const dragData: DropSource = {
-//                 sourceType: "library",
-//                 containerId: "library",
-//                 index: idx,
-//                 node: entry.node,
-//               };
-
-//               // Internal use
-//               setDraggingNode(dragData);
-//               e.dataTransfer.effectAllowed = "copyMove";
-
-//               // External drag support: provide LaTeX version
-//               try {
-//                   // RECOVER THIS IF I DECIDE THAT "LATEX VERSION" REQUIRES THE BLOCK WRAP `\[ ... \]`
-//                   // const rootWrappedNode = (entry.node.type === "inline-container") 
-//                   //   ? createRootWrapper(entry.node)
-//                   //   : createRootWrapper(createInlineContainer([entry.node as StructureNode]))
-//                   // const latex = nodeToLatex(rootWrappedNode);
-//                   const latex = nodeToLatex(entry.node)
-//                   e.dataTransfer.setData("text/plain", latex);
-//                 } catch (err) {
-//                   console.warn("Failed to convert node to LaTeX during drag:", err);
-//                 }
-//             }}
-//             onDragEnd={() => {
-//               setDraggingNode(null);
-//               setDropTarget(null);
-//             }}
-//           >
-//             <MathView node={entry.node} />
-//             <button
-//               className={styles.deleteButton}
-//               onClick={() => handleDelete(entry.id)}
-//               title="Delete"
-//             >
-//               ✕
-//             </button>
-//           </div>
-//         ))}
-//       </div>
-//     </ResizableSidebar>
-//   );
-// };
-
-// export default MathLibrary;
-
+// components/mathLibrary/MathLibrary.tsx
 import React, { useEffect, useState, useRef } from "react";
 import ResizableSidebar from "../layout/ResizableSidebar";
 import { MathView } from "../mathExpression/MathView";
@@ -203,6 +9,8 @@ import { parseLatex } from "../../models/mathNodeParser";
 import type { DropTarget } from "../../hooks/DragContext";
 import clsx from "clsx";
 import Tooltip from "../tooltips/Tooltip";
+import TabDropdownPortal from "./TabDropdownPortal";
+import LibCollectionArchiveModal from "../modals/LibCollectionArchiveModal";
 
 // storage key per collection set
 const STORAGE_KEY = "mathLibraryCollections";
@@ -219,6 +27,11 @@ const MathLibrary: React.FC<{
   const [collections, setCollections] = useState<LibraryCollection[]>([]);
   const [activeColl, setActiveColl] = useState<string>("");
   const [hoveredTab, setHoveredTab] = useState<string | null>(null);
+
+  const buttonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+
+  const [menuOpenFor, setMenuOpenFor] = useState<string | null>(null);
+  const [showArchiveModal, setShowArchiveModal] = useState(false);
 
   const [editingCollId, setEditingCollId] = useState<string | null>(null);
   const renameInputRef = useRef<HTMLInputElement | null>(null);
@@ -443,6 +256,28 @@ const MathLibrary: React.FC<{
     }
   };
 
+  const archiveCollection = (id: string) => {
+    setCollections(colls =>
+      colls.map(col =>
+        col.id === id ? { ...col, archived: true } : col
+      )
+    );
+    // If you just archived the active collection, switch to a remaining one
+    if (id === activeColl) {
+      const next = collections.find(c => c.id !== id && !c.archived);
+      if (next) setActiveColl(next.id);
+    }
+  };
+
+  const unarchiveCollection = (id: string) => {
+    setCollections(colls =>
+      colls.map(col =>
+        col.id === id ? { ...col, archived: false } : col
+      )
+    );
+    setShowArchiveModal(false);
+  };
+
   return (
     <ResizableSidebar
       side="right"
@@ -452,78 +287,117 @@ const MathLibrary: React.FC<{
       storageKey="mathLibraryWidth"
     >
       <div className={styles.tabRow}>
-        {collections.map(c => (
-          <div
-            key={c.id}
-            className={clsx(styles.tab, { 
-              [styles.active]: c.id === activeColl, 
-              [styles.hovered]: c.id === hoveredTab,
-            })}
-          >
-            {editingCollId === c.id ? (
-              <div className={styles.collectionNameInput}>
-                <input
-                  ref={renameInputRef}
-                  defaultValue={c.name}
-                  onBlur={(e) => renameCollection(c.id, e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") renameCollection(c.id, (e.target as HTMLInputElement).value);
-                    if (e.key === "Escape") setEditingCollId(null);
+        <div className={styles.tabHeaderLeft}>
+          {collections.filter(c => !c.archived).map(c => (
+            <div
+              key={c.id}
+              className={clsx(styles.tab, { 
+                [styles.active]: c.id === activeColl, 
+                [styles.hovered]: c.id === hoveredTab,
+              })}
+            >
+              {editingCollId === c.id ? (
+                <div className={styles.collectionNameInput}>
+                  <input
+                    ref={renameInputRef}
+                    defaultValue={c.name}
+                    onBlur={(e) => renameCollection(c.id, e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") renameCollection(c.id, (e.target as HTMLInputElement).value);
+                      if (e.key === "Escape") setEditingCollId(null);
+                    }}
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      onDropEntry(e, c.id); // pass the target collection ID
+                    }}
+                    autoFocus
+                  />
+                </div>
+              ) : (
+                <span 
+                  className={styles.collectionTab} 
+                  onClick={() => setActiveColl(c.id)}
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    setHoveredTab(c.id);
                   }}
-                  onDragOver={(e) => e.preventDefault()}
+                  onDragLeave={() => setHoveredTab(null)}
                   onDrop={(e) => {
                     e.preventDefault();
-                    onDropEntry(e, c.id); // pass the target collection ID
+                    setHoveredTab(null);
+                    onDropEntry(e, c.id);
                   }}
-                  autoFocus
-                />
-              </div>
-            ) : (
-              <span 
-                className={styles.collectionTab} 
-                onClick={() => setActiveColl(c.id)}
-                onDragOver={(e) => {
-                  e.preventDefault();
-                  setHoveredTab(c.id);
-                }}
-                onDragLeave={() => setHoveredTab(null)}
-                onDrop={(e) => {
-                  e.preventDefault();
-                  setHoveredTab(null);
-                  onDropEntry(e, c.id);
-                }}
-              >
-                {c.name}
-              </span>
-            )}
+                >
+                  {c.name}
+                </span>
+              )}
 
-            {(c.id === activeColl && editingCollId !== c.id) && (
-              <div className={styles.tabActions}>
-                <button className={styles.collectionTabButton} title="Rename" onClick={() => setEditingCollId(c.id)}>✏️</button>
-                {collections.length > 0 && (
-                  <button className={styles.collectionTabButton} title="Delete" onClick={() => deleteCollection(c.id)}>🗑️</button>
-                )}
-              </div>
-            )}
-          </div>
-        ))}
-        <Tooltip text="New Collection">
-          <button
-            className={styles.tabAdd}
-            onClick={() => {
-              const id = crypto.randomUUID();
-              const name = "New Collection";
-              setCollections(c => [...c, { id, name, entries: [] }]);
-              setActiveColl(id);
-              setEditingCollId(id);
-              setTimeout(() => {
-                renameInputRef.current?.focus();
-              }, 0);
-            }}
-          >
-            +
-          </button>
-        </Tooltip>
+              {(c.id === activeColl && editingCollId !== c.id) && (
+                <div className={styles.tabActions}>
+                  <button
+                    ref={(el) => { buttonRefs.current[c.id] = el; }}
+                    className={styles.collectionTabButton}
+                    title="More options"
+                    onClick={() => {
+                      setMenuOpenFor(c.id === menuOpenFor ? null : c.id)}
+                    }
+                  >
+                    ⋯
+                  </button>
+                  {menuOpenFor && menuOpenFor === c.id && buttonRefs.current[c.id] && (
+                    <TabDropdownPortal 
+                      anchorRef={{ current: buttonRefs.current[c.id] as HTMLButtonElement}}
+                      onRename={() => {
+                        setEditingCollId(c.id);
+                        setMenuOpenFor(null);
+                      }}
+                      onDelete={() => {
+                        if (window.confirm("Are you sure you want to delete this collection?")) {
+                          deleteCollection(c.id);
+                        }
+                        setMenuOpenFor(null);
+                      }}
+                      onArchive={() => {
+                        archiveCollection(c.id);
+                        setMenuOpenFor(null);
+                      }}
+                      onClose={() => setMenuOpenFor(null)}
+                    />
+                  )}
+                </div>
+              )}
+            </div>
+          ))}
+          <Tooltip text="New Collection">
+            <button
+              className={styles.tabAdd}
+              onClick={() => {
+                const id = crypto.randomUUID();
+                const name = "My Collection";
+                setCollections(c => [...c, { id, name, entries: [] }]);
+                setActiveColl(id);
+                setEditingCollId(id);
+                setTimeout(() => {
+                  renameInputRef.current?.focus();
+                }, 0);
+              }}
+            >
+              +
+            </button>
+          </Tooltip>
+        </div>
+        <div className={styles.tabHeaderRight}>
+          <Tooltip text="Collections Archive">
+            <button 
+              className={styles.archiveButton} 
+              onClick={() => setShowArchiveModal(true)} 
+              title="View archived collections"
+            >
+              🗃️
+            </button>  
+          </Tooltip>
+        </div>
       </div>
 
       {collections.length === 0 ? (
@@ -606,6 +480,16 @@ const MathLibrary: React.FC<{
           </div>
         </span>
 
+      )}
+      {showArchiveModal && (
+        <LibCollectionArchiveModal
+          archived={collections.filter(c => c.archived)}
+          onUnarchive={(id) => unarchiveCollection(id)}
+          onClose={() => setShowArchiveModal(false)}
+          onDelete={(id) => {
+            setCollections(c => c.filter(col => col.id !== id));
+          }}
+        />
       )}
     </ResizableSidebar>
   );

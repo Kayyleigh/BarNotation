@@ -201,6 +201,10 @@
     cursor: pointer;
   }
 
+  .delete-button:hover {
+    background-color: var(--delete-button-hover-bg);
+  }
+
   .cell-main-content {
     flex: 1;
     display: flex;
