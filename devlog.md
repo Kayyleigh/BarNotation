@@ -2,7 +2,7 @@
 ## Introduction
 When not given access to lecture slides, students have to take notes in class. Doing so on paper is painful for students with chronic pain. Digital note-taking may help, but this is difficult when mathematical notation is involved. In particular, actuarial notation requires accents and sub-/superscripts that are often not available in tools such as {TODO}, or take long to find in menus (in e.g. Word) or type out (in e.g. Latex packages that enable actuarial notation).
 
-This document describes and designs an application that enables the creation of mathematical notation, with a heavy focus on user freedom and ease-of-use. The goal is to enable math students with chronic pain to take lecture notes of math notation digitally, quick enough to not be restricted to physical writing when trying to keep up with the lecturers during class. The application focuses heavily on user freedom and minimal pain, always keeping in mind this use case. To avoid overcomplicating the app, it is meant to be used exclusively for math notation, meaning the user should still type surrounding textual lecture notes elsewhere.
+This document describes and designs an application that enables the creation of mathematical notation, with a heavy focus on user freedom and ease-of-use. The goal is to enable math students with chronic pain to take lecture notes of math notation digitally, quick enough to not be restricted to physical writing when trying to keep up with the lecturers during class. The application focuses heavily on user freedom and minimal pain, always keeping in mind this use case. To avoid overcomplicating the app, it is meant to be used exclusively for math notation, meaning the user should still type surrounding textual lecture notes elsewhere. (update 30/06/2025: this is not true anymore, the app is much bigger and cooler than I thought it would ever be.)
 
 The remainder of this document is structured as follows. First, background information is needed on chronic pain to find out what types of movements (i.e., drag/type/click) are beneficial or should be prioritized/avoided. Next, the building blocks of actuarial notation are examined, as this is necessary before deciding on the underlying data model(s) of the system. Afterwards, I look into existing tools for digital math notations to find out what conventions this application should follow as well as what features are missing in existing tools and should thus be included here. Next, I outline the requirements of the application.
 
@@ -3245,3 +3245,41 @@ Premade expressions that are handled the absolute worst (others are just slow to
 Progress:
 - added missing sequences to make all the premades work. 
 - made "delete entry" button appear only on hover of library entry. Reason: otherwise small entries are blocked by the button, so you can never really see what is in the entry. On hover, this issue still appears in the sense that you cannot easily see the underlying latex because the tooltip for that is only on the math itself. The reason for that is because I believe conceptually, latex truly is bound to the expression. Not the library entry.
+
+Next issue: Math cell when deleted seems to turn into text cell. I should not default to text when editorState is missing. Must handle state better, same stone can kill history bird I think
+
+Good for later: overview of reasons why all these sorting options exist for the use case.
+- Newest -- Notes within lecture will often be about similar topic, so recent snippets are likely needed a lot
+- Oldest -- For user-controlled maintainability; easy to delete old entries if no longer needed. Good for allowing user-maintained de-clutter
+- Most used -- helps user understand themselves, i.e. can help them realize which entries are useful to duplicate into new collections
+- Least used -- shows user which entries are so unnecessary that they can be removed from their collection. Good for allowing user-maintained de-clutter
+- A-Z and Z-A -- alphabetical, good when library collection is huge and user is not sure of exact special characters underlying latex, meaning they may not find what they are looking for in the substring filter search bar
+
+IDEA: when multi-note support exist, it should be possible to drag cells into other notes to deep-copy the full cell!
+
+Note: current app does not allow drag-and-drop math from cell to external app, in the way that the library does. Maybe add it later.
+
+Big-ish TODOs for the app atm:
+- [COLLECTION ARCHIVE] show (& thus keep track of) date created (and/or date archived)
+- [MATH LIBRARY] Enable custom re-ordering of library tabs
+- [MATH LIBRARY] disable deletion and addition of entries of predefined structure collection
+- [MATH LIBRARY] ...and disable perma deletion of structure collection
+- [MATH LIBRARY] (Maybe just somehow have a library collection component or  something, which lets me control whether it is custom/normal-predefined or perma-predefined)
+- [NOTE EDITOR] keep track of text cell state as well, to prevent full deletion (instead normal per-token or word)
+- [NOTE EDITOR] ensure deletion of match cell does not turn it into text cell
+- [NOTE EDITOR] implement (sub(sub))sectioning of text cells (or new cell type but imo text is cleaner; just keep 2 cell types for user to not have an overwhelming menu)
+- [MATH EDITOR] force hovered node jump to parent (when valid) when user presses shift(?). Reason: nodes could be hard to pick when it's only like 1 pixel and you're in a hurry and your hand is hurting
+- [MATH LOGIC] handle splitting of CommandInput and MultiDigit when typing or dropping something else in the middle
+- [MATH LOGIC] implement matrix, vector, and binom
+- [MATH LOGIC] feedback predict-completion list of existing sequences when user is in command-input
+- [MATH LOGIC] add on-hover actions (maybe with delay) to do things to the node, depending on the node type
+- [APP SETTINGS] enable custom key binds for shortcuts
+- [APP SETTINGS] implement the turning-off of preview colors 
+- [APP SETTINGS] show little feedback saying sth like "saved" on any change of the settings, so user understands that saving happens before the apply&close button is pressed
+- [APP SETTINGS] turn theme picker into dropdown
+- [APP SETTINGS] add nerd mode to show frequency counts and more debug-related stuff that is also nice for users to maybe keep?
+- [ADDITIONAL MODALS] write user guide
+- [ADDITIONAL MODALS] make "are you sure?" on deletion of collections
+- [ADDITIONAL MODALS] make overview of existing special sequences
+
+But first, lemme make that scrollbar prettyyyyy

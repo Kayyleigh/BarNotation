@@ -241,7 +241,7 @@ const App: React.FC = () => {
                   toolbarExtras={
                     cell.type === "math" ? (
                       <button className="preview-button" onClick={() => toggleShowLatex(cell.id)}>
-                        {showLatexMap[cell.id] ? "🙈 Hide Latex" : "👁️ Show Latex"}
+                        {showLatexMap[cell.id] ? "🙈 Latex" : "👁️ Latex"}
                       </button>
                     ) : null
                   }

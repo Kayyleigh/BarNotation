@@ -111,7 +111,7 @@
 
 .libraryDropZone {
   flex: 1;
-  height: calc(83%);
+  height: calc(83.71%); /* Quick and dirty; TODO actually calculate what's left after headers */
   align-content: flex-start;
   overflow-y: auto;
   padding: 8px;

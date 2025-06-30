@@ -30,7 +30,7 @@ const MathCell: React.FC<MathCellProps> = ({ resetZoomSignal, defaultZoom, isPre
       {showToolbar && (
         <div className="cell-toolbar">
           <button className="preview-button" onClick={toggleLatex}>
-            {showLatex ? "🙈 Hide Latex" : "👁️ Show Latex"}
+            {showLatex ? "🙈 Latex" : "👁️ Latex"}
           </button>
           <button className="delete-button" onClick={onDelete}>🗑️</button>
         </div>
