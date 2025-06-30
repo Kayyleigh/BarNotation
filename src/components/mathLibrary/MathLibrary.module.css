@@ -17,10 +17,35 @@
 .tab {
   position: relative;
   display: flex;
-  cursor: pointer;
+  cursor: grab;
   user-select: none;
   align-items: center;
   min-height: 2.3em;
+}
+
+.dragOverLeft::before,
+.dragOverRight::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background-color: #0078d7; /* bright blue accent color */
+  z-index: 10;
+  border-radius: 2px;
+}
+
+.dragOverLeft::before {
+  left: 0;
+}
+
+.dragOverRight::before {
+  right: 0;
+}
+
+.dragging {
+  opacity: 0.6;
+  cursor: grabbing;
 }
 
 .tab.active {

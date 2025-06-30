@@ -39,7 +39,10 @@ const MathLibrary: React.FC<{
 
   const [loadingCollections, setLoadingCollections] = useState(true);
 
+  const [draggingTabIdx, setDraggingTabIdx] = useState<number | null>(null);
+  const dragOverTabIdx = useRef<number | null>(null);
 
+  const [dragOverPosition, setDragOverPosition] = useState<"left" | "right" | null>(null);
 
   const [filter, setFilter] = useState("");
   type SortOption = "date" | "date-asc" | "usage" | "usage-asc" | "latex" | "latex-desc";
@@ -250,6 +253,67 @@ const MathLibrary: React.FC<{
     }
   };
 
+  const onTabDragStart = (e: React.DragEvent, idx: number) => {
+    setDraggingTabIdx(idx);
+    e.dataTransfer.effectAllowed = "move";
+    // You can optionally set drag image or dataTransfer data if needed
+  };
+  
+  const onTabDragOver = (e: React.DragEvent, idx: number) => {
+    if (!draggingTabIdx) return; // Do not treat as dragOver when source is not a tab
+
+    e.preventDefault();
+  
+    // Calculate if mouse is on left or right half of the tab
+    const target = e.currentTarget as HTMLElement;
+    const rect = target.getBoundingClientRect();
+    const mouseX = e.clientX;
+    const midpoint = rect.left + rect.width / 2;
+  
+    const position = mouseX < midpoint ? "left" : "right";
+  
+    dragOverTabIdx.current = idx;
+    setDragOverPosition(position);
+  };
+  
+  const onTabDrop = (e: React.DragEvent, idx: number) => {
+    e.preventDefault();
+    if (draggingTabIdx === null) return;
+  
+    let newIndex = idx;
+    if (dragOverPosition === "right") {
+      newIndex = idx + 1;
+    }
+  
+    // Adjust if dragged item was before the new index (to avoid offset)
+    if (draggingTabIdx < newIndex) {
+      newIndex--;
+    }
+  
+    if (draggingTabIdx === newIndex) {
+      setDraggingTabIdx(null);
+      setDragOverPosition(null);
+      dragOverTabIdx.current = null;
+      return; // no move needed
+    }
+  
+    setCollections(colls => {
+      const updated = [...colls];
+      const [moved] = updated.splice(draggingTabIdx, 1);
+      updated.splice(newIndex, 0, moved);
+      return updated;
+    });
+  
+    setDraggingTabIdx(null);
+    setDragOverPosition(null);
+    dragOverTabIdx.current = null;
+  };
+  
+  const onTabDragEnd = () => {
+    setDraggingTabIdx(null);
+    dragOverTabIdx.current = null;
+  };
+
   const updateCollectionEntries = (newEntries: LibraryEntry[]) => {
     setCollections(colls =>
       colls.map(c =>
@@ -307,87 +371,99 @@ const MathLibrary: React.FC<{
     >
       <div className={styles.tabRow}>
         <div className={styles.tabHeaderLeft}>
-          {collections.filter(c => !c.archived).map(c => (
-            <div
-              key={c.id}
-              className={clsx(styles.tab, { 
-                [styles.active]: c.id === activeColl, 
-                [styles.hovered]: c.id === hoveredTab,
-              })}
-            >
-              {editingCollId === c.id ? (
-                <div className={styles.collectionNameInput}>
-                  <input
-                    ref={renameInputRef}
-                    defaultValue={c.name}
-                    onBlur={(e) => renameCollection(c.id, e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") renameCollection(c.id, (e.target as HTMLInputElement).value);
-                      if (e.key === "Escape") setEditingCollId(null);
+          {collections.filter(c => !c.archived).map((c, idx) => {
+            const isDragOver = dragOverTabIdx.current === idx;
+  
+            return (
+              <div
+                key={c.id}
+                className={clsx(styles.tab, { 
+                  [styles.active]: c.id === activeColl, 
+                  [styles.hovered]: c.id === hoveredTab,
+                  [styles.dragging]: draggingTabIdx === idx,
+                  [styles.dragOverLeft]: isDragOver && dragOverPosition === "left",
+                  [styles.dragOverRight]: isDragOver && dragOverPosition === "right",
+                })}
+                draggable
+                onDragStart={(e) => onTabDragStart(e, idx)}
+                onDragOver={(e) => onTabDragOver(e, idx)}
+                onDrop={(e) => onTabDrop(e, idx)}
+                onDragEnd={onTabDragEnd}
+              >
+                {editingCollId === c.id ? (
+                  <div className={styles.collectionNameInput}>
+                    <input
+                      ref={renameInputRef}
+                      defaultValue={c.name}
+                      onBlur={(e) => renameCollection(c.id, e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") renameCollection(c.id, (e.target as HTMLInputElement).value);
+                        if (e.key === "Escape") setEditingCollId(null);
+                      }}
+                      onDragOver={(e) => e.preventDefault()}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        onDropEntry(e, c.id); // pass the target collection ID
+                      }}
+                      autoFocus
+                    />
+                  </div>
+                ) : (
+                  <span 
+                    className={styles.collectionTab} 
+                    onClick={() => setActiveColl(c.id)}
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      setHoveredTab(c.id);
                     }}
-                    onDragOver={(e) => e.preventDefault()}
+                    onDragLeave={() => setHoveredTab(null)}
                     onDrop={(e) => {
                       e.preventDefault();
-                      onDropEntry(e, c.id); // pass the target collection ID
+                      setHoveredTab(null);
+                      onDropEntry(e, c.id);
                     }}
-                    autoFocus
-                  />
-                </div>
-              ) : (
-                <span 
-                  className={styles.collectionTab} 
-                  onClick={() => setActiveColl(c.id)}
-                  onDragOver={(e) => {
-                    e.preventDefault();
-                    setHoveredTab(c.id);
-                  }}
-                  onDragLeave={() => setHoveredTab(null)}
-                  onDrop={(e) => {
-                    e.preventDefault();
-                    setHoveredTab(null);
-                    onDropEntry(e, c.id);
-                  }}
-                >
-                  {c.name}
-                </span>
-              )}
-
-              {(c.id === activeColl && editingCollId !== c.id) && (
-                <div className={styles.tabActions}>
-                  <button
-                    ref={(el) => { buttonRefs.current[c.id] = el; }}
-                    className={styles.collectionTabButton}
-                    title="More options"
-                    onClick={() => {
-                      setMenuOpenFor(c.id === menuOpenFor ? null : c.id)}
-                    }
                   >
-                    ⋯
-                  </button>
-                  {menuOpenFor && menuOpenFor === c.id && buttonRefs.current[c.id] && (
-                    <TabDropdownPortal 
-                      anchorRef={{ current: buttonRefs.current[c.id] as HTMLButtonElement}}
-                      onRename={() => {
-                        setEditingCollId(c.id);
-                        setMenuOpenFor(null);
+                    {c.name}
+                  </span>
+                )}
+  
+                {(c.id === activeColl && editingCollId !== c.id) && (
+                  <div className={styles.tabActions}>
+                    <button
+                      ref={(el) => { buttonRefs.current[c.id] = el; }}
+                      className={styles.collectionTabButton}
+                      title="More options"
+                      onClick={() => {
+                        setMenuOpenFor(c.id === menuOpenFor ? null : c.id);
                       }}
-                      onDelete={() => {
-                        if (window.confirm("Are you sure you want to delete this collection?")) {
-                          deleteCollection(c.id);
-                        }
-                        setMenuOpenFor(null);
-                      }}
-                      onArchive={() => {
-                        archiveCollection(c.id);
-                        setMenuOpenFor(null);
-                      }}
-                      onClose={() => setMenuOpenFor(null)}
-                    />
-                  )}
-                </div>
-              )}
-            </div>
-          ))}
+                    >
+                      ⋯
+                    </button>
+                    {menuOpenFor && menuOpenFor === c.id && buttonRefs.current[c.id] && (
+                      <TabDropdownPortal 
+                        anchorRef={{ current: buttonRefs.current[c.id] as HTMLButtonElement}}
+                        onRename={() => {
+                          setEditingCollId(c.id);
+                          setMenuOpenFor(null);
+                        }}
+                        onDelete={() => {
+                          if (window.confirm("Are you sure you want to delete this collection?")) {
+                            deleteCollection(c.id);
+                          }
+                          setMenuOpenFor(null);
+                        }}
+                        onArchive={() => {
+                          archiveCollection(c.id);
+                          setMenuOpenFor(null);
+                        }}
+                        onClose={() => setMenuOpenFor(null)}
+                      />
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })} {/* <-- fixed here, removed extra }) */}
           <Tooltip text="New Collection">
             <button
               className={styles.tabAdd}
@@ -418,7 +494,7 @@ const MathLibrary: React.FC<{
           </Tooltip>
         </div>
       </div>
-
+  
       {loadingCollections ? (
         <div className={styles.loadingContainer}>
           <div className={styles.spinner} />
@@ -459,7 +535,7 @@ const MathLibrary: React.FC<{
               <option value="latex-desc">Z → A</option>
             </select>
           </div>
-
+  
           <div
             className={styles.libraryDropZone}
             onDragOver={(e) => {
@@ -504,7 +580,6 @@ const MathLibrary: React.FC<{
             {sorted.length === 0 && <p className={styles.empty}>Drag math expression here</p>}
           </div>
         </span>
-
       )}
       {showArchiveModal && (
         <LibCollectionArchiveModal
@@ -517,7 +592,7 @@ const MathLibrary: React.FC<{
         />
       )}
     </ResizableSidebar>
-  );
+  );  
 };
 
 export default MathLibrary;
