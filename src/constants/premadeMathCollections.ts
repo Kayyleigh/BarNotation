@@ -1,6 +1,20 @@
 // constants/premadeMathCollections.ts
 export const PREMADE_COLLECTIONS_RAW = [
     {
+      id: "premade-test",
+      name: "TEST",
+      archived: false,
+      entries: [
+        { id: "test-1", latex: `{}` },        
+        { id: "test-2", latex: `[]` },        
+        { id: "test-3", latex: `` },        
+        { id: "test-4", latex: `x` },        
+        { id: "test-5", latex: `{y}` },        
+        { id: "test-6", latex: `\\{\\}` },        
+        { id: "test-7", latex: `\\[\\]` },        
+      ],
+    },
+    {
       id: "premade-structures",
       name: "🏗️ Structures",
       archived: false,
@@ -61,8 +75,8 @@ export const PREMADE_COLLECTIONS_RAW = [
         { id: "logic-7", latex: `P \\iff Q` },
         { id: "logic-8", latex: `\\vdash P` },
         { id: "logic-9", latex: `\\models P` },
-        { id: "logic-10", latex: `\\bot ` },
-        { id: "logic-11", latex: `\\top ` },
+        { id: "logic-10", latex: `\\bot` },
+        { id: "logic-11", latex: `\\top` },
         { id: "logic-12", latex: `\\therefore P` },
       ],
     },

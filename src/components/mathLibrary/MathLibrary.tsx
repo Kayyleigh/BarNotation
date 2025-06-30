@@ -37,6 +37,10 @@ const MathLibrary: React.FC<{
   const [editingCollId, setEditingCollId] = useState<string | null>(null);
   const renameInputRef = useRef<HTMLInputElement | null>(null);
 
+  const [loadingCollections, setLoadingCollections] = useState(true);
+
+
+
   const [filter, setFilter] = useState("");
   type SortOption = "date" | "date-asc" | "usage" | "usage-asc" | "latex" | "latex-desc";
   const [sortBy, setSortBy] = useState<SortOption>("date");
@@ -72,6 +76,10 @@ const MathLibrary: React.FC<{
       setCollections([{ id: defaultId, name: "Default", entries: [] }]);
       setActiveColl(defaultId);
     }
+
+    setLoadingCollections(false); // done loading
+    // setTimeout(() => setLoadingCollections(false), 600000); // small delay for better UX feel
+
   }, []);
   
   useEffect(() => {
@@ -411,7 +419,13 @@ const MathLibrary: React.FC<{
         </div>
       </div>
 
-      {collections.length === 0 ? (
+      {loadingCollections ? (
+        <div className={styles.loadingContainer}>
+          <div className={styles.spinner} />
+          {/* <p className={styles.loadingText}>Loading collections, this may take a while...</p> */}
+          <p className={styles.loadingText}>You know the usual, we might have to wait a bit</p>
+        </div>
+      ) : collections.length === 0 ? (
         <div className={styles.empty}>
           No collections yet. Click <strong>+</strong> to create one.
         </div>

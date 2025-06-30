@@ -447,26 +447,6 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({ noteId, rightWidth, s
   const onDropNode = useCallback(
     (from: DropSource, to: DropTarget) => {
       const sourceState = from.cellId ? editorStates[from.cellId] : null;
-      console.log(`${to.cellId} ${to.containerId} ${to.index}`);
-  
-      const destState = editorStates[to.cellId];
-      if (!destState) return;
-  
-      // Redirect drop if container is the root-wrapper node
-      console.log(`${destState.rootNode.child.id} vs ${to.containerId}`)
-      if (to.containerId === "root") {
-        console.log(`We are doing ok`)
-        // Find the inline-container child of rootNode
-        const inlineContainerChild = destState.rootNode.child;
-
-        if (inlineContainerChild) {
-          to = {
-            ...to,
-            containerId: inlineContainerChild.id,
-            index: inlineContainerChild.children?.length ?? 0, // drop at the end
-          };
-        }
-      }
   
       // Drop from editor to library
       if (to.cellId === "library" && from.sourceType === "cell") {
@@ -480,6 +460,24 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({ noteId, rightWidth, s
         };
         addEntryToLibraryRef.current?.(newEntry);
         return;
+      }
+
+
+      const destState = editorStates[to.cellId];
+      if (!destState) return;
+  
+      // Redirect drop if container is the root-wrapper node
+      if (to.containerId === "root") {
+        // Find the inline-container child of rootNode
+        const inlineContainerChild = destState.rootNode.child;
+
+        if (inlineContainerChild) {
+          to = {
+            ...to,
+            containerId: inlineContainerChild.id,
+            index: inlineContainerChild.children?.length ?? 0, // drop at the end
+          };
+        }
       }
   
       const updatedEditorStates = { ...editorStates };

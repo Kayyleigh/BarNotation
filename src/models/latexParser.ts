@@ -255,28 +255,165 @@ export function parseLatex(input: string): MathNode {
     // base = createTextNode("");
     base = createInlineContainer();
     if (token) {
+      // if (token.type === "command") {
+      //   const { name } = consume() as { type: "command"; name: string };
+
+      //   if (name === "actsymb") {
+      //     // Parse optional left scripts bracket, e.g. [m|]
+      //     const subLeftStr = parseOptionalBracketString(); //TODO: if \actsymb[]{}{}[] is also valid (idk if is), then this may make wrong child?
+      //     const supLeftStr = parseOptionalBracketString();
+
+      //     // Make MathNode with valid input (empty InlineContainer if undefined)
+      //     const subLeft = parseLatex(" " + (subLeftStr ? subLeftStr : "") + " ");
+      //     const supLeft = parseLatex(" " + (supLeftStr ? supLeftStr : "") + " ");
+
+      //     // Parse mandatory base group {A}
+      //     const base = parseGroup();
+
+      //     // Parse mandatory supRight group {x:\angl{n}}
+      //     const subRight = parseGroup();
+
+      //     // Parse optional right subscript bracket, e.g. [2]
+      //     const supRightStr = parseOptionalBracketString();
+      //     const supRight = parseLatex(" " + (supRightStr ? supRightStr : "") + " ");
+
+      //     return createChildedNode(
+      //       base as InlineContainerNode,
+      //       'actsymb',
+      //       subLeft as InlineContainerNode,
+      //       supLeft as InlineContainerNode,
+      //       subRight as InlineContainerNode,
+      //       supRight as InlineContainerNode,
+      //     );
+
+      //   }
+      //   else if (name === "frac") {
+      //     const numerator = parseGroup();
+      //     const denominator = parseGroup();
+      //     base = createFraction(numerator, denominator);
+      //   }
+      //   else if (name === "sqrt") {
+      //     // your sqrt parsing logic here ...
+      //     const indexString = parseOptionalBracketString();
+      //     const indexNode = parseLatex(indexString ? (" " + indexString + "") : " ");
+      //     const index = indexNode.type === "inline-container" ? indexNode : createInlineContainer([indexNode as StructureNode])
+      //     console.log(`index is ${index.type}`)
+      //     const radicand = parseGroup();
+      //     base = createNthRoot(
+      //       radicand,
+      //       index,
+      //     );
+      //   }
+      //   else if (name in decorationToLatexCommandInverse) {
+      //     const child = parseGroup();
+      //     base = createAccentedNode(
+      //       child,
+      //       {
+      //         type: 'predefined',
+      //         decoration: decorationToLatexCommandInverse[name] as NodeDecoration,
+      //       },
+      //     );
+      //   }
+      //   else if (getStyledNodeFromAlias(name)) {
+      //     // Parse child node that will receive styling
+      //     const child = parseGroup();
+
+      //     // Call styled node creation (wrap around child) with inferred styling from command name
+      //     base = getStyledNodeFromAlias(name, child)
+      //   }
+      //   else if (getSymbolNodeFromAlias(name)) {
+      //     base = getSymbolNodeFromAlias(name); // Call creatNode()
+
+
+      //     // if latex string exists ??
+      //     if (specialSymbols[name + " "]) {
+      //     // if (symbolToLatex[name] && symbolToLatex[name].charAt(symbolToLatex[name].length - 1) === " ") {
+      //       if (peek()?.type === "char" && peek()?.value === " ") {
+      //         console.log(`SWALLOWED A SPACE AFTER ${name}`)
+      //         consume(); // consume ' '
+      //       } else console.log(`NOPE type is ${peek()?.type}`)
+      //     } else console.warn(name)
+      //   }
+      //   else if (getBigOpNodeFromAlias(name)) {
+      //     // Parse optional subscript (lower limit)
+      //     let lower: InlineContainerNode = createInlineContainer();
+      //     let upper: InlineContainerNode = createInlineContainer();
+
+      //     skipWhitespace();
+
+      //     // Check if next token is '_' for lower limit
+      //     let next = peek();
+      //     if (next && next.type === "char" && next.value === "_") {
+      //       consume(); // consume '_'
+      //       skipWhitespace();
+      //       lower = parseChildScript();
+      //     }
+
+      //     // Check if next token is '^' for upper limit
+      //     next = peek();
+      //     if (next && next.type === "char" && next.value === "^") {
+      //       consume(); // consume '^'
+      //       skipWhitespace();
+      //       upper = parseChildScript();
+      //     }
+      //     const result = getBigOpNodeFromAlias(name, lower, upper);
+      //     if (result != undefined) {
+      //       base = result;
+      //     } else throw new Error(`PROBLEM: COULD NOT MAKE THE BIG OP FROM ${name}!!`)
+      //   }
+
+      //   else if (name === 'overset') {
+      //     const accentContent = parseGroup();
+      //     const child = parseGroup();
+      //     base = createAccentedNode(child, { type: 'custom', content: accentContent, position: 'above' })
+      //   }
+      //   else if (name === 'underset') {
+      //     const accentContent = parseGroup();
+      //     const child = parseGroup();
+      //     base = createAccentedNode(child, { type: 'custom', content: accentContent, position: 'below' })
+      //   }
+      //   else if (name === 'left') {
+      //     console.warn(`Not yet implemented: ${name}`)
+      //   }
+      //   else if (name === 'right') {
+      //     console.warn(`Not yet implemented: ${name}`)
+      //   }
+      //   else if (name.startsWith("\\")) {
+      //     // TODO: recognize when to turn into special spacing like \,
+
+      //     console.warn(`Escape sequence: ${name}`)
+
+      //     if (name === "\\,") {
+      //       base = createTextNode(" ", name);
+      //     }
+      //     else {
+      //       // Create text node where display text is the sequence after "\"
+      //       base = createTextNode(name.slice(1), name);
+      //     }
+      //   }
+      //   else {
+      //     console.log(`Name not found: '${name}'. Creating`)
+      //     console.log(`creating \\${name} `)
+      //     // Create text node with escaped sequence 
+      //     base = createStyledNode(createTextNode("\\" + name, "\\" + name), { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } });
+      //   }
+      // }
       if (token.type === "command") {
         const { name } = consume() as { type: "command"; name: string };
-
+      
         if (name === "actsymb") {
-          // Parse optional left scripts bracket, e.g. [m|]
-          const subLeftStr = parseOptionalBracketString(); //TODO: if \actsymb[]{}{}[] is also valid (idk if is), then this may make wrong child?
+          const subLeftStr = parseOptionalBracketString();
           const supLeftStr = parseOptionalBracketString();
-
-          // Make MathNode with valid input (empty InlineContainer if undefined)
-          const subLeft = parseLatex(" " + (subLeftStr ? subLeftStr : "") + " ");
-          const supLeft = parseLatex(" " + (supLeftStr ? supLeftStr : "") + " ");
-
-          // Parse mandatory base group {A}
+      
+          const subLeft = parseLatex(" " + (subLeftStr ?? "") + " ");
+          const supLeft = parseLatex(" " + (supLeftStr ?? "") + " ");
+      
           const base = parseGroup();
-
-          // Parse mandatory supRight group {x:\angl{n}}
           const subRight = parseGroup();
-
-          // Parse optional right subscript bracket, e.g. [2]
+      
           const supRightStr = parseOptionalBracketString();
-          const supRight = parseLatex(" " + (supRightStr ? supRightStr : "") + " ");
-
+          const supRight = parseLatex(" " + (supRightStr ?? "") + " ");
+      
           return createChildedNode(
             base as InlineContainerNode,
             'actsymb',
@@ -285,116 +422,140 @@ export function parseLatex(input: string): MathNode {
             subRight as InlineContainerNode,
             supRight as InlineContainerNode,
           );
-
         }
+      
         else if (name === "frac") {
           const numerator = parseGroup();
           const denominator = parseGroup();
           base = createFraction(numerator, denominator);
         }
+      
         else if (name === "sqrt") {
-          // your sqrt parsing logic here ...
           const indexString = parseOptionalBracketString();
-          const indexNode = parseLatex(indexString ? (" " + indexString + "") : " ");
-          const index = indexNode.type === "inline-container" ? indexNode : createInlineContainer([indexNode as StructureNode])
-          console.log(`index is ${index.type}`)
+          const indexNode = parseLatex(indexString ? ` ${indexString} ` : " ");
+          const index = indexNode.type === "inline-container"
+            ? indexNode
+            : createInlineContainer([indexNode as StructureNode]);
+      
           const radicand = parseGroup();
-          base = createNthRoot(
-            radicand,
-            index,
-          );
+          base = createNthRoot(radicand, index);
         }
+      
         else if (name in decorationToLatexCommandInverse) {
           const child = parseGroup();
-          base = createAccentedNode(
-            child,
-            {
-              type: 'predefined',
-              decoration: decorationToLatexCommandInverse[name] as NodeDecoration,
-            },
-          );
+          base = createAccentedNode(child, {
+            type: 'predefined',
+            decoration: decorationToLatexCommandInverse[name] as NodeDecoration,
+          });
         }
+      
         else if (getStyledNodeFromAlias(name)) {
-          // Parse child node that will receive styling
           const child = parseGroup();
-
-          // Call styled node creation (wrap around child) with inferred styling from command name
-          base = getStyledNodeFromAlias(name, child)
+          base = getStyledNodeFromAlias(name, child);
         }
+      
         else if (getSymbolNodeFromAlias(name)) {
-          base = getSymbolNodeFromAlias(name); // Call creatNode()
-
-          if (symbolToLatex[name] && symbolToLatex[name].charAt(symbolToLatex[name].length - 1) === " ") {
-            if (peek()?.type === "char" && peek()?.value === " ") {
-              console.log(`SWALLOWED A SPACE AFTER ${name}`)
-              consume(); // consume ' '
-            } else console.log(`NOPE type is ${peek()?.type}`)
+          const nextToken = peek();
+        
+          // LaTeX rule: only treat as full command if next token is not a letter (char a-zA-Z)
+          const isTerminated =
+            !nextToken || 
+            nextToken.type !== "char" || 
+            !/^[a-zA-Z]$/.test(nextToken.value);
+        
+          if (!isTerminated) {
+            // Don't consume as symbol — fallback below will handle
+            console.warn(`Command \\${name} not terminated properly; not a match`);
+          } else {
+            base = getSymbolNodeFromAlias(name);
+        
+            // Optional trailing space swallow
+            const rawSeq = symbolToLatex[base?.type === "text" ? base.content : ""] ?? "";
+            const hadTrailingSpace = rawSeq.endsWith(" ");
+        
+            if (hadTrailingSpace) {
+              const next = peek();
+              if (next?.type === "char" && next.value === " ") {
+                console.log(`SWALLOWED A SPACE AFTER \\${name}`);
+                consume();
+              } else {
+                console.log(`NOPE type is ${next?.type}`);
+              }
+            }
           }
         }
+      
         else if (getBigOpNodeFromAlias(name)) {
-          // Parse optional subscript (lower limit)
           let lower: InlineContainerNode = createInlineContainer();
           let upper: InlineContainerNode = createInlineContainer();
-
+      
           skipWhitespace();
-
-          // Check if next token is '_' for lower limit
+      
           let next = peek();
-          if (next && next.type === "char" && next.value === "_") {
-            consume(); // consume '_'
+          if (next?.type === "char" && next.value === "_") {
+            consume();
             skipWhitespace();
             lower = parseChildScript();
           }
-
-          // Check if next token is '^' for upper limit
+      
           next = peek();
-          if (next && next.type === "char" && next.value === "^") {
-            consume(); // consume '^'
+          if (next?.type === "char" && next.value === "^") {
+            consume();
             skipWhitespace();
             upper = parseChildScript();
           }
+      
           const result = getBigOpNodeFromAlias(name, lower, upper);
-          if (result != undefined) {
+          if (result !== undefined) {
             base = result;
-          } else throw new Error(`PROBLEM: COULD NOT MAKE THE BIG OP FROM ${name}!!`)
+          } else {
+            throw new Error(`PROBLEM: COULD NOT MAKE THE BIG OP FROM ${name}!!`);
+          }
         }
-
+      
         else if (name === 'overset') {
           const accentContent = parseGroup();
           const child = parseGroup();
-          base = createAccentedNode(child, { type: 'custom', content: accentContent, position: 'above' })
+          base = createAccentedNode(child, {
+            type: 'custom',
+            content: accentContent,
+            position: 'above'
+          });
         }
+      
         else if (name === 'underset') {
           const accentContent = parseGroup();
           const child = parseGroup();
-          base = createAccentedNode(child, { type: 'custom', content: accentContent, position: 'below' })
+          base = createAccentedNode(child, {
+            type: 'custom',
+            content: accentContent,
+            position: 'below'
+          });
         }
-        else if (name === 'left') {
-          console.warn(`Not yet implemented: ${name}`)
+      
+        else if (name === 'left' || name === 'right') {
+          console.warn(`Not yet implemented: ${name}`);
         }
-        else if (name === 'right') {
-          console.warn(`Not yet implemented: ${name}`)
-        }
+      
         else if (name.startsWith("\\")) {
-          // TODO: recognize when to turn into special spacing like \,
-
-          console.warn(`Escape sequence: ${name}`)
-
+          console.warn(`Escape sequence: ${name}`);
           if (name === "\\,") {
             base = createTextNode(" ", name);
-          }
-          else {
-            // Create text node where display text is the sequence after "\"
+            //TODO fix here: make even escaped brackets parse as bracketed group
+          } else {
             base = createTextNode(name.slice(1), name);
           }
         }
+      
         else {
-          console.log(`Name not found: '${name}'. Creating`)
-          console.log(`creating \\${name} `)
-          // Create text node with escaped sequence 
-          base = createStyledNode(createTextNode("\\" + name, "\\" + name), { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } });
+          console.log(`Name not found: '${name}'. Creating fallback text node`);
+          base = createStyledNode(
+            createTextNode("\\" + name, "\\" + name),
+            { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
+          );
         }
       }
+      
       else if (token.type === "brace_open") {
         const group = parseGroup();
         if (group.children.length === 1) {
@@ -491,7 +652,7 @@ function tokenize(input: string): Token[] {
 
       if (/[a-zA-Z]/.test(next)) {
         let name = "";
-        while (/[a-zA-Z]/.test(input[i])) {
+        while (i < input.length && /[a-zA-Z]/.test(input[i])) {
           name += input[i++];
         }
         console.log(`Push command: ${name}`)
@@ -513,7 +674,7 @@ function tokenize(input: string): Token[] {
     } else if (/\s/.test(ch)) {
       let ws = "";
       while (i < input.length && /\s/.test(input[i])) {
-        console.log(`ws ${input[i + 1]}`)
+        console.log(`ws ${input[i]}`)
         ws += input[i++];
       }
       console.log(`Push whitespace`)

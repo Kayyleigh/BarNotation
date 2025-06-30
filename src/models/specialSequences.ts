@@ -498,7 +498,7 @@ export const standardFunctionNames: SpecialSequence[] = [
   },
 ]
 
-const specialSymbols: SpecialSequence[] = [
+export const specialSymbols: SpecialSequence[] = [
   ...greekLetters,
   ...hebrewLetters,
   ...binaryOperators,
@@ -516,62 +516,77 @@ export const specialSequences: SpecialSequence[] = [
   ...bigOperatorSequences,
   ...nodeTransformationSequences,
 ];
-//TODO merge bigop into nodetransf
-export const bigOperatorToLatex: Record<string, string> = Object.fromEntries(
-  bigOperatorSequences
-    .map(e => {
-      const node = e.createNode();
-      if (node.type === 'big-operator') {
-        return [node.operator, e.sequence];
-      }
-      return null;
-    })
-    .filter((entry): entry is [string, string] => entry !== null)
+
+// --- Normalization Utility ---
+const normalizeCommand = (cmd: string) => cmd.trim().replace(/^\\/, "");
+
+
+// --- Fast Lookup Maps ---
+
+// Normalized string → SpecialSequence
+export const normalizedSpecialSequenceMap: Record<string, SpecialSequence> = Object.fromEntries(
+  specialSequences.map(s => [normalizeCommand(s.sequence), s])
 );
 
+// Set of all known commands
+export const knownLatexCommands = new Set(
+  specialSequences.map(s => normalizeCommand(s.sequence))
+);
+
+// Maps symbol → LaTeX (like '∃' → '\\exists')
 export const symbolToLatex: Record<string, string> = Object.fromEntries(
   specialSymbols
     .map(e => {
       const node = e.createNode();
-      if (node.type === 'text') {
-        return [node.content, e.sequence];
-      }
-      else if (node.type === 'styled') {
-        return [node.child.content, e.sequence];
-      }
+      if (node.type === 'text') return [node.content, e.sequence.trim()];
+      if (node.type === 'styled') return [node.child.content, e.sequence.trim()];
       return null;
     })
     .filter((entry): entry is [string, string] => entry !== null)
 );
 
-const normalizeCommand = (cmd: string) => cmd.trim().replace(/^\\/, "");
+// Maps operator → LaTeX (like '∫' → '\\int')
+export const bigOperatorToLatex: Record<string, string> = Object.fromEntries(
+  bigOperatorSequences
+    .map(e => {
+      const node = e.createNode();
+      if (node.type === 'big-operator') return [node.operator, e.sequence.trim()];
+      return null;
+    })
+    .filter((entry): entry is [string, string] => entry !== null)
+);
 
-// Symbol (no arguments)
+// --- Factory Maps ---
 
 export const inputAliasToSymbolNodeFactory: Record<string, () => StructureNode> = Object.fromEntries(
   specialSymbols.map(({ sequence, createNode }) => [normalizeCommand(sequence), createNode])
 );
 
-export function getSymbolNodeFromAlias(command: string): StructureNode | undefined {
-  return inputAliasToSymbolNodeFactory[command]?.();
-};
-
-// Big Operator
-
 export const inputAliasToBigOpNodeFactory: Record<string, (lower?: InlineContainerNode, upper?: InlineContainerNode) => StructureNode> = Object.fromEntries(
   bigOperatorSequences.map(({ sequence, createNode }) => [normalizeCommand(sequence), createNode])
 );
-
-export function getBigOpNodeFromAlias(command: string, lower?: InlineContainerNode, upper?: InlineContainerNode): StructureNode | undefined {
-  return inputAliasToBigOpNodeFactory[command]?.(lower, upper);
-};
-
-// Styled
 
 export const inputAliasToStyledNodeFactory: Record<string, (child?: InlineContainerNode) => StructureNode> = Object.fromEntries(
   stylingOptions.map(({ sequence, createNode }) => [normalizeCommand(sequence), createNode])
 );
 
-export function getStyledNodeFromAlias(command: string, child?: InlineContainerNode): StructureNode | undefined {
-  return inputAliasToStyledNodeFactory[command]?.(child);
-};
+// --- Lookup Helpers ---
+
+export function getSymbolNodeFromAlias(command: string): StructureNode | undefined {
+  return inputAliasToSymbolNodeFactory[normalizeCommand(command)]?.();
+}
+
+export function getBigOpNodeFromAlias(
+  command: string,
+  lower?: InlineContainerNode,
+  upper?: InlineContainerNode
+): StructureNode | undefined {
+  return inputAliasToBigOpNodeFactory[normalizeCommand(command)]?.(lower, upper);
+}
+
+export function getStyledNodeFromAlias(
+  command: string,
+  child?: InlineContainerNode
+): StructureNode | undefined {
+  return inputAliasToStyledNodeFactory[normalizeCommand(command)]?.(child);
+}
