@@ -19,7 +19,8 @@
   display: flex;
   cursor: pointer;
   user-select: none;
-  align-items: baseline;
+  align-items: center;
+  min-height: 2.3em;
 }
 
 .tab.active {

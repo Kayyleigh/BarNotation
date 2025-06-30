@@ -476,7 +476,7 @@ const MathLibrary: React.FC<{
                   <MathView node={entry.node} />
                 </Tooltip>              
                 <div className={styles.meta}>
-                  <span title="Used">{entry.draggedCount}×</span>
+                  <span>{entry.draggedCount}×</span>
                 </div>
                 <button
                   className={styles.entryDeleteButton}

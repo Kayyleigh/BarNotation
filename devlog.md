@@ -3220,3 +3220,24 @@ TODO: also ensure that user can archive the premade one and the app will remembe
 AND probably (?) make an exceptional setting for premade ones to not be allowed to be deleted. Bad for freedom but good for recovery in case they accidentally delete the structures.
 
 made premade ones just skip entry if parser fails. That's good. But holy damn it takes long to load in predefined ones now. Surely the parser is just really bad
+
+Little todo: when tab title has emoji, there's a tiny gap under the other tabs because size. Fix plz.
+
+![alt text](image-47.png)
+My baby is growing up :`)
+
+Things to do tomorrow:
+- check which premade expressions are throwing errors and why
+- fix those mistakes in the parser (the empty text and the lack of IC)
+- check the commands I am clearly missing from the latex premades and add to known commands
+- make placeholder dotted squares a little lower opacity?
+- enable duplication of collections (new option in dropdown menu)
+
+![alt text](image-48.png)
+
+another possible sorting: by most recently used 
+
+### 30/06/2025
+Premade expressions that are handled the absolute worst (others are just slow to parse, but these really fuck it up):
+- `\\top`
+- `\\bot`

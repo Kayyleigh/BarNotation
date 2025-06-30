@@ -27,6 +27,7 @@ const makeStyledSequence = (sequence: string, style: TextStyle): SpecialSequence
 
 export const stylingOptions: SpecialSequence[] = [
   makeStyledSequence("\\text ", { fontStyling: { fontStyle: "upright" , fontStyleAlias: "\\text" } }),
+  makeStyledSequence("\\mathrm ", { fontStyling: { fontStyle: "upright" , fontStyleAlias: "\\mathrm" } }),
   makeStyledSequence("\\operatorname ", { fontStyling: { fontStyle: "upright" , fontStyleAlias: "\\operatorname" } }),
   makeStyledSequence("\\mathbf ", { fontStyling: { fontStyle: "bold" , fontStyleAlias: "\\mathbf" } }),
   makeStyledSequence("\\mathbb ", { fontStyling: { fontStyle: "blackboard" , fontStyleAlias: "\\mathbb" } }),
@@ -60,6 +61,7 @@ export const bigOperatorSequences: SpecialSequence[] = [
   makeBigOp("\\iint ", "∫∫"),
   makeBigOp("\\iiint ", "∫∫∫"),
   makeBigOp("\\iiiint ", "∫∫∫∫"),
+  makeBigOp("\\oint ", "∮"),
 ];
 
 //NOTE TO SELF: sequence is what _I_ allow; alias is a unique identifier _I_ chose
@@ -138,17 +140,24 @@ export const arrowSymbols: SpecialSequence[] = [
   { sequence: "\\Rightarrow ", createNode: () => createTextNode("⇒", "\\Rightarrow ") },
   { sequence: "\\leftrightarrow ", createNode: () => createTextNode("↔", "\\leftrightarrow ") },
   { sequence: "\\Leftrightarrow ", createNode: () => createTextNode("⇔", "\\Leftrightarrow ") },
+
+  // In LaTeX slightly different from Leftrightarrow and Rightarrow, but my app is not that fancy in rendering (yet) since I just use existing symbols
+  { sequence: "\\iff ", createNode: () => createTextNode("⇔", "\\iff ") }, 
+  { sequence: "\\implies ", createNode: () => createTextNode("⇒", "\\implies ") }, 
 ];
 
 export const binaryOperators: SpecialSequence[] = [
   { sequence: "\\cdot ", createNode: () => createTextNode("⋅", "\\cdot ") },
+  { sequence: "\\times ", createNode: () => createTextNode("×", "\\times ") },  
   { sequence: "\\ast ", createNode: () => createTextNode("∗", "\\ast ") },
   { sequence: "\\pm ", createNode: () => createTextNode("±", "\\pm ") },
   { sequence: "\\cap ", createNode: () => createTextNode("∩", "\\cap ") },
   { sequence: "\\setminus ", createNode: () => createTextNode("\\", "\\setminus ") },
   { sequence: "\\cup ", createNode: () => createTextNode("∪", "\\cup ") },
   { sequence: "\\wedge ", createNode: () => createTextNode("∧", "\\wedge ") },
+  { sequence: "\\land ", createNode: () => createTextNode("∧", "\\land ") },
   { sequence: "\\vee ", createNode: () => createTextNode("∨", "\\vee ") },
+  { sequence: "\\lor ", createNode: () => createTextNode("∨", "\\lor ") },
   { sequence: "\\smallsetminus ", createNode: () => createTextNode("∖", "\\smallsetminus ") },
   { sequence: "\\emptyset ", createNode: () => createTextNode("∅", "\\emptyset ") },
   { sequence: "\\bigcap ", createNode: () => createTextNode("⋂", "\\bigcap ") },
