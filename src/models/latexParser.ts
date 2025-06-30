@@ -252,8 +252,8 @@ export function parseLatex(input: string): MathNode {
     }
 
     let base: MathNode;
-    base = createTextNode("");
-
+    // base = createTextNode("");
+    base = createInlineContainer();
     if (token) {
       if (token.type === "command") {
         const { name } = consume() as { type: "command"; name: string };
@@ -461,7 +461,7 @@ export function parseLatex(input: string): MathNode {
 
     // 4. Return SubSup node if any scripts found, else just base
     if (subLeft || supLeft || subRight || supRight) {
-      return createChildedNode(createInlineContainer([base]), 'subsup', subLeft, supLeft, subRight, supRight);
+      return createChildedNode(ensureInContainerNode(base), 'subsup', subLeft, supLeft, subRight, supRight);
     }
     return base;
   }
