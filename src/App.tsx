@@ -1,11 +1,12 @@
 import React from "react";
 import './styles/themes.css'
 import MainLayout from "./components/layout/MainLayout";
+import { ToastProvider } from "./components/common/ToastProvider";
 
 const App: React.FC = () => (
-  <div>
+  <ToastProvider>
     <MainLayout />
-  </div>
+  </ToastProvider>
 );
 
 export default App;

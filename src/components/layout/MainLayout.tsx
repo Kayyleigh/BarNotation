@@ -15,6 +15,7 @@ import { createInitialCursor } from "../../logic/cursor";
 import { createRootWrapper } from "../../models/nodeFactories";
 import { createEmptySnapshot, type EditorSnapshot } from "../../logic/global-history";
 import type { CellData, NoteMetadata } from "../../models/noteTypes";
+import { useToast } from "../../hooks/useToast";
 
 interface Note {
   id: string;
@@ -40,6 +41,7 @@ function loadEditorSnapshotForNote(noteId: string): EditorSnapshot {
 const LOCAL_STORAGE_KEY = "notes";
 
 const MainLayout: React.FC = () => {
+  const { showToast } = useToast();
 
   const getStoredBoolean = (key: string, fallback: boolean) => {
     const stored = localStorage.getItem(key);
@@ -238,7 +240,7 @@ const MainLayout: React.FC = () => {
     // link.href = URL.createObjectURL(blob);
     // link.download = `${note.metadata.title || "note"}.tex`;
     // link.click();
-    console.warn(`Not yet implemented: exportLatex`)
+    showToast({ message: `LaTeX export is not yet implemented`, type: "warning" });
   };
 
   return (

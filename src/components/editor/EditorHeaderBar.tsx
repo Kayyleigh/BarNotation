@@ -2,6 +2,7 @@
 import clsx from "clsx";
 import React from "react";
 import Tooltip from "../tooltips/Tooltip";
+import { useToast } from "../../hooks/useToast";
 
 interface EditorHeaderBarProps {
   isPreviewMode: boolean;
@@ -30,6 +31,8 @@ const EditorHeaderBar: React.FC<EditorHeaderBarProps> = ({
   dropdownRef,
   onAddCell,
 }) => {
+  const { showToast } = useToast();
+  
   return (
     <div className="editor-header-bar">
       <div className="button-bar">
@@ -46,7 +49,7 @@ const EditorHeaderBar: React.FC<EditorHeaderBarProps> = ({
         </Tooltip>
 
         <Tooltip text="Remove empty cells">
-          <button onClick={() => console.log("placeholder for button 3")} className={clsx("button")}>
+          <button onClick={() => showToast({ message: `Cleanup is not yet implemented`, type: "warning" })} className={clsx("button")}>
             🧹 Clean
           </button>
         </Tooltip>

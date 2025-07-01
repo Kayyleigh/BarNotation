@@ -6,6 +6,7 @@ import type { Note } from "../../models/noteTypes";
 import NoteActionsDropdown from "./NoteActionsDropdown";
 import SearchBar from "../common/SearchBar";
 import Tooltip from "../tooltips/Tooltip";
+import { useToast } from "../../hooks/useToast";
 
 type SortBy = "created" | "modified" | "title" | "cellCount";
 
@@ -41,6 +42,8 @@ const NotesMenu: React.FC<NotesMenuProps> = ({
   onDuplicateNote,
   onExportLatex,
 }) => {
+  const { showToast } = useToast();
+
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState<SortBy>("modified");
   const [menuOpenForId, setMenuOpenForId] = useState<string | null>(null);
@@ -91,7 +94,7 @@ const NotesMenu: React.FC<NotesMenuProps> = ({
             </button>
           </Tooltip>
           <Tooltip text="View archived notebooks">
-            <button className={styles.newNoteButton} onClick={() => {}}>
+            <button className={styles.newNoteButton} onClick={() => showToast({ message: `Archive modal does not exist yet`, type: "warning" })}>
               🗂️ Archived
             </button>
           </Tooltip>
