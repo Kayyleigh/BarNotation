@@ -421,8 +421,39 @@ function loadEditorSnapshotForNote(noteId: string): EditorSnapshot {
 const LOCAL_STORAGE_KEY = "notes";
 
 const MainLayout: React.FC = () => {
-  // const [leftWidth, setLeftWidth] = useState(200);
-  // const [rightWidth, setRightWidth] = useState(600);
+
+  const getStoredBoolean = (key: string, fallback: boolean) => {
+    const stored = localStorage.getItem(key);
+    if (stored === null) return fallback;
+    return stored === "true";
+  };
+  
+  const getStoredNumber = (key: string, fallback: number) => {
+    const raw = localStorage.getItem(key);
+    const parsed = raw ? parseInt(raw, 10) : NaN;
+    return isNaN(parsed) ? fallback : parsed;
+  };
+
+  const [isDarkMode, setIsDarkMode] = useState(() =>
+    localStorage.getItem("mathEditorTheme") !== "light" // dark is default
+  );
+  
+  const [leftWidth, setLeftWidth] = useState(() => getStoredNumber("notesMenuWidth", 200));
+  const [rightWidth, setRightWidth] = useState(() => getStoredNumber("mathLibraryWidth", 600));
+  
+  const [showColorInPreview, setShowColorInPreview] = useState(() =>
+    getStoredBoolean("showColorInPreview", true)
+  );
+  
+  const [nerdMode, setNerdMode] = useState(() =>
+    getStoredBoolean("nerdMode", false)
+  );
+  
+  const [authorName, setAuthorName] = useState(() =>
+    localStorage.getItem("defaultAuthor") || ""
+  );
+
+
   const [showSettings, setShowSettings] = useState(false);
   const [showHotkeys, setShowHotkeys] = useState(false);
 
@@ -432,40 +463,6 @@ const MainLayout: React.FC = () => {
   const initialSnapshot: EditorSnapshot = selectedNoteId
   ? loadEditorSnapshotForNote(selectedNoteId)
   : createEmptySnapshot(); // Safe fallback
-  
-  // === Settings state ===
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    return localStorage.getItem("mathEditorTheme") === "dark";
-  });
-
-  const [leftWidth, setLeftWidth] = useState(() => {
-    const saved = localStorage.getItem("notesMenuWidth");
-    return saved ? parseInt(saved, 10) : 200; // fallback to default
-  });
-  
-  const [rightWidth, setRightWidth] = useState(() => {
-    const saved = localStorage.getItem("mathLibraryWidth");
-    return saved ? parseInt(saved, 10) : 600;
-  });
-  
-  // Save left width
-  useEffect(() => {
-    localStorage.setItem("notesMenuWidth", leftWidth.toString());
-  }, [leftWidth]);
-  
-  // Save right width
-  useEffect(() => {
-    localStorage.setItem("mathLibraryWidth", rightWidth.toString());
-  }, [rightWidth]);
-  
-
-  const [showColorInPreview, setShowColorInPreview] = useState(() => {
-    return localStorage.getItem("showColorInPreview") === "true";
-  });
-
-  const [nerdMode, setNerdMode] = useState(() => {
-    return localStorage.getItem("nerdMode") === "false";
-  });
 
   const toggleDarkMode = () => setIsDarkMode(prev => !prev);
 
@@ -479,24 +476,35 @@ const MainLayout: React.FC = () => {
     setNerdMode(prev => !prev);
   }
 
-  const [authorName, setAuthorName] = useState(() => {
-    return localStorage.getItem("defaultAuthor") || "";
-  });
-
+  // Save left width
   useEffect(() => {
-    localStorage.setItem("defaultAuthor", authorName);
-  }, [authorName]);
-
+    localStorage.setItem("notesMenuWidth", leftWidth.toString());
+  }, [leftWidth]);
+  
+  // Save right width
   useEffect(() => {
-    document.body.classList.toggle("dark", isDarkMode);
+    localStorage.setItem("mathLibraryWidth", rightWidth.toString());
+  }, [rightWidth]);
+
+  // Save theme preference
+  useEffect(() => {
+    const root = document.documentElement;
+    if (isDarkMode) {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
+  
     localStorage.setItem("mathEditorTheme", isDarkMode ? "dark" : "light");
   }, [isDarkMode]);
 
+  // Save preview coloring preference
   useEffect(() => {
     document.body.classList.toggle("unColoredPreview", !showColorInPreview);
     localStorage.setItem("showColorInPreview", showColorInPreview ? "true" : "false");
   }, [showColorInPreview]);
 
+  // Save nerd mode preference
   useEffect(() => {
     document.body.classList.toggle("nerdMode", nerdMode);
     localStorage.setItem("nerdMode", nerdMode ? "true" : "false");
@@ -522,6 +530,11 @@ const MainLayout: React.FC = () => {
   useEffect(() => {
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(notes));
   }, [notes]);
+
+  // Save default author name
+  useEffect(() => {
+    localStorage.setItem("defaultAuthor", authorName);
+  }, [authorName]);
 
   // Get currently selected note data:
   const selectedNote = notes.find(note => note.id === selectedNoteId) ?? null;
