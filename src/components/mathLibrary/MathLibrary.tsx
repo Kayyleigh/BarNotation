@@ -13,6 +13,8 @@ import TabDropdownPortal from "./TabDropdownPortal";
 import LibCollectionArchiveModal from "../modals/LibCollectionArchiveModal";
 import { createPremadeCollections } from "../../utils/collectionUtils";
 import SearchBar from "../common/SearchBar";
+import { useToast } from "../../hooks/useToast";
+import { nodeToLatex } from "../../models/nodeToLatex";
 
 // storage key per collection set
 const STORAGE_KEY = "mathLibraryCollections";
@@ -24,6 +26,8 @@ const MathLibrary: React.FC<{
   addEntryRef?: React.RefObject<(entry: LibraryEntry) => void>;
   updateEntryRef?: React.RefObject<(id: string) => void>;
 }> = ({ width, onWidthChange, onDropNode, addEntryRef, updateEntryRef }) => {
+  const { showToast } = useToast();
+  
   const { draggingNode, setDraggingNode, setDropTarget } = useDragContext();
 
   const premade = React.useMemo(() => createPremadeCollections(), []);
@@ -76,8 +80,8 @@ const MathLibrary: React.FC<{
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(collections));
-    if (!collections.find(c => c.id === activeColl) && collections.length > 0) {
-      setActiveColl(collections[0].id);
+    if (!collections.find(c => c.id === activeColl) && collections.filter(c => !c.archived).length > 0) {
+      setActiveColl(collections.filter(c => !c.archived)[0].id);
     }
   }, [activeColl, collections]);
 
@@ -158,17 +162,20 @@ const MathLibrary: React.FC<{
     };
 
     if (draggingNode) {
-
       // Drop from editor or elsewhere
-      //TODO check if this is doing anything at all atm
       if (draggingNode.sourceType === "cell") {
-        onDropNode(draggingNode, to);
-        setDraggingNode(null);
-        setDropTarget(null);
-        return;
+        if (to.containerId !== activeColl) {
+          showToast({ message: `Dropping into non-active tab not (yet) supported`, type: "warning" });
+        }
+        else {
+          onDropNode(draggingNode, to);
+          setDraggingNode(null);
+          setDropTarget(null);
+          return;
+        }
       }
 
-      // Reordering inside library
+      // Reordering inside library //TODO I think it does not reorder
       if (draggingNode.containerId === activeColl) {
         const from = draggingNode.index;
         const toIdx = dropInsertionRef.current ?? entries.length;
@@ -192,7 +199,6 @@ const MathLibrary: React.FC<{
 
         // Deep-copy into different tab
         if (fromCollId !== targetId) {
-          console.log(`${fromCollId} to ${targetId}`)
           const sourceColl = collections.find(c => c.id === fromCollId);
           const sourceEntry = sourceColl?.entries.find(e => e.node.id === draggingNode.node.id);
 
@@ -210,6 +216,8 @@ const MathLibrary: React.FC<{
                   : c
               )
             );
+            // TODO: cut off latex string if too long?
+            showToast({ message: `Copied ${nodeToLatex(draggingNode.node)} to ${collections.find(c => c.id === targetId)?.name}`, type: "success" });
           }
           setDraggingNode(null);
           setDropTarget(null);
@@ -223,7 +231,6 @@ const MathLibrary: React.FC<{
     // Fallback: text/plain LaTeX drop
     try {
       const latex = e?.dataTransfer?.getData("text/plain");
-      console.log(`Putting latex ${latex} to ${targetId}`)
       if (latex) {
         const node = parseLatex(latex);
         if (node) {
@@ -266,7 +273,6 @@ const MathLibrary: React.FC<{
     const position = mouseX < midpoint ? "left" : "right";
   
     dragOverTabIdx.current = idx;
-    console.log(`drag over in ${position}`)
     setDragOverPosition(position);
   };
   
@@ -345,8 +351,11 @@ const MathLibrary: React.FC<{
   const deleteCollection = (id: string) => {
     setCollections(c => c.filter(col => col.id !== id));
     if (id === activeColl && collections.length > 1) {
-      const next = collections.find(c => c.id !== id);
-      if (next) setActiveColl(next.id);
+      const next = collections.filter(c => !c.archived).find(c => c.id !== id);
+      if (next) {
+        setActiveColl(next.id);
+      }
+      else setActiveColl(""); // No non-archived collection to select
     }
   };
 
@@ -360,6 +369,7 @@ const MathLibrary: React.FC<{
     if (id === activeColl) {
       const next = collections.find(c => c.id !== id && !c.archived);
       if (next) setActiveColl(next.id);
+      else setActiveColl(""); // No non-archived collection to select
     }
   };
 
