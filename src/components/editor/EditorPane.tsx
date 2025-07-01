@@ -1464,6 +1464,7 @@ function loadNoteState(noteId: string) {
   try {
     const saved = localStorage.getItem(`note-editor-state-${noteId}`);
     if (!saved) return null;
+    console.warn(`THIS IS ACTUALLY USED`)
     return JSON.parse(saved) as {
       order: string[];
       states: Record<string, EditorState>; // loosely typed EditorState, adjust as needed

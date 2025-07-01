@@ -26,7 +26,34 @@ const MathLibrary: React.FC<{
 }> = ({ width, onWidthChange, onDropNode, addEntryRef, updateEntryRef }) => {
   const { draggingNode, setDraggingNode, setDropTarget } = useDragContext();
 
-  const [collections, setCollections] = useState<LibraryCollection[]>([]);
+  const premade = React.useMemo(() => createPremadeCollections(), []);
+  const [loadingCollections, setLoadingCollections] = useState(true);
+
+  const [collections, setCollections] = useState<LibraryCollection[]>(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) {
+        // No saved data: return premade collections or default fallback
+        const defaultColls = premade.length > 0 ? premade : [{ id: crypto.randomUUID(), name: "Default", entries: [] }];
+        setLoadingCollections(false);
+        return defaultColls;
+      }
+  
+      const savedCollections: LibraryCollection[] = JSON.parse(raw);
+  
+      // Merge saved + premade, keeping saved collections first to override premade if conflict
+      setLoadingCollections(false);
+      return [
+        ...savedCollections,
+        ...premade.filter(pc => !savedCollections.some(sc => sc.id === pc.id))
+      ];
+    } catch {
+      // On parse error, fallback to premade or default
+      setLoadingCollections(false);
+      return premade.length > 0 ? premade : [{ id: crypto.randomUUID(), name: "Default", entries: [] }];
+    }
+  });
+
   const [activeColl, setActiveColl] = useState<string>("");
   const [hoveredTab, setHoveredTab] = useState<string | null>(null);
 
@@ -38,8 +65,6 @@ const MathLibrary: React.FC<{
   const [editingCollId, setEditingCollId] = useState<string | null>(null);
   const renameInputRef = useRef<HTMLInputElement | null>(null);
 
-  const [loadingCollections, setLoadingCollections] = useState(true);
-
   const [draggingTabIdx, setDraggingTabIdx] = useState<number | null>(null);
   const dragOverTabIdx = useRef<number | null>(null);
 
@@ -49,42 +74,36 @@ const MathLibrary: React.FC<{
   type SortOption = "date" | "date-asc" | "usage" | "usage-asc" | "latex" | "latex-desc";
   const [sortBy, setSortBy] = useState<SortOption>("date");
 
-  useEffect(() => {
-    const premade = createPremadeCollections(); // premade collections creator
-  
-    const raw = localStorage.getItem(STORAGE_KEY);
-    let savedCollections: LibraryCollection[] = [];
-  
-    if (raw) {
-      try {
-        savedCollections = JSON.parse(raw);
-      } catch {
-        console.warn("Failed to parse library data.");
-        savedCollections = [];
-      }
-    }
-  
-    // Merge premade + saved, avoiding duplicates by id
-    const mergedCollections = [
-      ...premade,
-      ...savedCollections.filter(sc => !premade.some(pc => pc.id === sc.id))
-    ];
-  
-    setCollections(mergedCollections);
-  
-    if (mergedCollections.length > 0) {
-      setActiveColl(mergedCollections[0].id);
-    } else {
-      // fallback if nothing at all
-      const defaultId = crypto.randomUUID();
-      setCollections([{ id: defaultId, name: "Default", entries: [] }]);
-      setActiveColl(defaultId);
-    }
+  // useEffect(() => {
+  //   const raw = localStorage.getItem(STORAGE_KEY);
+  //   let savedCollections: LibraryCollection[] = [];
 
-    setLoadingCollections(false); // done loading
-    // setTimeout(() => setLoadingCollections(false), 600000); // small delay for better UX feel
+  //   if (raw) {
+  //     try {
+  //       savedCollections = JSON.parse(raw);
+  //     } catch {
+  //       console.warn("Failed to parse library data.");
+  //       savedCollections = [];
+  //     }
+  //   }
 
-  }, []);
+  //   // Merge premade + saved, avoiding duplicates by id
+  //   const mergedCollections = [
+  //     ...savedCollections,
+  //     ...premade.filter(pc => !savedCollections.some(sc => sc.id === pc.id))
+  //   ];
+
+  //   if (mergedCollections.length === 0) {
+  //     const defaultId = crypto.randomUUID();
+  //     setCollections([{ id: defaultId, name: "Default", entries: [] }]);
+  //     setActiveColl(defaultId);
+  //   } else {
+  //     setCollections(mergedCollections);
+  //     setActiveColl(mergedCollections[0].id);
+  //   }
+
+  //   setLoadingCollections(false);
+  // }, [premade]);
   
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(collections));

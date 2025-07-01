@@ -624,7 +624,7 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({
   setRightWidth,
   noteMetadata,
   setNoteMetadata,
-  noteCells,
+  // noteCells,
   setNoteCells,
 }) => {
   const { history, updateState } = useEditorHistory();
