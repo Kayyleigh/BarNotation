@@ -13,6 +13,7 @@ import clsx from "clsx";
 import type { CellData, NoteMetadata } from "../../models/noteTypes";
 import type { EditorState } from "../../logic/editor-state";
 import type { MathNode } from "../../models/types";
+import { nodeToLatex } from "../../models/nodeToLatex";
 
 interface NotationEditorProps {
   isPreviewMode: boolean;
@@ -70,7 +71,7 @@ const reconstructCells = (
 ): CellData[] => {
   return order.map((id) =>
     editorStates[id]
-      ? { id, type: "math", content: "" } // math content is in editorState, content string unused
+      ? { id, type: "math", content: nodeToLatex(editorStates[id].rootNode) } // math content is in editorState, content string unused
       : { id, type: "text", content: textContents[id] || "" }
   );
 };
@@ -112,6 +113,9 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
   } = useCellDragState();
 
   const cellRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  //TODO SYNC WITH GLOBALLLL
+  //rn there is just no cells at all in actual global. Duplicate does say 3 cells but it does not show em 
 
   /** Derived cells list from current state */
   const cells = reconstructCells(order, editorStates, textContents);
@@ -177,87 +181,92 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
       />
 
       <div className={styles.cellList}>
-        {cells.map((cell, index) => (
-          <React.Fragment key={cell.id}>
-            <div
-              className={`insert-zone ${
-                dragOverInsertIndex === index ? "drag-over" : ""
-              }`}
-              onMouseEnter={() => setHoveredInsertIndex(index)}
-              onMouseLeave={() => setHoveredInsertIndex(null)}
-              onPointerEnter={() =>
-                draggingCellId !== null && updateDragOver(index)
-              }
-            >
-              <InsertCellButtons
-                onInsert={(type) => addCell(type, index)}
-                isVisible={hoveredInsertIndex === index}
-              />
-            </div>
-
-            <div
-              ref={(el) => {
-                if (el) cellRefs.current[index] = el;
-              }}
-            >
-              <BaseCell
-                typeLabel={cell.type === "math" ? "Math" : "Text"}
-                isSelected={selectedCellId === cell.id}
-                isPreviewMode={isPreviewMode}
-                isDragging={draggingCellId === cell.id}
-                onClick={() => setSelectedCellId(cell.id)}
-                onDelete={() => deleteCell(cell.id)}
-                handlePointerDown={(e) =>
-                  handlePointerDown(e, cell.id, index)
-                }
-                toolbarExtras={
-                  cell.type === "math" ? (
-                    <Tooltip
-                      text={
-                        showLatexMap[cell.id]
-                          ? "Hide LaTeX output for this cell"
-                          : "Show LaTeX output for this cell"
-                      }
-                    >
-                      <button
-                        className={clsx("button", "preview-button")}
-                        onClick={() => toggleShowLatex(cell.id)}
-                      >
-                        {showLatexMap[cell.id] ? "🙈 LaTeX" : "👁️ LaTeX"}
-                      </button>
-                    </Tooltip>
-                  ) : null
+        {cells.length === 0 ? (
+          <div className={styles.emptyMessage}>
+            No cells yet. Add one to get started!
+          </div>
+        ) : (        
+          cells.map((cell, index) => (
+            <React.Fragment key={cell.id}>
+              <div
+                className={`insert-zone ${
+                  dragOverInsertIndex === index ? "drag-over" : ""
+                }`}
+                onMouseEnter={() => setHoveredInsertIndex(index)}
+                onMouseLeave={() => setHoveredInsertIndex(null)}
+                onPointerEnter={() =>
+                  draggingCellId !== null && updateDragOver(index)
                 }
               >
-                {cell.type === "text" ? (
-                  <TextCell
-                    value={cell.content}
-                    isPreviewMode={isPreviewMode}
-                    onChange={(newValue) =>
-                      updateCellContent(cell.id, newValue)
-                    }
-                  />
-                ) : (
-                  <MathCell
-                    cellId={cell.id}
-                    isPreviewMode={isPreviewMode}
-                    defaultZoom={defaultZoom}
-                    resetZoomSignal={resetZoomSignal}
-                    showLatex={showLatexMap[cell.id] ?? false}
-                    editorState={editorStates[cell.id]}
-                    updateEditorState={(newState) =>
-                      setEditorStates((prev) => ({
-                        ...prev,
-                        [cell.id]: newState,
-                      }))
-                    }
-                    onDropNode={onDropNode}
-                  />
-                )}
-              </BaseCell>
-            </div>
-          </React.Fragment>
-        ))}
+                <InsertCellButtons
+                  onInsert={(type) => addCell(type, index)}
+                  isVisible={hoveredInsertIndex === index}
+                />
+              </div>
+
+              <div
+                ref={(el) => {
+                  if (el) cellRefs.current[index] = el;
+                }}
+              >
+                <BaseCell
+                  typeLabel={cell.type === "math" ? "Math" : "Text"}
+                  isSelected={selectedCellId === cell.id}
+                  isPreviewMode={isPreviewMode}
+                  isDragging={draggingCellId === cell.id}
+                  onClick={() => setSelectedCellId(cell.id)}
+                  onDelete={() => deleteCell(cell.id)}
+                  handlePointerDown={(e) =>
+                    handlePointerDown(e, cell.id, index)
+                  }
+                  toolbarExtras={
+                    cell.type === "math" ? (
+                      <Tooltip
+                        text={
+                          showLatexMap[cell.id]
+                            ? "Hide LaTeX output for this cell"
+                            : "Show LaTeX output for this cell"
+                        }
+                      >
+                        <button
+                          className={clsx("button", "preview-button")}
+                          onClick={() => toggleShowLatex(cell.id)}
+                        >
+                          {showLatexMap[cell.id] ? "🙈 LaTeX" : "👁️ LaTeX"}
+                        </button>
+                      </Tooltip>
+                    ) : null
+                  }
+                >
+                  {cell.type === "text" ? (
+                    <TextCell
+                      value={cell.content}
+                      isPreviewMode={isPreviewMode}
+                      onChange={(newValue) =>
+                        updateCellContent(cell.id, newValue)
+                      }
+                    />
+                  ) : (
+                    <MathCell
+                      cellId={cell.id}
+                      isPreviewMode={isPreviewMode}
+                      defaultZoom={defaultZoom}
+                      resetZoomSignal={resetZoomSignal}
+                      showLatex={showLatexMap[cell.id] ?? false}
+                      editorState={editorStates[cell.id]}
+                      updateEditorState={(newState) =>
+                        setEditorStates((prev) => ({
+                          ...prev,
+                          [cell.id]: newState,
+                        }))
+                      }
+                      onDropNode={onDropNode}
+                    />
+                  )}
+                </BaseCell>
+              </div>
+            </React.Fragment>
+          )))}
       </div>
 
       <div

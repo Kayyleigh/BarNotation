@@ -59,6 +59,10 @@
   .decoration-angl {
     padding-right: 0.2em;
   }
+
+  .decoration-angl::before {
+    left: calc(0%);
+  }
   
   .decoration-angl::before,
   .decoration-angl::after {

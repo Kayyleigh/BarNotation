@@ -26,10 +26,11 @@ const LibCollectionArchiveModal: React.FC<Props> = ({ archived, onClose, onUnarc
     };
 
     window.addEventListener("keydown", handleEsc);
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mouseup", handleClickOutside);
+    
     return () => {
       window.removeEventListener("keydown", handleEsc);
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("mouseup", handleClickOutside);
     };
   }, [onClose]);
 

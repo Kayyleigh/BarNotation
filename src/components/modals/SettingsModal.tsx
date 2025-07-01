@@ -10,6 +10,8 @@ const SettingsModal: React.FC<{
   toggleShowColorInPreview: () => void;
   authorName: string;
   setAuthorName: (name: string) => void;
+  nerdMode: boolean;
+  toggleNerdMode: () => void;
 }> = ({
   onClose,
   isDarkMode,
@@ -18,6 +20,8 @@ const SettingsModal: React.FC<{
   toggleShowColorInPreview,
   authorName,
   setAuthorName,
+  nerdMode,
+  toggleNerdMode,
 }) => {
   const contentRef = useRef<HTMLDivElement>(null);
   // const [authorName, setAuthorName] = React.useState(() => localStorage.getItem("defaultAuthor") || "");
@@ -90,6 +94,19 @@ const SettingsModal: React.FC<{
             onChange={(e) => setAuthorName(e.target.value)}
           />
         </div>
+        <label className="toggle-row">
+          <span>I am a nerd</span>
+          <Tooltip text="Toggle debug mode">
+            <label className="switch">
+              <input
+                type="checkbox"
+                checked={nerdMode}
+                onChange={() => toggleNerdMode()}
+              />
+              <span className="slider" />
+            </label>
+          </Tooltip>
+        </label>
         <div className="settings-actions">
           <Tooltip text="Apply changes and return to editor">
             <button className="button primary" onClick={onClose}>

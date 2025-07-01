@@ -301,6 +301,13 @@ export const standardFunctionNames: SpecialSequence[] = [
       { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
+  //TODO move this one to better place:
+  {
+    sequence: "\\angln ",
+    createNode: () => createAccentedNode(
+      createInlineContainer([createTextNode("n")]),
+      { type: 'predefined', decoration: "angl" as NodeDecoration }),
+  },
     
   // Valid in latex
 

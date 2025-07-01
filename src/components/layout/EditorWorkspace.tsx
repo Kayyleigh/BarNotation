@@ -623,6 +623,8 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({
   setRightWidth,
   noteMetadata,
   setNoteMetadata,
+  noteCells,
+  setNoteCells,
 }) => {
   const { history, updateState } = useEditorHistory();
   const { states: editorStates, order, textContents } = history.present;
@@ -630,12 +632,44 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({
   const addEntryToLibraryRef = useRef<(entry: LibraryEntry) => void>(() => {});
   const updateLibraryEntryRef = useRef<(id: string) => void>(() => {});
 
+  const syncNoteCellsWithOrder = useCallback(
+    (order: string[]) => {
+      const newCells: CellData[] = order.map((id) => {
+        if (editorStates[id]) {
+          return {
+            id,
+            type: "math",
+            content: nodeToLatex(editorStates[id].rootNode),
+          };
+        }
+        if (textContents[id] !== undefined) {
+          return {
+            id,
+            type: "text",
+            content: textContents[id],
+          };
+        }
+        return {
+          id,
+          type: "text",
+          content: "",
+        };
+      });
+  
+      if (noteId) {
+        setNoteCells(noteId, newCells);
+      }
+    },
+    [editorStates, textContents, noteId, setNoteCells]
+  );
+
   const onDropNode = useCallback(
     (from: DropSource, to: DropTarget) => {
       const sourceState = from.cellId ? editorStates[from.cellId] : null;
 
       // Drop from editor to library
       if (to.cellId === "library" && from.sourceType === "cell") {
+        console.log(`Cloning ${nodeToLatex(from.node)} to ${to.containerId}`)
         const cloned = cloneTreeWithNewIds(from.node);
         const newEntry: LibraryEntry = {
           id: crypto.randomUUID(),
@@ -703,8 +737,13 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({
         order,
         textContents,
       });
+
+      // Persist in noteCells
+      if (noteId) {
+        syncNoteCellsWithOrder(order)
+      }
     },
-    [editorStates, order, textContents, updateState]
+    [editorStates, noteId, order, syncNoteCellsWithOrder, textContents, updateState]
   );
 
   const { undo, redo } = useEditorHistory();

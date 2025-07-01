@@ -3291,3 +3291,31 @@ Big-ish TODOs for the app atm:
 - ... and of course the notes menu!!!!!!!!!!!!
 
 But first, lemme make that scrollbar prettyyyyy. OK done 
+
+Basic notes menu doneeeeeeee
+But when dropping from lib to cell and then leaving to other note and then back, it does not show that new one. So I must be missing an updateState thingy on onDrop
+
+![alt text](image-49.png)
+
+BUT OMG IT'S AN APPPPP
+
+Next steps:
+- fix saving of state after hover
+- enable deletion of notes
+- add more info in note menu entries
+- add "duplicate collection" option on dropdown of collection in library
+
+BUG: currently, dropping from cell into tab feels like it should go into tab, but goes into current active collection instead.
+
+also, copying a note does not copy the cells smh
+
+Big day, big progress, big bugs
+Next steps:
+- sync editorStates with global cells (into storage!)
+- make Library load indep from there being a selected note, and enable it to be shown already before a note is selected
+
+### 01/07/2025
+
+![alt text](<Blank diagram - Page 1.jpeg>)
+
+TODO: When deleting all collections, the last one stays visible. Have it know that it is empty, and prompt user to make a new expression. Do not allow dropping into library if no collection is open, or have it auto create a new one when there is none available.

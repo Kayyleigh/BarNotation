@@ -440,8 +440,21 @@ const MainLayout: React.FC = () => {
     return localStorage.getItem("showColorInPreview") === "true";
   });
 
+  const [nerdMode, setNerdMode] = useState(() => {
+    return localStorage.getItem("nerdMode") === "false";
+  });
+
   const toggleDarkMode = () => setIsDarkMode(prev => !prev);
-  const toggleShowColorInPreview = () => setShowColorInPreview(prev => !prev);
+
+  const toggleShowColorInPreview = () => {
+    console.log(`You want to toggle color setting`)
+    setShowColorInPreview(prev => !prev);
+  }
+
+  const toggleNerdMode = () => {
+    console.log(`Toggling nerd mode`)
+    setNerdMode(prev => !prev);
+  }
 
   const [authorName, setAuthorName] = useState(() => {
     return localStorage.getItem("defaultAuthor") || "";
@@ -457,8 +470,14 @@ const MainLayout: React.FC = () => {
   }, [isDarkMode]);
 
   useEffect(() => {
+    document.body.classList.toggle("unColoredPreview", !showColorInPreview);
     localStorage.setItem("showColorInPreview", showColorInPreview ? "true" : "false");
   }, [showColorInPreview]);
+
+  useEffect(() => {
+    document.body.classList.toggle("nerdMode", nerdMode);
+    localStorage.setItem("nerdMode", nerdMode ? "true" : "false");
+  }, [nerdMode]);
 
   // Load notes from localStorage on mount
   useEffect(() => {
@@ -522,11 +541,58 @@ const MainLayout: React.FC = () => {
         author: authorName,
         dateOrPeriod: "",
         archived: false,
+        createdAt: Date.now(),
       },
       cells: [],
     };
     setNotes((prev) => [newNote, ...prev]);
     setSelectedNoteId(newId);
+  };
+
+  const deleteNote = (id: string) => {
+    setNotes(prevNotes => prevNotes.filter(note => note.id !== id));
+    if (selectedNoteId === id) {
+      setSelectedNoteId(null);
+    }
+  };
+  
+  const archiveNote = (id: string) => {
+    updateNoteMetadata(id, { archived: true });
+  };
+  
+  const duplicateNote = (id: string) => {
+    const original = notes.find(note => note.id === id);
+    if (!original) return;
+  
+    const newId = `note-${Date.now()}`;
+    const duplicatedNote: Note = {
+      ...original,
+      id: newId,
+      metadata: {
+        ...original.metadata,
+        title: `${original.metadata.title} (Copy)`,
+        createdAt: Date.now(), 
+      },
+      cells: {
+        ...original.cells,
+      }
+    };
+  
+    setNotes(prevNotes => [duplicatedNote, ...prevNotes]);
+    setSelectedNoteId(newId);
+  };
+  
+  const exportLatex = (id: string) => {
+    // const note = notes.find(n => n.id === id);
+    // if (!note) return;
+  
+    // const latexContent = note.cells.map(cell => cell.content).join("\n\n"); // Simple example
+    // const blob = new Blob([latexContent], { type: "text/plain" });
+    // const link = document.createElement("a");
+    // link.href = URL.createObjectURL(blob);
+    // link.download = `${note.metadata.title || "note"}.tex`;
+    // link.click();
+    console.warn(`Not yet implemented: exportLatex`)
   };
 
   return (
@@ -543,7 +609,11 @@ const MainLayout: React.FC = () => {
             selectedNoteId={selectedNoteId}
             onSelectNote={setSelectedNoteId}
             notes={notes}
-            onCreateNote={createNewNote}
+            onCreateNote={createNewNote} 
+            onDeleteNote={deleteNote}
+            onArchiveNote={archiveNote}
+            onDuplicateNote={duplicateNote}
+            onExportLatex={exportLatex}     
           />
         </div>
         <div style={{ flexGrow: 1, display: "flex", minWidth: 0 }}>
@@ -582,6 +652,8 @@ const MainLayout: React.FC = () => {
           toggleShowColorInPreview={toggleShowColorInPreview}
           authorName={authorName}
           setAuthorName={setAuthorName}
+          nerdMode={nerdMode}
+          toggleNerdMode={toggleNerdMode}
         />
       )}
     </div>

@@ -17,7 +17,7 @@
 .tab {
   position: relative;
   display: flex;
-  cursor: grab;
+  cursor: pointer;
   user-select: none;
   align-items: center;
   min-height: 2.3em;
@@ -50,7 +50,6 @@
 
 .tab.active {
   background: var(--math-editor-bg);
-  cursor: default;
 }
 
 .tab.hovered {
@@ -149,7 +148,7 @@
   position: relative;
   /* height: fit-content; */
   align-content: center;
-  padding: 8px;
+  padding: 16px 8px 4px 8px;
   background: var(--math-editor-bg);
   border: 1px solid var(--math-editor-border);
   border-radius: 8px;
@@ -165,8 +164,8 @@
 
 .entryDeleteButton {
   position: absolute;
-  top: 4px;
-  right: 4px;
+  top: 2px;
+  right: 2px;
   background: transparent;
   border: none;
   color: var(--math-text-color);
@@ -234,28 +233,6 @@
   font-style: italic;
 }
 
-.searchBar {
-  position: relative;
-  display: flex;
-  align-items: center;
-  flex-grow: 1;
-}
-
-.searchBar input {
-  flex: 1;
-  width: 100%;
-  padding: 0.5em;
-  font-size: 1em;
-  border: 1px solid var(--math-editor-border);
-  border-radius: 6px;
-  box-shadow: 0 0 4px var(--math-editor-shadow);
-  background-color: var(--math-editor-bg);
-  color: var(--math-text-color);
-  box-sizing: border-box;
-  /* margin-top: 0.25em;
-  margin-bottom: 1em; */
-}
-
 .sortDropdown {
   padding: 4px 8px;
   border-radius: 4px;
@@ -281,6 +258,7 @@
 }
 
 .meta {
+  visibility: var(--lib-entry-meta-visibility);
   font-size: 12px;
   color: #666;
   margin-top: 4px;

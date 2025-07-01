@@ -5,6 +5,7 @@
 /* pink: #d70087, darkblue: #015f86, orange: #d86410, purple: #8700af, green: #038700  */
 
 :root {
+    --lib-entry-meta-visibility: hidden;
 
     --empty-math-inline-container-width: 0.3em;
 
@@ -13,7 +14,6 @@
     --logo-color-1-dark: #3a9583;
     --logo-color-2: #c586c0;
     --logo-color-2-light: #ecd7ea;
-
 
     /* Other */
     --editor-font-size: 2.4em;
@@ -133,7 +133,11 @@
     --scrollbar-thumb: #cccccc;
     --scrollbar-track: #f1f1f1;
     --scrollbar-thumb-hover: #aaaaaa;
-  
+
+    /* Notes menu */
+    --notes-menu-selected-note-entry-bg: var(--logo-color-1);
+    --notes-menu-hovered-note-entry-bg: #c586c060;
+
   }
   
   .dark {
@@ -150,7 +154,8 @@
   
     --math-text-color: white;
     --math-selection-bg: rgba(255, 255, 255, 0.1);
-    --math-hover-bg: #1ba0ff2c;
+    /* --math-hover-bg: #1ba0ff2c; */
+    --math-hover-bg: #1b9fff2c;
     --math-editor-bg: #252526;
     --math-editor-border: #444;
     --math-editor-shadow: rgba(0, 0, 0, 0.3);
@@ -229,6 +234,26 @@
     --scrollbar-track: #1e1e1e;
     --scrollbar-thumb-hover: #5e5e5e;
 
+    /* Notes menu */
+    --notes-menu-selected-note-entry-bg: var(--logo-color-1);
+    --notes-menu-hovered-note-entry-bg: #c586c040;
+
+  }
+
+  .nerdMode {
+    --lib-entry-meta-visibility: shown;
+  }
+
+  .unColoredPreview .cell.preview {
+    --math-color-single-bracket: var(--math-text-color);
+    --math-color-pair-brackets: var(--math-text-color);
+    --math-color-actuarial-text: var(--math-text-color);  
+    --math-color-big-operator-symbol: var(--math-text-color);
+    --math-color-big-operator-limits: var(--math-text-color);
+    --math-color-nth-root-symbol: var(--math-text-color);
+    --math-color-nth-root-index: var(--math-text-color);
+    --math-color-upright-text: var(--math-text-color);
+    --math-color-command-input-text: var(--math-text-color);
   }
 
   html, body {

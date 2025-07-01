@@ -12,6 +12,7 @@ import Tooltip from "../tooltips/Tooltip";
 import TabDropdownPortal from "./TabDropdownPortal";
 import LibCollectionArchiveModal from "../modals/LibCollectionArchiveModal";
 import { createPremadeCollections } from "../../utils/collectionUtils";
+import SearchBar from "../common/SearchBar";
 
 // storage key per collection set
 const STORAGE_KEY = "mathLibraryCollections";
@@ -171,6 +172,7 @@ const MathLibrary: React.FC<{
     if (draggingNode) {
 
       // Drop from editor or elsewhere
+      //TODO check if this is doing anything at all atm
       if (draggingNode.sourceType === "cell") {
         onDropNode(draggingNode, to);
         setDraggingNode(null);
@@ -188,6 +190,7 @@ const MathLibrary: React.FC<{
           const [moved] = arr.splice(from, 1);
           arr.splice(toIdx, 0, moved);
           updateCollectionEntries(arr);
+          console.log(`Math Libary 191 updated collection entries`)
         }
 
         setDraggingNode(null);
@@ -201,6 +204,7 @@ const MathLibrary: React.FC<{
 
         // Deep-copy into different tab
         if (fromCollId !== targetId) {
+          console.log(`${fromCollId} to ${targetId}`)
           const sourceColl = collections.find(c => c.id === fromCollId);
           const sourceEntry = sourceColl?.entries.find(e => e.node.id === draggingNode.node.id);
 
@@ -231,6 +235,7 @@ const MathLibrary: React.FC<{
     // Fallback: text/plain LaTeX drop
     try {
       const latex = e?.dataTransfer?.getData("text/plain");
+      console.log(`Putting latex ${latex} to ${targetId}`)
       if (latex) {
         const node = parseLatex(latex);
         if (node) {
@@ -489,7 +494,7 @@ const MathLibrary: React.FC<{
               onClick={() => setShowArchiveModal(true)} 
               title="View archived collections"
             >
-              🗃️
+              🗂️
             </button>  
           </Tooltip>
         </div>
@@ -498,8 +503,8 @@ const MathLibrary: React.FC<{
       {loadingCollections ? (
         <div className={styles.loadingContainer}>
           <div className={styles.spinner} />
-          {/* <p className={styles.loadingText}>Loading collections, this may take a while...</p> */}
-          <p className={styles.loadingText}>You know the usual, we might have to wait a bit</p>
+          <p className={styles.loadingText}>Loading collections, this may take a while...</p>
+          {/* <p className={styles.loadingText}>You know the usual, we might have to wait a bit</p> */}
         </div>
       ) : collections.length === 0 ? (
         <div className={styles.empty}>
@@ -508,24 +513,7 @@ const MathLibrary: React.FC<{
       ) : (
         <span>
           <div className={styles.controls}>
-            <Tooltip text="Search on LaTeX substring" style={{ width: "100%" }}>
-              <div className={styles.searchBar}>
-                <input
-                  placeholder="Search..."
-                  value={filter}
-                  onChange={(e) => setFilter(e.target.value)}
-                />
-                {filter && (
-                  <button
-                    className={styles.clearButton}
-                    onClick={() => setFilter("")}
-                    title="Clear search"
-                  >
-                    ×
-                  </button>
-                )}
-              </div>
-            </Tooltip>
+            <SearchBar placeholder="Search in collection..." value={filter} onChange={setFilter} tooltip="Search on LaTeX substring" />
             <select className={styles.sortDropdown} value={sortBy} onChange={(e) => setSortBy(e.target.value as SortOption)}>
               <option value="date">Newest</option>
               <option value="date-asc">Oldest</option>
@@ -554,7 +542,6 @@ const MathLibrary: React.FC<{
                   e.preventDefault();
                   dropInsertionRef.current = idx;
                 }}
-                onDrop={onDropEntry}
                 onDragEnd={() => {
                   setDraggingNode(null);
                   setDropTarget(null);

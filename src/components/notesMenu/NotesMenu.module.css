@@ -2,81 +2,195 @@
     display: flex;
     flex-direction: column;
     height: 100%;
-    background-color: var(--sidebar-panel-bg);
-    color: var(--sidebar-text);
-    border-right: 1px solid var(--sidebar-panel-edge);
-    font-size: 1rem;
-    user-select: none;
-    overflow: hidden;
+    box-sizing: border-box;
   }
   
-  .header {
-    padding: 1rem;
-    font-weight: bold;
-    border-bottom: 1px solid var(--sidebar-panel-edge);
-  }
-  
-  .notesList {
-    flex-grow: 1;
-    overflow-y: auto;
-    margin: 0;
-    padding: 0.5rem 1rem;
-    list-style: none;
-    scrollbar-width: thin;
-  }
-  
-  .noteItem {
-    padding: 0.4rem 0.6rem;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    color: var(--sidebar-text);
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-  }
-  
-  .noteItem:hover {
-    background-color: #88888866;
-  }
-  
-  .selected {
-    font-weight: 600;
-    background-color: #88888833;
-    color: white;
+  .menuHeader {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 0.5em;
   }
   
   .newNoteButton {
-    margin: 0.75rem 1rem;
-    padding: 0.5rem 1rem;
-    background-color: var(--button-bg);
-    color: var(--button-color);
+    background: var(--math-accent-bg);
+    color: var(--math-text-color);
     border: none;
-    border-radius: 4px;
+    text-align: left;
+    width: 100%;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 1.1rem;
+    font-weight: 500;
     cursor: pointer;
-    font-weight: 600;
-    transition: background-color 0.2s ease;
-    user-select: none;
   }
   
   .newNoteButton:hover {
-    background-color: #88888888;
-    color: white;
+    background: #ccc2;
   }
   
   .searchInput {
-    margin: 0.75rem 1rem;
-    padding: 0.4rem 0.6rem;
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+    flex: 1;
+    width: 100%;
+    padding: 0.5em;
+    font-size: 1em;
     border: 1px solid var(--math-editor-border);
-    border-radius: 4px;
+    border-radius: 6px;
+    box-shadow: 0 0 4px var(--math-editor-shadow);
     background-color: var(--math-editor-bg);
-    color: var(--sidebar-text);
-    font-size: 1rem;
-    outline-offset: 2px;
+    color: var(--math-text-color);
+    box-sizing: border-box;
   }
   
-  .searchInput::placeholder {
-    color: var(--sidebar-text);
+  .sortRow {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 1rem;
+    color: var(--math-subtle-text-color);
+  }
+  
+  .sortSelect {
+    background: var(--math-editor-bg);
+    border: 1px solid var(--math-border-color);
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 1rem;
+    color: var(--math-text-color);
+    outline: none;
+  }
+  
+  /* .notesSectionLabel {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--math-subtle-text-color);
+    padding-top: 4px;
     opacity: 0.6;
+    margin-bottom: -4px;
+  } */
+  
+  .notesList {
+    list-style: none;
+    padding: 0.5em 0em 2em 0.5em;
+    margin: 0;
+    overflow-y: auto;
+    flex-grow: 1;
+  }
+  
+  .noteItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: transparent;
+    padding: 6px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    /* transition: background 0.2s; */
+    position: relative;
+  }
+  
+  .noteItem:hover:not(.selected) {
+    background-color: var(--notes-menu-hovered-note-entry-bg);
+  }
+  
+  .selected {
+    background-color: var(--notes-menu-selected-note-entry-bg);
+    color: #000000bb;
+  }
+
+  .selected .noteTitle {
+    color: #000000;
+  }
+  
+  .noteTextBlock {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow: hidden;
+    min-width: 0;
+  }
+  
+  .noteTitle {
+    font-size: 1.05rem;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--math-text-color);
+  }
+  
+  .noteMeta {
+    display: flex;
+    gap: 8px;
+    font-size: 0.8rem;
+    color: var(--math-subtle-text-color);
+    opacity: 0.8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-wrap: nowrap;
+  }
+
+  /* .noteMeta span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  } */
+  
+  .noteDate {
+    font-size: 0.8rem;
+  }
+  
+  .moreButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    font-size: 1.5rem;
+    color: var(--math-subtle-text-color);
+    opacity: 0;
+    transition: opacity 0.2s;
+    margin-left: 6px;
+  }
+  
+  .noteItem:hover .moreButton {
+    opacity: 1;
+  }
+  
+  .noNotes {
+    font-size: 1.1rem;
+    color: var(--math-subtle-text-color);
+    padding: 10px 8px;
+    text-align: center;
+    pointer-events: none;
+  }
+  
+  .notesSectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 8px;
+    margin-top: 8px;
+  }
+  
+  .notesSectionLabel {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--math-text-color);
+    padding-top: 4px;
+    opacity: 0.6;
+  }
+  
+  .sortDropdown {
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    background: var(--button-bg);
+    color: var(--math-text-color);
+    font-size: 14px;
   }
   
