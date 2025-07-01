@@ -96,7 +96,7 @@ const SettingsModal: React.FC<{
         </div>
         <label className="toggle-row">
           <span>I am a nerd</span>
-          <Tooltip text="Toggle debug mode">
+          <Tooltip text="Toggle visibility of node drag frequencies">
             <label className="switch">
               <input
                 type="checkbox"

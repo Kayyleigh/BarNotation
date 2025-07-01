@@ -421,23 +421,43 @@ function loadEditorSnapshotForNote(noteId: string): EditorSnapshot {
 const LOCAL_STORAGE_KEY = "notes";
 
 const MainLayout: React.FC = () => {
-  const [leftWidth, setLeftWidth] = useState(200);
-  const [rightWidth, setRightWidth] = useState(600);
+  // const [leftWidth, setLeftWidth] = useState(200);
+  // const [rightWidth, setRightWidth] = useState(600);
   const [showSettings, setShowSettings] = useState(false);
   const [showHotkeys, setShowHotkeys] = useState(false);
 
   const [notes, setNotes] = useState<Note[]>([]);
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(notes.length ? notes[0].id : null);
 
-  //const [initialSnapshot, setInitialSnapshot] = useState<EditorSnapshot | null>(null);
   const initialSnapshot: EditorSnapshot = selectedNoteId
   ? loadEditorSnapshotForNote(selectedNoteId)
-  : createEmptySnapshot(); // ← Safe fallback
+  : createEmptySnapshot(); // Safe fallback
   
   // === Settings state ===
   const [isDarkMode, setIsDarkMode] = useState(() => {
     return localStorage.getItem("mathEditorTheme") === "dark";
   });
+
+  const [leftWidth, setLeftWidth] = useState(() => {
+    const saved = localStorage.getItem("notesMenuWidth");
+    return saved ? parseInt(saved, 10) : 200; // fallback to default
+  });
+  
+  const [rightWidth, setRightWidth] = useState(() => {
+    const saved = localStorage.getItem("mathLibraryWidth");
+    return saved ? parseInt(saved, 10) : 600;
+  });
+  
+  // Save left width
+  useEffect(() => {
+    localStorage.setItem("notesMenuWidth", leftWidth.toString());
+  }, [leftWidth]);
+  
+  // Save right width
+  useEffect(() => {
+    localStorage.setItem("mathLibraryWidth", rightWidth.toString());
+  }, [rightWidth]);
+  
 
   const [showColorInPreview, setShowColorInPreview] = useState(() => {
     return localStorage.getItem("showColorInPreview") === "true";
