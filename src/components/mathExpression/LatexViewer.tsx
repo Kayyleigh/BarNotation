@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { nodeToLatex } from "../../models/nodeToLatex";
-import type { MathNode } from "../../models/types"; // Replace with your actual Node type
+import type { MathNode } from "../../models/types";
 import styles from "./LatexViewer.module.css";
 import "../../styles/latexOutputColoring.css";
 

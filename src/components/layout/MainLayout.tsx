@@ -87,7 +87,6 @@ const MainLayout: React.FC = () => {
     }
     return [];
   });
-  // const [editorStates, setEditorStates] = useState<Record<string, string | null>>({});
 
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(notes.length ? notes[0].id : null);
 
@@ -140,53 +139,6 @@ const MainLayout: React.FC = () => {
     document.body.classList.toggle("nerdMode", nerdMode);
     localStorage.setItem("nerdMode", nerdMode ? "true" : "false");
   }, [nerdMode]);
-
-  // Load notes from localStorage on mount
-  // useEffect(() => {
-  //   const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
-  //   console.warn(`saved = ${saved}`)
-  //   if (saved) {
-  //     console.warn(`we have ${saved}`)
-  //     try {
-  //       const parsed: Note[] = JSON.parse(saved);
-  //       setNotes(parsed);
-  
-  //       if (parsed.length > 0) {
-  //         setSelectedNoteId(parsed[0].id);
-  //       }
-  
-  //       // Build a map of saved editor states keyed by noteId <-- Important!!
-  //       const savedEditorStates: Record<string, string | null> = {};
-  //       parsed.forEach(note => {
-  //         const key = `note-editor-state-${note.id}`;
-  //         const editorState = localStorage.getItem(key);
-  //         savedEditorStates[note.id] = editorState;
-  //       });
-  
-  //       console.log("Loaded saved editor states:", savedEditorStates);
-  
-  //       // TODO: you can store savedEditorStates in state or context if you want to load them into editor later
-  
-  //     } catch (e) {
-  //       console.warn("Failed to parse saved notes:", e);
-  //     }
-  //   }
-  // }, []);
-
-  // useEffect(() => {
-  //   if (notes.length === 0) return; // No notes, skip
-
-  //   const loadedEditorStates: Record<string, string | null> = {};
-
-  //   notes.forEach(note => {
-  //     const key = `note-editor-state-${note.id}`;
-  //     const savedEditorState = localStorage.getItem(key);
-  //     loadedEditorStates[note.id] = savedEditorState;
-  //   });
-
-  //   console.log("Loaded editor states:", loadedEditorStates);
-  //   // setEditorStates(loadedEditorStates);
-  // }, [notes]);
 
   // Save notes to localStorage on change
   useEffect(() => {

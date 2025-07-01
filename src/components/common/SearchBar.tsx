@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./SearchBar.module.css"; // or use a shared style
+import styles from "./SearchBar.module.css";
 import Tooltip from "../tooltips/Tooltip";
 
 interface SearchBarProps {

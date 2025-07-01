@@ -74,37 +74,6 @@ const MathLibrary: React.FC<{
   type SortOption = "date" | "date-asc" | "usage" | "usage-asc" | "latex" | "latex-desc";
   const [sortBy, setSortBy] = useState<SortOption>("date");
 
-  // useEffect(() => {
-  //   const raw = localStorage.getItem(STORAGE_KEY);
-  //   let savedCollections: LibraryCollection[] = [];
-
-  //   if (raw) {
-  //     try {
-  //       savedCollections = JSON.parse(raw);
-  //     } catch {
-  //       console.warn("Failed to parse library data.");
-  //       savedCollections = [];
-  //     }
-  //   }
-
-  //   // Merge premade + saved, avoiding duplicates by id
-  //   const mergedCollections = [
-  //     ...savedCollections,
-  //     ...premade.filter(pc => !savedCollections.some(sc => sc.id === pc.id))
-  //   ];
-
-  //   if (mergedCollections.length === 0) {
-  //     const defaultId = crypto.randomUUID();
-  //     setCollections([{ id: defaultId, name: "Default", entries: [] }]);
-  //     setActiveColl(defaultId);
-  //   } else {
-  //     setCollections(mergedCollections);
-  //     setActiveColl(mergedCollections[0].id);
-  //   }
-
-  //   setLoadingCollections(false);
-  // }, [premade]);
-  
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(collections));
     if (!collections.find(c => c.id === activeColl) && collections.length > 0) {
