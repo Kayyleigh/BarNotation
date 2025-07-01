@@ -243,20 +243,6 @@
   font-size: 14px;
 }
 
-.clearButton {
-  position: absolute;
-  right: 4px;
-  background: transparent;
-  border: none;
-  font-size: 16px;
-  cursor: pointer;
-  color: #888;
-}
-
-.clearButton:hover {
-  color: #333;
-}
-
 .meta {
   visibility: var(--lib-entry-meta-visibility);
   font-size: 12px;

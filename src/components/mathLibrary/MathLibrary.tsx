@@ -50,7 +50,7 @@ const MathLibrary: React.FC<{
   const [sortBy, setSortBy] = useState<SortOption>("date");
 
   useEffect(() => {
-    const premade = createPremadeCollections(); // your premade collections creator
+    const premade = createPremadeCollections(); // premade collections creator
   
     const raw = localStorage.getItem(STORAGE_KEY);
     let savedCollections: LibraryCollection[] = [];

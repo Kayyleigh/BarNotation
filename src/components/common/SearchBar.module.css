@@ -19,3 +19,18 @@
     color: var(--math-text-color);
     box-sizing: border-box;
   }
+
+  
+.clearButton {
+    position: absolute;
+    right: 4px;
+    background: transparent;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    color: #888;
+  }
+  
+  .clearButton:hover {
+    color: #333;
+  }
