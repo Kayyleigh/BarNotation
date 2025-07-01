@@ -633,21 +633,52 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({
   const addEntryToLibraryRef = useRef<(entry: LibraryEntry) => void>(() => {});
   const updateLibraryEntryRef = useRef<(id: string) => void>(() => {});
 
+  // const syncNoteCellsWithOrder = useCallback(
+  //   (order: string[]) => {
+  //     const newCells: CellData[] = order.map((id) => {
+  //       if (editorStates[id]) {
+  //         return {
+  //           id,
+  //           type: "math",
+  //           content: nodeToLatex(editorStates[id].rootNode),
+  //         };
+  //       }
+  //       if (textContents[id] !== undefined) {
+  //         return {
+  //           id,
+  //           type: "text",
+  //           content: textContents[id],
+  //         };
+  //       }
+  //       return {
+  //         id,
+  //         type: "text",
+  //         content: "",
+  //       };
+  //     });
+  
+  //     if (noteId) {
+  //       setNoteCells(noteId, newCells);
+  //     }
+  //   },
+  //   [editorStates, textContents, noteId, setNoteCells]
+  // );
+
   const syncNoteCellsWithOrder = useCallback(
-    (order: string[]) => {
+    (order: string[], states: typeof editorStates, textContentsParam: typeof textContents) => {
       const newCells: CellData[] = order.map((id) => {
-        if (editorStates[id]) {
+        if (states[id]) {
           return {
             id,
             type: "math",
-            content: nodeToLatex(editorStates[id].rootNode),
+            content: nodeToLatex(states[id].rootNode),
           };
         }
-        if (textContents[id] !== undefined) {
+        if (textContentsParam[id] !== undefined) {
           return {
             id,
             type: "text",
-            content: textContents[id],
+            content: textContentsParam[id],
           };
         }
         return {
@@ -658,10 +689,20 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({
       });
   
       if (noteId) {
+        //TODO also update editor state in local storage
+//        order, states: editorStates, textContents: newContents
+        const prevState = localStorage.getItem(`note-editor-state-${noteId}`);
+        if (prevState) {
+          localStorage.setItem(`note-editor-state-${noteId}`, JSON.stringify({ ...JSON.parse(prevState), state: JSON.stringify(states) }));
+
+        }
+        // console.log(`Want to set ${nodeToLatex(states[noteId].rootNode)} --- ${states[noteId]}`)
+        // console.log(`Want to set  --- ${states[noteId]}`)
+        // console.log(`Want to set  --- ${JSON.stringify(states)}`)
         setNoteCells(noteId, newCells);
       }
     },
-    [editorStates, textContents, noteId, setNoteCells]
+    [noteId, setNoteCells]
   );
 
   const onDropNode = useCallback(
@@ -741,7 +782,7 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({
 
       // Persist in noteCells
       if (noteId) {
-        syncNoteCellsWithOrder(order)
+        syncNoteCellsWithOrder(order, updatedEditorStates, textContents);
       }
     },
     [editorStates, noteId, order, syncNoteCellsWithOrder, textContents, updateState]

@@ -251,7 +251,8 @@ const MainLayout: React.FC = () => {
   const duplicateNote = (id: string) => {
     const original = notes.find(note => note.id === id);
     if (!original) return;
-  
+    console.warn(`I found ${original}`)
+
     const newId = `note-${Date.now()}`;
     const duplicatedNote: Note = {
       ...original,
@@ -265,7 +266,12 @@ const MainLayout: React.FC = () => {
         ...original.cells,
       }
     };
-  
+    const originalEditorState = localStorage.getItem(`note-editor-state-${original.id}`);
+    if (originalEditorState) {
+      console.warn(`I am going to set the state in storage`)
+      localStorage.setItem(`note-editor-state-${newId}`, originalEditorState);
+    }
+    
     setNotes(prevNotes => [duplicatedNote, ...prevNotes]);
     setSelectedNoteId(newId);
   };
