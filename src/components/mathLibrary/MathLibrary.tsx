@@ -266,37 +266,55 @@ const MathLibrary: React.FC<{
     const position = mouseX < midpoint ? "left" : "right";
   
     dragOverTabIdx.current = idx;
+    console.log(`drag over in ${position}`)
     setDragOverPosition(position);
   };
   
-  const onTabDrop = (e: React.DragEvent, idx: number) => {
+  const onTabDrop = (e: React.DragEvent, visibleIdx: number) => {
     e.preventDefault();
     if (draggingTabIdx === null) return;
   
-    let newIndex = idx;
+    let newVisibleIdx = visibleIdx;
     if (dragOverPosition === "right") {
-      newIndex = idx + 1;
+      newVisibleIdx += 1;
     }
   
-    // Adjust if dragged item was before the new index (to avoid offset)
-    if (draggingTabIdx < newIndex) {
-      newIndex--;
+    // Adjust for forward movement (classic off-by-one)
+    if (draggingTabIdx < newVisibleIdx) {
+      newVisibleIdx--;
     }
   
-    if (draggingTabIdx === newIndex) {
-      setDraggingTabIdx(null);
-      setDragOverPosition(null);
-      dragOverTabIdx.current = null;
-      return; // no move needed
+    // Clamp to valid range
+    const visibleTabs = collections.filter(c => !c.archived);
+    newVisibleIdx = Math.max(0, Math.min(newVisibleIdx, visibleTabs.length - 1));
+  
+    if (draggingTabIdx === newVisibleIdx) {
+      resetDragState();
+      return;
     }
   
-    setCollections(colls => {
+    // Map visible indices to real indices in collections[]
+    const fromId = visibleTabs[draggingTabIdx].id;
+    const toId = visibleTabs[newVisibleIdx].id;
+  
+    const fromIndex = collections.findIndex(c => c.id === fromId);
+    const toIndex = collections.findIndex(c => c.id === toId);
+  
+    if (fromIndex === -1 || toIndex === -1) return;
+  
+    // Reorder in collections
+    setCollections((colls) => {
       const updated = [...colls];
-      const [moved] = updated.splice(draggingTabIdx, 1);
-      updated.splice(newIndex, 0, moved);
+      const [moved] = updated.splice(fromIndex, 1);
+      updated.splice(toIndex, 0, moved);
       return updated;
     });
   
+    resetDragState();
+  };
+  
+  
+  const resetDragState = () => {
     setDraggingTabIdx(null);
     setDragOverPosition(null);
     dragOverTabIdx.current = null;
