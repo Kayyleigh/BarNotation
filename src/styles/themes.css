@@ -131,7 +131,7 @@
 
     /* Scrollbars */
     --scrollbar-thumb: #cccccc;
-    --scrollbar-track: #f1f1f1;
+    --scrollbar-track: transparent;
     --scrollbar-thumb-hover: #aaaaaa;
 
     /* Notes menu */
@@ -231,7 +231,7 @@
 
     /* Scrollbars */
     --scrollbar-thumb: #4a4a4a;
-    --scrollbar-track: #1e1e1e;
+    --scrollbar-track: transparent;
     --scrollbar-thumb-hover: #5e5e5e;
 
     /* Notes menu */

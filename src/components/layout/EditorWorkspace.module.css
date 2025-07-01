@@ -1,4 +1,4 @@
-.libraryContent {
+/* .libraryContent {
     width: 100%;
   }
   .zoomControls {
@@ -8,4 +8,11 @@
   }
   .zoomControls button {
     font-size: 1em;
+  } */
+
+  .emptyMessage {
+    text-align: center;
+    color: #888;
+    font-style: italic;
+    margin: 2em 0;
   }

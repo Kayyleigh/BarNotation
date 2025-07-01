@@ -394,7 +394,7 @@ import { DragProvider } from "../../hooks/DragProvider";
 import { EditorHistoryProvider } from "../../hooks/EditorHistoryProvider";
 import { createInitialCursor } from "../../logic/cursor";
 import { createRootWrapper } from "../../models/nodeFactories";
-import type { EditorSnapshot } from "../../logic/global-history";
+import { createEmptySnapshot, type EditorSnapshot } from "../../logic/global-history";
 import type { CellData, NoteMetadata } from "../../models/noteTypes";
 
 interface Note {
@@ -429,8 +429,11 @@ const MainLayout: React.FC = () => {
   const [notes, setNotes] = useState<Note[]>([]);
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(notes.length ? notes[0].id : null);
 
-  const [initialSnapshot, setInitialSnapshot] = useState<EditorSnapshot | null>(null);
-
+  //const [initialSnapshot, setInitialSnapshot] = useState<EditorSnapshot | null>(null);
+  const initialSnapshot: EditorSnapshot = selectedNoteId
+  ? loadEditorSnapshotForNote(selectedNoteId)
+  : createEmptySnapshot(); // ← Safe fallback
+  
   // === Settings state ===
   const [isDarkMode, setIsDarkMode] = useState(() => {
     return localStorage.getItem("mathEditorTheme") === "dark";
@@ -521,15 +524,15 @@ const MainLayout: React.FC = () => {
     );
   };
 
-  // Load editor snapshot when note selected
-  useEffect(() => {
-    if (selectedNoteId) {
-      const loadedSnapshot = loadEditorSnapshotForNote(selectedNoteId);
-      setInitialSnapshot(loadedSnapshot);
-    } else {
-      setInitialSnapshot(null);
-    }
-  }, [selectedNoteId]);
+  // // Load editor snapshot when note selected
+  // useEffect(() => {
+  //   if (selectedNoteId) {
+  //     const loadedSnapshot = loadEditorSnapshotForNote(selectedNoteId);
+  //     setInitialSnapshot(loadedSnapshot);
+  //   } else {
+  //     setInitialSnapshot(null);
+  //   }
+  // }, [selectedNoteId]);
 
   const createNewNote = () => {
     const newId = `note-${Date.now()}`;
@@ -617,28 +620,28 @@ const MainLayout: React.FC = () => {
           />
         </div>
         <div style={{ flexGrow: 1, display: "flex", minWidth: 0 }}>
-          {selectedNoteId && selectedNote && initialSnapshot ? (
+          {/* {selectedNoteId && selectedNote && initialSnapshot ? ( */}
             <EditorHistoryProvider initialSnapshot={initialSnapshot}>
               <DragProvider>
                 <EditorWorkspace
                   noteId={selectedNoteId}
                   rightWidth={rightWidth}
                   setRightWidth={setRightWidth}
-                  noteMetadata={selectedNote.metadata}
+                  noteMetadata={selectedNote?.metadata}
                   setNoteMetadata={updateNoteMetadata}
-                  noteCells={selectedNote.cells}
+                  noteCells={selectedNote?.cells}
                   setNoteCells={updateNoteCells}
                 />
               </DragProvider>
             </EditorHistoryProvider>
-          ) : (
+          {/* ) : (
             <div style={{ padding: "2rem" }}>
               <h2>Select a note or create a new one</h2>
               <button className="button primary" onClick={createNewNote}>
                 Create Temporary Note
               </button>
             </div>
-          )}
+          )} */}
         </div>
       </div>
 

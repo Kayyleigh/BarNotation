@@ -90,6 +90,8 @@
 //   }
 
 // logic/global-history.ts
+import { createRootWrapper } from "../models/nodeFactories";
+import { createInitialCursor } from "./cursor";
 import type { EditorState } from "./editor-state";
 
 export interface EditorSnapshot {
@@ -109,6 +111,21 @@ export function createInitialHistory(initial: EditorSnapshot): HistoryState {
     past: [],
     present: initial,
     future: [],
+  };
+}
+
+export function createEmptySnapshot(): EditorSnapshot {
+  const rootNode = createRootWrapper();
+
+  return {
+    states: {
+      __empty__: {
+        rootNode,
+        cursor: createInitialCursor(rootNode),
+      },
+    },
+    order: ["__empty__"],
+    textContents: {},
   };
 }
 

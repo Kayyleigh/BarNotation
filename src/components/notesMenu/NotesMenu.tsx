@@ -112,7 +112,7 @@ const NotesMenu: React.FC<NotesMenuProps> = ({
         </div>
         <ul className={styles.notesList}>
           {filteredNotes.length === 0 && (
-            <li className={styles.noNotes}>No notes found</li>
+            <li className={styles.noNotes}>No notes found.</li>
           )}
           {filteredNotes.map((note) => (
             <li

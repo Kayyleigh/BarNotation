@@ -592,14 +592,15 @@ import { useEditorHistory } from "../../hooks/EditorHistoryContext";
 import type { LibraryEntry } from "../../models/libraryTypes";
 import { nodeToLatex } from "../../models/nodeToLatex"; // Needed for metadata
 import type { CellData, NoteMetadata } from "../../models/noteTypes";
+import styles from "./EditorWorkspace.module.css";
 
 interface EditorWorkspaceProps {
   noteId: string | null;
   rightWidth: number;
   setRightWidth: (width: number) => void;
-  noteMetadata: NoteMetadata;
+  noteMetadata: NoteMetadata | undefined;
   setNoteMetadata: (noteId: string, metadata: Partial<NoteMetadata>) => void;
-  noteCells: CellData[];
+  noteCells: CellData[] | undefined;
   setNoteCells: (noteId: string, newCells: CellData[]) => void;
 }
 
@@ -764,16 +765,22 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({
 
   return (
     <div className="editor-workspace" style={{ display: "flex", height: "100%", width: "100%" }}>
-      <div style={{ flexGrow: 1, minWidth: 0 }}>
-        <EditorPane
-          style={{ width: "100%", height: "100%" }}
-          noteId={noteId}
-          onDropNode={onDropNode}
-          noteMetadata={noteMetadata}
-          setNoteMetadata={setNoteMetadata}
-        />
-      </div>
-
+      {noteId && noteMetadata ? (
+        <div style={{ flexGrow: 1, minWidth: 0 }}>
+          <EditorPane
+            style={{ width: "100%", height: "100%" }}
+            noteId={noteId}
+            onDropNode={onDropNode}
+            noteMetadata={noteMetadata}
+            setNoteMetadata={setNoteMetadata}
+          />
+        </div>
+        
+        ) : (
+          <div className={styles.emptyMessage} style={{ flexGrow: 1, minWidth: 0 }}>
+            Select a note or create a new one.
+          </div>
+        )}
       <div style={{ flex: "0 0 auto", width: `${rightWidth}px` }}>
         <MathLibrary
           width={rightWidth}

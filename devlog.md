@@ -3319,3 +3319,7 @@ Next steps:
 ![alt text](<Blank diagram - Page 1.jpeg>)
 
 TODO: When deleting all collections, the last one stays visible. Have it know that it is empty, and prompt user to make a new expression. Do not allow dropping into library if no collection is open, or have it auto create a new one when there is none available.
+
+![alt text](image-50.png)
+
+BOOM! LIBRARY DOES NOT NEED A SELECTED NOTE ANYMROEEEE

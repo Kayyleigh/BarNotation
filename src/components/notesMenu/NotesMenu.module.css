@@ -167,6 +167,7 @@
     padding: 10px 8px;
     text-align: center;
     pointer-events: none;
+    opacity: 0.6;
   }
   
   .notesSectionHeader {
