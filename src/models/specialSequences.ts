@@ -1,4 +1,4 @@
-import { createAccentedNode, createBigOperator, createInlineContainer, createNthRoot, createStyledNode, createTextNode } from '../models/nodeFactories';
+import { createAccentedNode, createBigOperator, createFraction, createInlineContainer, createNthRoot, createStyledNode, createTextNode } from '../models/nodeFactories';
 import type { InlineContainerNode, StructureNode, TextStyle } from '../models/types';
 import { decorationToLatexCommand, type NodeDecoration, type DecorationInfo } from '../utils/accentUtils';
 
@@ -40,6 +40,13 @@ export const nodeTransformationSequences: SpecialSequence[] = [ //TODO: rename t
   {
     sequence: "\\sqrt ",
     createNode: () => createNthRoot(
+      createInlineContainer(),
+      createInlineContainer(),
+    ),
+  },
+  {
+    sequence: "\\frac ",
+    createNode: () => createFraction(
       createInlineContainer(),
       createInlineContainer(),
     ),
