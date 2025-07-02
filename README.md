@@ -200,8 +200,8 @@ The app is built in **React** with **TypeScript** and uses **Vite** as the build
 
 ### 1. Clone the repo
 ```bash
-git clone https://github.com/your-username/bar-notation.git
-cd bar-notation
+git clone https://github.com/Kayyleigh/BarNotation.git
+cd BarNotation
 ```
 ### 2. Install Dependencies
 ```
@@ -260,4 +260,4 @@ This is my first time pushing a project of this size out into the world. However
 ## 🗣️ Feedback
 
 Have ideas or suggestions? Found a bug?  
-Please [open an issue](https://github.com/your-username/bar-notation/issues). Your feedback helps me improve!
+Please [open an issue](https://github.com/Kayyleigh/BarNotation/issues). Your feedback helps me improve!
