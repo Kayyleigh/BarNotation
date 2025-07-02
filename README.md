@@ -39,20 +39,74 @@ BarNotation enables users to build their notes as a sequence of "cells", either 
 
 ## 📷 Screenshots
 
-### Basic Editing Page  
-![BarNotation editing interface showing math and text cells](readme-images/screenshot-editing.png)
+### 📝 Main Editing Interface  
+A simple, cell-based interface for math and text. Drag, type, and transform as you go.
 
-### Dragging a Math Expression to the Library  
-![Dragging math nodes into the library panel for reuse](readme-images/screenshot-drag-library.png)
+<p align="center">
+  <img src="readme-images/screenshot-editing.png" alt="BarNotation editing interface showing math and text cells" width="700"/>
+</p>
 
-### Result of Dragging to the Library  
-![Library panel showing saved math snippets](readme-images/screenshot-library-result.png)
+### 📚 Drag-and-Drop Math Library  
+Save any expression for reuse. Just drag it into the library panel, and back into cells whenever you need!
 
-### Preview Mode (Roughly LaTeX Rendering)  
-![Preview mode displaying LaTeX-rendered math expressions](readme-images/screenshot-preview-mode.png)
+<p align="center">
+  <img src="readme-images/gif-library-dragging.gif" alt="Dragging math expressions to and from the library" width="450"/>
+</p>
+
+> 🤓 **Fun fact!**  
+> The library keeps track of how often you re-use each snippet, so you can sort by "most used" (among others)!  
+> Interested in seeing exact counts? Turn on **_nerd mode_** in settings.
+
+### 🧩 Build Your Own Collections  
+Create your own custom collections! Copy math from notes, or **drag between tabs**.
+
+<p align="center">
+  <img src="readme-images/gif-new-collection.gif" alt="Creating a new custom math collection" width="450"/>
+</p>
+
+### 🗂️ Power Features for Collections
+
+#### ↕️ Reorder Collection Tabs  
+Just drag to rearrange!
+
+<p align="center">
+  <img src="readme-images/cursor-screenshot-reorder-tabs.png" alt="Reordering collection tabs" width="700"/>
+</p>
+
+#### 📥 Archive Collections You’re Not Using  
+Wildly different courses this semester, but expect similar ones in the future? Archive your collections to de-clutter your workspace!
+
+<p align="center">
+  <img src="readme-images/cursor-screenshot-collection-dropdown.png" alt="Dropdown for archiving math collections" width="600"/>
+</p>
+
+#### 🧭 View and Restore Archived Collections  
+Searchable, previewable, and manageable. Even if you named a dozen of them "My Collection".
+
+<p align="center">
+  <img src="readme-images/cursor-screenshot-find-collection-archive.png" alt="Accessing collection archive" width="320"/>
+  &nbsp;&nbsp;&nbsp;
+  <img src="readme-images/cursor-screenshot-collection-archive-modal.png" alt="Archive modal for restoring and previewing collections" width="320"/>
+</p>
+
+<p align="center"><i>Browse and restore from the archive (with previews!)</i></p>
 
 
----
+### 📜 Preview Mode  
+Check how your note would roughly render in LaTeX.
+
+<p align="center">
+  <img src="readme-images/screenshot-preview-mode.png" alt="Preview mode showing LaTeX output" width="700"/>
+</p>
+
+### 🌍 LaTeX In and Out  
+Hate my app, but enjoy the math library? No problem! Just drag your snippets straight into any LaTeX editor (here: [Overleaf](https://www.overleaf.com/))!
+
+<p align="center">
+  <img src="readme-images/gif-external-latex.gif" alt="Dragging math expressions into an external LaTeX editor" width="450"/>
+</p>
+
+And yes, dragging raw LaTeX into the library works too! Just drop LaTeX code and it gets converted into structured math.
 
 ## 📁 Project Structure
 
@@ -187,7 +241,7 @@ The app is built in **React** with **TypeScript** and uses **Vite** as the build
     ├── collectionUtils.ts         # Init functions for math collections
     ├── mathHoverUtils.ts          # Hover behavior for math nodes
     ├── navigationUtils.ts         # Cursor/child traversal logic
-    ├── noop.ts                    # Empty function, used in MathView (non-interative Math rendering)
+    ├── noop.ts                    # Empty function used in MathView (non-interative Math render)
     ├── subsupUtils.ts             # Sup/subscript position helpers
     ├── textContainerUtils.ts      # (Unused) splitting container logic
     └── treeUtils.ts               # Tree update, find nodes, get logical children
