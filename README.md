@@ -12,9 +12,9 @@ BarNotation is a real-time math note-taking app designed especially for students
 BarNotation enables users to build their notes as a sequence of "cells", either *Text* or *Math*, with intuitive keyboard entry, structural transformations, and drag-and-drop support for editing, reordering, and organizing notes and math expressions.
 
 <p align="center">
-  <img src="readme-images/screenshot-random-use.png" alt="Random usage screenshot of the editor" width="700"/>
+  <img src="readme-images/screenshot-random-use.png" alt="Random usage screenshot of the editor" width="400"/>
 </p>
-<p align="center"><em>See the [Screenshots](#-screenshots) section for a visual walkthrough!</em></p>
+<p align="center"><em>See the [📷 Screenshots](https://github.com/Kayyleigh/BarNotation?tab=readme-ov-file#-screenshots) section for a visual walkthrough!</em></p>
 
 ---
 
