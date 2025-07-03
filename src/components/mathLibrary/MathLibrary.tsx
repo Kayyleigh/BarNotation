@@ -598,7 +598,7 @@
 
 // export default MathLibrary;
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, type DragEvent } from "react";
 import ResizableSidebar from "../layout/ResizableSidebar";
 import LibCollectionArchiveModal from "../modals/LibCollectionArchiveModal";
 import LibraryEntries from "./LibraryEntries";
@@ -611,6 +611,7 @@ import SearchBar from "../common/SearchBar";
 import type { DropSource, DropTarget } from "../layout/EditorWorkspace";
 import { useDragContext } from "../../hooks/useDragContext";
 import { nodeToLatex } from "../../models/nodeToLatex";
+import { parseLatex } from "../../models/latexParser";
 
 const STORAGE_KEY = "mathLibraryCollections";
 
@@ -632,7 +633,6 @@ interface MathLibraryProps {
 const MathLibrary: React.FC<MathLibraryProps> = ({
   width,
   onWidthChange,
-  onDropNode,
 }) => {
   console.warn(`Rendering MathLibrary`);
 
@@ -712,8 +712,47 @@ const MathLibrary: React.FC<MathLibraryProps> = ({
 
   // Handle drop inside library (from anywhere) - called by LibraryEntries onDrop handler
   const handleLibraryDrop = useCallback(
-    (dropCollectionId: string, dropIndex: number | null) => {
-      if (!draggingNode) return;
+    (e: React.DragEvent, dropCollectionId: string, dropIndex: number | null) => {
+
+      if (!draggingNode) {
+        const plainText = e.dataTransfer.getData("text/plain")?.trim();
+  
+        if (!plainText) return;
+  
+        const targetCollection = findCollection(dropCollectionId);
+        if (!targetCollection) return;
+  
+        try {
+          const parsed = parseLatex(plainText);
+          const newEntry: LibraryEntry = {
+            id: crypto.randomUUID(),
+            node: parsed,
+            addedAt: Date.now(),
+            draggedCount: 0,
+            latex: plainText,
+          };
+  
+          const updatedEntries = [...targetCollection.entries];
+          const insertIndex = dropIndex ?? updatedEntries.length;
+  
+          updatedEntries.splice(insertIndex, 0, newEntry);
+  
+          setCollections(prev =>
+            prev.map(c =>
+              c.id === targetCollection.id
+                ? { ...c, entries: updatedEntries }
+                : c
+            )
+          );
+  
+          showToast({ type: "success", message: "LaTeX added to library." });
+        } catch (err) {
+          console.error("Invalid LaTeX dropped:", err);
+          showToast({ type: "error", message: "Failed to parse LaTeX." });
+        }
+  
+        return;
+      }
 
       // If dragging from library and dropping into same collection at same or adjacent index -> ignore
       if (
@@ -816,17 +855,6 @@ const MathLibrary: React.FC<MathLibraryProps> = ({
     [draggingNode, findCollection, setDraggingNode, setDropTarget, showToast, updateCollectionEntries]
   );
 
-  // Handle drop on workspace cells - just forward the drop
-  const handleDropToWorkspace = useCallback(
-    (from: DropSource, to: DropTarget) => {
-      if (!from || !to) return;
-      onDropNode(from, to);
-      setDraggingNode(null);
-      setDropTarget(null);
-    },
-    [onDropNode, setDraggingNode, setDropTarget]
-  );
-
   const activeCollection = collections.find(c => c.id === activeColl);
   const placeholderText = `Search ${activeCollection ? activeCollection.name : "Collection"}...`;  
 
@@ -893,10 +921,10 @@ const MathLibrary: React.FC<MathLibraryProps> = ({
             activeColl={activeColl}
             sortOption={sortOption}
             searchTerm={searchTerm}
-            onDrop={(dropIndex: number | null) =>
-              handleLibraryDrop(activeColl, dropIndex)
-            }
-            onDropToWorkspace={handleDropToWorkspace}
+            onDrop={(e: DragEvent<Element>, dropIndex: number | null) => {
+              e.preventDefault();
+              handleLibraryDrop(e, activeColl, dropIndex);
+            }}
           />
         ) : (
           <p>No active collection available.</p>

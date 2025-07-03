@@ -5,7 +5,6 @@ import type { MathNode } from "../../models/types";
 import { deleteNodeById, insertNodeAtIndex } from "../../logic/node-manipulation";
 import { cloneTreeWithNewIds, isDescendantOrSelf } from "../../utils/treeUtils";
 import { useEditorHistory } from "../../hooks/EditorHistoryContext";
-import type { LibraryEntry } from "../../models/libraryTypes";
 import { nodeToLatex } from "../../models/nodeToLatex"; 
 import type { CellData, NoteMetadata } from "../../models/noteTypes";
 import styles from "./EditorWorkspace.module.css";
@@ -45,12 +44,6 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({
 }) => {
   const { history, updateState } = useEditorHistory();
   const { states: editorStates, order, textContents } = history.present;
-
-  const onDropEntryToLibraryCollection = (entry: LibraryEntry, collectionId: string) => {
-    const updatedEntry = { ...entry, addedAt: Date.now() };
-    console.warn("Dropping entry into collection:", collectionId, updatedEntry);
-    // DOES NOT ACTUALLY DO ANYTHING RIGHT NOW??
-  };
 
   const updateLibraryEntryRef = useRef<(id: string) => void>(() => {});
 
@@ -106,18 +99,9 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({
 
       // Drop from editor to library <---- HERE IS SOME LIBRARY STUFF
       if (to.cellId === "library" && from.sourceType === "cell") {
-        console.log(`Cloning ${nodeToLatex(from.node)} to ${to.containerId}`)
-        const cloned = cloneTreeWithNewIds(from.node);
-        const newEntry: LibraryEntry = {
-          id: crypto.randomUUID(),
-          node: cloned,
-          addedAt: Date.now(),
-          draggedCount: 0,
-          latex: nodeToLatex(cloned),
-        };
+        console.log(`Cloning ${nodeToLatex(from.node)} to ${to.containerId}`)      
         // set data to latex plain text??/
         // used to be `addEntryToLibraryRef.current?.(newEntry);`
-        onDropEntryToLibraryCollection(newEntry, to.containerId);
         return;
       }
 

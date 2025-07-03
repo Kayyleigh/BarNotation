@@ -170,7 +170,6 @@ import React, { useMemo, useCallback } from "react";
 import { useDragContext } from "../../hooks/useDragContext";
 import type { LibraryCollection } from "../../models/libraryTypes";
 import styles from "./MathLibrary.module.css";
-import type { DropSource, DropTarget } from "../layout/EditorWorkspace";
 import type { SortOption } from "./MathLibrary";
 import { MathView } from "../mathExpression/MathView";
 
@@ -180,8 +179,8 @@ interface LibraryEntriesProps {
   activeColl: string;
   sortOption: SortOption;
   searchTerm: string;
-  onDrop: (dropIndex: number | null) => void;
-  onDropToWorkspace: (from: DropSource, to: DropTarget) => void;
+  onDrop: (e: React.DragEvent, dropIndex: number | null) => void;
+
 }
 
 const LibraryEntries: React.FC<LibraryEntriesProps> = ({
@@ -191,7 +190,6 @@ const LibraryEntries: React.FC<LibraryEntriesProps> = ({
   sortOption,
   searchTerm,
   onDrop,
-  onDropToWorkspace,
 }) => {
   console.warn(`Rendering LibraryEntries`);
 
@@ -285,7 +283,7 @@ const LibraryEntries: React.FC<LibraryEntriesProps> = ({
     (e: React.DragEvent, index: number) => {
       e.preventDefault();
       e.stopPropagation();
-      onDrop(index);
+      onDrop(e, index);
       setDraggingNode(null);
       setDropTarget(null);
     },
@@ -311,33 +309,11 @@ const LibraryEntries: React.FC<LibraryEntriesProps> = ({
     (e: React.DragEvent) => {
       e.preventDefault();
       e.stopPropagation();
-      onDrop(null);
+      onDrop(e, null);
       setDraggingNode(null);
       setDropTarget(null);
     },
     [onDrop, setDraggingNode, setDropTarget]
-  );
-
-  const handleDropOnWorkspace = useCallback( // NOT USED I THINK
-    (e: React.DragEvent, target: DropTarget) => {
-      e.preventDefault();
-      e.stopPropagation();
-      if (!draggingNode) return;
-
-      if (draggingNode.sourceType === "library") {
-        const from: DropSource = {
-          sourceType: "library",
-          cellId: activeColl,
-          containerId: draggingNode.containerId!,
-          index: draggingNode.index ?? 0,
-          node: draggingNode.node,
-        };
-        onDropToWorkspace(from, target);
-        setDraggingNode(null);
-        setDropTarget(null);
-      }
-    },
-    [activeColl, draggingNode, onDropToWorkspace, setDraggingNode, setDropTarget]
   );
 
   // Now that hooks are all called, return early if no collection
