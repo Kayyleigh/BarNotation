@@ -289,6 +289,7 @@ import clsx from "clsx";
 import TabDropdownPortal from "./TabDropdownPortal";
 import { useDragContext } from "../../hooks/useDragContext";
 import { nodeToLatex } from "../../models/nodeToLatex";
+import React from "react";
 
 interface CollectionTabsProps {
   collections: LibraryCollection[];
@@ -603,4 +604,4 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
   );
 };
 
-export default CollectionTabs;
+export default React.memo(CollectionTabs);

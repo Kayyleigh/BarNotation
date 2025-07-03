@@ -93,83 +93,266 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({
     [noteId, setNoteCells]
   );
 
-  const onDropNode = useCallback(
-    (from: DropSource, to: DropTarget) => {
-      const sourceState = from.cellId ? editorStates[from.cellId] : null;
+  // REFFING
+  const editorStatesRef = useRef(editorStates);
+  const orderRef = useRef(order);
+  const textContentsRef = useRef(textContents);
+  const noteIdRef = useRef(noteId);
+  const syncNoteCellsWithOrderRef = useRef(syncNoteCellsWithOrder);
 
-      // Drop from editor to library <---- HERE IS SOME LIBRARY STUFF
-      if (to.cellId === "library" && from.sourceType === "cell") {
-        console.log(`Cloning ${nodeToLatex(from.node)} to ${to.containerId}`)      
-        // set data to latex plain text??/
-        // used to be `addEntryToLibraryRef.current?.(newEntry);`
-        return;
+  useEffect(() => {
+    editorStatesRef.current = editorStates;
+  }, [editorStates]);
+
+  useEffect(() => {
+    orderRef.current = order;
+  }, [order]);
+
+  useEffect(() => {
+    textContentsRef.current = textContents;
+  }, [textContents]);
+
+  useEffect(() => {
+    noteIdRef.current = noteId;
+  }, [noteId]);
+
+  useEffect(() => {
+    syncNoteCellsWithOrderRef.current = syncNoteCellsWithOrder;
+  }, [syncNoteCellsWithOrder]);
+  // END OF REFFING
+
+
+
+  // const onDropNode = useCallback(
+  //   (from: DropSource, to: DropTarget) => {
+  //     const sourceState = from.cellId ? editorStates[from.cellId] : null;
+
+  //     // Drop from editor to library <---- HERE IS SOME LIBRARY STUFF
+  //     if (to.cellId === "library" && from.sourceType === "cell") {
+  //       console.log(`Cloning ${nodeToLatex(from.node)} to ${to.containerId}`)      
+  //       // set data to latex plain text??/
+  //       // used to be `addEntryToLibraryRef.current?.(newEntry);`
+  //       return;
+  //     }
+
+  //     const destState = editorStates[to.cellId];
+  //     if (!destState) return;
+
+  //     // Redirect drop if container is the root-wrapper node
+  //     if (to.containerId === "root") {
+  //       const inlineContainerChild = destState.rootNode.child;
+  //       if (inlineContainerChild) {
+  //         to = {
+  //           ...to,
+  //           containerId: inlineContainerChild.id,
+  //           index: inlineContainerChild.children?.length ?? 0, // drop at the end
+  //         };
+  //       }
+  //     }
+
+  //     const updatedEditorStates = { ...editorStates };
+
+  //     // Drag within same cell
+  //     if (from.sourceType === "cell" && from.cellId === to.cellId) {
+  //       if (isDescendantOrSelf(from.node, to.containerId)) return;
+  //       const node = cloneTreeWithNewIds(from.node);
+  //       let updated = deleteNodeById(destState, from.node.id);
+
+  //       if (from.containerId === to.containerId && to.index >= from.index) {
+  //         updated = insertNodeAtIndex(updated, to.containerId, to.index, node);
+  //       } else {
+  //         updated = insertNodeAtIndex(updated, to.containerId, to.index + 1, node);
+  //       }
+  //       updatedEditorStates[to.cellId] = updated;
+  //     }
+  //     // Drag from one cell to another
+  //     else if (from.sourceType === "cell" && from.cellId !== to.cellId && sourceState) {
+  //       const node = cloneTreeWithNewIds(from.node);
+  //       const updatedDest = insertNodeAtIndex(destState, to.containerId, to.index + 1, node);
+  //       updatedEditorStates[to.cellId] = updatedDest;
+  //     }
+  //     // From library to editor
+  //     else if (from.sourceType === "library") {
+  //       console.log(`Cloning from library ${nodeToLatex(from.node)} to ${to.cellId} ${to.containerId} ${to.index}`)
+
+  //       const cloned = cloneTreeWithNewIds(from.node);
+  //       const updated = insertNodeAtIndex(destState, to.containerId, to.index + 1, cloned);
+  //       const dropFailed = updated === destState;
+
+  //       if (dropFailed) return; // no update if drop failed
+
+  //       updatedEditorStates[to.cellId] = updated;
+
+  //       // Increment drag count in the library
+  //       updateLibraryEntryRef.current?.(from.containerId);
+  //     }
+
+  //     updateState({
+  //       states: updatedEditorStates,
+  //       order,
+  //       textContents,
+  //     });
+
+  //     // Persist in noteCells
+  //     if (noteId) {
+  //       syncNoteCellsWithOrder(order, updatedEditorStates, textContents);
+  //     }
+  //   },
+  //   [editorStates, noteId, order, syncNoteCellsWithOrder, textContents, updateState]
+  // );
+
+  // const onDropNode = useCallback(
+  //   (from: DropSource, to: DropTarget) => {
+  //     const editorStates = editorStatesRef.current;
+  //     const noteId = noteIdRef.current;
+  //     const order = orderRef.current;
+  //     const textContents = textContentsRef.current;
+  
+  //     const sourceState = from.cellId ? editorStates[from.cellId] : null;
+  
+  //     // Drop from editor to library <---- HERE IS SOME LIBRARY STUFF
+  //     if (to.cellId === "library" && from.sourceType === "cell") {
+  //       console.log(`Cloning ${nodeToLatex(from.node)} to ${to.containerId}`);
+  //       // set data to latex plain text??/
+  //       // used to be `addEntryToLibraryRef.current?.(newEntry);`
+  //       return;
+  //     }
+  
+  //     const destState = editorStates[to.cellId];
+  //     if (!destState) return;
+  
+  //     // Redirect drop if container is the root-wrapper node
+  //     if (to.containerId === "root") {
+  //       const inlineContainerChild = destState.rootNode.child;
+  //       if (inlineContainerChild) {
+  //         to = {
+  //           ...to,
+  //           containerId: inlineContainerChild.id,
+  //           index: inlineContainerChild.children?.length ?? 0, // drop at the end
+  //         };
+  //       }
+  //     }
+  
+  //     const updatedEditorStates = { ...editorStates };
+  
+  //     // Drag within same cell
+  //     if (from.sourceType === "cell" && from.cellId === to.cellId) {
+  //       if (isDescendantOrSelf(from.node, to.containerId)) return;
+  //       const node = cloneTreeWithNewIds(from.node);
+  //       let updated = deleteNodeById(destState, from.node.id);
+  
+  //       if (from.containerId === to.containerId && to.index >= from.index) {
+  //         updated = insertNodeAtIndex(updated, to.containerId, to.index, node);
+  //       } else {
+  //         updated = insertNodeAtIndex(updated, to.containerId, to.index + 1, node);
+  //       }
+  //       updatedEditorStates[to.cellId] = updated;
+  //     }
+  //     // Drag from one cell to another
+  //     else if (from.sourceType === "cell" && from.cellId !== to.cellId && sourceState) {
+  //       const node = cloneTreeWithNewIds(from.node);
+  //       const updatedDest = insertNodeAtIndex(destState, to.containerId, to.index + 1, node);
+  //       updatedEditorStates[to.cellId] = updatedDest;
+  //     }
+  //     // From library to editor
+  //     else if (from.sourceType === "library") {
+  //       console.log(`Cloning from library ${nodeToLatex(from.node)} to ${to.cellId} ${to.containerId} ${to.index}`);
+  
+  //       const cloned = cloneTreeWithNewIds(from.node);
+  //       const updated = insertNodeAtIndex(destState, to.containerId, to.index + 1, cloned);
+  //       const dropFailed = updated === destState;
+  
+  //       if (dropFailed) return; // no update if drop failed
+  
+  //       updatedEditorStates[to.cellId] = updated;
+  
+  //       // Increment drag count in the library
+  //       updateLibraryEntryRef.current?.(from.containerId);
+  //     }
+  
+  //     updateState({
+  //       states: updatedEditorStates,
+  //       order,
+  //       textContents,
+  //     });
+  
+  //     // Persist in noteCells
+  //     if (noteId) {
+  //       syncNoteCellsWithOrder(order, updatedEditorStates, textContents);
+  //     }
+  //   },
+  //   [] // no dependencies, function is stable
+  // );
+
+  const onDropNode = useCallback((from: DropSource, to: DropTarget) => {
+    const editorStates = editorStatesRef.current;
+    const noteId = noteIdRef.current;
+    const order = orderRef.current;
+    const textContents = textContentsRef.current;
+  
+    const sourceState = from.cellId ? editorStates[from.cellId] : null;
+  
+    if (to.cellId === "library" && from.sourceType === "cell") {
+      console.log(`Cloning ${nodeToLatex(from.node)} to ${to.containerId}`);
+      return;
+    }
+  
+    const destState = editorStates[to.cellId];
+    if (!destState) return;
+  
+    if (to.containerId === "root") {
+      const inlineContainerChild = destState.rootNode.child;
+      if (inlineContainerChild) {
+        to = {
+          ...to,
+          containerId: inlineContainerChild.id,
+          index: inlineContainerChild.children?.length ?? 0,
+        };
       }
-
-      const destState = editorStates[to.cellId];
-      if (!destState) return;
-
-      // Redirect drop if container is the root-wrapper node
-      if (to.containerId === "root") {
-        const inlineContainerChild = destState.rootNode.child;
-        if (inlineContainerChild) {
-          to = {
-            ...to,
-            containerId: inlineContainerChild.id,
-            index: inlineContainerChild.children?.length ?? 0, // drop at the end
-          };
-        }
+    }
+  
+    const updatedEditorStates = { ...editorStates };
+  
+    if (from.sourceType === "cell" && from.cellId === to.cellId) {
+      if (isDescendantOrSelf(from.node, to.containerId)) return;
+      const node = cloneTreeWithNewIds(from.node);
+      let updated = deleteNodeById(destState, from.node.id);
+  
+      if (from.containerId === to.containerId && to.index >= from.index) {
+        updated = insertNodeAtIndex(updated, to.containerId, to.index, node);
+      } else {
+        updated = insertNodeAtIndex(updated, to.containerId, to.index + 1, node);
       }
-
-      const updatedEditorStates = { ...editorStates };
-
-      // Drag within same cell
-      if (from.sourceType === "cell" && from.cellId === to.cellId) {
-        if (isDescendantOrSelf(from.node, to.containerId)) return;
-        const node = cloneTreeWithNewIds(from.node);
-        let updated = deleteNodeById(destState, from.node.id);
-
-        if (from.containerId === to.containerId && to.index >= from.index) {
-          updated = insertNodeAtIndex(updated, to.containerId, to.index, node);
-        } else {
-          updated = insertNodeAtIndex(updated, to.containerId, to.index + 1, node);
-        }
-        updatedEditorStates[to.cellId] = updated;
-      }
-      // Drag from one cell to another
-      else if (from.sourceType === "cell" && from.cellId !== to.cellId && sourceState) {
-        const node = cloneTreeWithNewIds(from.node);
-        const updatedDest = insertNodeAtIndex(destState, to.containerId, to.index + 1, node);
-        updatedEditorStates[to.cellId] = updatedDest;
-      }
-      // From library to editor
-      else if (from.sourceType === "library") {
-        console.log(`Cloning from library ${nodeToLatex(from.node)} to ${to.cellId} ${to.containerId} ${to.index}`)
-
-        const cloned = cloneTreeWithNewIds(from.node);
-        const updated = insertNodeAtIndex(destState, to.containerId, to.index + 1, cloned);
-        const dropFailed = updated === destState;
-
-        if (dropFailed) return; // no update if drop failed
-
-        updatedEditorStates[to.cellId] = updated;
-
-        // Increment drag count in the library
-        updateLibraryEntryRef.current?.(from.containerId);
-      }
-
-      updateState({
-        states: updatedEditorStates,
-        order,
-        textContents,
-      });
-
-      // Persist in noteCells
-      if (noteId) {
-        syncNoteCellsWithOrder(order, updatedEditorStates, textContents);
-      }
-    },
-    [editorStates, noteId, order, syncNoteCellsWithOrder, textContents, updateState]
-  );
+      updatedEditorStates[to.cellId] = updated;
+    }
+    else if (from.sourceType === "cell" && from.cellId !== to.cellId && sourceState) {
+      const node = cloneTreeWithNewIds(from.node);
+      const updatedDest = insertNodeAtIndex(destState, to.containerId, to.index + 1, node);
+      updatedEditorStates[to.cellId] = updatedDest;
+    }
+    else if (from.sourceType === "library") {
+      console.log(`Cloning from library ${nodeToLatex(from.node)} to ${to.cellId} ${to.containerId} ${to.index}`);
+  
+      const cloned = cloneTreeWithNewIds(from.node);
+      const updated = insertNodeAtIndex(destState, to.containerId, to.index + 1, cloned);
+      if (updated === destState) return;
+  
+      updatedEditorStates[to.cellId] = updated;
+  
+      updateLibraryEntryRef.current?.(from.containerId);
+    }
+  
+    updateState({
+      states: updatedEditorStates,
+      order,
+      textContents,
+    });
+  
+    if (noteId) {
+      syncNoteCellsWithOrderRef.current(order, updatedEditorStates, textContents);
+    }
+  }, [updateState]); // no dependencies because we use refs
+  
 
   const { undo, redo } = useEditorHistory();
 

@@ -234,32 +234,27 @@ const LibraryEntries: React.FC<LibraryEntriesProps> = ({
   }, [collection, searchTerm, sortOption]);
 
   // All hooks (useCallback) must be called here before any returns
-  const handleDragStart = useCallback(
-    (e: React.DragEvent, entryIndex: number) => {
+  const handleDragStartAtIndex = useCallback(
+    (index: number) => (e: React.DragEvent) => {
       e.stopPropagation();
       setDraggingNode({
         sourceType: "library",
         cellId: activeColl,
-        containerId: filteredEntries[entryIndex].id,
-        index: entryIndex,
-        node: filteredEntries[entryIndex].node,
+        containerId: filteredEntries[index].id,
+        index,
+        node: filteredEntries[index].node,
       });
       setDropTarget(null);
       e.dataTransfer.effectAllowed = "move";
-
-      // Add latex to dataTransfer for external drops (fix for your issue)
-      const latexText = filteredEntries[entryIndex].latex;
-      if (latexText) {
-        e.dataTransfer.setData("text/plain", latexText);
-      } else {
-        e.dataTransfer.setData("text/plain", "");
-      }
+  
+      const latexText = filteredEntries[index].latex || "";
+      e.dataTransfer.setData("text/plain", latexText);
     },
     [activeColl, filteredEntries, setDraggingNode, setDropTarget]
   );
 
-  const handleDragOverEntry = useCallback(
-    (e: React.DragEvent, index: number) => {
+  const handleDragOverEntryAtIndex = useCallback(
+    (index: number) => (e: React.DragEvent) => {
       e.preventDefault();
       e.stopPropagation();
       if (!draggingNode) return;
@@ -272,15 +267,9 @@ const LibraryEntries: React.FC<LibraryEntriesProps> = ({
     },
     [draggingNode, activeColl, setDropTarget]
   );
-
-  const handleDragLeaveEntry = useCallback(() => {
-    if (dropTarget?.cellId === "library") {
-      setDropTarget(null);
-    }
-  }, [dropTarget, setDropTarget]);
-
-  const handleDropOnEntry = useCallback(
-    (e: React.DragEvent, index: number) => {
+  
+  const handleDropOnEntryAtIndex = useCallback(
+    (index: number) => (e: React.DragEvent) => {
       e.preventDefault();
       e.stopPropagation();
       onDrop(e, index);
@@ -289,6 +278,12 @@ const LibraryEntries: React.FC<LibraryEntriesProps> = ({
     },
     [onDrop, setDraggingNode, setDropTarget]
   );
+
+  const handleDragLeaveEntry = useCallback(() => {
+    if (dropTarget?.cellId === "library") {
+      setDropTarget(null);
+    }
+  }, [dropTarget, setDropTarget]);
 
   const handleDragOverListEnd = useCallback(
     (e: React.DragEvent) => {
@@ -339,10 +334,10 @@ const LibraryEntries: React.FC<LibraryEntriesProps> = ({
               : ""
           }`}
           draggable
-          onDragStart={(e) => handleDragStart(e, idx)}
-          onDragOver={(e) => handleDragOverEntry(e, idx)}
+          onDragStart={handleDragStartAtIndex(idx)}
+          onDragOver={handleDragOverEntryAtIndex(idx)}
           onDragLeave={handleDragLeaveEntry}
-          onDrop={(e) => handleDropOnEntry(e, idx)}
+          onDrop={handleDropOnEntryAtIndex(idx)}
           role="listitem"
           tabIndex={0}
         >
@@ -379,4 +374,4 @@ const LibraryEntries: React.FC<LibraryEntriesProps> = ({
   );
 };
 
-export default LibraryEntries;
+export default React.memo(LibraryEntries);

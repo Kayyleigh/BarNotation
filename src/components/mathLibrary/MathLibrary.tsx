@@ -612,6 +612,7 @@ import type { DropSource, DropTarget } from "../layout/EditorWorkspace";
 import { useDragContext } from "../../hooks/useDragContext";
 import { nodeToLatex } from "../../models/nodeToLatex";
 import { parseLatex } from "../../models/latexParser";
+import React from "react";
 
 const STORAGE_KEY = "mathLibraryCollections";
 
@@ -858,6 +859,14 @@ const MathLibrary: React.FC<MathLibraryProps> = ({
   const activeCollection = collections.find(c => c.id === activeColl);
   const placeholderText = `Search ${activeCollection ? activeCollection.name : "Collection"}...`;  
 
+  const memoizedOnDrop = useCallback(
+    (e: React.DragEvent<Element>, dropIndex: number | null) => {
+      e.preventDefault();
+      handleLibraryDrop(e, activeColl, dropIndex);
+    },
+    [handleLibraryDrop, activeColl] // dependencies here
+  );
+
   return (
     <ResizableSidebar
       side="right"
@@ -921,10 +930,7 @@ const MathLibrary: React.FC<MathLibraryProps> = ({
             activeColl={activeColl}
             sortOption={sortOption}
             searchTerm={searchTerm}
-            onDrop={(e: DragEvent<Element>, dropIndex: number | null) => {
-              e.preventDefault();
-              handleLibraryDrop(e, activeColl, dropIndex);
-            }}
+            onDrop={memoizedOnDrop}
           />
         ) : (
           <p>No active collection available.</p>
@@ -951,4 +957,4 @@ const MathLibrary: React.FC<MathLibraryProps> = ({
   );
 };
 
-export default MathLibrary;
+export default React.memo(MathLibrary);
