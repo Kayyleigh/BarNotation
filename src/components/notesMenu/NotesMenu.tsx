@@ -176,4 +176,4 @@ const NotesMenu: React.FC<NotesMenuProps> = ({
   );
 };
 
-export default NotesMenu;
+export default React.memo(NotesMenu);
