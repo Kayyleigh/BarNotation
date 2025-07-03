@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import styles from "./LibCollectionArchiveModal.module.css";
 import type { LibraryCollection } from "../../models/libraryTypes";
 import { MathView } from "../mathExpression/MathView";
+import SearchBar from "../common/SearchBar";
 
 interface Props {
   archived: LibraryCollection[];
@@ -10,8 +11,14 @@ interface Props {
   onDelete: (id: string) => void;
 }
 
-const LibCollectionArchiveModal: React.FC<Props> = ({ archived, onClose, onUnarchive, onDelete }) => {
+const LibCollectionArchiveModal: React.FC<Props> = ({
+  archived,
+  onClose,
+  onUnarchive,
+  onDelete,
+}) => {
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -27,39 +34,57 @@ const LibCollectionArchiveModal: React.FC<Props> = ({ archived, onClose, onUnarc
 
     window.addEventListener("keydown", handleEsc);
     document.addEventListener("mouseup", handleClickOutside);
-    
+
     return () => {
       window.removeEventListener("keydown", handleEsc);
       document.removeEventListener("mouseup", handleClickOutside);
     };
   }, [onClose]);
 
+  const filtered = archived.filter((col) =>
+    col.name.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
     <div className={styles.overlay}>
       <div className={styles.modal} ref={contentRef}>
         <h2>Archived Collections</h2>
 
-        {archived.length === 0 ? (
-          <p className={styles.empty}>No archived collections.</p>
+        <SearchBar
+          value={search}
+          onChange={setSearch}
+          placeholder="Search archived collections..."
+          tooltip="Search by collection name"
+          className={styles.searchBar}
+        />
+
+        {filtered.length === 0 ? (
+          <p className={styles.empty}>No matching collections.</p>
         ) : (
           <ul className={styles.list}>
-            {archived.map((col) => (
+            {filtered.map((col) => (
               <li key={col.id} className={styles.item}>
                 <div className={styles.header}>
                   <div>
                     <strong>{col.name}</strong>
-                    <div className={styles.meta}>{col.entries.length} entr{col.entries.length === 1 ? "y" : "ies"}</div>
+                    <div className={styles.meta}>
+                      {col.entries.length} entr{col.entries.length === 1 ? "y" : "ies"}
+                    </div>
                   </div>
                   <div className={styles.actions}>
-                    <button onClick={() => setExpandedId(expandedId === col.id ? null : col.id)}>
+                    <button
+                      onClick={() => setExpandedId(expandedId === col.id ? null : col.id)}
+                    >
                       {expandedId === col.id ? "Hide" : "Preview"}
                     </button>
                     <button onClick={() => onUnarchive(col.id)}>Restore</button>
-                    <button onClick={() => {
-                      if (confirm(`Delete "${col.name}" permanently?`)) {
-                        onDelete(col.id);
-                      }
-                    }}>
+                    <button
+                      onClick={() => {
+                        if (confirm(`Delete "${col.name}" permanently?`)) {
+                          onDelete(col.id);
+                        }
+                      }}
+                    >
                       🗑️
                     </button>
                   </div>
@@ -71,7 +96,7 @@ const LibCollectionArchiveModal: React.FC<Props> = ({ archived, onClose, onUnarc
                       <p className={styles.emptyPreview}>No entries.</p>
                     ) : (
                       <div className={styles.previewEntries}>
-                        {col.entries.map(e => (
+                        {col.entries.map((e) => (
                           <div key={e.id} className={styles.previewEntry}>
                             <MathView node={e.node} />
                           </div>

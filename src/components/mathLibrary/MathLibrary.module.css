@@ -1,3 +1,7 @@
+.libraryContainer {
+  height: 100%;
+}
+
 .tabRow {
   display: flex;
   overflow-x: auto;
