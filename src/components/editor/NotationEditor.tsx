@@ -12,8 +12,9 @@ import clsx from "clsx";
 
 import type { CellData, NoteMetadata } from "../../models/noteTypes";
 import type { EditorState } from "../../logic/editor-state";
-import type { MathNode } from "../../models/types";
 import { nodeToLatex } from "../../models/nodeToLatex";
+import type { DropTarget } from "../layout/EditorWorkspace";
+import type { DragSource } from "../../hooks/DragContext";
 
 interface NotationEditorProps {
   isPreviewMode: boolean;
@@ -48,18 +49,8 @@ interface NotationEditorProps {
 
   /** Drag-and-drop math node handler */
   onDropNode: (
-    from: {
-      sourceType: "cell" | "library";
-      cellId?: string;
-      containerId: string;
-      index: number;
-      node: MathNode;
-    },
-    to: {
-      cellId: string;
-      containerId: string;
-      index: number;
-    }
+    from: DragSource,
+    to: DropTarget,
   ) => void;
 }
 

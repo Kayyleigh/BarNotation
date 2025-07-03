@@ -4,7 +4,6 @@ import { setCursor } from "../../logic/editor-state";
 import { handleKeyDown } from "../../logic/handle-keydown";
 import { MathRenderer } from "./MathRenderer";
 import LatexViewer from "./LatexViewer";
-import { useHoverState } from "../../hooks/useHoverState";
 import { useZoom } from "../../hooks/useZoom";
 import {
   insertNodeAtCursor,
@@ -14,10 +13,13 @@ import {
 import { parseLatex } from "../../models/latexParser";
 import { nodeToLatex } from "../../models/nodeToLatex";
 import { findNodeById } from "../../utils/treeUtils";
-import type { MathNode } from "../../models/types";
 import type { EditorState } from "../../logic/editor-state";
 import { useDragContext } from "../../hooks/useDragContext";
 import type { CursorPosition } from "../../logic/cursor";
+import type { DropTarget } from "../layout/EditorWorkspace";
+import type { DragSource } from "../../hooks/DragContext";
+import type { TextStyle } from "../../models/types";
+import { useHover } from "../../hooks/useHover";
 
 interface MathEditorProps {
   resetZoomSignal: number;
@@ -27,18 +29,8 @@ interface MathEditorProps {
   editorState: EditorState;
   updateEditorState: (newState: EditorState) => void;
   onDropNode: (
-    from: {
-      sourceType: "cell" | "library";
-      cellId?: string;
-      containerId: string;
-      index: number;
-      node: MathNode;
-    },
-    to: {
-      cellId: string;
-      containerId: string;
-      index: number;
-    }
+    from: DragSource,
+    to: DropTarget,
   ) => void;
   onHoverInfoChange?: (info: { hoveredType: string; zoomLevel: number }) => void;
 }
@@ -55,18 +47,39 @@ const MathEditor: React.FC<MathEditorProps> = ({
 }) => {
   // console.log("Rendering MathEditor", cellId);
 
+  const { hoverPath, setHoverPath } = useHover();
+
   const editorRef = useRef<HTMLDivElement>(null);
   const zoomLevel = useZoom(editorRef, resetZoomSignal, defaultZoom);
 
   const [isActive, setIsActive] = useState(false);
-  const { hoveredNodeId, setHoveredNodeId } = useHoverState();
 
   const { draggingNode, dropTarget, setDropTarget } = useDragContext();
 
-  const hoveredNode = hoveredNodeId
-    ? findNodeById(editorState.rootNode, hoveredNodeId)
+  const hoveredNode = hoverPath[hoverPath.length - 1]
+    ? findNodeById(editorState.rootNode, hoverPath[hoverPath.length - 1])
     : null;
   const hoveredType = hoveredNode?.type ?? "";
+
+  useEffect(() => {
+    const node = editorRef.current;
+    if (!node) {
+      setHoverPath([])
+      return;
+    }
+  
+    const handleMouseLeave = (e: MouseEvent) => {
+      const related = e.relatedTarget as Node | null;
+      if (!related || !node.contains(related)) {
+        setHoverPath([]); // ← Clear hover when mouse leaves the entire editor
+      }
+    };
+  
+    node.addEventListener("mouseleave", handleMouseLeave);
+    return () => {
+      node.removeEventListener("mouseleave", handleMouseLeave);
+    };
+  }, [setHoverPath]);
 
   useEffect(() => {
     if (onHoverInfoChange) {
@@ -126,6 +139,21 @@ const MathEditor: React.FC<MathEditorProps> = ({
       ? editorState.rootNode.child.id
       : "unknown-container";
 
+  const handleDropNode = React.useCallback((from: DragSource, to: DropTarget) => {
+    // Redirect drop target if needed
+    if (to.containerId === editorState.rootNode.id) {
+      const child = editorState.rootNode.child;
+      to = { ...to, containerId: child.id, index: 0 };
+    }
+    onDropNode(from, to);
+  }, [editorState.rootNode, onDropNode]);
+
+  const defaultInheritedStyle: TextStyle = React.useMemo(() => ({
+    fontStyling: { fontStyle: "normal", fontStyleAlias: "" },
+  }), []);
+
+  const emptyAncestorIds = React.useMemo(() => [], []);
+
   return (
     <div>
       <div
@@ -136,6 +164,7 @@ const MathEditor: React.FC<MathEditorProps> = ({
         onCopy={onCopy}
         onCut={onCut}
         onPaste={onPaste}
+        onMouseLeave={() => setHoverPath([])} 
         onFocus={() => setIsActive(true)}
         onBlur={(e) => {
           if (!e.currentTarget.contains(e.relatedTarget as Node)) {
@@ -167,24 +196,15 @@ const MathEditor: React.FC<MathEditorProps> = ({
             cellId={cellId}
             node={editorState.rootNode}
             cursor={editorState.cursor}
-            hoveredId={hoveredNodeId}
             containerId="root"
             index={0}
-            onHoverChange={setHoveredNodeId}
+            hoverPath={hoverPath}
+            setHoverPath={setHoverPath}
+            inheritedStyle={defaultInheritedStyle}
             onCursorChange={onCursorChange}
             isActive={isActive}
-            ancestorIds={[]}
-            onDropNode={(from, to) => {
-              // Check if dropping onto root-wrapper container
-              if (to.containerId === editorState.rootNode.id) {
-                // Find the inline-container child (assuming first child)
-                const child = editorState.rootNode.child;
-                // Redirect the drop target to the inline-container child with index 0
-                to = { ...to, containerId: child.id, index: 0 };
-                
-              }
-              onDropNode(from, to); // call original onDropNode with redirected target
-            }}
+            ancestorIds={emptyAncestorIds}
+            onDropNode={handleDropNode}
           />
         </div>
       </div>

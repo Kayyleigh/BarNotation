@@ -21,9 +21,9 @@ export const MathView: React.FC<MathViewProps> = ({ node, className }) => {
         index={0}
         isActive={false}
         cursor={dummyCursorPosition}
-        hoveredId={undefined}
+        hoverPath={[]}
         onCursorChange={noop}
-        onHoverChange={noop}
+        setHoverPath={noop}
         onDropNode={noop}
         ancestorIds={[]}
         inheritedStyle={{

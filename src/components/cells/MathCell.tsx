@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import MathEditor from "../mathExpression/MathEditor";
-import type { MathNode } from "../../models/types";
 import type { EditorState } from "../../logic/editor-state";
+import type { DropTarget } from "../layout/EditorWorkspace";
+import type { DragSource } from "../../hooks/DragContext";
+import { HoverProvider } from "../../hooks/HoverProvider";
 
 type MathCellProps = {
   resetZoomSignal: number;
@@ -12,18 +14,8 @@ type MathCellProps = {
   editorState: EditorState;
   updateEditorState: (newState: EditorState) => void;
   onDropNode: (
-    from: {
-      sourceType: "cell" | "library";
-      cellId?: string;
-      containerId: string;
-      index: number;
-      node: MathNode;
-    },
-    to: {
-      cellId: string;
-      containerId: string;
-      index: number;
-    }
+    from: DragSource,
+    to: DropTarget,
   ) => void;
 };
 
@@ -52,16 +44,18 @@ const MathCell: React.FC<MathCellProps> = ({
   return (
     <div className="math-cell">
       <div className="math-editor-scroll-container" style={style}>
-        <MathEditor
-          resetZoomSignal={resetZoomSignal}
-          defaultZoom={defaultZoom}
-          showLatex={showLatex}
-          cellId={cellId}
-          editorState={editorState}
-          updateEditorState={updateEditorState}
-          onDropNode={onDropNode}
-          onHoverInfoChange={setHoverInfo}
-        />
+        <HoverProvider>
+          <MathEditor
+            resetZoomSignal={resetZoomSignal}
+            defaultZoom={defaultZoom}
+            showLatex={showLatex}
+            cellId={cellId}
+            editorState={editorState}
+            updateEditorState={updateEditorState}
+            onDropNode={onDropNode}
+            onHoverInfoChange={setHoverInfo}
+          />
+        </HoverProvider>
       </div>
       {hoverInfo.hoveredType && !isPreviewMode && (
         <div className="hover-type-info">

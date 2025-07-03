@@ -1,58 +1,62 @@
 let hoverClearTimeout: number | null = null;
 
-/**
- * Called on mouse enter over a node. Clears any pending hover reset and sets the hovered ID.
- */
 export function handleMouseEnter(
-  nodeId: string,
-  onHoverChange: (id?: string) => void
+  fullPath: string[],
+  onHoverChange: (path: string[]) => void
 ) {
   if (hoverClearTimeout !== null) {
     clearTimeout(hoverClearTimeout);
     hoverClearTimeout = null;
   }
-  onHoverChange(nodeId);
+  onHoverChange(fullPath);
 }
 
-/**
- * Called on mouse leave from a node wrapper. Checks if related target is still inside the same node or an ancestor.
- * If not, schedules hover clear.
- */
 export function handleMouseLeave(
   e: React.MouseEvent,
-  // nodeId: string,
   ancestorIds: string[] = [],
-  onHoverChange: (id?: string) => void
+  onHoverChange: (path: string[]) => void
 ) {
+  if (ancestorIds.length === 0) return;
+
   const related = e.relatedTarget as HTMLElement | null;
 
-  // Ignore if mouse is still within the current element
+  // Still inside this node, do nothing
   if (related && related instanceof Node && e.currentTarget.contains(related)) {
     return;
   }
 
-  // Check if the related target is inside any ancestor node
+  // Check if mouse moved into an ancestor node
   for (const ancestorId of ancestorIds) {
-    const ancestorElem = document.querySelector(`[data-nodeid="${ancestorId}"]`);
-    if (ancestorElem && related instanceof Node && ancestorElem.contains(related)) {
-      onHoverChange(ancestorId);
+    const ancestorElem = document.querySelector(`[data-nodeid="${ancestorId}"]`) as HTMLElement | null;
+    if (
+      ancestorElem &&
+      related instanceof Node &&
+      ancestorElem.contains(related)
+    ) {
+      // Trim hover path up to this ancestor
+      const ancestorIndex = ancestorIds.indexOf(ancestorId);
+      if (ancestorIndex !== -1) {
+        const newPath = ancestorIds.slice(0, Math.max(ancestorIndex, 0));
+        onHoverChange(newPath);
+      } 
       return;
     }
   }
 
-  // Otherwise, clear hover after a short delay (next tick)
+  // If none of the ancestors match and we are not inside the node anymore, clear hover
   hoverClearTimeout = window.setTimeout(() => {
-    onHoverChange(undefined);
+    onHoverChange([]); // Clear hover path
     hoverClearTimeout = null;
   }, 0);
 }
+
 
 /**
  * Utility to determine if a node is considered hovered.
  */
 export function getIsHovered(
   node: { id: string },
-  hoveredId?: string
+  hoverPath: string[]
 ): boolean {
-  return hoveredId === node.id;
+  return hoverPath[hoverPath.length - 1] === node.id;
 }
