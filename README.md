@@ -115,12 +115,12 @@ Wildly different courses this semester, but expect similar ones in the future? A
 </p>
 
 #### 🧭 View and Restore Archived Collections  
-Searchable (//TODO), previewable, and manageable. Even if you named a dozen of them "My Collection".
+Searchable, previewable, and manageable. Even if you named a dozen of them "My Collection".
 
 <p align="center">
-  <img src="readme-images/cursor-screenshot-find-collection-archive.png" alt="Accessing collection archive" width="320"/>
+  <img src="readme-images/screenshot-find-collections-archive.png" alt="Accessing collection archive" width="320"/>
   &nbsp;&nbsp;&nbsp;
-  <img src="readme-images/cursor-screenshot-collection-archive-modal.png" alt="Archive modal for restoring and previewing collections" width="320"/>
+  <img src="readme-images/screenshot-collections-archive.png" alt="Archive modal for restoring and previewing collections" width="320"/>
 </p>
 
 <p align="center"><i>Browse and restore from the archive (with previews!)</i></p>
