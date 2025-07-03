@@ -6,9 +6,15 @@
 
 
 # BarNotation
+
 BarNotation is a real-time math note-taking app designed especially for students with hand pain in fast-paced lecture settings where writing detailed mathematical notation by hand can be painful and inefficient. An app like this is necessary because existing solutions (as far as I have found) do not allow complex structures such as actuarial symbols, nor do they provide easily customizable solutions to re-using sub-expressions. 
 
 BarNotation enables users to build their notes as a sequence of "cells", either *Text* or *Math*, with intuitive keyboard entry, structural transformations, and drag-and-drop support for editing, reordering, and organizing notes and math expressions.
+
+<p align="center">
+  <img src="readme-images/screenshot-random-use.png" alt="Random usage screenshot of the editor" width="700"/>
+</p>
+<p align="center"><em>See the [Screenshots](#-screenshots) section for a visual walkthrough!</em></p>
 
 ---
 

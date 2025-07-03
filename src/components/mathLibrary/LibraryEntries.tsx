@@ -172,6 +172,7 @@ import type { LibraryCollection } from "../../models/libraryTypes";
 import styles from "./MathLibrary.module.css";
 import type { SortOption } from "./MathLibrary";
 import { MathView } from "../mathExpression/MathView";
+import Tooltip from "../tooltips/Tooltip";
 
 interface LibraryEntriesProps {
   collections: LibraryCollection[];
@@ -341,7 +342,9 @@ const LibraryEntries: React.FC<LibraryEntriesProps> = ({
           role="listitem"
           tabIndex={0}
         >
-          <MathView node={entry.node} />
+          <Tooltip text={entry.latex}>
+            <MathView node={entry.node} />
+          </Tooltip>
           <button
             className={styles.entryDeleteButton}
             title="Delete entry"

@@ -907,6 +907,7 @@ const MathLibrary: React.FC<MathLibraryProps> = ({
             value={searchTerm}
             onChange={setSearchTerm}
             className={styles.librarySearch}
+            tooltip="Search on LaTeX substring"
           />
           <select
             value={sortOption}

@@ -98,7 +98,7 @@ const NotesMenu: React.FC<NotesMenuProps> = ({
               🗂️ Archived
             </button>
           </Tooltip>
-          <SearchBar placeholder="Search notes..." value={searchTerm} onChange={(e) => setSearchTerm(e)} tooltip="Search notes by title." />
+          <SearchBar placeholder="Search notes..." value={searchTerm} onChange={(e) => setSearchTerm(e)} tooltip="Search notes by title" />
         </div>
         <div className={styles.notesSectionHeader}>
           <div className={styles.notesSectionLabel}>Notes</div>
