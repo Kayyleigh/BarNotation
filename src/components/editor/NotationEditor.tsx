@@ -1,5 +1,5 @@
 // components/editor/NotationEditor.tsx
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useCallback, useMemo } from "react";
 import InsertCellButtons from "../cells/InsertCellButtons";
 import BaseCell from "../cells/BaseCell";
 import TextCell from "../cells/TextCell";
@@ -95,6 +95,8 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
   setMetadata,
   onDropNode,
 }) => {
+  // console.log("Rendering NotationEditor", noteId);
+
   const [selectedCellId, setSelectedCellId] = useState<string | null>(null);
   const [hoveredInsertIndex, setHoveredInsertIndex] = useState<number | null>(null);
 
@@ -118,7 +120,10 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
   //rn there is just no cells at all in actual global. Duplicate does say 3 cells but it does not show em 
 
   /** Derived cells list from current state */
-  const cells = reconstructCells(order, editorStates, textContents);
+  const cells = useMemo(() => {
+    return reconstructCells(order, editorStates, textContents);
+  }, [order, editorStates, textContents]);
+  
 
   /** Updates local text cell content */
   const updateCellContent = (id: string, newContent: string) => {
@@ -164,6 +169,24 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
     window.addEventListener("pointermove", handlePointerMove);
     window.addEventListener("pointerup", handlePointerUp);
   };
+
+  const updateEditorState = useCallback(
+    (id: string, newState: EditorState) => {
+      setEditorStates((prev) => ({
+        ...prev,
+        [id]: newState,
+      }));
+    },
+    [setEditorStates]
+  );
+
+  const memoizedUpdateEditorStateFns = useMemo(() => {
+    const fns: Record<string, (newState: EditorState) => void> = {};
+    order.forEach((id) => {
+      fns[id] = (newState: EditorState) => updateEditorState(id, newState);
+    });
+    return fns;
+  }, [order, updateEditorState]);
 
   return (
     <main
@@ -254,12 +277,7 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
                       resetZoomSignal={resetZoomSignal}
                       showLatex={showLatexMap[cell.id] ?? false}
                       editorState={editorStates[cell.id]}
-                      updateEditorState={(newState) =>
-                        setEditorStates((prev) => ({
-                          ...prev,
-                          [cell.id]: newState,
-                        }))
-                      }
+                      updateEditorState={memoizedUpdateEditorStateFns[cell.id]}
                       onDropNode={onDropNode}
                     />
                   )}
@@ -288,4 +306,4 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
   );
 };
 
-export default NotationEditor;
+export default React.memo(NotationEditor);

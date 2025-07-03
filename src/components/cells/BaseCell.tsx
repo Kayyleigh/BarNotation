@@ -67,4 +67,4 @@ const BaseCell: React.FC<BaseCellProps> = ({
   );  
 };
 
-export default BaseCell;
+export default React.memo(BaseCell);

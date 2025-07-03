@@ -12,6 +12,50 @@ BarNotation enables users to build their notes as a sequence of "cells", either 
 
 ---
 
+<!-- <details> -->
+  <summary>
+    <strong>❗❗❗ ⚠️ WARNING: THIS APP IS NOT PRODUCTION READY! PLEASE READ BEFORE USING! ⚠️ ❗❗❗</strong>
+  </summary>
+  <p>Thank you for your interest in this app! Please note that it is still under development and not yet fully polished. Here are some important issues to keep in mind:</p>
+  
+ 
+  #### 🧠 Development Context
+  - I'm developing this on a **laptop from over 5 years ago**, with a **6-bit color display**. Sometimes colors look very wrong. (e.g., I’ve presented calm orange slides in presentations that came out *neon red* 😬).
+  - **No idea what the BarNotation looks like** on a real monitor. It might be beautiful... or painful.
+  - My CPU is a **dual-core i3**, which is below modern standards. If your device is newer, the app may run better — but I can't promise anything.
+  #### 🦥🐌🐢 Performance Warning
+  - The app becomes **extremely laggy** after moderate use:
+    - ~10 math cells + ~100 library entries + 3 notes  
+    - → Typing can delay by **15 seconds** when slamming the keyboard.  
+    - → Normal input has **2–3 second lag**.  
+
+  #### 🔁 Limitations & Bugs
+  - **Undo/redo only works in the math editor.**  
+    - Library actions (like delete) have no undo. You’ll need to manually re-enter or delete things.
+  - **No bulk actions** for library entries (copy, delete, move).
+  - **Export/import not implemented yet.**
+  - **Poor error handling** in some places, especially deletions. Some deletions = **instant & permanent**. No warning. No undo. Bye-bye.
+  - Only tested on **Chrome** (a bit on **Edge**).  
+    - Unpredictable behavior on other browsers.
+  - I’ve **not tested screen resolutions or DPI scaling** differences. CSS might fall apart on anything unfamiliar.
+  - Dragging math elements is still buggy:
+    - Sometimes nodes **duplicate** or **disappear**.
+    - Especially bad when dragging into a **multi-digit node** or **command-input node**: guaranteed deletion.
+
+  #### 🗃 Storage & Data
+  - I am a professionally trained computer scientist who has extensively studied how to make proper design choices for databases, among other things. I have therefore chosen for procrastination. Everything uses **Chrome's `localStorage`** right now, but I swear I'll fix it when I am confident and ready to make the proper solution it deserves.
+  
+  #### 🧪 Testing Status
+  - The only thing that has been consistently tested is my patience.
+
+  <p>If you do not have experience with git, I recommend waiting for a more stable version (hopefully still in the summer of 2025). Your patience is appreciated!</p>
+
+</details>
+
+
+
+---
+
 ## ✨ Features
 
 - **Cell-based note-taking**: Compose your notes as a series of *Math* and *Text* cells, inspired by the feel of a [Jupyter notebook](https://jupyter.org/).

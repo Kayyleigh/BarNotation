@@ -74,7 +74,13 @@ const updateState = useCallback((newSnapshot: EditorSnapshot) => {
           if (!prevEditor || !newEditor) return true;
   
           // Only compare rootNode, ignore cursor
-          return JSON.stringify(prevEditor.rootNode) !== JSON.stringify(newEditor.rootNode);
+          // console.warn(`${JSON.stringify(prevEditor.rootNode)}`)
+          // console.warn(`${JSON.stringify(newEditor.rootNode)}`)
+
+          // console.warn(`SAME?? ${prevEditor.rootNode === newEditor.rootNode}`)
+          // return JSON.stringify(prevEditor.rootNode) !== JSON.stringify(newEditor.rootNode);
+          return prevEditor.rootNode !== newEditor.rootNode;
+
         });
   
       if (!didStructureChange) {

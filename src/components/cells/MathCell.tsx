@@ -72,4 +72,4 @@ const MathCell: React.FC<MathCellProps> = ({
   );
 };
 
-export default MathCell;
+export default React.memo(MathCell);

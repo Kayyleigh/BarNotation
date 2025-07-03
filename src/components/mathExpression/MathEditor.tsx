@@ -1,5 +1,5 @@
 //components/mathExpression/MathEditor.tsx
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { setCursor } from "../../logic/editor-state";
 import { handleKeyDown } from "../../logic/handle-keydown";
 import { MathRenderer } from "./MathRenderer";
@@ -17,6 +17,7 @@ import { findNodeById } from "../../utils/treeUtils";
 import type { MathNode } from "../../models/types";
 import type { EditorState } from "../../logic/editor-state";
 import { useDragContext } from "../../hooks/useDragContext";
+import type { CursorPosition } from "../../logic/cursor";
 
 interface MathEditorProps {
   resetZoomSignal: number;
@@ -52,6 +53,8 @@ const MathEditor: React.FC<MathEditorProps> = ({
   onDropNode,
   onHoverInfoChange,
 }) => {
+  // console.log("Rendering MathEditor", cellId);
+
   const editorRef = useRef<HTMLDivElement>(null);
   const zoomLevel = useZoom(editorRef, resetZoomSignal, defaultZoom);
 
@@ -75,6 +78,15 @@ const MathEditor: React.FC<MathEditorProps> = ({
     const updated = handleKeyDown(e, editorState);
     if (updated) updateEditorState(updated);
   };
+
+  const onCursorChange = useCallback(
+    (cursor: CursorPosition) => {
+      console.log(`In onCursorChange`)
+      if (cursor === editorState.cursor) return;
+      updateEditorState(setCursor(editorState, cursor));
+    },
+    [editorState, updateEditorState]
+  );
 
   const onCopy = (e: React.ClipboardEvent) => {
     const selectedNode = getSelectedNode(editorState);
@@ -159,7 +171,7 @@ const MathEditor: React.FC<MathEditorProps> = ({
             containerId="root"
             index={0}
             onHoverChange={setHoveredNodeId}
-            onCursorChange={(cursor) => updateEditorState(setCursor(editorState, cursor))}
+            onCursorChange={onCursorChange}
             isActive={isActive}
             ancestorIds={[]}
             onDropNode={(from, to) => {
@@ -175,17 +187,10 @@ const MathEditor: React.FC<MathEditorProps> = ({
             }}
           />
         </div>
-
-        {/* {hoveredType && (
-          <div className="hover-type-info">
-            {hoveredType} • {Math.round(zoomLevel * 100)}%
-          </div>
-        )} */}
       </div>
-
       <LatexViewer rootNode={editorState.rootNode} showLatex={showLatex} />
     </div>
   );
 };
 
-export default MathEditor;
+export default React.memo(MathEditor); //TODO should be memo or no?

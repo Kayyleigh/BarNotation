@@ -8,6 +8,8 @@ interface InsertCellButtonsProps {
 }
 
 const InsertCellButtons: React.FC<InsertCellButtonsProps> = ({ onInsert, isVisible }) => {
+  // console.log("Rendering InsertCellButtons", isVisible);
+
   return (
     <div className={clsx("add-buttons insert-between", { visible: isVisible })}>
       <Tooltip text="Add math cell">
@@ -24,4 +26,4 @@ const InsertCellButtons: React.FC<InsertCellButtonsProps> = ({ onInsert, isVisib
   );
 };
 
-export default InsertCellButtons;
+export default React.memo(InsertCellButtons);

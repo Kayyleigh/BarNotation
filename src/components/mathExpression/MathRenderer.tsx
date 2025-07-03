@@ -184,6 +184,7 @@ import {
   renderNthRootNode,
 } from "./MathRenderers";
 import type { CursorPosition } from "../../logic/cursor";
+import { nodeToLatex } from "../../models/nodeToLatex";
 
 export type MathRendererProps = {
   node: MathNode;
@@ -352,6 +353,7 @@ export const MathRenderer: React.FC<MathRendererProps> = ({
       content = renderStyledNode(node, props);
       break;
     case "root-wrapper":
+      // console.log(`Here we go, a root! ${nodeToLatex(node)}`)
       content = renderRootWrapperNode(node, props);
       break;
     default:

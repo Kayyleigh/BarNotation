@@ -39,4 +39,4 @@ const TextCell: React.FC<TextCellProps> = ({
   );
 };
 
-export default TextCell;
+export default React.memo(TextCell);

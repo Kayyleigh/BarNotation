@@ -4,24 +4,10 @@ import EditorHeaderBar from "./EditorHeaderBar";
 import NotationEditor from "./NotationEditor";
 import styles from "./Editor.module.css";
 import type { NoteMetadata } from "../../models/noteTypes";
-import type { MathNode } from "../../models/types";
 import { useEditorHistory } from "../../hooks/EditorHistoryContext";
 import { createRootWrapper } from "../../models/nodeFactories";
 import { createEditorState, type EditorState } from "../../logic/editor-state";
-
-type DropSource = {
-  sourceType: "cell" | "library";
-  cellId?: string;
-  containerId: string;
-  index: number;
-  node: MathNode;
-};
-
-type DropTarget = {
-  cellId: string;
-  containerId: string;
-  index: number;
-};
+import type { DropSource, DropTarget } from "../layout/EditorWorkspace";
 
 interface EditorPaneProps {
   noteId: string | null;

@@ -20,7 +20,7 @@ interface EditorWorkspaceProps {
   setNoteCells: (noteId: string, newCells: CellData[]) => void;
 }
 
-type DropSource = {
+export type DropSource = {
   sourceType: "cell" | "library";
   cellId?: string;
   containerId: string;
@@ -28,7 +28,7 @@ type DropSource = {
   node: MathNode;
 };
 
-type DropTarget = {
+export type DropTarget = {
   cellId: string;
   containerId: string;
   index: number;
@@ -46,12 +46,22 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({
   const { history, updateState } = useEditorHistory();
   const { states: editorStates, order, textContents } = history.present;
 
-  const addEntryToLibraryRef = useRef<(entry: LibraryEntry) => void>(() => {});
+  const onDropEntryToLibraryCollection = (entry: LibraryEntry, collectionId: string) => {
+    const updatedEntry = { ...entry, addedAt: Date.now() };
+    console.warn("Dropping entry into collection:", collectionId, updatedEntry);
+    // DOES NOT ACTUALLY DO ANYTHING RIGHT NOW??
+  };
+
   const updateLibraryEntryRef = useRef<(id: string) => void>(() => {});
 
+  // REMOVED:   const addEntryToLibraryRef = useRef<(entry: LibraryEntry) => void>(() => {});
   const syncNoteCellsWithOrder = useCallback(
     (order: string[], states: typeof editorStates, textContentsParam: typeof textContents) => {
       const newCells: CellData[] = order.map((id) => {
+        console.log(`const newCells in syncnotecellswithorder in editorworkspace`)
+        // This is not the main issue. Only happens when dropping into cell
+
+
         if (states[id]) {
           return {
             id,
@@ -94,7 +104,7 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({
     (from: DropSource, to: DropTarget) => {
       const sourceState = from.cellId ? editorStates[from.cellId] : null;
 
-      // Drop from editor to library
+      // Drop from editor to library <---- HERE IS SOME LIBRARY STUFF
       if (to.cellId === "library" && from.sourceType === "cell") {
         console.log(`Cloning ${nodeToLatex(from.node)} to ${to.containerId}`)
         const cloned = cloneTreeWithNewIds(from.node);
@@ -105,7 +115,9 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({
           draggedCount: 0,
           latex: nodeToLatex(cloned),
         };
-        addEntryToLibraryRef.current?.(newEntry);
+        // set data to latex plain text??/
+        // used to be `addEntryToLibraryRef.current?.(newEntry);`
+        onDropEntryToLibraryCollection(newEntry, to.containerId);
         return;
       }
 
@@ -147,6 +159,8 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({
       }
       // From library to editor
       else if (from.sourceType === "library") {
+        console.log(`Cloning from library ${nodeToLatex(from.node)} to ${to.cellId} ${to.containerId} ${to.index}`)
+
         const cloned = cloneTreeWithNewIds(from.node);
         const updated = insertNodeAtIndex(destState, to.containerId, to.index + 1, cloned);
         const dropFailed = updated === destState;
@@ -212,7 +226,6 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({
           width={rightWidth}
           onWidthChange={setRightWidth}
           onDropNode={onDropNode}
-          addEntryRef={addEntryToLibraryRef}
           updateEntryRef={updateLibraryEntryRef}
         />
       </div>

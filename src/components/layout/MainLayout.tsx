@@ -164,12 +164,24 @@ const MainLayout: React.FC = () => {
     );
   };
 
-  // Handler to update cells of a note:
+  // // Handler to update cells of a note:
+  // const updateNoteCells = (noteId: string, newCells: CellData[]) => {
+  //   setNotes((prevNotes) =>
+  //     prevNotes.map(note =>
+  //       note.id === noteId ? { ...note, cells: newCells } : note
+  //     )
+  //   );
+  // };
   const updateNoteCells = (noteId: string, newCells: CellData[]) => {
     setNotes((prevNotes) =>
-      prevNotes.map(note =>
-        note.id === noteId ? { ...note, cells: newCells } : note
-      )
+      prevNotes.map(note => {
+        if (note.id !== noteId) return note;
+  
+        // 🔍 Avoid updating unless something actually changed
+        if (note.cells === newCells) return note;
+  
+        return { ...note, cells: newCells };
+      })
     );
   };
 
