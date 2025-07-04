@@ -11,7 +11,7 @@ type MathViewProps = {
   className?: string;
 };
 
-export const MathView: React.FC<MathViewProps> = ({ node, className }) => {
+const MathView: React.FC<MathViewProps> = ({ node, className }) => {
   return (
     <div className={className} style={{ pointerEvents: "none" }}>
       <MathRenderer
@@ -33,3 +33,5 @@ export const MathView: React.FC<MathViewProps> = ({ node, className }) => {
     </div>
   );
 };
+
+export default React.memo(MathView);

@@ -22,7 +22,8 @@ type Props = {
   ancestorIds: string[];
 };
 
-export const DummyStartNodeRenderer: React.FC<Props> = ({
+// STILL RE-RENDERING FOR NO REASON //TODO fix
+const DummyStartNodeRenderer: React.FC<Props> = ({
   containerId,
   cellId,
   hoverPath,
@@ -48,16 +49,6 @@ export const DummyStartNodeRenderer: React.FC<Props> = ({
           e.stopPropagation();
           onCursorChange({ containerId, index: 0 });
         }}
-        // onMouseEnter={() => setHoverPath(ancestorIds)}
-        // onMouseLeave={(e) => {
-        //   const related = e.relatedTarget as HTMLElement;
-        //   const isInsideAncestor = ancestorIds.some((id) =>
-        //     related?.closest?.(`[data-nodeid="${id}"]`)
-        //   );
-        //   if (!isInsideAncestor) {
-        //     setHoverPath([]);
-        //   }
-        // }}
         onMouseEnter={() => handleMouseEnter([...ancestorIds], setHoverPath)}
         onMouseLeave={(e) =>
           handleMouseLeave(e, ancestorIds, setHoverPath)
@@ -80,3 +71,5 @@ export const DummyStartNodeRenderer: React.FC<Props> = ({
     </span>
   );
 };
+
+export default React.memo(DummyStartNodeRenderer);

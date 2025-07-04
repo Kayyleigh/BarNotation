@@ -231,16 +231,6 @@
   font-style: italic;
 }
 
-.sortDropdown {
-  padding: 4px 8px;
-  border-radius: 4px;
-  border: 1px solid var(--border-color);
-  background: var(--button-bg);
-  color: var(--math-text-color);
-  /* cursor: pointer; */
-  font-size: 14px;
-}
-
 .meta {
   visibility: var(--lib-entry-meta-visibility);
   font-size: 12px;

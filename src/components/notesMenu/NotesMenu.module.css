@@ -63,16 +63,7 @@
     color: var(--math-text-color);
     outline: none;
   }
-  
-  /* .notesSectionLabel {
-    font-size: 1rem;
-    font-weight: 500;
-    color: var(--math-subtle-text-color);
-    padding-top: 4px;
-    opacity: 0.6;
-    margin-bottom: -4px;
-  } */
-  
+ 
   .notesList {
     list-style: none;
     padding: 0.5em 0em 2em 0.5em;

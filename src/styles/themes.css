@@ -103,6 +103,7 @@
     /* Main app buttons etc */
     --button-bg: #eee;
     --button-color: #333;
+    --button-color-hover: #aaa;
 
     /* Zoom panel */
     --panel-bg: var(--background-color);
@@ -137,6 +138,17 @@
     /* Notes menu */
     --notes-menu-selected-note-entry-bg: var(--logo-color-1);
     --notes-menu-hovered-note-entry-bg: #c586c060;
+
+    /* Modal-specific (Light Mode) */
+    --modal-text-secondary: #555555;     /* Slightly muted, readable */
+    --modal-text-tertiary: #888888;      /* Lighter tertiary hint text */
+
+    --modal-border-muted: #dddddd;       /* Light separators */
+    --modal-border-dark: #2e2e2e;        /* For preview box contrast */
+
+    --modal-bg: var(--math-editor-bg);   /* Reuse clean editor white */
+    --modal-button-bg: var(--button-bg); 
+    --modal-button-hover-bg: #ddd;       /* Slight hover effect */
 
   }
   
@@ -204,6 +216,7 @@
     /* Main app buttons etc */
     --button-bg: #333;
     --button-color: #eee;
+    --button-color-hover: #444;
 
     /* Zoom panel */
     --panel-bg: var(--background-color);
@@ -237,6 +250,17 @@
     /* Notes menu */
     --notes-menu-selected-note-entry-bg: var(--logo-color-1);
     --notes-menu-hovered-note-entry-bg: #c586c040;
+
+    /* ===== Modal (Dark Mode) ===== */
+    --modal-text-secondary: #aaaaaa;     /* Softer gray for labels, metadata */
+    --modal-text-tertiary: #888888;      /* Hinted text, less visual priority */
+
+    --modal-border-muted: #3a3a3a;       /* Darker border than bg */
+    --modal-border-dark: #5a5a5a;        /* Used in preview outline */
+
+    --modal-bg: var(--math-editor-bg);   /* Reuse dark editor background */
+    --modal-button-bg: var(--button-bg); 
+    --modal-button-hover-bg: #444444;    /* Subtle dark hover effect */
 
   }
 

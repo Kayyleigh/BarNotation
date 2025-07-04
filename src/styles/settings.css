@@ -111,3 +111,18 @@
   .button.primary:hover {
     background-color: var(--accent-color-hover, #45a045);
   }
+
+  .button.secondary {
+    background-color: var(--logo-color-1-dark); /* green or theme-aware */
+    color: black;
+    padding: 0.5em 1.2em;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .button.secondary:hover {
+    background-color: var(--logo-color-1);
+  }

@@ -577,7 +577,7 @@ import '../../styles/accents.css';
 import { MathRenderer, type BaseRenderProps, type MathRendererProps } from "./MathRenderer";
 import { getCloseSymbol, getOpenSymbol, isClosingBracket, isOpeningBracket } from "../../utils/bracketUtils";
 import { getIsHovered, handleMouseEnter, handleMouseLeave } from "../../utils/mathHoverUtils";
-import { DummyStartNodeRenderer } from "./DummyStartNodeRenderer";
+import DummyStartNodeRenderer from "./DummyStartNodeRenderer";
 
 // Helper to get CSS classes for font styles
 function getStyleClass(style: TextStyle) {

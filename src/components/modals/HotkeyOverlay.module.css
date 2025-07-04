@@ -1,0 +1,56 @@
+/* components/overlays/HotkeyOverlay.module.css */
+  
+  .group {
+    margin-bottom: 2rem;
+  }
+  
+  .groupTitle {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid var(--math-editor-border);
+    padding-bottom: 0.25rem;
+  }
+  
+  .list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .row {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
+  }
+  
+  .keys {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    font-family: monospace;
+  }
+
+  .key {
+    background: var(--hotkey-key-bg, var(--button-bg));
+    color: var(--hotkey-key-color, var(--button-color));
+    padding: 0.2em 0.5em;
+    border-radius: 4px;
+    margin: 0 2px;
+    font-size: 0.95em;
+    font-family: monospace;
+    border: 1px solid var(--button-bg);
+  }
+  
+  .separator {
+    margin: 0 4px;
+    font-weight: normal;
+    color: var(--hotkey-key-color, var(--button-color));
+  }
+  
+  .desc {
+    font-size: 0.95rem;
+  }
+  
