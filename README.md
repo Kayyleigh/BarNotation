@@ -87,9 +87,8 @@ Save any expression for reuse. Just drag it into the library panel, and back int
   <img src="readme-images/gif-library-dragging.gif" alt="Dragging math expressions to and from the library" width="450"/>
 </p>
 
-> 🤓 **Fun fact!**  
-> The library keeps track of how often you re-use each snippet, so you can sort by "most used" (among others)!  
-> Interested in seeing exact counts? Turn on **_nerd mode_** in settings.
+> [!TIP]
+> 🤓 **Fun fact!** The library keeps track of how often you re-use each snippet, so you can sort by "most used" (among others)! Interested in seeing exact counts? Turn on **_nerd mode_** in settings.
 
 ### 🧩 Build Your Own Collections  
 Create your own custom collections! Copy math from notes, or **drag between tabs**.
@@ -141,6 +140,9 @@ Hate my app, but enjoy the math library? No problem! Just drag your snippets str
 </p>
 
 And yes, dragging raw LaTeX into the library works too! Just drop LaTeX code and it gets converted into structured math.
+
+> [!TIP]
+> If you paste something into a **math cell**, whatever is in your clipboard will also be transformed into structured math directly into the cell! I recommend pasting only valid LaTeX math, though, but if you paste some huge text in there you can simply undo it because that is also implemented. 😎
 
 ## 📁 Project Structure
 
@@ -322,10 +324,24 @@ The app should now be running at http://localhost:5173.
 
 Planned features and improvements include:
 
-- 📦 Full notebook export as LaTeX
-- 🎛️ Custom hotkeys
-- 📚 Hierarchical notebook sections (e.g., sections, subsections)
-- 🐛 Better error handling and onboarding experience
+- Archive of notebooks (similar to collection archive)
+- Cell and collection duplication option
+- Proper persistent storage (I currently put everything in the browser localStorage)
+- Full notebook export as LaTeX
+- Customizable hotkeys
+- Overview of existing command sequences
+- Hierarchical notebook sections (e.g., sections, subsections)
+- Autocomplete of existing command sequences when typing in `command-input` nodes
+- Proper user guide 
+- Add `binom`, `vector` and `matrix` math node types
+- Add `cases` math node type
+- Add `multiline-equation` math node type
+- Proper bracket handling (right now all brackets become parentheses, while LaTeX has fancy stuff to make the brackets as tall as the stuff inside)
+- Better error handling and onboarding experience
+- Very unsure about this one, but I want to look into allowing inline math in text cells too (probably much less interactive than the math cells) because you can see in the screenshots section that writing "... with parameters mu and sigma" is just kinda ugly and definitely going to be a common issue in real-world settings
+
+> [!NOTE]
+> This is not an exhaustive list, nor is it chronologically ordered. Some of these may already exist on other branches, since it includes the things I am planning to work on a few minutes after writing this sentence. 
 
 ---
 
