@@ -6,10 +6,12 @@ export interface NoteMetadata {
   createdAt?: number;   // Timestamp (ms since epoch) when the note was created
   updatedAt?: number;   // Timestamp when the note was last updated
   archived: boolean;
+  archivedAt?: number;  // Timestamp when the note was archived
   // can add more fields as needed, for example:
   // tags?: string[];
   // description?: string;
 }
+
 export interface Note {
   id: string;
   metadata: NoteMetadata;

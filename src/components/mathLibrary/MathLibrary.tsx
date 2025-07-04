@@ -598,7 +598,7 @@
 
 // export default MathLibrary;
 
-import { useEffect, useState, useCallback, type DragEvent } from "react";
+import { useEffect, useState, useCallback } from "react";
 import ResizableSidebar from "../layout/ResizableSidebar";
 import LibCollectionArchiveModal from "../modals/LibCollectionArchiveModal";
 import LibraryEntries from "./LibraryEntries";
@@ -613,6 +613,7 @@ import { useDragContext } from "../../hooks/useDragContext";
 import { nodeToLatex } from "../../models/nodeToLatex";
 import { parseLatex } from "../../models/latexParser";
 import React from "react";
+import { SortDropdown } from "../common/SortDropdown";
 
 const STORAGE_KEY = "mathLibraryCollections";
 
@@ -859,6 +860,15 @@ const MathLibrary: React.FC<MathLibraryProps> = ({
   const activeCollection = collections.find(c => c.id === activeColl);
   const placeholderText = `Search ${activeCollection ? activeCollection.name : "Collection"}...`;  
 
+  const sortOptions = [
+    { label: "Newest", value: "date" },
+    { label: "Oldest", value: "date-asc" },
+    { label: "Most Used", value: "usage" },
+    { label: "Least Used", value: "usage-asc" },
+    { label: "A → Z", value: "latex" },
+    { label: "Z → A", value: "latex-desc" },
+  ];
+
   const memoizedOnDrop = useCallback(
     (e: React.DragEvent<Element>, dropIndex: number | null) => {
       e.preventDefault();
@@ -909,19 +919,13 @@ const MathLibrary: React.FC<MathLibraryProps> = ({
             className={styles.librarySearch}
             tooltip="Search on LaTeX substring"
           />
-          <select
+          <SortDropdown
+            options={sortOptions}
             value={sortOption}
-            onChange={(e) => setSortOption(e.target.value as SortOption)}
+            onChange={(val) => setSortOption(val as SortOption)}
             className={styles.sortDropdown}
             aria-label="Sort library entries"
-          >
-            <option value="date">Newest</option>
-            <option value="date-asc">Oldest</option>
-            <option value="usage">Most Used</option>
-            <option value="usage-asc">Least Used</option>
-            <option value="latex">A → Z</option>
-            <option value="latex-desc">Z → A</option>
-          </select>
+          />
         </div>
 
         {activeColl ? (
