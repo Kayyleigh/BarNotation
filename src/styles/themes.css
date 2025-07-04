@@ -103,6 +103,7 @@
     /* Main app buttons etc */
     --button-bg: #eee;
     --button-color: #333;
+    --button-color-hover: #aaa;
 
     /* Zoom panel */
     --panel-bg: var(--background-color);
@@ -215,6 +216,7 @@
     /* Main app buttons etc */
     --button-bg: #333;
     --button-color: #eee;
+    --button-color-hover: #444;
 
     /* Zoom panel */
     --panel-bg: var(--background-color);

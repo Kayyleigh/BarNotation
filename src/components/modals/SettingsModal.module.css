@@ -1,0 +1,118 @@
+/* components/modals/SettingsModal.module.css */
+  
+  .label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+  }
+  
+  .button {
+    background: inherit;
+    color: var(--button-color);
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .button:hover {
+    background-color: var(--button-color-hover);
+  }
+  
+  .primary {
+    background-color: var(--logo-color-1-dark, #2a82f7);
+    color: black;
+  }
+  
+  .primary:hover {
+    background-color: var(--logo-color-1, #1669d9);
+  }
+  
+  .toggleRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 1rem 0;
+    user-select: none;
+  }
+  
+  .settingsRow {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 1em;
+    gap: 0.75em;
+  }
+  
+  .settingsInput {
+    width: 100%;
+    padding: 0.5em;
+    font-size: 1em;
+    border: 1px solid var(--math-editor-border);
+    border-radius: 6px;
+    box-shadow: 0 0 4px var(--math-editor-shadow);
+    background-color: var(--math-editor-bg);
+    color: var(--math-text-color);
+    box-sizing: border-box;
+    margin-top: 0.25em;
+    margin-bottom: 1em;
+  }
+
+  .inline {
+    display: inline-block;
+    max-width: 60%;
+  }
+  
+  .settingsActions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 2em;
+  }
+  
+  /* Switch toggle styles */
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 22px;
+  }
+  
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+  }
+  
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    border-radius: 34px;
+    transition: background-color 0.4s;
+  }
+  
+  .slider::before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    border-radius: 50%;
+    transition: transform 0.4s;
+  }
+  
+  .switch input:checked + .slider {
+    background-color: var(--logo-color-1-dark, #2a82f7);
+  }
+  
+  .switch input:checked + .slider::before {
+    transform: translateX(22px);
+  }
+  

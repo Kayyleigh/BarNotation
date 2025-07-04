@@ -1,5 +1,5 @@
 // components/layout/MainLayout.tsx
-import React, { useState, useEffect } from "react"; 
+import React, { useState, useEffect, useCallback } from "react"; 
 import HeaderBar from "./MainHeaderBar";
 import NotesMenu from "../notesMenu/NotesMenu";
 import EditorWorkspace from "./EditorWorkspace";
@@ -164,6 +164,25 @@ const MainLayout: React.FC = () => {
     );
   };
 
+  const handleUnarchiveNote = useCallback((id: string) => {
+    setNotes(prev =>
+      prev.map(note =>
+        note.id === id
+          ? { ...note, metadata: { ...note.metadata, archived: false, archivedAt: undefined } }
+          : note
+      )
+    );
+    showToast({ type: "success", message: "Note unarchived." });
+  }, [showToast]);
+  
+  const handleDeleteNote = useCallback((id: string) => {
+    setNotes(prev => prev.filter(note => note.id !== id));
+    if (selectedNoteId === id) {
+      setSelectedNoteId(null);
+    }
+    showToast({ type: "success", message: "Note deleted." });
+  }, [selectedNoteId, showToast]);
+
   // // Handler to update cells of a note:
   // const updateNoteCells = (noteId: string, newCells: CellData[]) => {
   //   setNotes((prevNotes) =>
@@ -202,16 +221,9 @@ const MainLayout: React.FC = () => {
     setNotes((prev) => [newNote, ...prev]);
     setSelectedNoteId(newId);
   };
-
-  const deleteNote = (id: string) => {
-    setNotes(prevNotes => prevNotes.filter(note => note.id !== id));
-    if (selectedNoteId === id) {
-      setSelectedNoteId(null);
-    }
-  };
   
   const archiveNote = (id: string) => {
-    updateNoteMetadata(id, { archived: true });
+    updateNoteMetadata(id, { archived: true, archivedAt: Date.now() });
   };
   
   const duplicateNote = (id: string) => {
@@ -270,8 +282,9 @@ const MainLayout: React.FC = () => {
             onSelectNote={setSelectedNoteId}
             notes={notes}
             onCreateNote={createNewNote} 
-            onDeleteNote={deleteNote}
+            onDeleteNote={handleDeleteNote}
             onArchiveNote={archiveNote}
+            onUnarchiveNote={handleUnarchiveNote}
             onDuplicateNote={duplicateNote}
             onExportLatex={exportLatex}     
           />

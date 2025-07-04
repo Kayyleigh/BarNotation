@@ -1,0 +1,7 @@
+.authorLine {
+    font-size: 0.875rem; /* slightly smaller than title */
+    color: var(--main-text-color);
+    margin: 4px 0;
+    opacity: 70%;
+  }
+  

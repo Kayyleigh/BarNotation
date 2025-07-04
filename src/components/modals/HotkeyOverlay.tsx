@@ -1,6 +1,7 @@
-import React, { useEffect, useRef } from "react";
-import "../../styles/hotkeyOverlay.css";
-import Tooltip from "../tooltips/Tooltip";
+// components/modals/HotkeyOverlay.tsx
+import React from "react";
+import styles from "./HotkeyOverlay.module.css";
+import Modal from "../modals/Modal";
 
 interface HotkeyOverlayProps {
   onClose: () => void;
@@ -23,9 +24,7 @@ const groupedHotkeys = [
   },
   {
     title: "Structural Shortcuts",
-    keys: [
-      [["Drag & Drop"], "Rearrange nodes"],
-    ],
+    keys: [[["Drag & Drop"], "Rearrange nodes"]],
   },
   {
     title: "Editing & Navigation",
@@ -50,67 +49,32 @@ const groupedHotkeys = [
 ];
 
 const HotkeyOverlay: React.FC<HotkeyOverlayProps> = ({ onClose }) => {
-  const contentRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-
-    const handleClickOutside = (e: MouseEvent) => {
-      if (
-        contentRef.current &&
-        !contentRef.current.contains(e.target as Node)
-      ) {
-        onClose();
-      }
-    };
-
-    window.addEventListener("keydown", handleEsc);
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      window.removeEventListener("keydown", handleEsc);
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [onClose]);
-
   return (
-    <div className="hotkey-overlay">
-      <div className="hotkey-overlay-content" ref={contentRef}>
-        <span className="hotkey-close-button">
-          <Tooltip text="Close">
-            <button className="button" onClick={onClose}>
-              ✕
-            </button>
-          </Tooltip>
-        </span>
-        <h2>Keyboard Shortcuts</h2>
-
-        {groupedHotkeys.map((group, idx) => (
-          <div key={idx} className="hotkey-group">
-            <h3>{group.title}</h3>
-            <ul className="hotkey-list">
-              {group.keys.map(([combo, desc], i) => (
-                <li key={i} className="hotkey-row">
-                  <div className="hotkey-keys">
-                    {(combo as string[]).map((key, i, arr) => (
-                      <React.Fragment key={i}>
-                        <span className="key">{key}</span>
-                        {i < arr.length - 1 && (
-                          <span className="key-separator">+</span>
-                        )}
-                      </React.Fragment>
-                    ))}
-                  </div>
-                  <div className="hotkey-desc">{desc}</div>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
-      </div>
-    </div>
+    <Modal onClose={onClose}>
+      <h2>Keyboard Shortcuts</h2>
+      {groupedHotkeys.map((group, idx) => (
+        <div key={idx} className={styles.group}>
+          <h3 className={styles.groupTitle}>{group.title}</h3>
+          <ul className={styles.list}>
+            {group.keys.map(([combo, desc], i) => (
+              <li key={i} className={styles.row}>
+                <div className={styles.keys}>
+                  {(combo as string[]).map((key, j, arr) => (
+                    <React.Fragment key={j}>
+                      <span className={styles.key}>{key}</span>
+                      {j < arr.length - 1 && (
+                        <span className={styles.separator}>+</span>
+                      )}
+                    </React.Fragment>
+                  ))}
+                </div>
+                <div className={styles.desc}>{desc}</div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </Modal>
   );
 };
 
