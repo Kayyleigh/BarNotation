@@ -22,7 +22,8 @@ type Props = {
   ancestorIds: string[];
 };
 
-export const DummyStartNodeRenderer: React.FC<Props> = ({
+// STILL RE-RENDERING FOR NO REASON //TODO fix
+const DummyStartNodeRenderer: React.FC<Props> = ({
   containerId,
   cellId,
   hoverPath,
@@ -70,3 +71,5 @@ export const DummyStartNodeRenderer: React.FC<Props> = ({
     </span>
   );
 };
+
+export default React.memo(DummyStartNodeRenderer);

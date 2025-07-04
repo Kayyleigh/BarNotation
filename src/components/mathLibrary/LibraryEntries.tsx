@@ -4,7 +4,7 @@ import { useDragContext } from "../../hooks/useDragContext";
 import type { LibraryCollection } from "../../models/libraryTypes";
 import styles from "./MathLibrary.module.css";
 import type { SortOption } from "./MathLibrary";
-import { MathView } from "../mathExpression/MathView";
+import MathView from "../mathExpression/MathView";
 import Tooltip from "../tooltips/Tooltip";
 
 interface LibraryEntriesProps {
@@ -178,6 +178,9 @@ const LibraryEntries: React.FC<LibraryEntriesProps> = ({
           <Tooltip text={entry.latex}>
             <MathView node={entry.node} />
           </Tooltip>
+          <div className={styles.meta}>
+            <span>{entry.draggedCount}×</span>
+          </div>
           <button
             className={styles.entryDeleteButton}
             title="Delete entry"
@@ -191,7 +194,7 @@ const LibraryEntries: React.FC<LibraryEntriesProps> = ({
                 };
               });
               setCollections(updatedCollections);
-            }}
+            }}  
           >
             ✕
           </button>

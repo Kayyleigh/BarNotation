@@ -2,7 +2,7 @@
 import React, { useState, useMemo } from "react";
 import type { LibraryCollection } from "../../models/libraryTypes";
 import ArchiveModal from "./ArchiveModal";
-import { MathView } from "../mathExpression/MathView";
+import MathView from "../mathExpression/MathView";
 import archiveStyles from "./ArchiveModal.module.css";
 import collectionArchiveStyles from "./LibCollectionArchiveModal.module.css";
 import { formatArchivedAt, formatCreatedAt } from "../../utils/dateUtils";

@@ -629,12 +629,13 @@ interface MathLibraryProps {
   width: number;
   onWidthChange: (width: number) => void;
   onDropNode: (from: DropSource, to: DropTarget) => void;
-  updateEntryRef: React.RefObject<(id: string) => void>;
+  updateEntryRef: React.RefObject<(id: string) => void>; //unused?
 }
 
 const MathLibrary: React.FC<MathLibraryProps> = ({
   width,
   onWidthChange,
+  updateEntryRef,
 }) => {
   console.warn(`Rendering MathLibrary`);
 
@@ -706,6 +707,23 @@ const MathLibrary: React.FC<MathLibraryProps> = ({
     []
   );
 
+  updateEntryRef.current = (id) => { //TODO check if inefficient; this should recover the dragged counts
+    setCollections(colls => {
+      let changed = false;
+      const newColls = colls.map(coll => {
+        const newEntries = coll.entries.map(e => {
+          if (e.id === id) {
+            changed = true;
+            return { ...e, draggedCount: e.draggedCount + 1 };
+          }
+          return e;
+        });
+        return changed ? { ...coll, entries: newEntries } : coll;
+      });
+      return changed ? newColls : colls;
+    });
+  };
+  
   // Helper: find collection by id
   const findCollection = useCallback(
     (id: string) => collections.find((c) => c.id === id),
