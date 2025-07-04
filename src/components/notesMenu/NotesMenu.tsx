@@ -3,10 +3,10 @@ import React, { useMemo, useState, useRef } from "react";
 import ResizableSidebar from "../layout/ResizableSidebar";
 import styles from "./NotesMenu.module.css";
 import type { Note } from "../../models/noteTypes";
-import NoteActionsDropdown from "./NoteActionsDropdown";
 import SearchBar from "../common/SearchBar";
 import Tooltip from "../tooltips/Tooltip";
 import { useToast } from "../../hooks/useToast";
+import NoteListItem from "./NoteListItem";
 
 type SortBy = "created" | "modified" | "title" | "cellCount";
 
@@ -59,24 +59,6 @@ const NotesMenu: React.FC<NotesMenuProps> = ({
       )
       .sort(sortFunctions[sortBy]);
   }, [notes, searchTerm, sortBy]);
-
-  const formatCreatedAt = (timestamp: number) => {
-    // TODO: extend to have "Today" "Yesterday" etc
-    const now = Date.now();
-    const diffInMs = now - timestamp;
-    const diffInMinutes = diffInMs / (1000 * 60);
-  
-    if (diffInMinutes < 2) return "Created just now";
-  
-    return (
-      "Created " +
-      new Date(timestamp).toLocaleDateString(undefined, {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-      })
-    );
-  };
   
   return (
     <ResizableSidebar
@@ -118,57 +100,21 @@ const NotesMenu: React.FC<NotesMenuProps> = ({
             <li className={styles.noNotes}>No notes found.</li>
           )}
           {filteredNotes.map((note) => (
-            <li
+            <NoteListItem
               key={note.id}
-              className={`${styles.noteItem} ${selectedNoteId === note.id ? styles.selected : ""}`}
+              note={note}
+              selected={selectedNoteId === note.id}
               onClick={() => onSelectNote(note.id)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") onSelectNote(note.id);
-              }}
-              tabIndex={0}
-              role="button"
-            >
-              <div className={styles.noteTextBlock}>
-                <div className={styles.noteTitle}>{note.metadata.title}</div>
-                <div className={styles.noteMeta}>
-                  <span>{note.cells.length} cells</span>
-                  <span className={styles.noteDate}>
-                    {note.metadata.updatedAt
-                      ? new Date(note.metadata.updatedAt).toLocaleDateString(undefined, {
-                          month: "short",
-                          day: "numeric",
-                        })
-                      : ""}
-                  </span>
-                  <span className={styles.noteDate}>
-                    {note.metadata.createdAt ? formatCreatedAt(note.metadata.createdAt) : ""}
-                  </span>
-                </div>
-              </div>
-              <button
-                ref={(el) => {
-                  dotRefs.current[note.id] = el;
-                }}
-                className={styles.moreButton}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setMenuOpenForId(note.id === menuOpenForId ? null : note.id);
-                }}
-                aria-label="Note options"
-              >
-                ⋯
-              </button>
-              {menuOpenForId === note.id && dotRefs.current[note.id] && (
-                <NoteActionsDropdown
-                  anchorRef={{ current: dotRefs.current[note.id]! }}
-                  onClose={() => setMenuOpenForId(null)}
-                  onDelete={() => onDeleteNote(note.id)}
-                  onArchive={() => onArchiveNote(note.id)}
-                  onDuplicate={() => onDuplicateNote(note.id)}
-                  onExportLatex={() => onExportLatex(note.id)}
-                />
-              )}
-            </li>
+              dotRef={(el) => (dotRefs.current[note.id] = el)}
+              menuOpen={menuOpenForId === note.id}
+              setMenuOpen={(open) =>
+                setMenuOpenForId(open ? note.id : null)
+              }
+              onDeleteNote={() => onDeleteNote(note.id)}
+              onArchiveNote={() => onArchiveNote(note.id)}
+              onDuplicateNote={() => onDuplicateNote(note.id)}
+              onExportLatex={() => onExportLatex(note.id)}
+            />
           ))}
         </ul>
       </div>
