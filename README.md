@@ -20,8 +20,8 @@ BarNotation enables users to build their notes as a sequence of "cells", either 
 </p>
 
 ---
-
-> ⚠️ **WARNING: This app is NOT production-ready. It is unstable, untested, and under heavy development. Proper database design has been procrastinated, and due to an unfortunate lack of experience developing apps like this, performance optimization is an afterthought (where after = now 😭).**
+> [!WARNING]
+> This app is NOT production-ready. It is unstable, untested, and under heavy development. Proper database design has been procrastinated, and due to an unfortunate lack of experience developing apps like this, performance optimization is an afterthought (where after = now 😭).
 
 ---
 
@@ -281,6 +281,9 @@ The app is built in **React** with **TypeScript** and uses **Vite** as the build
     └── treeUtils.ts               # Tree update, find nodes, get logical children
 ```
 </details>
+
+> [!NOTE]
+> Since this app is under heavy development right now, this filetree is already outdated. I will not keep it up-to-date between larger working versions of the app, since files frequently get added, deleted, renamed or modified. 
 
 ---
 
