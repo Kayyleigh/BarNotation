@@ -779,15 +779,19 @@ const MathLibrary: React.FC<MathLibraryProps> = ({
         draggingNode.sourceType === "library" &&
         draggingNode.cellId === dropCollectionId
       ) {
-        // If dropping back into same collection, allow move only if index is different
-        if (dropIndex === null) {
-          // Dropped outside entries -> append, so allow move
-        } else if (dropIndex === draggingNode.index || dropIndex === draggingNode.index + 1) {
-          // Same spot or adjacent, ignore
-          setDraggingNode(null);
-          setDropTarget(null);
-          return;
-        }
+        // // If dropping back into same collection, allow move only if index is different
+        // console.warn(`${dropIndex} ${draggingNode.index}`)
+
+        // if (dropIndex === null) {
+        //   // Do not 
+        //   return;
+        // } else if (dropIndex === draggingNode.index || dropIndex === draggingNode.index + 1) {
+        //   // Same spot or adjacent, ignore
+        //   setDraggingNode(null);
+        //   setDropTarget(null);
+        //   return;
+        // }
+        return;
       }
 
       // Find target collection

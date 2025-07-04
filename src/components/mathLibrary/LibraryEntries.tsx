@@ -106,6 +106,7 @@ const LibraryEntries: React.FC<LibraryEntriesProps> = ({
     (index: number) => (e: React.DragEvent) => {
       e.preventDefault();
       e.stopPropagation();
+      console.warn(`dropping ${e} at ${index}`)
       onDrop(e, index);
       setDraggingNode(null);
       setDropTarget(null);
@@ -171,7 +172,7 @@ const LibraryEntries: React.FC<LibraryEntriesProps> = ({
           onDragStart={handleDragStartAtIndex(idx)}
           onDragOver={handleDragOverEntryAtIndex(idx)}
           onDragLeave={handleDragLeaveEntry}
-          onDrop={handleDropOnEntryAtIndex(idx)}
+          // onDrop={handleDropOnEntryAtIndex(idx)}
           role="listitem"
           tabIndex={0}
         >
