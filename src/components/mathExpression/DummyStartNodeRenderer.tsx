@@ -58,7 +58,7 @@ export const DummyStartNodeRenderer: React.FC<Props> = ({
         //     setHoverPath([]);
         //   }
         // }}
-        onMouseEnter={() => handleMouseEnter([...ancestorIds, containerId], setHoverPath)}
+        onMouseEnter={() => handleMouseEnter([...ancestorIds], setHoverPath)}
         onMouseLeave={(e) =>
           handleMouseLeave(e, ancestorIds, setHoverPath)
         }

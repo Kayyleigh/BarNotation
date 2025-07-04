@@ -57,9 +57,10 @@ const MathCell: React.FC<MathCellProps> = ({
           />
         </HoverProvider>
       </div>
-      {hoverInfo.hoveredType && !isPreviewMode && (
+      {!isPreviewMode && (
         <div className="hover-type-info">
-          {hoverInfo.hoveredType} • {Math.round(hoverInfo.zoomLevel * 100)}%
+          {hoverInfo.hoveredType ? `${hoverInfo.hoveredType} • ` : ""}
+          {Math.round(hoverInfo.zoomLevel * 100)}%
         </div>
       )}
     </div>
