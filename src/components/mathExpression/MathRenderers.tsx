@@ -650,10 +650,10 @@ export function renderContainerChildren(
               onCursorChange({ containerId, index: i + 1 });
             }
           }}
-          onMouseEnter={() => handleMouseEnter([...baseProps.ancestorIds, child.id], setHoverPath)}
-          onMouseLeave={(e) =>
-            handleMouseLeave(e, ancestorIds, setHoverPath)
-          }
+          // onMouseEnter={() => handleMouseEnter([...baseProps.ancestorIds], setHoverPath)}
+          // onMouseLeave={(e) =>
+          //   handleMouseLeave(e, [...ancestorIds], setHoverPath)
+          // }
           className={clsx("math-node-wrapper", {
             hovered: getIsHovered(child, hoverPath),
           })}
@@ -696,7 +696,7 @@ export function renderTextNode(
         hovered: getIsHovered(node, baseProps.hoverPath),
       })}
       style={getInlineStyle(baseProps.inheritedStyle)}
-      onMouseEnter={() => handleMouseEnter([...baseProps.ancestorIds, node.id], baseProps.setHoverPath)}
+      onMouseEnter={() => handleMouseEnter([...baseProps.ancestorIds], baseProps.setHoverPath)}
       onMouseLeave={(e) =>
         handleMouseLeave(e, baseProps.ancestorIds, baseProps.setHoverPath)
       }
@@ -717,7 +717,7 @@ export function renderMultiDigitNode(
       data-nodeid={node.id}
       className={clsx("math-node", "type-multidigit", styleClass, { hovered: getIsHovered(node, baseProps.hoverPath) })}
       style={getInlineStyle(baseProps.inheritedStyle)}
-      onMouseEnter={() => handleMouseEnter([...baseProps.ancestorIds, node.id], baseProps.setHoverPath)}
+      onMouseEnter={() => handleMouseEnter([...baseProps.ancestorIds], baseProps.setHoverPath)}
       onMouseLeave={(e) =>
         handleMouseLeave(e, baseProps.ancestorIds, baseProps.setHoverPath)
       }
@@ -741,7 +741,7 @@ export function renderCommandInputNode(
       data-nodeid={node.id}
       className={clsx("math-node", "type-command-input", styleClass, { hovered: getIsHovered(node, baseProps.hoverPath) })}
       style={getInlineStyle(baseProps.inheritedStyle)}
-      onMouseEnter={() => handleMouseEnter([...baseProps.ancestorIds, node.id], baseProps.setHoverPath)}
+      onMouseEnter={() => handleMouseEnter([...baseProps.ancestorIds], baseProps.setHoverPath)}
       onMouseLeave={(e) =>
         handleMouseLeave(e, baseProps.ancestorIds, baseProps.setHoverPath)
       }
@@ -780,7 +780,7 @@ export function renderInlineContainerNode(
         { hovered: getIsHovered(node, baseProps.hoverPath) }
       )}
       style={getInlineStyle(baseProps.inheritedStyle)}
-      onMouseEnter={() => handleMouseEnter([...baseProps.ancestorIds, node.id], baseProps.setHoverPath)}
+      onMouseEnter={() => handleMouseEnter([...baseProps.ancestorIds], baseProps.setHoverPath)}
       onMouseLeave={(e) =>
         handleMouseLeave(e, baseProps.ancestorIds, baseProps.setHoverPath)
       }
@@ -802,33 +802,31 @@ export function renderGroupNode(
   node: GroupNode,
   baseProps: BaseRenderProps & MathRendererProps
 ): React.ReactNode {
-  const styleClass = getStyleClass(baseProps.inheritedStyle);
+  const { inheritedStyle, ancestorIds, setHoverPath, hoverPath } = baseProps;
+  const styleClass = getStyleClass(inheritedStyle);
+  const isHovered = getIsHovered(node, hoverPath);
+
+  const handleEnter = () => handleMouseEnter([...ancestorIds], setHoverPath);
+  const handleLeave = (e: React.MouseEvent) => handleMouseLeave(e, ancestorIds, setHoverPath);
+
+  const childProps = {
+    ...baseProps,
+    node: node.child,
+    containerId: node.child.id,
+    index: 0,
+  };
+
   return (
     <span
       data-nodeid={node.id}
-      className={clsx("math-node", "type-group", styleClass, { hovered: getIsHovered(node, baseProps.hoverPath) })}
-      style={getInlineStyle(baseProps.inheritedStyle)}
-      onMouseEnter={() => handleMouseEnter([...baseProps.ancestorIds, node.id], baseProps.setHoverPath)}
-      onMouseLeave={(e) =>
-        handleMouseLeave(e, baseProps.ancestorIds, baseProps.setHoverPath)
-      }
+      className={clsx("math-node", "type-group", styleClass, { hovered: isHovered })}
+      style={getInlineStyle(inheritedStyle)}
+      onMouseEnter={handleEnter}
+      onMouseLeave={handleLeave}
     >
       <span className="bracket bracket-open">{getOpenSymbol(node.bracketStyle)}</span>
       <span className="group-contents">
-        <MathRenderer
-          node={node.child}
-          cellId={baseProps.cellId}
-          isActive={baseProps.isActive}
-          containerId={node.child.id}
-          index={0}
-          cursor={baseProps.cursor}
-          hoverPath={baseProps.hoverPath}
-          onCursorChange={baseProps.onCursorChange}
-          setHoverPath={baseProps.setHoverPath}
-          inheritedStyle={baseProps.inheritedStyle}
-          onDropNode={baseProps.onDropNode}
-          ancestorIds={baseProps.ancestorIds}
-        />
+        <MathRenderer {...childProps} />
       </span>
       <span className="bracket bracket-close">{getCloseSymbol(node.bracketStyle)}</span>
     </span>
@@ -840,49 +838,34 @@ export function renderFractionNode(
   node: FractionNode,
   baseProps: BaseRenderProps & MathRendererProps
 ): React.ReactNode {
-  const styleClass = getStyleClass(baseProps.inheritedStyle);
+  const { inheritedStyle, ancestorIds, setHoverPath, hoverPath } = baseProps;
+  const styleClass = getStyleClass(inheritedStyle);
+  const isHovered = getIsHovered(node, hoverPath);
+
+  const handleEnter = () => handleMouseEnter([...ancestorIds], setHoverPath);
+  const handleLeave = (e: React.MouseEvent) => handleMouseLeave(e, ancestorIds, setHoverPath);
+
+  const getChildProps = (childNode: MathNode, index: number) => ({
+    ...baseProps,
+    node: childNode,
+    containerId: childNode.id,
+    index,
+  });
+
   return (
     <span
       data-nodeid={node.id}
-      className={clsx("math-node", "type-fraction", styleClass, { hovered: getIsHovered(node, baseProps.hoverPath) })}
-      style={getInlineStyle(baseProps.inheritedStyle)}
-      onMouseEnter={() => handleMouseEnter([...baseProps.ancestorIds, node.id], baseProps.setHoverPath)}
-      onMouseLeave={(e) =>
-        handleMouseLeave(e, baseProps.ancestorIds, baseProps.setHoverPath)
-      }
+      className={clsx("math-node", "type-fraction", styleClass, { hovered: isHovered })}
+      style={getInlineStyle(inheritedStyle)}
+      onMouseEnter={handleEnter}
+      onMouseLeave={handleLeave}
     >
       <span className="numerator">
-        <MathRenderer
-          node={node.numerator}
-          containerId={node.numerator.id}
-          index={0}
-          cellId={baseProps.cellId}
-          isActive={baseProps.isActive}
-          cursor={baseProps.cursor}
-          hoverPath={baseProps.hoverPath}          
-          onCursorChange={baseProps.onCursorChange}
-          setHoverPath={baseProps.setHoverPath}
-          inheritedStyle={baseProps.inheritedStyle}
-          onDropNode={baseProps.onDropNode}
-          ancestorIds={baseProps.ancestorIds}
-        />
+        <MathRenderer {...getChildProps(node.numerator, 0)} />
       </span>
       <div className="line"></div>
       <span className="denominator">
-        <MathRenderer
-          node={node.denominator}
-          cellId={baseProps.cellId}
-          isActive={baseProps.isActive}
-          containerId={node.denominator.id}
-          index={1}
-          cursor={baseProps.cursor}
-          hoverPath={baseProps.hoverPath}          
-          onCursorChange={baseProps.onCursorChange}
-          setHoverPath={baseProps.setHoverPath}
-          inheritedStyle={baseProps.inheritedStyle}
-          onDropNode={baseProps.onDropNode}
-          ancestorIds={baseProps.ancestorIds}
-        />
+        <MathRenderer {...getChildProps(node.denominator, 1)} />
       </span>
     </span>
   );
@@ -893,50 +876,35 @@ export function renderNthRootNode(
   node: NthRootNode,
   baseProps: BaseRenderProps & MathRendererProps
 ): React.ReactNode {
-  const styleClass = getStyleClass(baseProps.inheritedStyle);
+  const { inheritedStyle, ancestorIds, setHoverPath, hoverPath } = baseProps;
+  const styleClass = getStyleClass(inheritedStyle);
+  const isHovered = getIsHovered(node, hoverPath);
+
+  const handleEnter = () => handleMouseEnter([...ancestorIds], setHoverPath);
+  const handleLeave = (e: React.MouseEvent) => handleMouseLeave(e, ancestorIds, setHoverPath);
+
+  const getChildProps = (childNode: MathNode, index: number) => ({
+    ...baseProps,
+    node: childNode,
+    containerId: childNode.id,
+    index,
+  });
+
   return (
     <span
       data-nodeid={node.id}
-      className={clsx("math-node", "type-nth-root", styleClass, { hovered: getIsHovered(node, baseProps.hoverPath) })}
-      style={getInlineStyle(baseProps.inheritedStyle)}
-      onMouseEnter={() => handleMouseEnter([...baseProps.ancestorIds, node.id], baseProps.setHoverPath)}
-      onMouseLeave={(e) =>
-        handleMouseLeave(e, baseProps.ancestorIds, baseProps.setHoverPath)
-      }
+      className={clsx("math-node", "type-nth-root", styleClass, { hovered: isHovered })}
+      style={getInlineStyle(inheritedStyle)}
+      onMouseEnter={handleEnter}
+      onMouseLeave={handleLeave}
     >
       <span className="nth-root-wrapper">
         <span className="nth-index">
-          <MathRenderer
-            node={node.index}
-            cellId={baseProps.cellId}
-            isActive={baseProps.isActive}
-            containerId={node.index.id}
-            index={0}
-            cursor={baseProps.cursor}
-            hoverPath={baseProps.hoverPath}
-            onCursorChange={baseProps.onCursorChange}
-            setHoverPath={baseProps.setHoverPath}
-            inheritedStyle={baseProps.inheritedStyle}
-            onDropNode={baseProps.onDropNode}
-            ancestorIds={baseProps.ancestorIds}
-          />
+          <MathRenderer {...getChildProps(node.index, 0)} />
         </span>
-        <span className="radical-symbol"></span>
+        <span className="radical-symbol" />
         <span className="radicand">
-          <MathRenderer
-            node={node.base}
-            cellId={baseProps.cellId}
-            isActive={baseProps.isActive}
-            containerId={node.base.id}
-            index={1}
-            cursor={baseProps.cursor}
-            hoverPath={baseProps.hoverPath} 
-            onCursorChange={baseProps.onCursorChange}
-            setHoverPath={baseProps.setHoverPath}
-            inheritedStyle={baseProps.inheritedStyle}
-            onDropNode={baseProps.onDropNode}
-            ancestorIds={baseProps.ancestorIds}
-          />
+          <MathRenderer {...getChildProps(node.base, 1)} />
         </span>
       </span>
     </span>
@@ -948,155 +916,91 @@ export function renderBigOperatorNode(
   node: BigOperatorNode,
   baseProps: BaseRenderProps & MathRendererProps
 ): React.ReactNode {
-  const styleClass = getStyleClass(baseProps.inheritedStyle);
+  const { inheritedStyle, ancestorIds, setHoverPath, hoverPath } = baseProps;
+  const styleClass = getStyleClass(inheritedStyle);
+  const isHovered = getIsHovered(node, hoverPath);
+
+  const handleEnter = () => handleMouseEnter([...ancestorIds], setHoverPath);
+  const handleLeave = (e: React.MouseEvent) => handleMouseLeave(e, ancestorIds, setHoverPath);
+
+  const getChildProps = (childNode: MathNode, index: number) => ({
+    ...baseProps,
+    node: childNode,
+    containerId: childNode.id,
+    index,
+  });
+
   return (
     <span
       data-nodeid={node.id}
-      className={clsx("math-node", styleClass, "type-big-operator", { hovered: getIsHovered(node, baseProps.hoverPath) })}
-      style={getInlineStyle(baseProps.inheritedStyle)}
-      onMouseEnter={() => handleMouseEnter([...baseProps.ancestorIds, node.id], baseProps.setHoverPath)}
-      onMouseLeave={(e) =>
-        handleMouseLeave(e, baseProps.ancestorIds, baseProps.setHoverPath)
-      }
+      className={clsx("math-node", styleClass, "type-big-operator", { hovered: isHovered })}
+      style={getInlineStyle(inheritedStyle)}
+      onMouseEnter={handleEnter}
+      onMouseLeave={handleLeave}
     >
       <div className="big-operator-wrapper">
         <div className="big-operator-upper">
-          <MathRenderer
-            node={node.upper}
-            cellId={baseProps.cellId}
-            isActive={baseProps.isActive}
-            containerId={node.upper.id}
-            index={0}
-            cursor={baseProps.cursor}
-            hoverPath={baseProps.hoverPath}
-            onCursorChange={baseProps.onCursorChange}
-            setHoverPath={baseProps.setHoverPath}
-            inheritedStyle={baseProps.inheritedStyle}
-            onDropNode={baseProps.onDropNode}
-            ancestorIds={baseProps.ancestorIds}
-          />
+          <MathRenderer {...getChildProps(node.upper, 0)} />
         </div>
         <div className="big-operator-symbol">{node.operator}</div>
         <div className="big-operator-lower">
-          <MathRenderer
-            node={node.lower}
-            cellId={baseProps.cellId}
-            isActive={baseProps.isActive}
-            containerId={node.lower.id}
-            index={1}
-            cursor={baseProps.cursor}
-            hoverPath={baseProps.hoverPath}
-            onCursorChange={baseProps.onCursorChange}
-            setHoverPath={baseProps.setHoverPath}
-            inheritedStyle={baseProps.inheritedStyle}
-            onDropNode={baseProps.onDropNode}
-            ancestorIds={baseProps.ancestorIds}
-          />
+          <MathRenderer {...getChildProps(node.lower, 1)} />
         </div>
       </div>
     </span>
   );
 }
 
-// 9. Childed Node (has child)
+// 9. Childed Node (has 4 children)
 export function renderChildedNode(
   node: ChildedNode,
   baseProps: BaseRenderProps & MathRendererProps
 ): React.ReactNode {
-  const styleClass = getStyleClass(baseProps.inheritedStyle);
+  const { inheritedStyle, ancestorIds, setHoverPath, hoverPath } = baseProps;
+  const styleClass = getStyleClass(inheritedStyle);
+  const isHovered = getIsHovered(node, hoverPath);
+
+  const handleEnter = () => handleMouseEnter([...ancestorIds], setHoverPath);
+  const handleLeave = (e: React.MouseEvent) => handleMouseLeave(e, ancestorIds, setHoverPath);
+
+  const getChildProps = (childNode: MathNode, index: number) => ({
+    ...baseProps,
+    node: childNode,
+    containerId: childNode.id,
+    index,
+  });
+
+  const children = [
+    { className: "sup-left", node: node.supLeft },
+    { className: "sub-left", node: node.subLeft },
+    { className: "base", node: node.base },
+    { className: "sub-right", node: node.subRight },
+    { className: "sup-right", node: node.supRight },
+  ];
+
   return (
     <span
       data-nodeid={node.id}
-      className={clsx("math-node", "type-childed", node.variant === 'subsup' ? "type-subsup" : "type-actsymb", styleClass, { hovered: getIsHovered(node, baseProps.hoverPath) })}
-      style={getInlineStyle(baseProps.inheritedStyle)}
-      onMouseEnter={() => handleMouseEnter([...baseProps.ancestorIds, node.id], baseProps.setHoverPath)}
-      onMouseLeave={(e) =>
-        handleMouseLeave(e, baseProps.ancestorIds, baseProps.setHoverPath)
-      }
+      className={clsx(
+        "math-node",
+        "type-childed",
+        node.variant === "subsup" ? "type-subsup" : "type-actsymb",
+        styleClass,
+        { hovered: isHovered }
+      )}
+      style={getInlineStyle(inheritedStyle)}
+      onMouseEnter={handleEnter}
+      onMouseLeave={handleLeave}
     >
-      <span className="sup-left">
-        <MathRenderer
-          node={node.supLeft}
-          cellId={baseProps.cellId}
-          isActive={baseProps.isActive}
-          containerId={node.supLeft.id}
-          index={0}
-          cursor={baseProps.cursor}
-          hoverPath={baseProps.hoverPath}
-          onCursorChange={baseProps.onCursorChange}
-          setHoverPath={baseProps.setHoverPath}
-          inheritedStyle={baseProps.inheritedStyle}
-          onDropNode={baseProps.onDropNode}
-          ancestorIds={baseProps.ancestorIds}
-        />
-      </span>
-      <span className="sub-left">
-        <MathRenderer
-          node={node.subLeft}
-          cellId={baseProps.cellId}
-          isActive={baseProps.isActive}
-          containerId={node.subLeft.id}
-          index={1}
-          cursor={baseProps.cursor}
-          hoverPath={baseProps.hoverPath}
-          onCursorChange={baseProps.onCursorChange}
-          setHoverPath={baseProps.setHoverPath}
-          inheritedStyle={baseProps.inheritedStyle}
-          onDropNode={baseProps.onDropNode}
-          ancestorIds={baseProps.ancestorIds}  
-        />
-      </span>
-      <span className="base">
-        <MathRenderer
-          node={node.base}
-          cellId={baseProps.cellId}
-          isActive={baseProps.isActive}
-          containerId={node.base.id}
-          index={2}
-          cursor={baseProps.cursor}
-          hoverPath={baseProps.hoverPath}
-          onCursorChange={baseProps.onCursorChange}
-          setHoverPath={baseProps.setHoverPath}
-          inheritedStyle={baseProps.inheritedStyle}
-          onDropNode={baseProps.onDropNode}
-          ancestorIds={baseProps.ancestorIds}
-        />
-      </span>
-      <span className="sub-right">
-        <MathRenderer
-          node={node.subRight}
-          cellId={baseProps.cellId}
-          isActive={baseProps.isActive}
-          containerId={node.subRight.id}
-          index={3}
-          cursor={baseProps.cursor}
-          hoverPath={baseProps.hoverPath}
-          onCursorChange={baseProps.onCursorChange}
-          setHoverPath={baseProps.setHoverPath}
-          inheritedStyle={baseProps.inheritedStyle}
-          onDropNode={baseProps.onDropNode}
-          ancestorIds={baseProps.ancestorIds}
-        />
-      </span>
-      <span className="sup-right">
-        <MathRenderer
-          node={node.supRight}
-          cellId={baseProps.cellId}
-          isActive={baseProps.isActive}
-          containerId={node.supRight.id}
-          index={4}
-          cursor={baseProps.cursor}
-          hoverPath={baseProps.hoverPath}
-          onCursorChange={baseProps.onCursorChange}
-          setHoverPath={baseProps.setHoverPath}
-          inheritedStyle={baseProps.inheritedStyle}
-          onDropNode={baseProps.onDropNode}
-          ancestorIds={baseProps.ancestorIds}
-        />
-      </span>
+      {children.map(({ className, node: child }, i) => (
+        <span key={className} className={className}>
+          <MathRenderer {...getChildProps(child, i)} />
+        </span>
+      ))}
     </span>
   );
 }
+
 
 // 10. Accented Node (has base)
 export function renderAccentedNode(
@@ -1138,7 +1042,7 @@ export function renderAccentedNode(
           baseProps.onCursorChange({ containerId: node.base.id, index: 0 });
         }
       }}
-      onMouseEnter={() => handleMouseEnter([...baseProps.ancestorIds, node.id], baseProps.setHoverPath)}
+      onMouseEnter={() => handleMouseEnter([...baseProps.ancestorIds], baseProps.setHoverPath)}
       onMouseLeave={(e) =>
         handleMouseLeave(e, updatedAncestors, baseProps.setHoverPath)
       }
@@ -1185,35 +1089,39 @@ export function renderStyledNode(
   node: StyledNode,
   baseProps: BaseRenderProps & MathRendererProps
 ): React.ReactNode {
+  const { inheritedStyle, ancestorIds, setHoverPath, hoverPath } = baseProps;
+  const isHovered = getIsHovered(node, hoverPath);
+
   const combinedStyle: TextStyle = {
-    ...baseProps.inheritedStyle,
+    ...inheritedStyle,
     ...node.style,
   };
   const styleClass = getStyleClass(combinedStyle);
+
+  const handleEnter = () => handleMouseEnter([...ancestorIds], setHoverPath);
+  const handleLeave = (e: React.MouseEvent) => handleMouseLeave(e, ancestorIds, setHoverPath);
+
+  const getChildProps = (childNode: MathNode, index: number) => ({
+    ...baseProps,
+    node: childNode,
+    containerId: childNode.id,
+    index,
+  });
+
   return (
     <span
       data-nodeid={node.id}
-      className={clsx("math-node", "type-styled", styleClass, { hovered: getIsHovered(node, baseProps.hoverPath) })}
+      className={clsx(
+        "math-node",
+        "type-styled",
+        styleClass,
+        { hovered: isHovered }
+      )}
       style={getInlineStyle(combinedStyle)}
-      onMouseEnter={() => handleMouseEnter([...baseProps.ancestorIds, node.id], baseProps.setHoverPath)}
-      onMouseLeave={(e) =>
-        handleMouseLeave(e, baseProps.ancestorIds, baseProps.setHoverPath)
-      }
+      onMouseEnter={handleEnter}
+      onMouseLeave={handleLeave}
     >
-      <MathRenderer
-        node={node.child}
-        cellId={baseProps.cellId}
-        isActive={baseProps.isActive}
-        containerId={node.child.id}
-        index={0}
-        cursor={baseProps.cursor}
-        hoverPath={baseProps.hoverPath}
-        onCursorChange={baseProps.onCursorChange}
-        setHoverPath={baseProps.setHoverPath}
-        inheritedStyle={combinedStyle}
-        onDropNode={baseProps.onDropNode}
-        ancestorIds={baseProps.ancestorIds}
-      />
+      <MathRenderer {...getChildProps(node.child, 0)} />
     </span>
   );
 }
@@ -1223,31 +1131,34 @@ export function renderRootWrapperNode(
   node: RootWrapperNode,
   baseProps: BaseRenderProps & MathRendererProps
 ): React.ReactNode {
-  const styleClass = getStyleClass(baseProps.inheritedStyle);
+  const { inheritedStyle, ancestorIds, setHoverPath, hoverPath } = baseProps;
+  const styleClass = getStyleClass(inheritedStyle);
+  const isHovered = getIsHovered(node, hoverPath);
+
+  const handleEnter = () => handleMouseEnter([...ancestorIds], setHoverPath);
+  const handleLeave = (e: React.MouseEvent) => handleMouseLeave(e, [], setHoverPath);
+
+  const getChildProps = (childNode: MathNode, index: number) => ({
+    ...baseProps,
+    node: childNode,
+    containerId: childNode.id,
+    index,
+  });
+
   return (
     <span
       data-nodeid={node.id}
-      className={clsx("math-node", "type-root-wrapper", styleClass)}
+      className={clsx(
+        "math-node", 
+        "type-root-wrapper", 
+        styleClass,
+        { hovered: isHovered }
+      )}
       style={getInlineStyle(baseProps.inheritedStyle)}
-      onMouseEnter={() => handleMouseEnter([...baseProps.ancestorIds, node.id], baseProps.setHoverPath)}
-      onMouseLeave={(e) =>
-        handleMouseLeave(e, baseProps.ancestorIds, baseProps.setHoverPath)
-      }
+      onMouseEnter={handleEnter}
+      onMouseLeave={handleLeave}
     >
-      <MathRenderer
-        node={node.child}
-        cellId={baseProps.cellId}
-        isActive={baseProps.isActive}
-        containerId={node.child.id}
-        index={0} //TODO maybe bad
-        cursor={baseProps.cursor}
-        hoverPath={baseProps.hoverPath}
-        onCursorChange={baseProps.onCursorChange}
-        setHoverPath={baseProps.setHoverPath}
-        inheritedStyle={baseProps.inheritedStyle}
-        onDropNode={baseProps.onDropNode} 
-        ancestorIds={baseProps.ancestorIds}
-      />
+      <MathRenderer {...getChildProps(node.child, 0)} />
     </span>
   );
 }

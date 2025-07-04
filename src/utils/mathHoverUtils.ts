@@ -16,7 +16,11 @@ export function handleMouseLeave(
   ancestorIds: string[] = [],
   onHoverChange: (path: string[]) => void
 ) {
-  if (ancestorIds.length === 0) return;
+  if (ancestorIds.length === 0) {
+    // Mouse left the root node (no ancestors), clear hover path
+    onHoverChange([]);
+    return;
+  }
 
   const related = e.relatedTarget as HTMLElement | null;
 
@@ -25,29 +29,25 @@ export function handleMouseLeave(
     return;
   }
 
-  // Check if mouse moved into an ancestor node
-  for (const ancestorId of ancestorIds) {
+  // Iterate ancestorIds from last to first for deepest match
+  for (let i = ancestorIds.length - 1; i >= 0; i--) {
+    const ancestorId = ancestorIds[i];
     const ancestorElem = document.querySelector(`[data-nodeid="${ancestorId}"]`) as HTMLElement | null;
+
     if (
       ancestorElem &&
       related instanceof Node &&
       ancestorElem.contains(related)
     ) {
-      // Trim hover path up to this ancestor
-      const ancestorIndex = ancestorIds.indexOf(ancestorId);
-      if (ancestorIndex !== -1) {
-        const newPath = ancestorIds.slice(0, Math.max(ancestorIndex, 0));
-        onHoverChange(newPath);
-      } 
+      // Trim hover path up to this ancestor (inclusive)
+      const newPath = ancestorIds.slice(0, i + 1);
+      onHoverChange(newPath);
       return;
     }
   }
 
-  // If none of the ancestors match and we are not inside the node anymore, clear hover
-  hoverClearTimeout = window.setTimeout(() => {
-    onHoverChange([]); // Clear hover path
-    hoverClearTimeout = null;
-  }, 0);
+  // Mouse left all ancestors — clear hover path completely
+  onHoverChange([]);
 }
 
 
