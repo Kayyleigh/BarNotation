@@ -1,4 +1,5 @@
-import React, { useState, useCallback, type ReactNode } from "react";
+import React, { useState, useCallback, type ReactNode, useMemo } from "react";
+import ReactDOM from "react-dom";
 import { v4 as uuidv4 } from "uuid";
 import { ToastContext, type Toast } from "../../hooks/toastContext";
 import ToastRenderer from "./ToastRenderer";
@@ -22,11 +23,17 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
+  const value = useMemo(() => ({ showToast }), [showToast]);
+
   return (
-    <ToastContext.Provider value={{ showToast }}>
-      {children}
-      {/* Toast rendering isolated from re-rendering app */}
-      <ToastRenderer toasts={toasts} onRemove={removeToast} />
-    </ToastContext.Provider>
+    <>
+      <ToastContext.Provider value={value}>
+        {children}
+      </ToastContext.Provider>
+      {ReactDOM.createPortal(
+        <ToastRenderer toasts={toasts} onRemove={removeToast} />,
+        document.body
+      )}
+    </>
   );
 };
