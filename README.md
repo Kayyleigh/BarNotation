@@ -14,9 +14,8 @@ BarNotation is a real-time math note-taking app designed especially for students
 BarNotation enables users to build their notes as a sequence of "cells", either *Text* or *Math*, with intuitive keyboard entry, structural transformations, and drag-and-drop support for editing, reordering, and organizing notes and math expressions.
 
 <p align="center">
-  <img src="readme-images/screenshot-random-use.png" alt="Random usage screenshot of the editor" width="540"/>
+  <img src="readme-images/screenshot-random-use-0607.png" alt="Random usage screenshot of the editor" width="540"/>
 </p>
-
 <p align="center">
   <em>See the <a href="#-screenshots">📷 Screenshots</a> section for a visual walkthrough!</em>
 </p>
@@ -74,6 +73,9 @@ BarNotation supports a growing list of structured math elements:
 | `accented` (custom)     | `AccentedNode`        | Custom over/under annotations (overset/underset).                                                                         | <div align="center"><img src="readme-images/node-type-render-screenshots/render-underset.png" alt="Custom accent example" width="100" /></div> | `Shift` + `ArrowUp` or `ArrowDown` |
 
 ## 📷 Screenshots
+
+> [!NOTE]
+> This (and the rest of the README, but especially this) section is outdated. The app is even way cooler now but updating the walkthrough takes a lot of time so I will update it once I have a more stable product. The image in the [introduction](#barnotation) is kept somewhat up-to-date. 
 
 ### 📝 Main Editing Interface  
 A simple, cell-based interface for math and text. Drag, type, and transform as you go.
@@ -326,8 +328,11 @@ The app should now be running at http://localhost:5173.
 
 Planned features and improvements include:
 
-- [X] Archive of notebooks (similar to collection archive)
-- [ ] Cell and collection duplication option
+- [X] (✅ Done but not in walkthrough yet) Archive of notebooks (similar to collection archive)
+- [X] (✅ Done but not in walkthrough yet) Cell and collection duplication option
+- [ ] Enable custom library zoom level
+- [ ] Implement soft delete, i.e. all deleted notes, collections and entries move to a bin so they can be recovered for a little bit before perma delete. (Especially entries since those are easy to accidentally delete)
+- [ ] "Lock mode" in preview mode as extra strict version where you cannot interact at all anymore. Just for viewing. 
 - [ ] Proper persistent storage (I currently put everything in the browser localStorage)
 - [ ] Full notebook export as LaTeX
 - [ ] Customizable hotkeys
@@ -335,6 +340,9 @@ Planned features and improvements include:
 - [ ] Hierarchical notebook sections (e.g., sections, subsections)
 - [ ] Autocomplete of existing command sequences when typing in `command-input` nodes
 - [ ] Proper user guide 
+- [ ] Bulk select of collection entries (for copying to another collection or bulk-delete)
+- [ ] Advanced search in collections and/or notes on inclusion/exclusion or depth of math node type(s)
+- [ ] Enable custom names on collection entries, and include it in search logic. Can be a button on hover, but single char is so small, I think either "edit mode" or a new modal for modifying entries (name, node, count). Latter may be overly complex for what it adds to the experience
 - [ ] Add `binom`, `vector` and `matrix` math node types
 - [ ] Add `cases` math node type
 - [ ] Add `multiline-equation` math node type

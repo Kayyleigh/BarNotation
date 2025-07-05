@@ -1,5 +1,12 @@
 // components/editor/NotationEditor.tsx
-import React, { useState, useRef, useCallback, useMemo } from "react";
+import React, {
+  useState,
+  useRef,
+  useCallback,
+  useMemo,
+  useEffect,
+  useTransition,
+} from "react";
 import InsertCellButtons from "../cells/InsertCellButtons";
 import BaseCell from "../cells/BaseCell";
 import TextCell from "../cells/TextCell";
@@ -21,51 +28,32 @@ interface NotationEditorProps {
   defaultZoom: number;
   resetZoomSignal: number;
   noteId: string | null;
-
-  /** Cell order (source of truth) */
   order: string[];
-
-  /** Editor state for math cells only */
   editorStates: Record<string, EditorState>;
   setEditorStates: React.Dispatch<React.SetStateAction<Record<string, EditorState>>>;
-
-  /** Text content state (externalized for undo/redo) */
   textContents: Record<string, string>;
   setTextContents: React.Dispatch<React.SetStateAction<Record<string, string>>>;
-
-  /** Drag/reorder insertion */
   addCell: (type: "math" | "text", index?: number) => void;
+  duplicateCell: (id: string) => void;
   deleteCell: (id: string) => void;
   updateOrder: (newOrder: string[]) => void;
-
-  /** Math preview visibility */
   showLatexMap: Record<string, boolean>;
   setShowLatexMap: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
-
-  /** Note metadata */
   metadata: NoteMetadata;
-  // setMetadata: React.Dispatch<React.SetStateAction<NoteMetadata>>;
   setMetadata: (noteId: string, metadata: Partial<NoteMetadata>) => void;
-
-  /** Drag-and-drop math node handler */
-  onDropNode: (
-    from: DragSource,
-    to: DropTarget,
-  ) => void;
+  onDropNode: (from: DragSource, to: DropTarget) => void;
 }
 
-/** Constructs a unified list of cells from order + state maps */
 const reconstructCells = (
   order: string[],
   editorStates: Record<string, EditorState>,
-  textContents: Record<string, string> = {},
-): CellData[] => {
-  return order.map((id) =>
+  textContents: Record<string, string> = {}
+): CellData[] =>
+  order.map((id) =>
     editorStates[id]
-      ? { id, type: "math", content: nodeToLatex(editorStates[id].rootNode) } // math content is in editorState, content string unused
+      ? { id, type: "math", content: nodeToLatex(editorStates[id].rootNode) }
       : { id, type: "text", content: textContents[id] || "" }
   );
-};
 
 const NotationEditor: React.FC<NotationEditorProps> = ({
   noteId,
@@ -78,6 +66,7 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
   textContents,
   setTextContents,
   addCell,
+  duplicateCell,
   deleteCell,
   updateOrder,
   showLatexMap,
@@ -86,19 +75,9 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
   setMetadata,
   onDropNode,
 }) => {
-  // console.log("Rendering NotationEditor", noteId);
-
   const [selectedCellId, setSelectedCellId] = useState<string | null>(null);
   const [hoveredInsertIndex, setHoveredInsertIndex] = useState<number | null>(null);
-
-  const handleMetadataUpdate = useCallback(
-    (partialMetadata: Partial<NoteMetadata>) => {
-      if (noteId) {
-        setMetadata(noteId, partialMetadata);
-      }
-    },
-    [noteId, setMetadata]
-  );  
+  const cellRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const {
     draggingCellId,
@@ -108,33 +87,62 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
     endDrag,
   } = useCellDragState();
 
-  const cellRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const baseCells = useMemo(
+    () => reconstructCells(order, editorStates, textContents),
+    [order, editorStates, textContents]
+  );
 
-  //TODO SYNC WITH GLOBALLLL
-  //rn there is just no cells at all in actual global. Duplicate does say 3 cells but it does not show em 
+  const [visibleCells, setVisibleCells] = useState(baseCells);
+  const [isPending, startTransition] = useTransition();
 
-  /** Derived cells list from current state */
-  const cells = useMemo(() => {
-    return reconstructCells(order, editorStates, textContents);
-  }, [order, editorStates, textContents]);
-  
+  const prevNoteIdRef = useRef(noteId);
+  const baseCellsRef = useRef(baseCells);
+  baseCellsRef.current = baseCells;
 
-  /** Updates local text cell content */
-  const updateCellContent = (id: string, newContent: string) => {
+  // Update visibleCells immediately when baseCells change *and* noteId is the same (typing/editing)
+  useEffect(() => {
+    if (noteId === prevNoteIdRef.current) {
+      setVisibleCells(baseCells);
+    }
+    // Always update ref after check
+    prevNoteIdRef.current = noteId;
+  }, [baseCells, noteId]);
+
+  // Run transition only when noteId changes (loading spinner shown)
+  useEffect(() => {
+    if (noteId !== prevNoteIdRef.current) {
+      startTransition(() => {
+        setVisibleCells(baseCellsRef.current);
+      });
+      prevNoteIdRef.current = noteId;
+    }
+  }, [noteId]);
+
+  const updateCellContent = useCallback((id: string, newContent: string) => {
     setTextContents((prev) => ({ ...prev, [id]: newContent }));
-  };
+  }, [setTextContents]);
 
-  /** Toggles LaTeX preview for a math cell */
-  const toggleShowLatex = (cellId: string) => {
+  const toggleShowLatex = useCallback((cellId: string) => {
     setShowLatexMap((prev) => ({ ...prev, [cellId]: !prev[cellId] }));
-  };
+  }, [setShowLatexMap]);
 
-  /** Handles drag start + pointer movement for reordering */
-  const handlePointerDown = (
-    e: React.PointerEvent,
-    id: string,
-    index: number
-  ) => {
+  const handleMetadataUpdate = useCallback((partial: Partial<NoteMetadata>) => {
+    if (noteId) setMetadata(noteId, partial);
+  }, [noteId, setMetadata]);
+
+  const updateEditorState = useCallback((id: string, newState: EditorState) => {
+    setEditorStates((prev) => ({ ...prev, [id]: newState }));
+  }, [setEditorStates]);
+
+  const memoizedUpdateEditorStateFns = useMemo(() => {
+    const fns: Record<string, (newState: EditorState) => void> = {};
+    for (const id of order) {
+      fns[id] = (newState) => updateEditorState(id, newState);
+    }
+    return fns;
+  }, [order, updateEditorState]);
+
+  const handlePointerDown = useCallback((e: React.PointerEvent, id: string, index: number) => {
     e.preventDefault();
     startDrag(id, index);
 
@@ -162,138 +170,102 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
 
     window.addEventListener("pointermove", handlePointerMove);
     window.addEventListener("pointerup", handlePointerUp);
-  };
-
-  const updateEditorState = useCallback(
-    (id: string, newState: EditorState) => {
-      setEditorStates((prev) => ({
-        ...prev,
-        [id]: newState,
-      }));
-    },
-    [setEditorStates]
-  );
-
-  const memoizedUpdateEditorStateFns = useMemo(() => {
-    const fns: Record<string, (newState: EditorState) => void> = {};
-    order.forEach((id) => {
-      fns[id] = (newState: EditorState) => updateEditorState(id, newState);
-    });
-    return fns;
-  }, [order, updateEditorState]);
+  }, [order, startDrag, updateDragOver, endDrag, updateOrder]);
 
   return (
-    <main
-      className={styles.editorLayout}
-      onClick={(e) => {
-        if (!(e.target as HTMLElement).closest(".cell")) {
-          setSelectedCellId(null);
-        }
-      }}
-    >
+    <main className={styles.editorLayout} onClick={(e) => {
+      if (!(e.target as HTMLElement).closest(".cell")) {
+        setSelectedCellId(null);
+      }
+    }}>
       <NoteMetaDataSection
         metadata={metadata}
-        setMetadata={handleMetadataUpdate} //??? TODO
+        setMetadata={handleMetadataUpdate}
         isPreviewMode={isPreviewMode}
       />
 
       <div className={styles.cellList}>
-        {cells.length === 0 ? (
+        {(visibleCells.length > 3 && isPending) ? (
+          <div className={styles.loadingContainer}>
+            <div className={styles.spinner} />
+            <p className={styles.loadingText}>Loading cells, this may take a while...</p>
+          </div>
+        ) : visibleCells.length === 0 ? (
           <div className={styles.emptyMessage}>
             No cells yet. Add one to get started!
           </div>
-        ) : (        
-          cells.map((cell, index) => (
-            <React.Fragment key={cell.id}>
-              <div
-                className={`insert-zone ${
-                  dragOverInsertIndex === index ? "drag-over" : ""
-                }`}
-                onMouseEnter={() => setHoveredInsertIndex(index)}
-                onMouseLeave={() => setHoveredInsertIndex(null)}
-                onPointerEnter={() =>
-                  draggingCellId !== null && updateDragOver(index)
-                }
-              >
-                <InsertCellButtons
-                  onInsert={(type) => addCell(type, index)}
-                  isVisible={hoveredInsertIndex === index}
-                />
-              </div>
+        ) : visibleCells.map((cell, index) => (
+          <React.Fragment key={cell.id}>
+            <div
+              className={`insert-zone ${dragOverInsertIndex === index ? "drag-over" : ""}`}
+              onMouseEnter={() => setHoveredInsertIndex(index)}
+              onMouseLeave={() => setHoveredInsertIndex(null)}
+              onPointerEnter={() => draggingCellId !== null && updateDragOver(index)}
+            >
+              <InsertCellButtons
+                onInsert={(type) => addCell(type, index)}
+                isVisible={hoveredInsertIndex === index}
+              />
+            </div>
 
-              <div
-                ref={(el) => {
-                  if (el) cellRefs.current[index] = el;
-                }}
+            <div ref={(el) => { if (el) cellRefs.current[index] = el; }}>
+              <BaseCell
+                typeLabel={cell.type === "math" ? "Math" : "Text"}
+                isSelected={selectedCellId === cell.id}
+                isPreviewMode={isPreviewMode}
+                isDragging={draggingCellId === cell.id}
+                onClick={() => setSelectedCellId(cell.id)}
+                onDelete={() => deleteCell(cell.id)}
+                onDuplicate={() => duplicateCell(cell.id)}
+                handlePointerDown={(e) => handlePointerDown(e, cell.id, index)}
+                toolbarExtras={cell.type === "math" ? (
+                  <Tooltip text={showLatexMap[cell.id] ? "Hide LaTeX output" : "Show LaTeX output"}>
+                    <button
+                      className={clsx("button", "preview-button")}
+                      onClick={() => toggleShowLatex(cell.id)}
+                    >
+                      {showLatexMap[cell.id] ? "🙈 LaTeX" : "👁️ LaTeX"}
+                    </button>
+                  </Tooltip>
+                ) : null}
               >
-                <BaseCell
-                  typeLabel={cell.type === "math" ? "Math" : "Text"}
-                  isSelected={selectedCellId === cell.id}
-                  isPreviewMode={isPreviewMode}
-                  isDragging={draggingCellId === cell.id}
-                  onClick={() => setSelectedCellId(cell.id)}
-                  onDelete={() => deleteCell(cell.id)}
-                  handlePointerDown={(e) =>
-                    handlePointerDown(e, cell.id, index)
-                  }
-                  toolbarExtras={
-                    cell.type === "math" ? (
-                      <Tooltip
-                        text={
-                          showLatexMap[cell.id]
-                            ? "Hide LaTeX output for this cell"
-                            : "Show LaTeX output for this cell"
-                        }
-                      >
-                        <button
-                          className={clsx("button", "preview-button")}
-                          onClick={() => toggleShowLatex(cell.id)}
-                        >
-                          {showLatexMap[cell.id] ? "🙈 LaTeX" : "👁️ LaTeX"}
-                        </button>
-                      </Tooltip>
-                    ) : null
-                  }
-                >
-                  {cell.type === "text" ? (
-                    <TextCell
-                      value={cell.content}
-                      isPreviewMode={isPreviewMode}
-                      onChange={(newValue) =>
-                        updateCellContent(cell.id, newValue)
-                      }
-                    />
-                  ) : (
-                    <MathCell
-                      cellId={cell.id}
-                      isPreviewMode={isPreviewMode}
-                      defaultZoom={defaultZoom}
-                      resetZoomSignal={resetZoomSignal}
-                      showLatex={showLatexMap[cell.id] ?? false}
-                      editorState={editorStates[cell.id]}
-                      updateEditorState={memoizedUpdateEditorStateFns[cell.id]}
-                      onDropNode={onDropNode}
-                    />
-                  )}
-                </BaseCell>
-              </div>
-            </React.Fragment>
-          )))}
+                {cell.type === "text" ? (
+                  <TextCell
+                    value={cell.content}
+                    isPreviewMode={isPreviewMode}
+                    onChange={(newVal) => updateCellContent(cell.id, newVal)}
+                  />
+                ) : editorStates[cell.id] ? (
+                  <MathCell
+                    cellId={cell.id}
+                    isPreviewMode={isPreviewMode}
+                    defaultZoom={defaultZoom}
+                    resetZoomSignal={resetZoomSignal}
+                    showLatex={showLatexMap[cell.id] ?? false}
+                    editorState={editorStates[cell.id]}
+                    updateEditorState={memoizedUpdateEditorStateFns[cell.id]}
+                    onDropNode={onDropNode}
+                  />
+                ) : (
+                  <div className={styles.loadingContainer}>
+                    <p className={styles.loadingText}>Loading...</p>
+                  </div>
+                )}
+              </BaseCell>
+            </div>
+          </React.Fragment>
+        ))}
       </div>
 
       <div
-        className={`insert-zone ${
-          dragOverInsertIndex === cells.length ? "drag-over" : ""
-        }`}
-        onMouseEnter={() => setHoveredInsertIndex(cells.length)}
+        className={`insert-zone ${dragOverInsertIndex === visibleCells.length ? "drag-over" : ""}`}
+        onMouseEnter={() => setHoveredInsertIndex(visibleCells.length)}
         onMouseLeave={() => setHoveredInsertIndex(null)}
-        onPointerEnter={() =>
-          draggingCellId !== null && updateDragOver(cells.length)
-        }
+        onPointerEnter={() => draggingCellId !== null && updateDragOver(visibleCells.length)}
       >
         <InsertCellButtons
           onInsert={(type) => addCell(type)}
-          isVisible={isPreviewMode ? hoveredInsertIndex === cells.length : true}
+          isVisible={isPreviewMode ? hoveredInsertIndex === visibleCells.length : true}
         />
       </div>
     </main>

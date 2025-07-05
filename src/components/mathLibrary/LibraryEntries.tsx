@@ -1,5 +1,5 @@
-//components/mathLibrary/LibraryEntries.tsx
-import React, { useMemo, useCallback } from "react";
+// components/mathLibrary/LibraryEntries.tsx
+import React, { useMemo, useCallback, useEffect } from "react";
 import { useDragContext } from "../../hooks/useDragContext";
 import type { LibraryCollection } from "../../models/libraryTypes";
 import styles from "./MathLibrary.module.css";
@@ -9,13 +9,52 @@ import Tooltip from "../tooltips/Tooltip";
 
 interface LibraryEntriesProps {
   collections: LibraryCollection[];
-  setCollections: React.Dispatch<React.SetStateAction<LibraryCollection[]>>
+  setCollections: React.Dispatch<React.SetStateAction<LibraryCollection[]>>;
   activeColl: string;
   sortOption: SortOption;
   searchTerm: string;
   onDrop: (e: React.DragEvent, dropIndex: number | null) => void;
-
+  onRendered?: () => void;
 }
+
+interface LibraryEntryItemProps {
+  entry: LibraryCollection["entries"][0];
+  isDropTarget: boolean;
+  onDragStart: (e: React.DragEvent) => void;
+  onDragOver: (e: React.DragEvent) => void;
+  onDragLeave: () => void;
+  onDelete: () => void;
+}
+
+const LibraryEntryItem: React.FC<LibraryEntryItemProps> = React.memo(
+  ({ entry, isDropTarget, onDragStart, onDragOver, onDragLeave, onDelete }) => {
+    return (
+      <div
+        className={`${styles.libraryEntry} ${isDropTarget ? styles.dropTarget : ""}`}
+        draggable
+        onDragStart={onDragStart}
+        onDragOver={onDragOver}
+        onDragLeave={onDragLeave}
+        role="listitem"
+        tabIndex={0}
+      >
+        <Tooltip text={entry.latex}>
+          <MathView node={entry.node} />
+        </Tooltip>
+        <div className={styles.meta}>
+          <span>{entry.draggedCount}×</span>
+        </div>
+        <button
+          className={styles.entryDeleteButton}
+          title="Delete entry"
+          onClick={onDelete}
+        >
+          ✕
+        </button>
+      </div>
+    );
+  }
+);
 
 const LibraryEntries: React.FC<LibraryEntriesProps> = ({
   collections,
@@ -24,6 +63,7 @@ const LibraryEntries: React.FC<LibraryEntriesProps> = ({
   sortOption,
   searchTerm,
   onDrop,
+  onRendered,
 }) => {
   console.warn(`Rendering LibraryEntries`);
 
@@ -32,7 +72,7 @@ const LibraryEntries: React.FC<LibraryEntriesProps> = ({
   // Find the active collection
   const collection = collections.find((c) => c.id === activeColl);
 
-  // Compute filtered and sorted entries, or empty array if no collection
+  // Compute filtered and sorted entries, always return an array (empty if no collection)
   const filteredEntries = useMemo(() => {
     if (!collection) return [];
 
@@ -67,21 +107,25 @@ const LibraryEntries: React.FC<LibraryEntriesProps> = ({
     return filtered;
   }, [collection, searchTerm, sortOption]);
 
-  // All hooks (useCallback) must be called here before any returns
+  // Drag and drop handlers — hooks must be declared unconditionally here
+
   const handleDragStartAtIndex = useCallback(
     (index: number) => (e: React.DragEvent) => {
       e.stopPropagation();
+      const entry = filteredEntries[index];
+      if (!entry) return;
+
       setDraggingNode({
         sourceType: "library",
         cellId: activeColl,
-        containerId: filteredEntries[index].id,
+        containerId: entry.id,
         index,
-        node: filteredEntries[index].node,
+        node: entry.node,
       });
       setDropTarget(null);
       e.dataTransfer.effectAllowed = "move";
-  
-      const latexText = filteredEntries[index].latex || "";
+
+      const latexText = entry.latex || "";
       e.dataTransfer.setData("text/plain", latexText);
     },
     [activeColl, filteredEntries, setDraggingNode, setDropTarget]
@@ -101,18 +145,17 @@ const LibraryEntries: React.FC<LibraryEntriesProps> = ({
     },
     [draggingNode, activeColl, setDropTarget]
   );
-  
-  const handleDropOnEntryAtIndex = useCallback(
-    (index: number) => (e: React.DragEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      console.warn(`dropping ${e} at ${index}`)
-      onDrop(e, index);
-      setDraggingNode(null);
-      setDropTarget(null);
-    },
-    [onDrop, setDraggingNode, setDropTarget]
-  );
+
+  // const handleDropOnEntryAtIndex = useCallback(
+  //   (index: number) => (e: React.DragEvent) => {
+  //     e.preventDefault();
+  //     e.stopPropagation();
+  //     onDrop(e, index);
+  //     setDraggingNode(null);
+  //     setDropTarget(null);
+  //   },
+  //   [onDrop, setDraggingNode, setDropTarget]
+  // );
 
   const handleDragLeaveEntry = useCallback(() => {
     if (dropTarget?.cellId === "library") {
@@ -128,11 +171,11 @@ const LibraryEntries: React.FC<LibraryEntriesProps> = ({
       setDropTarget({
         cellId: "library",
         containerId: activeColl,
-        index: 0,
+        index: filteredEntries.length, // drop at end
       });
       e.dataTransfer.dropEffect = "move";
     },
-    [draggingNode, activeColl, setDropTarget]
+    [draggingNode, activeColl, filteredEntries.length, setDropTarget]
   );
 
   const handleDropOnListEnd = useCallback(
@@ -146,8 +189,29 @@ const LibraryEntries: React.FC<LibraryEntriesProps> = ({
     [onDrop, setDraggingNode, setDropTarget]
   );
 
-  // Now that hooks are all called, return early if no collection
+  // Memoize arrays of handlers per entry index to avoid recreating inline functions each render
+  const dragStartHandlers = useMemo(
+    () => filteredEntries.map((_, idx) => handleDragStartAtIndex(idx)),
+    [filteredEntries, handleDragStartAtIndex]
+  );
+  const dragOverHandlers = useMemo(
+    () => filteredEntries.map((_, idx) => handleDragOverEntryAtIndex(idx)),
+    [filteredEntries, handleDragOverEntryAtIndex]
+  );
+  // const dropHandlers = useMemo(
+  //   () => filteredEntries.map((_, idx) => handleDropOnEntryAtIndex(idx)),
+  //   [filteredEntries, handleDropOnEntryAtIndex]
+  // );
+
+  useEffect(() => {
+    if (filteredEntries.length > 0 || collection?.entries.length === 0) {
+      onRendered?.();
+    }
+  }, [filteredEntries, collection?.entries.length, onRendered]);
+  
+
   if (!collection) return null;
+  
 
   return (
     <div
@@ -158,56 +222,37 @@ const LibraryEntries: React.FC<LibraryEntriesProps> = ({
       aria-label={`Entries in collection ${collection.name}`}
     >
       {filteredEntries.map((entry, idx) => (
-        <div
+        <LibraryEntryItem
           key={entry.id}
-          className={`${styles.libraryEntry} ${
-            dropTarget &&
-            dropTarget.cellId === "library" &&
+          entry={entry}
+          isDropTarget={
+            dropTarget?.cellId === "library" &&
             dropTarget.containerId === activeColl &&
             dropTarget.index === idx
-              ? styles.dropTarget
-              : ""
-          }`}
-          draggable
-          onDragStart={handleDragStartAtIndex(idx)}
-          onDragOver={handleDragOverEntryAtIndex(idx)}
+          }
+          onDragStart={dragStartHandlers[idx]}
+          onDragOver={dragOverHandlers[idx]}
           onDragLeave={handleDragLeaveEntry}
-          // onDrop={handleDropOnEntryAtIndex(idx)}
-          role="listitem"
-          tabIndex={0}
-        >
-          <Tooltip text={entry.latex}>
-            <MathView node={entry.node} />
-          </Tooltip>
-          <div className={styles.meta}>
-            <span>{entry.draggedCount}×</span>
-          </div>
-          <button
-            className={styles.entryDeleteButton}
-            title="Delete entry"
-            onClick={() => {
-              // Create a new collection array with the entry removed from the active collection
-              const updatedCollections = collections.map((coll) => {
-                if (coll.id !== activeColl) return coll; // unchanged
-                return {
-                  ...coll,
-                  entries: coll.entries.filter((e) => e.id !== entry.id),
-                };
-              });
-              setCollections(updatedCollections);
-            }}  
-          >
-            ✕
-          </button>
-        </div>
+          onDelete={() => {
+            const updatedCollections = collections.map((coll) => {
+              if (coll.id !== activeColl) return coll;
+              return {
+                ...coll,
+                entries: coll.entries.filter((e) => e.id !== entry.id),
+              };
+            });
+            setCollections(updatedCollections);
+          }}
+          // onDrop={dropHandlers[idx]}
+        />
       ))}
-      {filteredEntries.length === 0 && (
-        collection.entries.length === 0 
-          ? <p className={styles.empty}>Drag math expression here</p>
-          : <p className={styles.empty}>No matches found</p>
-      )}
-      {dropTarget &&
-        dropTarget.cellId === "library" &&
+      {filteredEntries.length === 0 &&
+        (collection.entries.length === 0 ? (
+          <p className={styles.empty}>Drag math expression here</p>
+        ) : (
+          <p className={styles.empty}>No matches found</p>
+        ))}
+      {dropTarget?.cellId === "library" &&
         dropTarget.containerId === activeColl &&
         dropTarget.index === null && <div className={styles.dropTargetEnd} />}
     </div>

@@ -22,3 +22,15 @@
   font-style: italic;
   margin: 2em 0 2em 2em;
 }
+
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  opacity: 0.5;
+}
+
+.loadingText {
+  font-size: 1rem;
+  color: var(--math-text-color);
+}
