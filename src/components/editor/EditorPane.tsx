@@ -1,13 +1,32 @@
 // components/editor/EditorPane.tsx
-import React, { useState, useRef, useEffect } from "react";
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+} from "react";
 import EditorHeaderBar from "./EditorHeaderBar";
 import NotationEditor from "./NotationEditor";
 import styles from "./Editor.module.css";
 import type { NoteMetadata } from "../../models/noteTypes";
+import type { MathNode } from "../../models/types";
 import { useEditorHistory } from "../../hooks/EditorHistoryContext";
 import { createRootWrapper } from "../../models/nodeFactories";
 import { createEditorState, type EditorState } from "../../logic/editor-state";
-import type { DropSource, DropTarget } from "../layout/EditorWorkspace";
+
+type DropSource = {
+  sourceType: "cell" | "library";
+  cellId?: string;
+  containerId: string;
+  index: number;
+  node: MathNode;
+};
+
+type DropTarget = {
+  cellId: string;
+  containerId: string;
+  index: number;
+};
 
 interface EditorPaneProps {
   noteId: string | null;
@@ -17,18 +36,14 @@ interface EditorPaneProps {
   onDropNode: (from: DropSource, to: DropTarget) => void;
 }
 
-/** 
- * Load the editor state JSON from localStorage by noteId.
- * Returns parsed state or null if none saved yet.
- */
+// LocalStorage helpers
 function loadNoteState(noteId: string) {
   try {
     const saved = localStorage.getItem(`note-editor-state-${noteId}`);
     if (!saved) return null;
-    console.warn(`THIS IS ACTUALLY USED`)
     return JSON.parse(saved) as {
       order: string[];
-      states: Record<string, EditorState>; // loosely typed EditorState, adjust as needed
+      states: Record<string, EditorState>;
       textContents: Record<string, string>;
     };
   } catch {
@@ -36,21 +51,15 @@ function loadNoteState(noteId: string) {
   }
 }
 
-/** 
- * Save the editor state JSON to localStorage by noteId.
- */
-function saveNoteState(
-  noteId: string,
-  state: {
-    order: string[];
-    states: Record<string, EditorState>;
-    textContents: Record<string, string>;
-  }
-) {
+function saveNoteState(noteId: string, state: {
+  order: string[];
+  states: Record<string, EditorState>;
+  textContents: Record<string, string>;
+}) {
   try {
     localStorage.setItem(`note-editor-state-${noteId}`, JSON.stringify(state));
   } catch {
-    // ignore write errors (quota, etc)
+    // Ignore write errors
   }
 }
 
@@ -64,206 +73,188 @@ const EditorPane: React.FC<EditorPaneProps> = ({
   const { history, updateState } = useEditorHistory();
   const { states: editorStates, order, textContents } = history.present;
 
-  // Update textContents safely
-  const setTextContents = (value: React.SetStateAction<typeof textContents>) => {
-    if (typeof value === "function") {
-      const newContents = value(textContents);
-      updateState({ states: editorStates, order, textContents: newContents });
-      if (noteId) saveNoteState(noteId, { order, states: editorStates, textContents: newContents });
-    } else {
-      updateState({ states: editorStates, order, textContents: value });
-      if (noteId) saveNoteState(noteId, { order, states: editorStates, textContents: value });
-    }
-  };
-
-  // Update editorStates safely
-  const setEditorStates = (value: React.SetStateAction<typeof editorStates>) => {
-    if (typeof value === "function") {
-      const newStates = value(editorStates);
-      updateState({ states: newStates, order, textContents });
-      if (noteId) saveNoteState(noteId, { order, states: newStates, textContents });
-    } else {
-      updateState({ states: value, order, textContents });
-      if (noteId) saveNoteState(noteId, { order, states: value, textContents });
-    }
-  };
-
-  // Add a new cell (math or text) at optional index
-  const addCell = (type: "math" | "text", index?: number) => {
-    const newCellId = Date.now().toString();
-
-    // Insert new cell ID into order array
-    const newOrder = [...order];
-    if (index === undefined) {
-      newOrder.push(newCellId);
-    } else {
-      newOrder.splice(index, 0, newCellId);
-    }
-
-    // If math cell, create initial editor state
-    const newStates = { ...editorStates };
-    if (type === "math") {
-      const root = createRootWrapper();
-      const editorState = createEditorState(root);
-      newStates[newCellId] = editorState;
-    }
-
-    const newTextContents = { ...textContents };
-    if (type === "text") {
-      newTextContents[newCellId] = "";
-    }
-
-    updateState({
-      order: newOrder,
-      states: newStates,
-      textContents: newTextContents,
-    });
-
-    if (noteId) {
-      saveNoteState(noteId, {
-        order: newOrder,
-        states: newStates,
-        textContents: newTextContents,
-      });
-    }
-  };
-
-  // Delete a cell by id
-  const deleteCell = (id: string) => {
-    const newOrder = order.filter((cellId) => cellId !== id);
-    const newStates = { ...editorStates };
-    delete newStates[id];
-    const newTextContents = { ...textContents };
-    delete newTextContents[id];
-
-    updateState({
-      order: newOrder,
-      states: newStates,
-      textContents: newTextContents,
-    });
-
-    if (noteId) {
-      saveNoteState(noteId, {
-        order: newOrder,
-        states: newStates,
-        textContents: newTextContents,
-      });
-    }
-  };
-
-  // Update order only
-  const updateOrder = (newOrder: string[]) => {
-    updateState({
-      order: newOrder,
-      states: editorStates,
-      textContents,
-    });
-
-    if (noteId) {
-      saveNoteState(noteId, {
-        order: newOrder,
-        states: editorStates,
-        textContents,
-      });
-    }
-  };
-
-  // Preview mode state with localStorage persistence
-  const [isPreviewMode, setIsPreviewMode] = useState(() => {
-    return localStorage.getItem("previewMode") === "on";
-  });
-
-  // Default zoom state with persistence
-  const [defaultZoom, setDefaultZoom] = useState(() => {
-    const stored = localStorage.getItem("defaultZoom");
-    return stored ? parseFloat(stored) : 1;
-  });
-
+  // Persistent Zoom + Preview Mode
+  const [defaultZoom, setDefaultZoom] = useState(() =>
+    parseFloat(localStorage.getItem("defaultZoom") ?? "1")
+  );
   const [resetZoomSignal, setResetZoomSignal] = useState(0);
   const [showZoomDropdown, setShowZoomDropdown] = useState(false);
+  const [isPreviewMode, setIsPreviewMode] = useState(() =>
+    localStorage.getItem("previewMode") === "on"
+  );
+  const [showLatexMap, setShowLatexMap] = useState<Record<string, boolean>>({});
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
+  // Persist current editor state
+  const persistState = useCallback(
+    (next: {
+      order: string[];
+      states: typeof editorStates;
+      textContents: typeof textContents;
+    }) => {
+      updateState(next);
+      if (noteId) saveNoteState(noteId, next);
+    },
+    [noteId, updateState]
+  );
+
+  const setEditorStates = useCallback(
+    (value: React.SetStateAction<typeof editorStates>) => {
+      const newStates =
+        typeof value === "function" ? value(editorStates) : value;
+      persistState({ order, states: newStates, textContents });
+    },
+    [order, editorStates, textContents, persistState]
+  );
+
+  const setTextContents = useCallback(
+    (value: React.SetStateAction<typeof textContents>) => {
+      const newContents =
+        typeof value === "function" ? value(textContents) : value;
+      persistState({ order, states: editorStates, textContents: newContents });
+    },
+    [order, editorStates, textContents, persistState]
+  );
+
+  const addCell = useCallback(
+    (type: "math" | "text", index?: number) => {
+      const newId = Date.now().toString();
+      const newOrder = [...order];
+      
+      if (index != null) {
+        newOrder.splice(index, 0, newId);
+      } else {
+        newOrder.push(newId);
+      }
+
+      const newStates = { ...editorStates };
+      const newTextContents = { ...textContents };
+
+      if (type === "math") {
+        newStates[newId] = createEditorState(createRootWrapper());
+      } else {
+        newTextContents[newId] = "";
+      }
+
+      persistState({ order: newOrder, states: newStates, textContents: newTextContents });
+    },
+    [order, editorStates, textContents, persistState]
+  );
+
+  const deleteCell = useCallback(
+    (id: string) => {
+      const newOrder = order.filter((cellId) => cellId !== id);
+      const newStates = { ...editorStates };
+      const newTextContents = { ...textContents };
+      delete newStates[id];
+      delete newTextContents[id];
+      persistState({ order: newOrder, states: newStates, textContents: newTextContents });
+    },
+    [order, editorStates, textContents, persistState]
+  );
+
+  const duplicateCell = useCallback(
+    (id: string) => {
+      const newId = Date.now().toString();
+      const index = order.indexOf(id);
+      const newOrder = [...order];
+
+      if (index != -1) {
+        newOrder.splice(index + 1, 0, newId);
+      } else {
+        newOrder.push(newId);
+      }
+
+      const newStates = { ...editorStates };
+      const newTextContents = { ...textContents };
+
+      if (editorStates[id]) {
+        newStates[newId] = structuredClone(editorStates[id]);
+      }
+      if (textContents[id] != null) {
+        newTextContents[newId] = textContents[id];
+      }
+
+      persistState({ order: newOrder, states: newStates, textContents: newTextContents });
+    },
+    [order, editorStates, textContents, persistState]
+  );
+
+  const updateOrder = useCallback(
+    (newOrder: string[]) => {
+      persistState({ order: newOrder, states: editorStates, textContents });
+    },
+    [editorStates, textContents, persistState]
+  );
+
+  // Zoom + Preview Handlers
+  const resetAllZooms = useCallback(() => {
+    setResetZoomSignal((n) => n + 1);
+    localStorage.setItem("defaultZoom", String(defaultZoom));
+  }, [defaultZoom]);
+
+  const handleZoomChange = useCallback((value: number) => {
+    const clamped = Math.max(0.5, Math.min(2, value));
+    setDefaultZoom(clamped);
+    localStorage.setItem("defaultZoom", clamped.toString());
+    resetAllZooms();
+  }, [resetAllZooms]);
+
+  const togglePreviewMode = useCallback(() => {
+    setIsPreviewMode((prev) => {
+      localStorage.setItem("previewMode", prev ? "off" : "on");
+      return !prev;
+    });
+  }, []);
+
+  const showAllLatex = useCallback(() => {
+    setShowLatexMap((prev) =>
+      Object.fromEntries(Object.keys(prev).map((key) => [key, true]))
+    );
+  }, []);
+
+  const hideAllLatex = useCallback(() => {
+    setShowLatexMap((prev) =>
+      Object.fromEntries(Object.keys(prev).map((key) => [key, false]))
+    );
+  }, []);
+
+  // 📥 Effects
   useEffect(() => {
     if (!noteId) return;
-
-    // Load saved editor state for new noteId, or empty fallback
-    const loadedState = loadNoteState(noteId);
-    if (loadedState) {
-      updateState({
-        order: loadedState.order,
-        states: loadedState.states,
-        textContents: loadedState.textContents,
-      });
-    } else {
-      // No saved state - clear editor for this note
-      updateState({
-        order: [],
-        states: {},
-        textContents: {},
-      });
-    }
-  }, [noteId, updateState]);
+    const loaded = loadNoteState(noteId);
+    persistState(
+      loaded ?? { order: [], states: {}, textContents: {} }
+    );
+  }, [noteId, persistState]);
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setShowZoomDropdown(false);
       }
     };
     if (showZoomDropdown) {
       document.addEventListener("mousedown", handleClickOutside);
     }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showZoomDropdown]);
-
-  const resetAllZooms = () => {
-    setResetZoomSignal((n) => n + 1);
-    localStorage.setItem("defaultZoom", String(defaultZoom));
-  };
-
-  const handleZoomChange = (value: number) => {
-    const clamped = Math.max(0.5, Math.min(2, value));
-    setDefaultZoom(clamped);
-    localStorage.setItem("defaultZoom", clamped.toString());
-    resetAllZooms();
-  };
-
-  // Show/hide LaTeX map per cell
-  const [showLatexMap, setShowLatexMap] = useState<Record<string, boolean>>({});
-
-  const showAllLatex = () => {
-    setShowLatexMap((prev) =>
-      Object.fromEntries(Object.keys(prev).map((key) => [key, true]))
-    );
-  };
-
-  const hideAllLatex = () => {
-    setShowLatexMap((prev) =>
-      Object.fromEntries(Object.keys(prev).map((key) => [key, false]))
-    );
-  };
 
   return (
     <div className={styles.editorPane} style={style}>
       <EditorHeaderBar
         isPreviewMode={isPreviewMode}
-        togglePreviewMode={() => setIsPreviewMode((p) => !p)}
+        togglePreviewMode={togglePreviewMode}
         defaultZoom={defaultZoom}
         resetAllZooms={resetAllZooms}
+        handleZoomChange={handleZoomChange}
         showAllLatex={showAllLatex}
         hideAllLatex={hideAllLatex}
-        handleZoomChange={handleZoomChange}
         showZoomDropdown={showZoomDropdown}
         setShowZoomDropdown={setShowZoomDropdown}
         dropdownRef={dropdownRef}
         onAddCell={addCell}
       />
-
       <NotationEditor
         noteId={noteId}
         isPreviewMode={isPreviewMode}
@@ -272,6 +263,7 @@ const EditorPane: React.FC<EditorPaneProps> = ({
         order={order}
         addCell={addCell}
         deleteCell={deleteCell}
+        duplicateCell={duplicateCell}
         updateOrder={updateOrder}
         editorStates={editorStates}
         setEditorStates={setEditorStates}

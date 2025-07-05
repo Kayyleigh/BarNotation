@@ -1,13 +1,13 @@
 import React, { useCallback, useEffect, useRef } from "react";
 import EditorPane from "../editor/EditorPane";
 import MathLibrary from "../mathLibrary/MathLibrary";
-import type { MathNode } from "../../models/types";
 import { deleteNodeById, insertNodeAtIndex } from "../../logic/node-manipulation";
 import { cloneTreeWithNewIds, isDescendantOrSelf } from "../../utils/treeUtils";
 import { useEditorHistory } from "../../hooks/EditorHistoryContext";
 import { nodeToLatex } from "../../models/nodeToLatex"; 
 import type { CellData, NoteMetadata } from "../../models/noteTypes";
 import styles from "./EditorWorkspace.module.css";
+import type { MathNode } from "../../models/types";
 
 interface EditorWorkspaceProps {
   noteId: string | null;
@@ -46,6 +46,9 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({
   const { states: editorStates, order, textContents } = history.present;
 
   const updateLibraryEntryRef = useRef<(id: string) => void>(() => {});
+
+  // TODO: I AM NOT USING CELLS AT ALL ANYMORE I THINK. MUST FIND OUT HOW OR WHETHER TO LINK OR MERGE THAT LOGIC
+  // RIGHT NOW WHEN I ADD CELLS, THEY WILL NOT UPDATE IN THE CELL COUNTS IN THE MENU BECAUSE NO CELL WAS ADDED, ONLY EDITORSTATE
 
   const syncNoteCellsWithOrder = useCallback(
     (order: string[], states: typeof editorStates, textContentsParam: typeof textContents) => {

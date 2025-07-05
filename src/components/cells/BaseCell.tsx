@@ -7,6 +7,7 @@ export type BaseCellProps = {
   isSelected: boolean;
   isPreviewMode: boolean;
   onDelete: () => void;
+  onDuplicate: () => void;
   onClick: () => void;
   toolbarExtras?: React.ReactNode;
   children: React.ReactNode;
@@ -20,6 +21,7 @@ const BaseCell: React.FC<BaseCellProps> = ({
   isSelected,
   isPreviewMode,
   onDelete,
+  onDuplicate,
   onClick,
   toolbarExtras,
   children,
@@ -51,6 +53,11 @@ const BaseCell: React.FC<BaseCellProps> = ({
           {(isSelected || hovered) && (
             <div className="cell-toolbar">
               {toolbarExtras}
+              <Tooltip text="Duplicate cell">
+                <button className={clsx("button")} onClick={onDuplicate}>
+                  Duplicate
+                </button>
+              </Tooltip>
               <Tooltip text="Delete cell">
                 <button className={clsx("button", "delete-button")} onClick={onDelete}>
                   🗑️

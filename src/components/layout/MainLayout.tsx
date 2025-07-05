@@ -261,9 +261,9 @@ const MainLayout: React.FC<MainLayoutProps> = ({
         title: `${original.metadata.title} (Copy)`,
         createdAt: Date.now(), 
       },
-      cells: {
+      cells: [
         ...original.cells,
-      }
+      ]
     };
     const originalEditorState = localStorage.getItem(`note-editor-state-${original.id}`);
     if (originalEditorState) {
