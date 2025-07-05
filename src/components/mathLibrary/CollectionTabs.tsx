@@ -122,16 +122,59 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
     setEditingCollId(null);
   };
 
+  const duplicateCollection = useCallback((id: string) => {
+    let duplicatedName: string | null = null;
+  
+    setCollections((currentCollections) => {
+      const original = currentCollections.find((c) => c.id === id);
+      if (!original) return currentCollections;
+  
+      duplicatedName = original.name;
+  
+      // Deep clone entries
+      const clonedEntries = original.entries.map((entry) => ({
+        ...entry,
+        id: crypto.randomUUID(),
+      }));
+  
+      const newCollection = {
+        ...original,
+        id: crypto.randomUUID(),
+        name: `${original.name} (Copy)`,
+        entries: clonedEntries,
+        createdAt: Date.now(),
+      };
+    
+      const originalIndex = currentCollections.findIndex((c) => c.id === id);
+      const newCollections = [...currentCollections];
+      newCollections.splice(originalIndex + 1, 0, newCollection);
+  
+      setEditingCollId(newCollection.id);
+  
+      return newCollections;
+    });
+  
+    if (duplicatedName) {
+      showToast({
+        type: "success",
+        message: `Duplicated "${duplicatedName}"`,
+      });
+    }
+  
+    // If setActiveColl here, do it outside setCollections and wrap in startTransition in parent.
+  }, [setCollections, setEditingCollId, showToast]);
+
+
   const deleteCollection = (id: string) => {
     const collection = collections.find((col) => col.id === id);
     setCollections((c) => c.filter((col) => col.id !== id));
-  
+
     if (id === activeColl && collections.length > 1) {
       const next = collections.filter((c) => !c.archived).find((c) => c.id !== id);
       if (next) setActiveColl(next.id);
       else setActiveColl("");
     }
-  
+
     showToast({
       type: "success",
       message: `Deleted "${collection?.name || "Collection"}"`,
@@ -145,19 +188,19 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
         col.id === id ? { ...col, archived: true, archivedAt: Date.now() } : col
       )
     );
-  
+
     if (id === activeColl) {
       const next = collections.find((c) => c.id !== id && !c.archived);
       if (next) setActiveColl(next.id);
       else setActiveColl("");
     }
-  
+
     showToast({
       type: "success",
       message: `Archived "${collection?.name || "Collection"}"`,
     });
   };
-  
+
 
   // ---- New: drag/drop for dropping entries into tabs (including inactive tabs) ----
 
@@ -290,6 +333,10 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
                         anchorRef={{ current: buttonRefs.current[c.id] as HTMLButtonElement }}
                         onRename={() => {
                           setEditingCollId(c.id);
+                          setMenuOpenFor(null);
+                        }}
+                        onDuplicate={() => {
+                          duplicateCollection(c.id);
                           setMenuOpenFor(null);
                         }}
                         onDelete={() => {

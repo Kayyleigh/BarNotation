@@ -1,5 +1,5 @@
 // components/layout/MainLayout.tsx
-import React, { useState, useEffect, useCallback, useMemo } from "react"; 
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import HeaderBar from "./MainHeaderBar";
 import NotesMenu from "../notesMenu/NotesMenu";
 import EditorWorkspace from "./EditorWorkspace";
@@ -52,13 +52,13 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   nerdMode
 }) => {
   const { showToast } = useToast();
-  
+
   const getStoredNumber = (key: string, fallback: number) => {
     const raw = localStorage.getItem(key);
     const parsed = raw ? parseInt(raw, 10) : NaN;
     return isNaN(parsed) ? fallback : parsed;
   };
-  
+
   const [leftWidth, setLeftWidth] = useState(() => getStoredNumber("notesMenuWidth", 200));
   const [rightWidth, setRightWidth] = useState(() => getStoredNumber("mathLibraryWidth", 600));
 
@@ -87,7 +87,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   useEffect(() => {
     localStorage.setItem("notesMenuWidth", leftWidth.toString());
   }, [leftWidth]);
-  
+
   // Save right width
   useEffect(() => {
     localStorage.setItem("mathLibraryWidth", rightWidth.toString());
@@ -101,7 +101,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     } else {
       root.classList.remove("dark");
     }
-  
+
     localStorage.setItem("mathEditorTheme", isDarkMode ? "dark" : "light");
   }, [isDarkMode]);
 
@@ -132,7 +132,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     () => notes.find(note => note.id === selectedNoteId) ?? null,
     [notes, selectedNoteId]
   );
-  
+
   const selectedNoteMetadata = useMemo(() => selectedNote?.metadata, [selectedNote]);
   const selectedNoteCells = useMemo(() => selectedNote?.cells, [selectedNote]);
 
@@ -147,45 +147,52 @@ const MainLayout: React.FC<MainLayoutProps> = ({
 
   const handleUnarchiveNote = useCallback((id: string) => {
     let noteTitle = null;
-  
+
     setNotes(prev => {
       const note = prev.find(n => n.id === id);
       if (!note) return prev;
       noteTitle = note.metadata.title;
-  
+
       return prev.map(n =>
         n.id === id
           ? { ...n, metadata: { ...n.metadata, archived: false, archivedAt: undefined } }
           : n
       );
     });
-  
+
     if (noteTitle) {
       showToast({ type: "success", message: `Note "${noteTitle}" unarchived.` });
     }
-  }, [showToast]);  
-  
+  }, [showToast]);
+
   const handleDeleteNote = useCallback((id: string) => {
+    let deletedNoteTitle: string | null = null;
+
     setNotes(prev => {
       const note = prev.find(n => n.id === id);
       if (note) {
-        showToast({ type: "success", message: `Note "${note.metadata.title}" deleted.` });
-      } else {
-        showToast({ type: "success", message: `Note deleted.` });
+        deletedNoteTitle = note.metadata.title;
       }
       return prev.filter(note => note.id !== id);
     });
-  
+
     if (selectedNoteId === id) {
       setSelectedNoteId(null);
     }
-  }, [selectedNoteId, showToast]);  
+
+    // Do the toast after state update:
+    if (deletedNoteTitle) {
+      showToast({ type: "success", message: `Note "${deletedNoteTitle}" deleted.` });
+    } else {
+      showToast({ type: "success", message: `Note deleted.` });
+    }
+  }, [selectedNoteId, showToast]);
 
   const updateNoteCells = useCallback((noteId: string, newCells: CellData[]) => {
     setNotes((prevNotes) =>
       prevNotes.map(note => {
         if (note.id !== noteId) return note;
-  
+
         // Avoid updating unless something actually changed
         if (note.cells === newCells) return note;
         if (
@@ -194,12 +201,12 @@ const MainLayout: React.FC<MainLayoutProps> = ({
         ) {
           return note;
         }
-  
+
         return { ...note, cells: newCells };
       })
     );
   }, []);
-  
+
 
   const createNewNote = () => {
     const newId = `note-${Date.now()}`;
@@ -218,35 +225,35 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     setNotes((prev) => [newNote, ...prev]);
     setSelectedNoteId(newId);
   };
-  
+
   const archiveNote = useCallback((id: string) => {
     let noteTitle: string | null = null;
-  
+
     setNotes(prev => {
       const note = prev.find(n => n.id === id);
       if (!note || note.metadata.archived) return prev;
       noteTitle = note.metadata.title;
-  
+
       const updated = prev.map(n =>
         n.id === id
           ? { ...n, metadata: { ...n.metadata, archived: true, archivedAt: Date.now() } }
           : n
       );
-  
+
       if (selectedNoteId === id) {
         const nextNote = updated.find(n => !n.metadata.archived && n.id !== id);
         setSelectedNoteId(nextNote?.id ?? null);
       }
-  
+
       return updated;
     });
-  
+
     if (noteTitle) {
       showToast({ type: "success", message: `Note "${noteTitle}" archived.` });
     }
   }, [selectedNoteId, showToast]);
-  
-  
+
+
   const duplicateNote = (id: string) => {
     const original = notes.find(note => note.id === id);
     if (!original) return;
@@ -259,7 +266,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
       metadata: {
         ...original.metadata,
         title: `${original.metadata.title} (Copy)`,
-        createdAt: Date.now(), 
+        createdAt: Date.now(),
       },
       cells: [
         ...original.cells,
@@ -270,15 +277,15 @@ const MainLayout: React.FC<MainLayoutProps> = ({
       console.warn(`I am going to set the state in storage`)
       localStorage.setItem(`note-editor-state-${newId}`, originalEditorState);
     }
-    
+
     setNotes(prevNotes => [duplicatedNote, ...prevNotes]);
     setSelectedNoteId(newId);
   };
-  
+
   const exportLatex = (id: string) => {
     // const note = notes.find(n => n.id === id);
     // if (!note) return;
-  
+
     // const latexContent = note.cells.map(cell => cell.content).join("\n\n"); // Simple example
     // const blob = new Blob([latexContent], { type: "text/plain" });
     // const link = document.createElement("a");
@@ -287,7 +294,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     // link.click();
     showToast({ message: `LaTeX export is not yet implemented`, type: "warning" });
   };
-  
+
   return (
     <div className="main-layout">
       <HeaderBar
@@ -302,31 +309,31 @@ const MainLayout: React.FC<MainLayoutProps> = ({
             selectedNoteId={selectedNoteId}
             onSelectNote={setSelectedNoteId}
             notes={notes}
-            onCreateNote={createNewNote} 
+            onCreateNote={createNewNote}
             onDeleteNote={handleDeleteNote}
             onArchiveNote={archiveNote}
             onUnarchiveNote={handleUnarchiveNote}
             onDuplicateNote={duplicateNote}
-            onExportLatex={exportLatex}     
+            onExportLatex={exportLatex}
           />
         </div>
         <div style={{ flexGrow: 1, display: "flex", minWidth: 0 }}>
           {/* {selectedNoteId && selectedNote && initialSnapshot ? ( */}
-            <EditorHistoryProvider initialSnapshot={initialSnapshot}>
-              <DragProvider>
-                <EditorWorkspace
-                  noteId={selectedNoteId}
-                  rightWidth={rightWidth}
-                  setRightWidth={setRightWidth}
-                  noteMetadata={selectedNoteMetadata}
-                  setNoteMetadata={updateNoteMetadata}
-                  noteCells={selectedNoteCells}
-                  setNoteCells={updateNoteCells}
-                  // editorStates={editorStates}
-                  // setEditorStates={setEditorStates}
-                />
-              </DragProvider>
-            </EditorHistoryProvider>
+          <EditorHistoryProvider initialSnapshot={initialSnapshot}>
+            <DragProvider>
+              <EditorWorkspace
+                noteId={selectedNoteId}
+                rightWidth={rightWidth}
+                setRightWidth={setRightWidth}
+                noteMetadata={selectedNoteMetadata}
+                setNoteMetadata={updateNoteMetadata}
+                noteCells={selectedNoteCells}
+                setNoteCells={updateNoteCells}
+              // editorStates={editorStates}
+              // setEditorStates={setEditorStates}
+              />
+            </DragProvider>
+          </EditorHistoryProvider>
         </div>
       </div>
     </div>

@@ -6,6 +6,7 @@ import Tooltip from "../tooltips/Tooltip";
 type Props = {
   anchorRef: React.RefObject<HTMLButtonElement>;
   onRename: () => void;
+  onDuplicate: () => void;
   onDelete: () => void;
   onArchive: () => void;
   onClose: () => void;
@@ -14,6 +15,7 @@ type Props = {
 const TabDropdownPortal: React.FC<Props> = ({
   anchorRef,
   onRename,
+  onDuplicate,
   onDelete,
   onArchive,
   onClose,
@@ -64,6 +66,9 @@ const TabDropdownPortal: React.FC<Props> = ({
     <div ref={menuRef} className={styles.dropdownMenu} style={style}>
       <Tooltip text="Rename collection">
         <button onClick={onRename}>✏️ Rename</button>
+      </Tooltip>
+      <Tooltip text="Duplicate collection">
+        <button onClick={onDuplicate}>📄 Duplicate</button>
       </Tooltip>
       <Tooltip text="Move to archive">
         <button onClick={onArchive}>📦 Archive</button>
