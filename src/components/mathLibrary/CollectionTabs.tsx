@@ -8,6 +8,7 @@ import TabDropdownPortal from "./TabDropdownPortal";
 import { useDragContext } from "../../hooks/useDragContext";
 import { nodeToLatex } from "../../models/nodeToLatex";
 import React from "react";
+import { useToast } from "../../hooks/useToast";
 
 interface CollectionTabsProps {
   collections: LibraryCollection[];
@@ -33,6 +34,8 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
   onDropEntryToCollection,
 }) => {
   console.warn(`Rendering CollectionTabs`);
+
+  const { showToast } = useToast();
 
   const buttonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const [draggingTabIdx, setDraggingTabIdx] = useState<number | null>(null);
@@ -120,22 +123,41 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
   };
 
   const deleteCollection = (id: string) => {
+    const collection = collections.find((col) => col.id === id);
     setCollections((c) => c.filter((col) => col.id !== id));
+  
     if (id === activeColl && collections.length > 1) {
       const next = collections.filter((c) => !c.archived).find((c) => c.id !== id);
       if (next) setActiveColl(next.id);
       else setActiveColl("");
     }
+  
+    showToast({
+      type: "success",
+      message: `Deleted "${collection?.name || "Collection"}"`,
+    });
   };
 
   const archiveCollection = (id: string) => {
-    setCollections((colls) => colls.map((col) => (col.id === id ? { ...col, archived: true, archivedAt: Date.now() } : col)));
+    const collection = collections.find((col) => col.id === id);
+    setCollections((colls) =>
+      colls.map((col) =>
+        col.id === id ? { ...col, archived: true, archivedAt: Date.now() } : col
+      )
+    );
+  
     if (id === activeColl) {
       const next = collections.find((c) => c.id !== id && !c.archived);
       if (next) setActiveColl(next.id);
       else setActiveColl("");
     }
+  
+    showToast({
+      type: "success",
+      message: `Archived "${collection?.name || "Collection"}"`,
+    });
   };
+  
 
   // ---- New: drag/drop for dropping entries into tabs (including inactive tabs) ----
 

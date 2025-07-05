@@ -27,6 +27,10 @@
   min-height: 2.3em;
 }
 
+.tab.dropTarget {
+  background-color: var(--library-tabs-hover-bg);
+}
+
 .dragOverLeft::before,
 .dragOverRight::before {
   content: "";

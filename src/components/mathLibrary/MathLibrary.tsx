@@ -968,14 +968,22 @@ const MathLibrary: React.FC<MathLibraryProps> = ({
             archived={collections.filter((c) => c.archived)}
             onClose={() => setArchiveModalOpen(false)}
             onUnarchive={(id) => {
+              const unarchived = collections.find((c) => c.id === id);
               setCollections((prev) =>
                 prev.map((c) => (c.id === id ? { ...c, archived: false } : c))
               );
-              showToast({ type: "success", message: "Collection unarchived." });
+              showToast({
+                type: "success",
+                message: `Unarchived "${unarchived?.name || "Collection"}"`,
+              });
             }}
             onDelete={(id) => {
+              const deleted = collections.find((c) => c.id === id);
               setCollections((prev) => prev.filter((c) => c.id !== id));
-              showToast({ type: "success", message: "Collection deleted." });
+              showToast({
+                type: "success",
+                message: `Deleted "${deleted?.name || "Collection"}"`,
+              });
             }}
           />
         )}

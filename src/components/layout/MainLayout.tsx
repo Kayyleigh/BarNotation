@@ -165,23 +165,40 @@ const MainLayout: React.FC = () => {
   };
 
   const handleUnarchiveNote = useCallback((id: string) => {
-    setNotes(prev =>
-      prev.map(note =>
-        note.id === id
-          ? { ...note, metadata: { ...note.metadata, archived: false, archivedAt: undefined } }
-          : note
-      )
-    );
-    showToast({ type: "success", message: "Note unarchived." });
-  }, [showToast]);
+    let noteTitle = null;
+  
+    setNotes(prev => {
+      const note = prev.find(n => n.id === id);
+      if (!note) return prev;
+      noteTitle = note.metadata.title;
+  
+      return prev.map(n =>
+        n.id === id
+          ? { ...n, metadata: { ...n.metadata, archived: false, archivedAt: undefined } }
+          : n
+      );
+    });
+  
+    if (noteTitle) {
+      showToast({ type: "success", message: `Note "${noteTitle}" unarchived.` });
+    }
+  }, [showToast]);  
   
   const handleDeleteNote = useCallback((id: string) => {
-    setNotes(prev => prev.filter(note => note.id !== id));
+    setNotes(prev => {
+      const note = prev.find(n => n.id === id);
+      if (note) {
+        showToast({ type: "success", message: `Note "${note.metadata.title}" deleted.` });
+      } else {
+        showToast({ type: "success", message: `Note deleted.` });
+      }
+      return prev.filter(note => note.id !== id);
+    });
+  
     if (selectedNoteId === id) {
       setSelectedNoteId(null);
     }
-    showToast({ type: "success", message: "Note deleted." });
-  }, [selectedNoteId, showToast]);
+  }, [selectedNoteId, showToast]);  
 
   // // Handler to update cells of a note:
   // const updateNoteCells = (noteId: string, newCells: CellData[]) => {
@@ -222,9 +239,33 @@ const MainLayout: React.FC = () => {
     setSelectedNoteId(newId);
   };
   
-  const archiveNote = (id: string) => {
-    updateNoteMetadata(id, { archived: true, archivedAt: Date.now() });
-  };
+  const archiveNote = useCallback((id: string) => {
+    let noteTitle: string | null = null;
+  
+    setNotes(prev => {
+      const note = prev.find(n => n.id === id);
+      if (!note || note.metadata.archived) return prev;
+      noteTitle = note.metadata.title;
+  
+      const updated = prev.map(n =>
+        n.id === id
+          ? { ...n, metadata: { ...n.metadata, archived: true, archivedAt: Date.now() } }
+          : n
+      );
+  
+      if (selectedNoteId === id) {
+        const nextNote = updated.find(n => !n.metadata.archived && n.id !== id);
+        setSelectedNoteId(nextNote?.id ?? null);
+      }
+  
+      return updated;
+    });
+  
+    if (noteTitle) {
+      showToast({ type: "success", message: `Note "${noteTitle}" archived.` });
+    }
+  }, [selectedNoteId, showToast]);
+  
   
   const duplicateNote = (id: string) => {
     const original = notes.find(note => note.id === id);
