@@ -22,3 +22,40 @@
   font-style: italic;
   margin: 2em 0 2em 2em;
 }
+
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  padding: 3rem 2rem 1rem 2rem;
+  text-align: center;
+  opacity: 0.5;
+  /* animation: fadeIn 0.3s ease-in-out; */
+}
+
+.loadingText {
+  margin-top: 1rem;
+  font-size: 1.1rem;
+  color: var(--math-text-color);
+}
+
+.spinner {
+  width: 1.2rem;
+  height: 1.2rem;
+  border: 0.2rem solid var(--math-text-color);
+  border-top: 0.2rem solid var(--math-editor-bg);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}

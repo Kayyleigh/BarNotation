@@ -1,5 +1,5 @@
 // components/editor/NotationEditor.tsx
-import React, { useState, useRef, useCallback, useMemo } from "react";
+import React, { useState, useRef, useCallback, useMemo, useTransition, useEffect } from "react";
 import InsertCellButtons from "../cells/InsertCellButtons";
 import BaseCell from "../cells/BaseCell";
 import TextCell from "../cells/TextCell";
@@ -113,11 +113,35 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
   //TODO SYNC WITH GLOBALLLL
   //rn there is just no cells at all in actual global. Duplicate does say 3 cells but it does not show em 
 
+  // States for loading phases
+  const [cellsReady, setCellsReady] = useState(false);
+  const [, startTransition] = useTransition(); //'isPending' is assigned a value but never used.eslint@typescript-eslint/no-unused-vars
+
   /** Derived cells list from current state */
   const cells = useMemo(() => {
     return reconstructCells(order, editorStates, textContents);
   }, [order, editorStates, textContents]);
+
+  // Reset loading state on cells data change and start transition to ready
+  useEffect(() => {
+    setCellsReady(false);
+    
+    startTransition(() => {
+      setTimeout(() => {
+        setCellsReady(true);
+      }, 0);
+    });
+  }, [noteId]);
+
+  useEffect(() => {
+    if (cellsReady) return;
   
+    const timer = setTimeout(() => {
+      setCellsReady(true);
+    }, 0);
+  
+    return () => clearTimeout(timer);
+  }, [cellsReady]);
 
   /** Updates local text cell content */
   const updateCellContent = (id: string, newContent: string) => {
@@ -198,7 +222,13 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
       />
 
       <div className={styles.cellList}>
-        {cells.length === 0 ? (
+        {!cellsReady ? (
+          // Show loading spinner while cells prepare
+          <div className={styles.loadingContainer}>
+            <div className={styles.spinner} />
+            <p className={styles.loadingText}>Loading cells, this may take a while...</p>
+          </div>
+        ) : cells.length === 0 ? (
           <div className={styles.emptyMessage}>
             No cells yet. Add one to get started!
           </div>
