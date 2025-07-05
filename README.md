@@ -330,6 +330,9 @@ Planned features and improvements include:
 
 - [X] (✅ Done but not in walkthrough yet) Archive of notebooks (similar to collection archive)
 - [X] (✅ Done but not in walkthrough yet) Cell and collection duplication option
+- [ ] Enable custom library zoom level
+- [ ] Implement soft delete, i.e. all deleted notes, collections and entries move to a bin so they can be recovered for a little bit before perma delete. (Especially entries since those are easy to accidentally delete)
+- [ ] "Lock mode" in preview mode as extra strict version where you cannot interact at all anymore. Just for viewing. 
 - [ ] Proper persistent storage (I currently put everything in the browser localStorage)
 - [ ] Full notebook export as LaTeX
 - [ ] Customizable hotkeys
@@ -337,6 +340,9 @@ Planned features and improvements include:
 - [ ] Hierarchical notebook sections (e.g., sections, subsections)
 - [ ] Autocomplete of existing command sequences when typing in `command-input` nodes
 - [ ] Proper user guide 
+- [ ] Bulk select of collection entries (for copying to another collection or bulk-delete)
+- [ ] Advanced search in collections and/or notes on inclusion/exclusion or depth of math node type(s)
+- [ ] Enable custom names on collection entries, and include it in search logic. Can be a button on hover, but single char is so small, I think either "edit mode" or a new modal for modifying entries (name, node, count). Latter may be overly complex for what it adds to the experience
 - [ ] Add `binom`, `vector` and `matrix` math node types
 - [ ] Add `cases` math node type
 - [ ] Add `multiline-equation` math node type
