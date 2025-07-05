@@ -1,10 +1,8 @@
 // components/layout/MainLayout.tsx
-import React, { useState, useEffect, useCallback } from "react"; 
+import React, { useState, useEffect, useCallback, useMemo } from "react"; 
 import HeaderBar from "./MainHeaderBar";
 import NotesMenu from "../notesMenu/NotesMenu";
 import EditorWorkspace from "./EditorWorkspace";
-import HotkeyOverlay from "../modals/HotkeyOverlay";
-import SettingsModal from "../modals/SettingsModal";
 import "../../styles/themes.css";
 import "../../styles/styles.css";
 import "../../styles/math-node.css";
@@ -14,14 +12,8 @@ import { EditorHistoryProvider } from "../../hooks/EditorHistoryProvider";
 import { createInitialCursor } from "../../logic/cursor";
 import { createRootWrapper } from "../../models/nodeFactories";
 import { createEmptySnapshot, type EditorSnapshot } from "../../logic/global-history";
-import type { CellData, NoteMetadata } from "../../models/noteTypes";
+import type { CellData, Note, NoteMetadata } from "../../models/noteTypes";
 import { useToast } from "../../hooks/useToast";
-
-interface Note {
-  id: string;
-  metadata: NoteMetadata;
-  cells: CellData[];
-}
 
 function loadEditorSnapshotForNote(noteId: string): EditorSnapshot {
   const rootNode = createRootWrapper();
@@ -40,42 +32,35 @@ function loadEditorSnapshotForNote(noteId: string): EditorSnapshot {
 
 const LOCAL_STORAGE_KEY = "notes";
 
-const MainLayout: React.FC = () => {
-  const { showToast } = useToast();
+type MainLayoutProps = {
+  onOpenSettings: () => void;
+  onOpenHotkeys: () => void;
+  authorName: string;
+  setAuthorName: (value: string) => void;
+  isDarkMode: boolean;
+  showColorInPreview: boolean;
+  nerdMode: boolean;
+};
 
-  const getStoredBoolean = (key: string, fallback: boolean) => {
-    const stored = localStorage.getItem(key);
-    if (stored === null) return fallback;
-    return stored === "true";
-  };
+const MainLayout: React.FC<MainLayoutProps> = ({
+  onOpenSettings,
+  onOpenHotkeys,
+  authorName,
+  // setAuthorName,
+  isDarkMode,
+  showColorInPreview,
+  nerdMode
+}) => {
+  const { showToast } = useToast();
   
   const getStoredNumber = (key: string, fallback: number) => {
     const raw = localStorage.getItem(key);
     const parsed = raw ? parseInt(raw, 10) : NaN;
     return isNaN(parsed) ? fallback : parsed;
   };
-
-  const [isDarkMode, setIsDarkMode] = useState(() =>
-    localStorage.getItem("mathEditorTheme") !== "light" // dark is default
-  );
   
   const [leftWidth, setLeftWidth] = useState(() => getStoredNumber("notesMenuWidth", 200));
   const [rightWidth, setRightWidth] = useState(() => getStoredNumber("mathLibraryWidth", 600));
-  
-  const [showColorInPreview, setShowColorInPreview] = useState(() =>
-    getStoredBoolean("showColorInPreview", true)
-  );
-  
-  const [nerdMode, setNerdMode] = useState(() =>
-    getStoredBoolean("nerdMode", false)
-  );
-  
-  const [authorName, setAuthorName] = useState(() =>
-    localStorage.getItem("defaultAuthor") || ""
-  );
-
-  const [showSettings, setShowSettings] = useState(false);
-  const [showHotkeys, setShowHotkeys] = useState(false);
 
   // Use lazy state initialization from localStorage
   const [notes, setNotes] = useState<Note[]>(() => {
@@ -92,21 +77,11 @@ const MainLayout: React.FC = () => {
 
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(notes.length ? notes[0].id : null);
 
-  const initialSnapshot: EditorSnapshot = selectedNoteId
-  ? loadEditorSnapshotForNote(selectedNoteId)
-  : createEmptySnapshot(); // Safe fallback
-
-  const toggleDarkMode = () => setIsDarkMode(prev => !prev);
-
-  const toggleShowColorInPreview = () => {
-    console.log(`You want to toggle color setting`)
-    setShowColorInPreview(prev => !prev);
-  }
-
-  const toggleNerdMode = () => {
-    console.log(`Toggling nerd mode`)
-    setNerdMode(prev => !prev);
-  }
+  const initialSnapshot = useMemo(() => {
+    return selectedNoteId
+      ? loadEditorSnapshotForNote(selectedNoteId)
+      : createEmptySnapshot();
+  }, [selectedNoteId]);
 
   // Save left width
   useEffect(() => {
@@ -153,56 +128,78 @@ const MainLayout: React.FC = () => {
   }, [authorName]);
 
   // Get currently selected note data:
-  const selectedNote = notes.find(note => note.id === selectedNoteId) ?? null;
+  const selectedNote = useMemo(
+    () => notes.find(note => note.id === selectedNoteId) ?? null,
+    [notes, selectedNoteId]
+  );
+  
+  const selectedNoteMetadata = useMemo(() => selectedNote?.metadata, [selectedNote]);
+  const selectedNoteCells = useMemo(() => selectedNote?.cells, [selectedNote]);
 
   // Handler to update metadata (like title) of a note:
-  const updateNoteMetadata = (noteId: string, newMetadata: Partial<NoteMetadata>) => {
+  const updateNoteMetadata = useCallback((noteId: string, newMetadata: Partial<NoteMetadata>) => {
     setNotes((prevNotes) =>
       prevNotes.map(note =>
         note.id === noteId ? { ...note, metadata: { ...note.metadata, ...newMetadata } } : note
       )
     );
-  };
+  }, []);
 
   const handleUnarchiveNote = useCallback((id: string) => {
-    setNotes(prev =>
-      prev.map(note =>
-        note.id === id
-          ? { ...note, metadata: { ...note.metadata, archived: false, archivedAt: undefined } }
-          : note
-      )
-    );
-    showToast({ type: "success", message: "Note unarchived." });
-  }, [showToast]);
+    let noteTitle = null;
+  
+    setNotes(prev => {
+      const note = prev.find(n => n.id === id);
+      if (!note) return prev;
+      noteTitle = note.metadata.title;
+  
+      return prev.map(n =>
+        n.id === id
+          ? { ...n, metadata: { ...n.metadata, archived: false, archivedAt: undefined } }
+          : n
+      );
+    });
+  
+    if (noteTitle) {
+      showToast({ type: "success", message: `Note "${noteTitle}" unarchived.` });
+    }
+  }, [showToast]);  
   
   const handleDeleteNote = useCallback((id: string) => {
-    setNotes(prev => prev.filter(note => note.id !== id));
+    setNotes(prev => {
+      const note = prev.find(n => n.id === id);
+      if (note) {
+        showToast({ type: "success", message: `Note "${note.metadata.title}" deleted.` });
+      } else {
+        showToast({ type: "success", message: `Note deleted.` });
+      }
+      return prev.filter(note => note.id !== id);
+    });
+  
     if (selectedNoteId === id) {
       setSelectedNoteId(null);
     }
-    showToast({ type: "success", message: "Note deleted." });
-  }, [selectedNoteId, showToast]);
+  }, [selectedNoteId, showToast]);  
 
-  // // Handler to update cells of a note:
-  // const updateNoteCells = (noteId: string, newCells: CellData[]) => {
-  //   setNotes((prevNotes) =>
-  //     prevNotes.map(note =>
-  //       note.id === noteId ? { ...note, cells: newCells } : note
-  //     )
-  //   );
-  // };
-  const updateNoteCells = (noteId: string, newCells: CellData[]) => {
+  const updateNoteCells = useCallback((noteId: string, newCells: CellData[]) => {
     setNotes((prevNotes) =>
       prevNotes.map(note => {
         if (note.id !== noteId) return note;
   
-        // 🔍 Avoid updating unless something actually changed
+        // Avoid updating unless something actually changed
         if (note.cells === newCells) return note;
+        if (
+          note.cells.length === newCells.length &&
+          note.cells.every((cell, idx) => cell === newCells[idx])
+        ) {
+          return note;
+        }
   
         return { ...note, cells: newCells };
       })
     );
-  };
+  }, []);
+  
 
   const createNewNote = () => {
     const newId = `note-${Date.now()}`;
@@ -222,9 +219,33 @@ const MainLayout: React.FC = () => {
     setSelectedNoteId(newId);
   };
   
-  const archiveNote = (id: string) => {
-    updateNoteMetadata(id, { archived: true, archivedAt: Date.now() });
-  };
+  const archiveNote = useCallback((id: string) => {
+    let noteTitle: string | null = null;
+  
+    setNotes(prev => {
+      const note = prev.find(n => n.id === id);
+      if (!note || note.metadata.archived) return prev;
+      noteTitle = note.metadata.title;
+  
+      const updated = prev.map(n =>
+        n.id === id
+          ? { ...n, metadata: { ...n.metadata, archived: true, archivedAt: Date.now() } }
+          : n
+      );
+  
+      if (selectedNoteId === id) {
+        const nextNote = updated.find(n => !n.metadata.archived && n.id !== id);
+        setSelectedNoteId(nextNote?.id ?? null);
+      }
+  
+      return updated;
+    });
+  
+    if (noteTitle) {
+      showToast({ type: "success", message: `Note "${noteTitle}" archived.` });
+    }
+  }, [selectedNoteId, showToast]);
+  
   
   const duplicateNote = (id: string) => {
     const original = notes.find(note => note.id === id);
@@ -266,12 +287,12 @@ const MainLayout: React.FC = () => {
     // link.click();
     showToast({ message: `LaTeX export is not yet implemented`, type: "warning" });
   };
-
+  
   return (
     <div className="main-layout">
       <HeaderBar
-        onOpenSettings={() => setShowSettings(true)}
-        onOpenHotkeys={() => setShowHotkeys(true)}
+        onOpenSettings={onOpenSettings}
+        onOpenHotkeys={onOpenHotkeys}
       />
       <div style={{ display: "flex", height: "calc(100vh - 50px)", width: "100%" }}>
         <div style={{ flex: "0 0 auto", width: `${leftWidth}px` }}>
@@ -297,9 +318,9 @@ const MainLayout: React.FC = () => {
                   noteId={selectedNoteId}
                   rightWidth={rightWidth}
                   setRightWidth={setRightWidth}
-                  noteMetadata={selectedNote?.metadata}
+                  noteMetadata={selectedNoteMetadata}
                   setNoteMetadata={updateNoteMetadata}
-                  noteCells={selectedNote?.cells}
+                  noteCells={selectedNoteCells}
                   setNoteCells={updateNoteCells}
                   // editorStates={editorStates}
                   // setEditorStates={setEditorStates}
@@ -308,24 +329,9 @@ const MainLayout: React.FC = () => {
             </EditorHistoryProvider>
         </div>
       </div>
-
-      {showHotkeys && <HotkeyOverlay onClose={() => setShowHotkeys(false)} />}
-      {showSettings && (
-        <SettingsModal
-          onClose={() => setShowSettings(false)}
-          isDarkMode={isDarkMode}
-          toggleDarkMode={toggleDarkMode}
-          showColorInPreview={showColorInPreview}
-          toggleShowColorInPreview={toggleShowColorInPreview}
-          authorName={authorName}
-          setAuthorName={setAuthorName}
-          nerdMode={nerdMode}
-          toggleNerdMode={toggleNerdMode}
-        />
-      )}
     </div>
   );
 };
 
-export default MainLayout;
+export default React.memo(MainLayout);
 

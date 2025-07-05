@@ -67,4 +67,4 @@ const NoteMetaDataSection: React.FC<Props> = ({ metadata, setMetadata, isPreview
   );
 };
 
-export default NoteMetaDataSection;
+export default React.memo(NoteMetaDataSection);

@@ -779,15 +779,19 @@ const MathLibrary: React.FC<MathLibraryProps> = ({
         draggingNode.sourceType === "library" &&
         draggingNode.cellId === dropCollectionId
       ) {
-        // If dropping back into same collection, allow move only if index is different
-        if (dropIndex === null) {
-          // Dropped outside entries -> append, so allow move
-        } else if (dropIndex === draggingNode.index || dropIndex === draggingNode.index + 1) {
-          // Same spot or adjacent, ignore
-          setDraggingNode(null);
-          setDropTarget(null);
-          return;
-        }
+        // // If dropping back into same collection, allow move only if index is different
+        // console.warn(`${dropIndex} ${draggingNode.index}`)
+
+        // if (dropIndex === null) {
+        //   // Do not 
+        //   return;
+        // } else if (dropIndex === draggingNode.index || dropIndex === draggingNode.index + 1) {
+        //   // Same spot or adjacent, ignore
+        //   setDraggingNode(null);
+        //   setDropTarget(null);
+        //   return;
+        // }
+        return;
       }
 
       // Find target collection
@@ -964,14 +968,22 @@ const MathLibrary: React.FC<MathLibraryProps> = ({
             archived={collections.filter((c) => c.archived)}
             onClose={() => setArchiveModalOpen(false)}
             onUnarchive={(id) => {
+              const unarchived = collections.find((c) => c.id === id);
               setCollections((prev) =>
                 prev.map((c) => (c.id === id ? { ...c, archived: false } : c))
               );
-              showToast({ type: "success", message: "Collection unarchived." });
+              showToast({
+                type: "success",
+                message: `Unarchived "${unarchived?.name || "Collection"}"`,
+              });
             }}
             onDelete={(id) => {
+              const deleted = collections.find((c) => c.id === id);
               setCollections((prev) => prev.filter((c) => c.id !== id));
-              showToast({ type: "success", message: "Collection deleted." });
+              showToast({
+                type: "success",
+                message: `Deleted "${deleted?.name || "Collection"}"`,
+              });
             }}
           />
         )}

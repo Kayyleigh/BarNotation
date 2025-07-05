@@ -37,7 +37,7 @@
 // };
 
 // hooks/EditorHistoryProvider.tsx
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import { EditorHistoryContext } from "./EditorHistoryContext";
 import {
   createInitialHistory,
@@ -104,9 +104,16 @@ const updateState = useCallback((newSnapshot: EditorSnapshot) => {
     setHistory(prev => redo(prev));
   }, []);
 
+  const contextValue = useMemo(() => ({
+    history,
+    updateState,
+    undo: handleUndo,
+    redo: handleRedo,
+  }), [history, updateState, handleUndo, handleRedo]);
+
   return (
     <EditorHistoryContext.Provider
-      value={{ history, updateState, undo: handleUndo, redo: handleRedo }}
+      value={contextValue}
     >
       {children}
     </EditorHistoryContext.Provider>

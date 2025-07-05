@@ -91,11 +91,14 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
   const [selectedCellId, setSelectedCellId] = useState<string | null>(null);
   const [hoveredInsertIndex, setHoveredInsertIndex] = useState<number | null>(null);
 
-  const handleMetadataUpdate = (partialMetadata: Partial<NoteMetadata>) => {
-    if (noteId) {
-      setMetadata(noteId, partialMetadata);
-    }
-  };
+  const handleMetadataUpdate = useCallback(
+    (partialMetadata: Partial<NoteMetadata>) => {
+      if (noteId) {
+        setMetadata(noteId, partialMetadata);
+      }
+    },
+    [noteId, setMetadata]
+  );  
 
   const {
     draggingCellId,

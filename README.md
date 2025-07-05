@@ -4,6 +4,8 @@
 
 <p align="center"><em>The mathematical note-taking app that truly raises the bar</em> 😎</p>
 
+> [!IMPORTANT]
+> Please visit the [Feature Design Voting](https://github.com/Kayyleigh/BarNotation/discussions/categories/feature-design-voting) Discussion category to vote on open design choices! These represent trade-offs that I can't fully resolve on my own, often because they come down to personal preferences or gaps in my understanding of the target audience. Your input really helps shape the project! 
 
 # BarNotation
 
@@ -324,21 +326,21 @@ The app should now be running at http://localhost:5173.
 
 Planned features and improvements include:
 
-- Archive of notebooks (similar to collection archive)
-- Cell and collection duplication option
-- Proper persistent storage (I currently put everything in the browser localStorage)
-- Full notebook export as LaTeX
-- Customizable hotkeys
-- Overview of existing command sequences
-- Hierarchical notebook sections (e.g., sections, subsections)
-- Autocomplete of existing command sequences when typing in `command-input` nodes
-- Proper user guide 
-- Add `binom`, `vector` and `matrix` math node types
-- Add `cases` math node type
-- Add `multiline-equation` math node type
-- Proper bracket handling (right now all brackets become parentheses, while LaTeX has fancy stuff to make the brackets as tall as the stuff inside)
-- Better error handling and onboarding experience
-- Very unsure about this one, but I want to look into allowing inline math in text cells too (probably much less interactive than the math cells) because you can see in the screenshots section that writing "... with parameters mu and sigma" is just kinda ugly and definitely going to be a common issue in real-world settings
+- [X] Archive of notebooks (similar to collection archive)
+- [ ] Cell and collection duplication option
+- [ ] Proper persistent storage (I currently put everything in the browser localStorage)
+- [ ] Full notebook export as LaTeX
+- [ ] Customizable hotkeys
+- [ ] Overview of existing command sequences
+- [ ] Hierarchical notebook sections (e.g., sections, subsections)
+- [ ] Autocomplete of existing command sequences when typing in `command-input` nodes
+- [ ] Proper user guide 
+- [ ] Add `binom`, `vector` and `matrix` math node types
+- [ ] Add `cases` math node type
+- [ ] Add `multiline-equation` math node type
+- [ ] Proper bracket handling (right now all brackets become parentheses, while LaTeX has fancy stuff to make the brackets as tall as the stuff inside)
+- [ ] Better error handling and onboarding experience
+- [ ] Very unsure about this one, but I want to look into allowing inline math in text cells too (probably much less interactive than the math cells) because you can see in the screenshots section that writing "... with parameters mu and sigma" is just kinda ugly and definitely going to be a common issue in real-world settings
 
 > [!NOTE]
 > This is not an exhaustive list, nor is it chronologically ordered. Some of these may already exist on other branches, since it includes the things I am planning to work on a few minutes after writing this sentence. 
