@@ -25,7 +25,7 @@
   user-select: none;
   align-items: center;
   min-height: 2.3em;
-  opacity: 0.6;
+  /* opacity: 0.6; */
 }
 
 .tab.dropTarget {
@@ -38,10 +38,11 @@
   position: absolute;
   top: 0;
   bottom: 0;
-  width: 4px;
-  background-color: #0078d7; /* bright blue accent color */
+  width: 3px;
+  background-color: #ffffff; /* bright blue accent color */
   z-index: 10;
-  border-radius: 2px;
+  opacity: 1;
+  border-radius: 0px;
 }
 
 .dragOverLeft::before {
@@ -72,7 +73,12 @@
 
 .collectionTab {
   padding: 0.4em 0.8em;
+  opacity: 0.6;
   color: var(--main-text-color);
+}
+
+.tab.active .collectionTab {
+  opacity: 1;
 }
 
 .collectionTab:hover {

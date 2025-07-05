@@ -13,7 +13,7 @@ import { useToast } from "../../hooks/useToast";
 interface CollectionTabsProps {
   collections: LibraryCollection[];
   activeColl: string;
-  setActiveColl: React.Dispatch<React.SetStateAction<string>>;
+  setActiveColl: (newId: string) => void;
   editingCollId: string | null;
   setEditingCollId: React.Dispatch<React.SetStateAction<string | null>>;
   setCollections: React.Dispatch<React.SetStateAction<LibraryCollection[]>>;
