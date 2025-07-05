@@ -49,7 +49,7 @@ const NoteListItem: React.FC<Props> = ({
       <div className={styles.noteTextBlock}>
         <div className={styles.noteTitle}>{note.metadata.title}</div>
         <div className={styles.noteMeta}>
-          <span>{note.cells.length} cells</span>
+          <span>{note.cells.length} cell{note.cells.length === 1 ? "" : "s"}</span>
           <span className={styles.noteDate}>
           {note.metadata.createdAt && (
             <span className={styles.noteDate}>

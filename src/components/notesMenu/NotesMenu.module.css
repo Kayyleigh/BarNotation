@@ -66,7 +66,7 @@
  
   .notesList {
     list-style: none;
-    padding: 0.5em 0em 2em 0.5em;
+    padding: 0.5em 0 2em;
     margin: 0;
     overflow-y: auto;
     flex-grow: 1;
@@ -78,23 +78,20 @@
     justify-content: space-between;
     background: transparent;
     padding: 6px 8px;
-    border-radius: 6px;
     cursor: pointer;
-    /* transition: background 0.2s; */
     position: relative;
+    border-left: 5px solid transparent; 
+    opacity: 50%;
   }
   
-  .noteItem:hover:not(.selected) {
-    background-color: var(--notes-menu-hovered-note-entry-bg);
+  .noteItem:hover:not(.selected) {    
+    opacity: 1;
   }
   
   .selected {
-    background-color: var(--notes-menu-selected-note-entry-bg);
-    color: #000000bb;
-  }
-
-  .selected .noteTitle {
-    color: #000000;
+    border-left: 5px solid var(--logo-color-1); 
+    color: var(--math-text-color);
+    opacity: 100%;
   }
   
   .noteTextBlock {

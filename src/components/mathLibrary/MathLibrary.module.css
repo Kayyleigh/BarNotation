@@ -25,6 +25,7 @@
   user-select: none;
   align-items: center;
   min-height: 2.3em;
+  opacity: 0.6;
 }
 
 .tab.dropTarget {
@@ -58,14 +59,24 @@
 
 .tab.active {
   background: var(--math-editor-bg);
+  opacity: 1;
 }
 
 .tab.hovered {
   background-color: var(--library-tabs-hover-bg);
 }
 
+.tab:hover {
+  opacity: 1;
+}
+
 .collectionTab {
   padding: 0.4em 0.8em;
+  color: var(--main-text-color);
+}
+
+.collectionTab:hover {
+  opacity: 1;
 }
 
 .collectionTabButton {
