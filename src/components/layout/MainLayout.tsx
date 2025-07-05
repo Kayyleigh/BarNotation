@@ -1,5 +1,5 @@
 // components/layout/MainLayout.tsx
-import React, { useState, useEffect, useCallback } from "react"; 
+import React, { useState, useEffect, useCallback, useMemo } from "react"; 
 import HeaderBar from "./MainHeaderBar";
 import NotesMenu from "../notesMenu/NotesMenu";
 import EditorWorkspace from "./EditorWorkspace";
@@ -92,19 +92,19 @@ const MainLayout: React.FC = () => {
 
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(notes.length ? notes[0].id : null);
 
-  const initialSnapshot: EditorSnapshot = selectedNoteId
-  ? loadEditorSnapshotForNote(selectedNoteId)
-  : createEmptySnapshot(); // Safe fallback
+  const initialSnapshot = useMemo(() => {
+    return selectedNoteId
+      ? loadEditorSnapshotForNote(selectedNoteId)
+      : createEmptySnapshot();
+  }, [selectedNoteId]);
 
   const toggleDarkMode = () => setIsDarkMode(prev => !prev);
 
   const toggleShowColorInPreview = () => {
-    console.log(`You want to toggle color setting`)
     setShowColorInPreview(prev => !prev);
   }
 
   const toggleNerdMode = () => {
-    console.log(`Toggling nerd mode`)
     setNerdMode(prev => !prev);
   }
 
