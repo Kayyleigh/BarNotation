@@ -32,7 +32,7 @@
 //   onAddCell,
 // }) => {
 //   const { showToast } = useToast();
-  
+
 //   return (
 //     <div className="editor-header-bar">
 //       <div className="button-bar">
@@ -143,11 +143,8 @@ const EditorHeaderBar: React.FC<EditorHeaderBarProps> = ({
   dropdownRef,
   onAddCell,
 }) => {
-  const { mode, togglePreview } = useEditorMode();
+  const { mode, togglePreview, toggleLocked } = useEditorMode();
   const { showToast } = useToast();
-
-  // Only toggle between "edit" and "preview"
-  const isPreviewMode = mode === "preview";
 
   return (
     <div className="editor-header-bar">
@@ -187,14 +184,25 @@ const EditorHeaderBar: React.FC<EditorHeaderBarProps> = ({
           </button>
         </Tooltip>
 
-        <Tooltip text={isPreviewMode ? "Return to edit mode" : "Enter preview mode"}>
+        <Tooltip text={mode === "edit" ? "Enter preview mode" : "Return to edit mode"}>
           <button
             onClick={togglePreview}
             className={clsx("button", "preview-toggle-button")}
           >
-            {isPreviewMode ? "✏️ Edit" : "📜 Preview"}
+            {mode === "edit" ? "📜 Preview" : "✏️ Edit"}
           </button>
         </Tooltip>
+
+        {mode === "preview" || mode === "locked" ? (
+          <Tooltip text={mode === "locked" ? "Unlock" : "Lock"}>
+            <button
+              onClick={toggleLocked}
+              className={clsx("button", "preview-toggle-button")}
+            >
+              {mode === "locked" ? "🔓 Unlock" : "🔒 Lock"}
+            </button>
+          </Tooltip>
+        ) : null}
 
         <Tooltip text="Reset all zoom levels">
           <button onClick={resetAllZooms} className={clsx("button", "zoom-button")}>

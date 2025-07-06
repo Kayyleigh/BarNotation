@@ -10,6 +10,7 @@ import textStyles from "../../styles/textStyles.module.css"
 import type { EditorState } from "../../logic/editor-state";
 import type { CellData, TextCellContent } from "../../models/noteTypes";
 import type { DragSource, DropTarget } from "../../hooks/DragContext";
+import { useEditorMode } from "../../hooks/useEditorMode";
 
 interface CellRowProps {
   cell: CellData;
@@ -60,6 +61,8 @@ const CellRow: React.FC<CellRowProps> = ({
 }) => {
   const ref = useRef<HTMLDivElement>(null);
 
+  const { mode } = useEditorMode();
+
   const handleInsert = useCallback(
     (type: "math" | "text") => addCell(type, index),
     [addCell, index]
@@ -75,7 +78,7 @@ const CellRow: React.FC<CellRowProps> = ({
       ref={ref}
       onPointerMove={handlePointerMove}
     >
-      <div
+      {(mode !== "locked") && <div
         className={clsx(
           styles.insertZone,
           { [styles.dragOver]: dragOverInsertIndex === index }
@@ -83,7 +86,7 @@ const CellRow: React.FC<CellRowProps> = ({
         onPointerEnter={() => draggingCellId !== null && updateDragOver(index)}
       >
         <InsertCellButtons onInsert={handleInsert} />
-      </div>
+      </div>}
 
       <div
         ref={(el) => {

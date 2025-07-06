@@ -130,6 +130,6 @@
 }
 
 .hierarchyTypeButton.active {
-  background: #6b8dfb;
-  color: #1e1b4b;
+  background: var(--logo-color-1);
+  color: #1c4940;
 }

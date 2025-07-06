@@ -147,6 +147,13 @@ const EditorPane: React.FC<EditorPaneProps> = ({
     addCellRef.current = addCell;
   }, [addCell]);
 
+  // const handleInsert = useCallback(
+  //   (type: "math" | "text") => {
+  //     addCellRef.current(type, index); // or undefined for end
+  //   },
+  //   [index] // 👈 not `addCell`, just `index`
+  // );
+
   const deleteCell = useCallback(
     (id: string) => {
       const newOrder = order.filter((cellId) => cellId !== id);
@@ -266,7 +273,7 @@ const EditorPane: React.FC<EditorPaneProps> = ({
           resetZoomSignal={resetZoomSignal}
           defaultZoom={defaultZoom}
           order={order}
-          addCell={addCell}//ref instead??
+          addCellRef={addCellRef}//ref instead??
           deleteCell={deleteCell}
           duplicateCell={duplicateCell}
           updateOrder={updateOrder}

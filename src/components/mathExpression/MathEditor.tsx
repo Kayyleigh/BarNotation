@@ -158,7 +158,7 @@ const MathEditor: React.FC<MathEditorProps> = ({
     <div>
       <div
         ref={editorRef}
-        className="math-editor"
+        className="math-editor" //need uneditable on lock but can still drag?
         tabIndex={0}
         onKeyDown={onKeyDown}
         onCopy={onCopy}

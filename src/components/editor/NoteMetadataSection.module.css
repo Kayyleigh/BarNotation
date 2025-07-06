@@ -57,20 +57,72 @@
   
 }
 
+.metadataBar.locked {
+  margin: 2rem 0 1rem;
+}
+
 .previewTitle {
   font-size: 1.5rem;
   font-weight: bold;
   color: var(--math-text-color);
+  width: 90%;
 }
 
 .previewAuthor {
   font-size: 1rem;
   color: var(--math-text-color);
   opacity: 0.85;
+  width: 90%;
 }
 
 .previewDate {
   font-size: 0.9rem;
   color: var(--math-text-color);
   opacity: 0.65;
+  width: 90%;
+}
+
+.previewInputTitle {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--math-text-color);
+  text-align: center;
+  background: transparent;
+  border: none;
+  outline: none;
+  width: 100%;
+  resize: none;
+  height: auto;
+  font: inherit;
+  padding: 0;
+}
+
+.previewInputAuthor {
+  font-size: 1rem;
+  color: var(--math-text-color);
+  opacity: 0.85;
+  text-align: center;
+  background: transparent;
+  border: none;
+  outline: none;
+  width: 100%;
+  resize: none;
+  height: auto;
+  font: inherit;
+  padding: 0;
+}
+
+.previewInputDate {
+  font-size: 0.9rem;
+  color: var(--math-text-color);
+  opacity: 0.65;
+  text-align: center;
+  background: transparent;
+  border: none;
+  outline: none;
+  width: 100%;
+  resize: none;
+  height: auto;
+  font: inherit;
+  padding: 0;
 }

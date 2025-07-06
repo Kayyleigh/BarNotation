@@ -380,6 +380,7 @@ import CellRow from "./CellRow";
 import clsx from "clsx";
 import { useEditorMode } from "../../hooks/useEditorMode";
 import { computeDisplayNumbers } from "../../utils/noteUtils";
+import cellStyles from "./cells/cell.module.css";
 
 interface NotationEditorProps {
   defaultZoom: number;
@@ -390,7 +391,8 @@ interface NotationEditorProps {
   setEditorStates: React.Dispatch<React.SetStateAction<Record<string, EditorState>>>;
   textContents: Record<string, TextCellContent>;
   setTextContents: React.Dispatch<React.SetStateAction<Record<string, TextCellContent>>>;
-  addCell: (type: "math" | "text", index?: number) => void;
+  // addCell: (type: "math" | "text", index?: number) => void;
+  addCellRef: React.RefObject<(type: "math" | "text", index?: number) => void>;
   duplicateCell: (id: string) => void;
   deleteCell: (id: string) => void;
   updateOrder: (newOrder: string[]) => void;
@@ -437,7 +439,7 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
   setEditorStates,
   textContents,
   setTextContents,
-  addCell,
+  addCellRef,
   duplicateCell,
   deleteCell,
   updateOrder,
@@ -473,7 +475,7 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
       .map((cell) => cell.id),
     [baseCells]
   );
-  
+
   const displayNumbers = useMemo(
     () =>
       !isEditMode
@@ -522,24 +524,24 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
     (id: string, partialContent: Partial<TextCellContent>) => {
       setTextContents(prev => {
         const prevContent = prev[id];
-  
+
         if (!prevContent) return prev; // or handle missing cell gracefully
-  
+
         const updatedContent = { ...prevContent, ...partialContent };
-  
+
         if (
           prevContent.text === updatedContent.text &&
           prevContent.type === updatedContent.type
         ) {
           return prev; // No actual change
         }
-  
+
         return { ...prev, [id]: updatedContent };
       });
     },
     [setTextContents]
   );
-  
+
 
   const toggleShowLatex = useCallback((cellId: string) => {
     setShowLatexMap((prev) => ({ ...prev, [cellId]: !prev[cellId] }));
@@ -592,11 +594,20 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
     window.addEventListener("pointerup", handlePointerUp);
   }, [startDrag, updateDragOver, endDrag, order, updateOrder]);
 
+  // const handleInsertAtEnd = useCallback(
+  //   (type: "text" | "math") => addCell(type, visibleCells.length), //TODO do not hardcode text math like that for extensibility
+  //   [addCell, visibleCells.length]
+  // );
+  const handleInsertAtEnd = useCallback(
+    (type: "text" | "math") => addCellRef.current(type, visibleCells.length),
+    [visibleCells.length, addCellRef]
+  );
+
   return (
     <main
       className={styles.editorLayout}
       onClick={(e) => {
-        if (!(e.target as HTMLElement).closest(".cell")) {
+        if (!(e.target as HTMLElement).closest(`.${cellStyles.cell}`)) {
           setSelectedCellId(null);
         }
       }}
@@ -629,7 +640,8 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
             showLatexMap={showLatexMap}
             defaultZoom={defaultZoom}
             resetZoomSignal={resetZoomSignal}
-            addCell={addCell}
+            // addCell={addCell}
+            onInsert={(type: "math" | "text") => addCellRef.current(type, index)}
             updateCellContent={updateCellContent}
             deleteCell={deleteCell}
             duplicateCell={duplicateCell}
@@ -641,21 +653,19 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
         ))}
 
         {/* Insertion zone after last cell */}
-        <div
-          className={clsx(
-            styles.insertZone,
-            { [styles.dragOver]: dragOverInsertIndex === visibleCells.length}
-          )}
-          onPointerEnter={() => draggingCellId !== null && updateDragOver(visibleCells.length)}
-        >
-          <InsertCellButtons
-            onInsert={useCallback(
-              (type) => addCell(type, visibleCells.length),
-              [addCell, visibleCells.length]
+        {mode !== "locked" &&
+          <div
+            className={clsx(
+              styles.insertZone,
+              { [styles.dragOver]: dragOverInsertIndex === visibleCells.length }
             )}
-            isPermanent={true}
-          />
-        </div>
+            onPointerEnter={() => draggingCellId !== null && updateDragOver(visibleCells.length)}
+          >
+            <InsertCellButtons
+              onInsert={handleInsertAtEnd}
+              isPermanent={true}
+            />
+          </div>}
       </div>
     </main>
   );

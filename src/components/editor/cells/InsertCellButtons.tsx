@@ -1,4 +1,4 @@
-import React, { useState, useCallback, memo } from "react";
+import React, { useState, useCallback } from "react";
 import clsx from "clsx";
 import Tooltip from "../../tooltips/Tooltip";
 import { useEditorMode } from "../../../hooks/useEditorMode";
@@ -13,8 +13,6 @@ const InsertCellButtons: React.FC<InsertCellButtonsProps> = ({
   onInsert,
   isPermanent = false
 }) => {
-  console.warn(`Rendering cell buttons (${isPermanent})`)
-
   const { mode } = useEditorMode();
   const isLocked = mode === "locked";
   const isEdit = mode === "edit";
@@ -66,4 +64,4 @@ const InsertCellButtons: React.FC<InsertCellButtonsProps> = ({
   );
 };
 
-export default memo(InsertCellButtons);
+export default React.memo(InsertCellButtons);

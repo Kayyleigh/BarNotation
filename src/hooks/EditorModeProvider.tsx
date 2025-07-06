@@ -1,4 +1,3 @@
-// components/editor/EditorModeProvider.tsx
 import React, { useState, useCallback, type ReactNode } from "react";
 import { EditorModeContext, type EditorMode } from "./EditorModeContext";
 
@@ -9,19 +8,47 @@ interface Props {
 export const EditorModeProvider: React.FC<Props> = ({ children }) => {
   const [mode, setMode] = useState<EditorMode>(() => {
     const preview = localStorage.getItem("previewMode");
-    return preview === "on" ? "preview" : "edit";
+    const locked = localStorage.getItem("lockedMode");
+
+    if (preview === "on") {
+      return locked === "on" ? "locked" : "preview";
+    }
+    return "edit";
   });
 
   const togglePreview = useCallback(() => {
     setMode((prev) => {
-      const next = prev === "preview" ? "edit" : "preview";
-      localStorage.setItem("previewMode", next === "preview" ? "on" : "off");
-      return next;
+      if (prev === "edit") {
+        localStorage.setItem("previewMode", "on");
+        return "preview";
+      }
+
+      if (prev === "preview") {
+        localStorage.setItem("previewMode", "off");
+        return "edit";
+      }
+
+      // From locked → edit (disabling both preview + locked)
+      localStorage.setItem("previewMode", "off");
+      localStorage.setItem("lockedMode", "off");
+      return "edit";
     });
   }, []);
 
   const toggleLocked = useCallback(() => {
-    setMode((prev) => (prev === "locked" ? "edit" : "locked"));
+    setMode((prev) => {
+      if (prev === "preview") {
+        localStorage.setItem("lockedMode", "on");
+        return "locked";
+      }
+
+      if (prev === "locked") {
+        localStorage.setItem("lockedMode", "off");
+        return "preview";
+      }
+
+      return prev; // do nothing if trying to lock from edit mode
+    });
   }, []);
 
   return (

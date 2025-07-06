@@ -5,6 +5,7 @@ import type { DropTarget } from "../../layout/EditorWorkspace";
 import type { DragSource } from "../../../hooks/DragContext";
 import { HoverProvider } from "../../../hooks/HoverProvider";
 import { useEditorMode } from "../../../hooks/useEditorMode";
+import styles from "./cell.module.css";
 
 type MathCellProps = {
   resetZoomSignal: number;
@@ -44,8 +45,8 @@ const MathCell: React.FC<MathCellProps> = ({
   });
 
   return (
-    <div className="math-cell">
-      <div className="math-editor-scroll-container" style={style}>
+    <div className={styles.mathCell}>
+      <div className={styles.mathScrollContainer} style={style}>
         <HoverProvider>
           <MathEditor
             resetZoomSignal={resetZoomSignal}
@@ -60,7 +61,7 @@ const MathCell: React.FC<MathCellProps> = ({
         </HoverProvider>
       </div>
       {isEditMode && (
-        <div className="hover-type-info">
+        <div className={styles.hoverTypeInfo}>
           {hoverInfo.hoveredType ? `${hoverInfo.hoveredType} • ` : ""}
           {Math.round(hoverInfo.zoomLevel * 100)}%
         </div>
