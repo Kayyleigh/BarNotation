@@ -1,0 +1,60 @@
+/* .text-cell-input {
+    width: 100%;
+    font-family: serif;
+    font-size: 1rem; 
+    line-height: 1.4;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: none;
+    transition: font-size 0.2s ease, font-weight 0.2s ease;
+    box-sizing: border-box;
+    background-color: white;
+    color: black;
+  } */
+  
+  /* .text-cell-input.preview {
+    background-color: #f9f9f9;
+    border-color: transparent;
+    cursor: default;
+    resize: none;
+  } */
+
+  .textCellWrapper {
+    display: flex;
+    align-items: flex-start; /* aligns number and textarea nicely */
+    gap: 0.75rem; /* spacing between number and textarea */
+  }
+  
+  .displayNumber {
+    /* font-family: "Georgia", "Times New Roman", serif; */
+    /* font-size: 0.95rem; */
+    /* color: #555; */
+    line-height: 1.5;
+    color: var(--text-cell-color, inherit);
+    padding-top: 0.5rem;
+    min-width: 3rem;
+    min-height: 1.5em;
+    text-align: left;
+    flex-shrink: 0;
+  }
+
+  .textCellInput {
+    width: 100%;
+    overflow: hidden;
+    resize: none;
+    font: inherit;
+    line-height: 1.5;
+    color: var(--text-cell-color, inherit);
+    padding: 0.5rem;
+    border: none;
+    outline: none;
+    background-color: transparent;
+    box-sizing: border-box;
+    height: auto;
+    min-height: 1.5em;
+  }
+  
+  .textCellInput.preview {
+    text-align: left;
+  }

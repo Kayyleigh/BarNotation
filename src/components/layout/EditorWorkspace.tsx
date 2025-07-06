@@ -72,7 +72,7 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({
         return {
           id,
           type: "text",
-          content: "",
+          content: {type: "plain", text: ""},
         };
       });
   

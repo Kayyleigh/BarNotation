@@ -18,8 +18,28 @@ export interface Note {
   cells: CellData[];
 }
 
-export type CellData = {
-  id: string;
-  type: "math" | "text";
-  content: string;
+export type TextCellContent = {
+  text: string;
+  type: "plain" | "section" | "subsection" | "subsubsection";
 };
+
+// export type CellData = {
+//   id: string;
+//   type: "math" | "text";
+//   content: string;
+// };
+
+type TextCellData = {
+  id: string;
+  type: "text";
+  content: TextCellContent;  // { text: string; type: string }
+};
+
+type MathCellData = {
+  id: string;
+  type: "math";
+  // content: EditorState;  // later use this? It's a huge flaw that I don't yet 
+  content: string;  // for now, store LaTeX here
+};
+
+export type CellData = TextCellData | MathCellData;

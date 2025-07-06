@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import clsx from "clsx";
-import Tooltip from "../tooltips/Tooltip";
+import Tooltip from "../../tooltips/Tooltip";
+import { useEditorMode } from "../../../hooks/useEditorMode";
 
 export type BaseCellProps = {
   typeLabel: string;
   isSelected: boolean;
-  isPreviewMode: boolean;
   onDelete: () => void;
   onDuplicate: () => void;
   onClick: () => void;
@@ -19,7 +19,6 @@ export type BaseCellProps = {
 const BaseCell: React.FC<BaseCellProps> = ({
   typeLabel,
   isSelected,
-  isPreviewMode,
   onDelete,
   onDuplicate,
   onClick,
@@ -29,13 +28,16 @@ const BaseCell: React.FC<BaseCellProps> = ({
   isDragOver = false,
   handlePointerDown,
 }) => {
+  const { mode } = useEditorMode();
+  const isEditMode = mode === "edit";
+
   const [hovered, setHovered] = useState(false);
 
   return (
     <div
       className={clsx("cell", {
         selected: isSelected,
-        preview: isPreviewMode,
+        preview: !isEditMode,
         dragging: isDragging,
         "drag-over": isDragOver,
       })}
@@ -47,7 +49,7 @@ const BaseCell: React.FC<BaseCellProps> = ({
         {isSelected && <div className="selected-indicator" />}
         <div className="drag-spot" onPointerDown={handlePointerDown} />
       </div>
-  
+
       <div className="cell-inner">
         <div className="cell-main-content">
           {(isSelected || hovered) && (
@@ -65,13 +67,13 @@ const BaseCell: React.FC<BaseCellProps> = ({
               </Tooltip>
             </div>
           )}
-  
+
           <div className="cell-content">{children}</div>
           <div className="cell-type-info">{typeLabel}</div>
         </div>
       </div>
     </div>
-  );  
+  );
 };
 
 export default React.memo(BaseCell);

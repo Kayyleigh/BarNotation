@@ -91,13 +91,14 @@
 
 // logic/global-history.ts
 import { createRootWrapper } from "../models/nodeFactories";
+import type { TextCellContent } from "../models/noteTypes";
 import { createInitialCursor } from "./cursor";
 import type { EditorState } from "./editor-state";
 
 export interface EditorSnapshot {
   states: Record<string, EditorState>;
   order: string[];
-  textContents: Record<string, string>;
+  textContents: Record<string, TextCellContent>;
 }
 
 export interface HistoryState {

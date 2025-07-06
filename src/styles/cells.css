@@ -156,6 +156,12 @@
     text-align: left;
   }
 
+  textarea {
+    resize: none;
+    overflow: hidden;
+    height: auto;
+  }
+
   .cell.preview .cell-inner {
     padding: 0;
     border: none;

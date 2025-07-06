@@ -8,11 +8,12 @@ import React, {
 import EditorHeaderBar from "./EditorHeaderBar";
 import NotationEditor from "./NotationEditor";
 import styles from "./Editor.module.css";
-import type { NoteMetadata } from "../../models/noteTypes";
+import type { NoteMetadata, TextCellContent } from "../../models/noteTypes";
 import type { MathNode } from "../../models/types";
 import { useEditorHistory } from "../../hooks/EditorHistoryContext";
 import { createRootWrapper } from "../../models/nodeFactories";
 import { createEditorState, type EditorState } from "../../logic/editor-state";
+import { EditorModeProvider } from "../../hooks/EditorModeProvider";
 
 type DropSource = {
   sourceType: "cell" | "library";
@@ -44,7 +45,7 @@ function loadNoteState(noteId: string) {
     return JSON.parse(saved) as {
       order: string[];
       states: Record<string, EditorState>;
-      textContents: Record<string, string>;
+      textContents: Record<string, TextCellContent>;
     };
   } catch {
     return null;
@@ -54,7 +55,7 @@ function loadNoteState(noteId: string) {
 function saveNoteState(noteId: string, state: {
   order: string[];
   states: Record<string, EditorState>;
-  textContents: Record<string, string>;
+  textContents: Record<string, TextCellContent>;
 }) {
   try {
     localStorage.setItem(`note-editor-state-${noteId}`, JSON.stringify(state));
@@ -79,9 +80,9 @@ const EditorPane: React.FC<EditorPaneProps> = ({
   );
   const [resetZoomSignal, setResetZoomSignal] = useState(0);
   const [showZoomDropdown, setShowZoomDropdown] = useState(false);
-  const [isPreviewMode, setIsPreviewMode] = useState(() =>
-    localStorage.getItem("previewMode") === "on"
-  );
+  // const [isPreviewMode, setIsPreviewMode] = useState(() =>
+  //   localStorage.getItem("previewMode") === "on"
+  // );
   const [showLatexMap, setShowLatexMap] = useState<Record<string, boolean>>({});
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
@@ -120,7 +121,7 @@ const EditorPane: React.FC<EditorPaneProps> = ({
     (type: "math" | "text", index?: number) => {
       const newId = Date.now().toString();
       const newOrder = [...order];
-      
+
       if (index != null) {
         newOrder.splice(index, 0, newId);
       } else {
@@ -133,13 +134,18 @@ const EditorPane: React.FC<EditorPaneProps> = ({
       if (type === "math") {
         newStates[newId] = createEditorState(createRootWrapper());
       } else {
-        newTextContents[newId] = "";
+        newTextContents[newId] = { type: "plain", text: "" };
       }
 
       persistState({ order: newOrder, states: newStates, textContents: newTextContents });
     },
     [order, editorStates, textContents, persistState]
   );
+
+  const addCellRef = useRef(addCell);
+  useEffect(() => {
+    addCellRef.current = addCell;
+  }, [addCell]);
 
   const deleteCell = useCallback(
     (id: string) => {
@@ -200,12 +206,12 @@ const EditorPane: React.FC<EditorPaneProps> = ({
     resetAllZooms();
   }, [resetAllZooms]);
 
-  const togglePreviewMode = useCallback(() => {
-    setIsPreviewMode((prev) => {
-      localStorage.setItem("previewMode", prev ? "off" : "on");
-      return !prev;
-    });
-  }, []);
+  // const togglePreviewMode = useCallback(() => {
+  //   setIsPreviewMode((prev) => {
+  //     localStorage.setItem("previewMode", prev ? "off" : "on");
+  //     return !prev;
+  //   });
+  // }, []);
 
   const showAllLatex = useCallback(() => {
     setShowLatexMap((prev) =>
@@ -241,41 +247,41 @@ const EditorPane: React.FC<EditorPaneProps> = ({
   }, [showZoomDropdown]);
 
   return (
-    <div className={styles.editorPane} style={style}>
-      <EditorHeaderBar
-        isPreviewMode={isPreviewMode}
-        togglePreviewMode={togglePreviewMode}
-        defaultZoom={defaultZoom}
-        resetAllZooms={resetAllZooms}
-        handleZoomChange={handleZoomChange}
-        showAllLatex={showAllLatex}
-        hideAllLatex={hideAllLatex}
-        showZoomDropdown={showZoomDropdown}
-        setShowZoomDropdown={setShowZoomDropdown}
-        dropdownRef={dropdownRef}
-        onAddCell={addCell}
-      />
-      <NotationEditor
-        noteId={noteId}
-        isPreviewMode={isPreviewMode}
-        resetZoomSignal={resetZoomSignal}
-        defaultZoom={defaultZoom}
-        order={order}
-        addCell={addCell}
-        deleteCell={deleteCell}
-        duplicateCell={duplicateCell}
-        updateOrder={updateOrder}
-        editorStates={editorStates}
-        setEditorStates={setEditorStates}
-        textContents={textContents}
-        setTextContents={setTextContents}
-        showLatexMap={showLatexMap}
-        setShowLatexMap={setShowLatexMap}
-        metadata={noteMetadata}
-        setMetadata={setNoteMetadata}
-        onDropNode={onDropNode}
-      />
-    </div>
+    <EditorModeProvider>
+      <div className={styles.editorPane} style={style}>
+        <EditorHeaderBar
+          defaultZoom={defaultZoom}
+          resetAllZooms={resetAllZooms}
+          handleZoomChange={handleZoomChange}
+          showAllLatex={showAllLatex}
+          hideAllLatex={hideAllLatex}
+          showZoomDropdown={showZoomDropdown}
+          setShowZoomDropdown={setShowZoomDropdown}
+          dropdownRef={dropdownRef}
+          onAddCell={addCell} //ref instead?? Actually this one only needs the ability to add at the end!!
+        />
+        <NotationEditor
+          noteId={noteId}
+          // isPreviewMode={isPreviewMode}
+          resetZoomSignal={resetZoomSignal}
+          defaultZoom={defaultZoom}
+          order={order}
+          addCell={addCell}//ref instead??
+          deleteCell={deleteCell}
+          duplicateCell={duplicateCell}
+          updateOrder={updateOrder}
+          editorStates={editorStates}
+          setEditorStates={setEditorStates}
+          textContents={textContents}
+          setTextContents={setTextContents}
+          showLatexMap={showLatexMap}
+          setShowLatexMap={setShowLatexMap}
+          metadata={noteMetadata}
+          setMetadata={setNoteMetadata}
+          onDropNode={onDropNode}
+        />
+      </div>
+    </EditorModeProvider>
   );
 };
 

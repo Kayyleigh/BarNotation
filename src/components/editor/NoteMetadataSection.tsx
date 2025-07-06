@@ -2,14 +2,17 @@ import React from "react";
 import styles from "./NoteMetadataSection.module.css";
 import clsx from "clsx";
 import type { NoteMetadata } from "../../models/noteTypes";
+import { useEditorMode } from "../../hooks/useEditorMode";
 
 interface Props {
   metadata: NoteMetadata;
   setMetadata: (metadata: Partial<NoteMetadata>) => void;
-  isPreviewMode: boolean;
 }
 
-const NoteMetaDataSection: React.FC<Props> = ({ metadata, setMetadata, isPreviewMode }) => {
+const NoteMetaDataSection: React.FC<Props> = ({ metadata, setMetadata }) => {
+  const { mode } = useEditorMode();
+  const isPreviewMode = mode === "preview";
+
   if (isPreviewMode) { //TODO: enable editing in preview mode
     return (
       <div className={clsx(styles.metadataBar, styles.preview)}>

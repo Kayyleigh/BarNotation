@@ -5,11 +5,11 @@ import "../styles/themes.css";
 import "../styles/styles.css";
 import "../styles/math-node.css";
 import "../styles/cells.css";
-import MathCell from "../cells/MathCell";
-import TextCell from "../cells/TextCell";
-import InsertCellButtons from "../cells/InsertCellButtons";
+import MathCell from "../editor/cells/MathCell";
+import TextCell from "../editor/cells/TextCell";
+import InsertCellButtons from "../editor/cells/InsertCellButtons";
 import SettingsModal from "../modals/SettingsModal";
-import BaseCell from "../cells/BaseCell";
+import BaseCell from "../editor/cells/BaseCell";
 import { useCellDragState } from "../../hooks/useCellDragState";
 
 const App: React.FC = () => {
