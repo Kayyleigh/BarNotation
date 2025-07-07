@@ -641,7 +641,7 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
             defaultZoom={defaultZoom}
             resetZoomSignal={resetZoomSignal}
             // addCell={addCell}
-            onInsert={(type: "math" | "text") => addCellRef.current(type, index)}
+            addCell={(type: "math" | "text") => addCellRef.current(type, index)}
             updateCellContent={updateCellContent}
             deleteCell={deleteCell}
             duplicateCell={duplicateCell}

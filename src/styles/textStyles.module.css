@@ -6,17 +6,17 @@
   }
   
   .section {
-    /* font-weight: bold; */
-    font-size: 1.8em; /* roughly \section size */
+    font-weight: bold;
+    font-size: 1.5em; /* roughly \section size */
   }
   
   .subsection {
-    /* font-weight: bold; */
-    font-size: 1.4em; /* roughly \subsection size */
+    font-weight: bold;
+    font-size: 1.3em; /* roughly \subsection size */
   }
   
   .subsubsection {
-    /* font-weight: bold; */
+    font-weight: bold;
     font-size: 1.2em; /* roughly \subsubsection size */
   }
   

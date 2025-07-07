@@ -24,23 +24,29 @@
 :global(.preview) .cellInner,
 :global(.locked) .cellInner {
   border: none;
+  /* width: calc(100% - 2em); */
   box-shadow: none;
   background: transparent;
   padding: 0;
 }
 
+:global(.preview:not(.locked)) .cellInner:hover {
+  background: var(--math-editor-bg);
+}
+
 /* Global locked margin offset */
 :global(.locked) .cellInner {
-  margin-left: 1em;
+  margin-left: var(--editor-margin-left);
 }
 
 .cell {
   display: flex;
   flex-direction: row;
   color: var(--math-text-color);
-  margin: 0em 0.75em 0em 0.15em;
+  margin: 0em 0em 0em var(--cell-selection-indicator-offset-left);
   position: relative;
   outline: none;
+  /* width: 100%; */
 }
 
 .cellToolbar {
@@ -135,7 +141,9 @@
 }
 
 .cellInner {
-  width: calc(100% - 2.5em);
+  /* width: calc(100% - 2.5em); */
+  width: calc(100% - var(--editor-margin-left));
+  /* margin-right: var(--editor-margin-right); */
   height: fit-content;
   padding: 0.6em 0.8em;
   position: relative;
@@ -164,11 +172,15 @@
 }
 
 .cellMargin {
-  width: 2.5em;
-  position: relative;
+  /* width: 2.5em; */
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.cellMargin:hover {
+  background: var(--math-editor-bg);
 }
 
 .selectedIndicator {
@@ -182,7 +194,7 @@
 }
 
 .dragSpot {
-  width: 2.5em;
+  width: var(--cell-dragspot-width);
   height: 100%;
   cursor: grab;
   user-select: none;

@@ -7,7 +7,7 @@
 .cellList {
   display: flex;
   flex-direction: column;
-  padding: 1px;
+  margin-right: var(--editor-margin-right);
 }
 
 .editorLayout {
@@ -132,4 +132,9 @@
 .hierarchyTypeButton.active {
   background: var(--logo-color-1);
   color: #1c4940;
+}
+
+.lockedMath {
+  overflow: hidden;
+  text-align: center;
 }

@@ -57,10 +57,12 @@ const BaseCell: React.FC<BaseCellProps> = ({
       onClick={onClickHandler}
     >
       {!isLockedMode && (
-        <div className={styles.cellMargin}>
-          {isSelected && <div className={styles.selectedIndicator} />}
-          <div className={styles.dragSpot} onPointerDown={handlePointerDown} />
-        </div>
+        <Tooltip text="Drag to re-order cells">
+          <div className={styles.cellMargin}>
+            {isSelected && <div className={styles.selectedIndicator} />}
+            <div className={styles.dragSpot} onPointerDown={handlePointerDown} />
+          </div>
+        </Tooltip>
       )}
 
       <div

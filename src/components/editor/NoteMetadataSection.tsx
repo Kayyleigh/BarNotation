@@ -48,6 +48,7 @@ const NoteMetaDataSection: React.FC<Props> = ({ metadata, setMetadata }) => {
         <div className={styles.previewTitle}>
           <textarea
             ref={titleRef}
+            rows={1}
             placeholder="Untitled Note"
             value={metadata.title}
             onChange={(e) => setMetadata({ title: e.target.value })}

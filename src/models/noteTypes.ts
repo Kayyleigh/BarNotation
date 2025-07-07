@@ -1,3 +1,5 @@
+import type { TextCellType } from "./textTypes";
+
 export interface NoteMetadata {
   title: string;        // The displayed title of the note
   author?: string;      // Optional author name
@@ -20,7 +22,7 @@ export interface Note {
 
 export type TextCellContent = {
   text: string;
-  type: "plain" | "section" | "subsection" | "subsubsection";
+  type: TextCellType;
 };
 
 // export type CellData = {
