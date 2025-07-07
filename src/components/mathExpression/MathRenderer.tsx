@@ -420,6 +420,7 @@ export type MathRendererProps = {
     to: DropTarget,
   ) => void;
   ancestorIds: string[];
+  showPlaceholder?: boolean;
 };
 
 export type BaseRenderProps = {
@@ -434,6 +435,7 @@ export type BaseRenderProps = {
   isActive: boolean;
   onDropNode: MathRendererProps["onDropNode"];
   ancestorIds: string[];
+  showPlaceholder?: boolean;
 };
 
 const InnerMathRenderer: React.FC<MathRendererProps> = ({
@@ -449,6 +451,7 @@ const InnerMathRenderer: React.FC<MathRendererProps> = ({
   onCursorChange,
   onDropNode,
   ancestorIds,
+  showPlaceholder,
 }) => {
   const { draggingNode, setDraggingNode, dropTarget, setDropTarget } = useDragContext();
 
@@ -478,6 +481,7 @@ const InnerMathRenderer: React.FC<MathRendererProps> = ({
     e.preventDefault();
     e.stopPropagation();
     if (!draggingNode) return;
+    console.log(`in MathRenderer 481 handleDrop`) //This stuff is deleted on refresh unless more input 
 
     let dropContainerId = containerId;
     let dropIndex = index;
@@ -509,6 +513,7 @@ const InnerMathRenderer: React.FC<MathRendererProps> = ({
     isActive,
     onDropNode,
     ancestorIds,
+    showPlaceholder,
   };
 
   const newAncestorIds = useMemo(() => [...(ancestorIds), node.id], [ancestorIds, node.id]);

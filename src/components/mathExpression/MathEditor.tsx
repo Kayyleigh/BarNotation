@@ -205,6 +205,7 @@ const MathEditor: React.FC<MathEditorProps> = ({
             isActive={isActive}
             ancestorIds={emptyAncestorIds}
             onDropNode={handleDropNode}
+            showPlaceholder={false}
           />
         </div>
       </div>

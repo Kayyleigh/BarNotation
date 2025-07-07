@@ -613,6 +613,7 @@ export function renderContainerChildren(
     isActive,
     onDropNode,
     ancestorIds,
+    showPlaceholder,
   } = baseProps;
 
   const nodes: React.ReactNode[] = [];
@@ -672,6 +673,7 @@ export function renderContainerChildren(
             setHoverPath={setHoverPath}
             onDropNode={onDropNode}
             ancestorIds={ancestorIds}
+            showPlaceholder={showPlaceholder}
           />
         </span>        
       );
@@ -763,12 +765,12 @@ export function renderCommandInputNode(
 // 4. Inline Container Node (has children)
 export function renderInlineContainerNode(
   node: InlineContainerNode,
-  baseProps: BaseRenderProps & MathRendererProps
+  baseProps: BaseRenderProps & MathRendererProps,
 ): React.ReactNode {
   const styleClass = getStyleClass(baseProps.inheritedStyle);
 
   // Warning: might be super dirty way to implement this... I thought of it a little late
-  const isPartOfLibraryEntry = baseProps.cellId === "readonly";
+  // const isPartOfLibraryEntry = baseProps.cellId === "readonly";
 
   return (
     <span
@@ -785,7 +787,8 @@ export function renderInlineContainerNode(
         handleMouseLeave(e, baseProps.ancestorIds, baseProps.setHoverPath)
       }
     >
-      {node.children.length < 1 && isPartOfLibraryEntry ? (
+      {/* {node.children.length < 1 && isPartOfLibraryEntry ? ( */}
+      {node.children.length < 1 && baseProps.showPlaceholder ? (
         <span className="placeholder-square">⬚</span>
       ) : (
         renderContainerChildren(node.children, {
@@ -1021,6 +1024,7 @@ export function renderAccentedNode(
     setHoverPath: baseProps.setHoverPath,
     inheritedStyle: baseProps.inheritedStyle,
     onDropNode: baseProps.onDropNode,
+    showPlaceholder: baseProps.showPlaceholder,
   };
 
   const updatedAncestors = [node.id, ...(baseProps.ancestorIds ?? [])];

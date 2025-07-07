@@ -9,9 +9,10 @@ import { noop } from "../../utils/noop";
 type MathViewProps = {
   node: MathNode;
   className?: string;
+  showPlaceHolder?: boolean;
 };
 
-const MathView: React.FC<MathViewProps> = ({ node, className }) => {
+const MathView: React.FC<MathViewProps> = ({ node, className, showPlaceHolder }) => {
   return (
     <div className={className} style={{ pointerEvents: "none" }}>
       <MathRenderer
@@ -29,6 +30,7 @@ const MathView: React.FC<MathViewProps> = ({ node, className }) => {
         inheritedStyle={{
           fontStyling: { fontStyle: "normal", fontStyleAlias: "" },
         }}
+        showPlaceholder={showPlaceHolder}
       />
     </div>
   );

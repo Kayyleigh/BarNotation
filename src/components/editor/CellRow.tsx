@@ -262,7 +262,7 @@ const CellRow: React.FC<CellRowProps> = ({
       >
         <BaseCell
           // typeLabel={cell.type === "math" ? "Math" : "Text"}
-          typeLabel={cell.type === "math" ? "Math" : TEXT_TYPE_LABELS[cell.content.type]}
+          typeLabel={cell.type === "math" ? "Math" : TEXT_TYPE_LABELS[cell.content.type] ?? "Text"}
           isSelected={!isLocked && selectedCellId === cell.id}
           isDragging={!isLocked && draggingCellId === cell.id}
           onClick={!isLocked ? () => setSelectedCellId(cell.id) : noop}
