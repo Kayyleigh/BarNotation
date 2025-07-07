@@ -1,15 +1,16 @@
 import React, { useState } from "react";
-import MathEditor from "../mathExpression/MathEditor";
-import type { EditorState } from "../../logic/editor-state";
-import type { DropTarget } from "../layout/EditorWorkspace";
-import type { DragSource } from "../../hooks/DragContext";
-import { HoverProvider } from "../../hooks/HoverProvider";
+import MathEditor from "../../mathExpression/MathEditor";
+import type { EditorState } from "../../../logic/editor-state";
+import type { DropTarget } from "../../layout/EditorWorkspace";
+import type { DragSource } from "../../../hooks/DragContext";
+import { HoverProvider } from "../../../hooks/HoverProvider";
+import { useEditorMode } from "../../../hooks/useEditorMode";
+import styles from "./cell.module.css";
 
 type MathCellProps = {
   resetZoomSignal: number;
   defaultZoom: number;
   showLatex: boolean;
-  isPreviewMode: boolean;
   cellId: string;
   editorState: EditorState;
   updateEditorState: (newState: EditorState) => void;
@@ -23,17 +24,19 @@ const MathCell: React.FC<MathCellProps> = ({
   resetZoomSignal,
   defaultZoom,
   showLatex,
-  isPreviewMode,
   cellId,
   editorState,
   updateEditorState,
   onDropNode,
 }) => {
+  const { mode } = useEditorMode();
+  const isEditMode = mode === "edit";
+
   const style: React.CSSProperties = {
-    textAlign: isPreviewMode ? "center" : "left",
-    zoom: isPreviewMode ? 1 : defaultZoom,
-    boxShadow: isPreviewMode ? "none" : undefined,
-    border: isPreviewMode ? "none" : undefined,
+    textAlign: isEditMode ? "left": "center",
+    zoom: isEditMode ? defaultZoom : 1,
+    boxShadow: isEditMode ? undefined : "none",
+    border: isEditMode ? undefined : "none",
   };
 
   const [hoverInfo, setHoverInfo] = useState<{ hoveredType: string; zoomLevel: number }>({
@@ -42,8 +45,8 @@ const MathCell: React.FC<MathCellProps> = ({
   });
 
   return (
-    <div className="math-cell">
-      <div className="math-editor-scroll-container" style={style}>
+    <div className={styles.mathCell}>
+      <div className={styles.mathScrollContainer} style={style}>
         <HoverProvider>
           <MathEditor
             resetZoomSignal={resetZoomSignal}
@@ -57,8 +60,8 @@ const MathCell: React.FC<MathCellProps> = ({
           />
         </HoverProvider>
       </div>
-      {!isPreviewMode && (
-        <div className="hover-type-info">
+      {isEditMode && (
+        <div className={styles.hoverTypeInfo}>
           {hoverInfo.hoveredType ? `${hoverInfo.hoveredType} • ` : ""}
           {Math.round(hoverInfo.zoomLevel * 100)}%
         </div>

@@ -40,6 +40,7 @@ type MainLayoutProps = {
   isDarkMode: boolean;
   showColorInPreview: boolean;
   nerdMode: boolean;
+  // onOpenNotesArchive: () => void;
 };
 
 const MainLayout: React.FC<MainLayoutProps> = ({
@@ -49,7 +50,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   // setAuthorName,
   isDarkMode,
   showColorInPreview,
-  nerdMode
+  nerdMode,
 }) => {
   const { showToast } = useToast();
 
@@ -136,6 +137,45 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   const selectedNoteMetadata = useMemo(() => selectedNote?.metadata, [selectedNote]);
   const selectedNoteCells = useMemo(() => selectedNote?.cells, [selectedNote]);
 
+  const menuNotes = useMemo(() => {
+    return notes
+      .filter(n => !n.metadata.archived)
+      .map(note => ({
+        id: note.id,
+        title: note.metadata.title,
+        cellCount: note.cells.length,
+        archived: note.metadata.archived,
+        createdAt: note.metadata.createdAt,
+        updatedAt: note.metadata.updatedAt,
+      }));
+  }, [notes]);
+  
+
+  const prevArchivedIdsRef = React.useRef(new Set<string>());
+  const prevNotesRef = React.useRef<Note[]>([]);
+  
+  const archivedNotes = React.useMemo(() => {
+    if (
+      !prevNotesRef.current.length ||
+      notes.length !== prevNotesRef.current.length ||
+      notes.some((note, i) => {
+        const prevNote = prevNotesRef.current[i];
+        return (
+          !prevNote ||
+          prevNote.id !== note.id ||
+          prevNote.metadata.archived !== note.metadata.archived
+        );
+      })
+    ) {
+      prevNotesRef.current = notes;
+      const archived = notes.filter(note => note.metadata.archived);
+      prevArchivedIdsRef.current = new Set(archived.map(n => n.id));
+      return archived;
+    }
+    // no change, return previous filtered array
+    return notes.filter(note => prevArchivedIdsRef.current.has(note.id));
+  }, [notes]);
+  
   // Handler to update metadata (like title) of a note:
   const updateNoteMetadata = useCallback((noteId: string, newMetadata: Partial<NoteMetadata>) => {
     setNotes((prevNotes) =>
@@ -208,7 +248,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   }, []);
 
 
-  const createNewNote = () => {
+  const createNewNote = useCallback(() => {
     const newId = `note-${Date.now()}`;
     const newNote: Note = {
       id: newId,
@@ -224,7 +264,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     };
     setNotes((prev) => [newNote, ...prev]);
     setSelectedNoteId(newId);
-  };
+  }, [authorName]);
 
   const archiveNote = useCallback((id: string) => {
     let noteTitle: string | null = null;
@@ -254,7 +294,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   }, [selectedNoteId, showToast]);
 
 
-  const duplicateNote = (id: string) => {
+  const duplicateNote = useCallback((id: string) => {
     const original = notes.find(note => note.id === id);
     if (!original) return;
     console.warn(`I found ${original}`)
@@ -280,9 +320,9 @@ const MainLayout: React.FC<MainLayoutProps> = ({
 
     setNotes(prevNotes => [duplicatedNote, ...prevNotes]);
     setSelectedNoteId(newId);
-  };
+  }, [notes]);
 
-  const exportLatex = (id: string) => {
+  const exportLatex = useCallback((id: string) => {
     // const note = notes.find(n => n.id === id);
     // if (!note) return;
 
@@ -292,8 +332,9 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     // link.href = URL.createObjectURL(blob);
     // link.download = `${note.metadata.title || "note"}.tex`;
     // link.click();
+    console.log(`[Placeholder]: latex export for note with id: ${id}`);
     showToast({ message: `LaTeX export is not yet implemented`, type: "warning" });
-  };
+  }, [showToast]);
 
   return (
     <div className="main-layout">
@@ -308,13 +349,14 @@ const MainLayout: React.FC<MainLayoutProps> = ({
             onWidthChange={setLeftWidth}
             selectedNoteId={selectedNoteId}
             onSelectNote={setSelectedNoteId}
-            notes={notes}
+            noteSummaries={menuNotes}
             onCreateNote={createNewNote}
             onDeleteNote={handleDeleteNote}
             onArchiveNote={archiveNote}
             onUnarchiveNote={handleUnarchiveNote}
             onDuplicateNote={duplicateNote}
             onExportLatex={exportLatex}
+            archivedNotes={archivedNotes}
           />
         </div>
         <div style={{ flexGrow: 1, display: "flex", minWidth: 0 }}>

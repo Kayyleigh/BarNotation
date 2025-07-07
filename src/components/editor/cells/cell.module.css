@@ -1,0 +1,237 @@
+/* === Global Preview & Locked Modifiers === */
+:global(.preview) .cell, /* This one is not actually working??? */
+:global(.locked) .cell {
+  border: none;
+  box-shadow: none;
+  background: transparent;
+}
+
+:global(.preview) .math-editor,
+:global(.locked) .math-editor {
+  border: none;
+  box-shadow: none;
+  background: transparent;
+  padding: 0;
+}
+
+:global(.preview) .hoverTypeInfo,
+:global(.preview) .cellTypeInfo,
+:global(.locked) .hoverTypeInfo,
+:global(.locked) .cellTypeInfo {
+  opacity: 0;
+}
+
+:global(.preview) .cellInner,
+:global(.locked) .cellInner {
+  border: none;
+  /* width: calc(100% - 2em); */
+  box-shadow: none;
+  background: transparent;
+  padding: 0;
+}
+
+:global(.preview:not(.locked)) .cellInner:hover {
+  background: var(--math-editor-bg);
+}
+
+/* Global locked margin offset */
+:global(.locked) .cellInner {
+  margin-left: var(--editor-margin-left);
+}
+
+.cell {
+  display: flex;
+  flex-direction: row;
+  color: var(--math-text-color);
+  margin: 0em 0em 0em var(--cell-selection-indicator-offset-left);
+  position: relative;
+  outline: none;
+  /* width: 100%; */
+}
+
+.cellToolbar {
+  position: absolute;
+  top: -1.1em;
+  right: 1em;
+  display: flex;
+  gap: 0.5rem;
+  z-index: 1;
+}
+
+.cellTypeInfo {
+  position: absolute;
+  bottom: 0.5em;
+  right: 0.9em;
+  pointer-events: none;
+  opacity: 0.3;
+  font-size: 0.8rem;
+  font-family: monospace;
+  user-select: none;
+}
+
+.cellTypeInfoPreview {
+  padding: 0;
+  border: none;
+  box-shadow: none;
+  background: transparent;
+}
+
+.mathCell {
+  position: relative;
+}
+
+.hoverTypeInfo {
+  position: absolute;
+  top: 0.5em;
+  right: 0.9em;
+  pointer-events: none;
+  opacity: 0.3;
+  font-size: 0.8rem;
+  font-family: monospace;
+  user-select: none;
+}
+
+.textCell {
+  box-sizing: border-box;
+  background: var(--math-editor-bg);
+  border: 1px solid var(--math-editor-border);
+  border-radius: 6px;
+  box-shadow: 0 0 4px var(--math-editor-shadow);
+  padding: 1em;
+  position: relative;
+}
+
+/* Optional global preview text tweaks */
+:global(.preview) .textCellInput,
+:global(.locked) .textCellInput {
+  text-align: left;
+}
+
+.textCellWrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.displayNumber {
+  line-height: 1.5;
+  cursor: default;
+  color: var(--text-cell-color, inherit);
+  padding-top: 0.5rem;
+  min-width: 3rem;
+  min-height: 1.5em;
+  text-align: left;
+  flex-shrink: 0;
+}
+
+.textCellInput {
+  width: 100%;
+  overflow: hidden;
+  resize: none;
+  font: inherit;
+  line-height: 1.5;
+  color: var(--text-cell-color, inherit);
+  padding: 0.5rem;
+  border: none;
+  outline: none;
+  background-color: transparent;
+  box-sizing: border-box;
+  height: auto;
+  min-height: 1.5em;
+}
+
+.cellInner {
+  /* width: calc(100% - 2.5em); */
+  width: calc(100% - var(--editor-margin-left));
+  /* margin-right: var(--editor-margin-right); */
+  height: fit-content;
+  padding: 0.6em 0.8em;
+  position: relative;
+  background: var(--math-editor-bg);
+  border: 1px solid var(--math-editor-border);
+  border-radius: 6px;
+  box-shadow: 0 0 4px var(--math-editor-shadow);
+  color: var(--math-text-color);
+}
+
+.cellInner:has(.mathCell) {
+  padding: 0em;
+}
+
+.cellMainContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.cellDragging {
+  opacity: 0.5;
+  cursor: grabbing;
+  position: relative;
+  z-index: 10;
+}
+
+.cellMargin {
+  /* width: 2.5em; */
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cellMargin:hover {
+  background: var(--math-editor-bg);
+}
+
+.selectedIndicator {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background-color: var(--selected-cell-bar);
+  border-radius: 2px;
+}
+
+.dragSpot {
+  width: var(--cell-dragspot-width);
+  height: 100%;
+  cursor: grab;
+  user-select: none;
+}
+
+.dragSpot:active {
+  cursor: grabbing;
+  background-color: #555;
+}
+
+.dragHandle {
+  display: none;
+}
+
+.mathScrollContainer {
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  width: 100%;
+  display: block;
+  position: relative;
+}
+
+/* Hide scrollbars (cross-browser)  */
+.mathScrollContainer::-webkit-scrollbar {
+  display: none;
+}
+
+.mathScrollContainer {
+  -ms-overflow-style: none;
+  /* IE/Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+/* Ensure MathEditor does not shrink or wrap  */
+.mathScrollContainer>* {
+  display: inline-block;
+  min-width: 100%;
+}

@@ -1,0 +1,22 @@
+    
+  /* Header-like sizes inspired by LaTeX */
+  .plain {
+    font-weight: normal;
+    font-size: 1em; /* normal body text */
+  }
+  
+  .section {
+    font-weight: bold;
+    font-size: 1.5em; /* roughly \section size */
+  }
+  
+  .subsection {
+    font-weight: bold;
+    font-size: 1.3em; /* roughly \subsection size */
+  }
+  
+  .subsubsection {
+    font-weight: bold;
+    font-size: 1.2em; /* roughly \subsubsection size */
+  }
+  

@@ -39,7 +39,7 @@ const LibraryEntryItem: React.FC<LibraryEntryItemProps> = React.memo(
         tabIndex={0}
       >
         <Tooltip text={entry.latex}>
-          <MathView node={entry.node} />
+          <MathView node={entry.node} showPlaceHolder={true} />
         </Tooltip>
         <div className={styles.meta}>
           <span>{entry.draggedCount}×</span>

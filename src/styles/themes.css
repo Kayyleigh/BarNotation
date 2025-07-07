@@ -150,6 +150,16 @@
     --modal-button-bg: var(--button-bg); 
     --modal-button-hover-bg: #ddd;       /* Slight hover effect */
 
+    /* Preview mode */
+    --cell-preview-hover-bg: #001aff11;
+
+
+    /* editor layout */    
+    --cell-dragspot-width: 2.5em;
+    --cell-selection-indicator-offset-left: 0.15em;
+    --editor-margin-right: 0.75em;
+    /* --editor-margin-left: calc(var(--cell-dragspot-width) + var(--cell-selection-indicator-offset-left)); */
+    --editor-margin-left: 2.65em;
   }
   
   .dark {
@@ -264,11 +274,21 @@
 
   }
 
+  .preview {
+    --editor-margin-right: 0.5em;
+  }
+
+  .locked {
+    --cell-dragspot-width: 0em;
+    --cell-selection-indicator-offset-left: 0em;
+    --editor-margin-left: 1em;
+  }
+
   .nerdMode {
     --lib-entry-meta-visibility: shown;
   }
 
-  .unColoredPreview .cell.preview {
+  .unColoredPreview .preview {
     --math-color-single-bracket: var(--math-text-color);
     --math-color-pair-brackets: var(--math-text-color);
     --math-color-actuarial-text: var(--math-text-color);  

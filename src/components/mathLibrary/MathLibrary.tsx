@@ -893,6 +893,7 @@ const MathLibrary: React.FC<MathLibraryProps> = ({
   const memoizedOnDrop = useCallback(
     (e: React.DragEvent<Element>, dropIndex: number | null) => {
       e.preventDefault();
+      console.log(`In line 896 of MathLibrary; memoizedOnDrop`)
       handleLibraryDrop(e, activeColl, dropIndex);
     },
     [handleLibraryDrop, activeColl]

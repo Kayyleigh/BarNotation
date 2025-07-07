@@ -1,11 +1,11 @@
 import React, { useRef, useEffect } from "react";
 import NoteActionsDropdown from "./NoteActionsDropdown";
 import styles from "./NotesMenu.module.css";
-import type { Note } from "../../models/noteTypes";
+import type { NoteSummary } from "../../models/noteTypes";
 import { formatCreatedAt } from "../../utils/dateUtils";
 
 type Props = {
-  note: Note;
+  note: NoteSummary;
   selected: boolean;
   onClick: () => void;
   dotRef: (el: HTMLButtonElement | null) => void;
@@ -47,15 +47,15 @@ const NoteListItem: React.FC<Props> = ({
       role="button"
     >
       <div className={styles.noteTextBlock}>
-        <div className={styles.noteTitle}>{note.metadata.title}</div>
+        <div className={styles.noteTitle}>{note.title}</div>
         <div className={styles.noteMeta}>
-          <span>{note.cells.length} cell{note.cells.length === 1 ? "" : "s"}</span>
+          <span>
+            {note.cellCount} cell{note.cellCount === 1 ? "" : "s"}
+          </span>
           <span className={styles.noteDate}>
-          {note.metadata.createdAt && (
-            <span className={styles.noteDate}>
-              {formatCreatedAt(note.metadata.createdAt)}
-            </span>
-          )}
+            {note.createdAt && (
+              <span className={styles.noteDate}>{formatCreatedAt(note.createdAt)}</span>
+            )}
           </span>
         </div>
       </div>
@@ -84,4 +84,34 @@ const NoteListItem: React.FC<Props> = ({
   );
 };
 
-export default React.memo(NoteListItem);
+// Custom comparison function for memoization
+function areEqual(prevProps: Props, nextProps: Props) {
+  // Compare relevant note fields (assuming these are stable and only update on real changes)
+  if (
+    prevProps.note.title !== nextProps.note.title ||
+    prevProps.note.cellCount !== nextProps.note.cellCount ||
+    prevProps.note.createdAt !== nextProps.note.createdAt
+  ) {
+    return false;
+  }
+
+  // Compare simple booleans and function identities
+  if (prevProps.selected !== nextProps.selected) return false;
+  if (prevProps.menuOpen !== nextProps.menuOpen) return false;
+
+  // onClick, setMenuOpen and other handlers ideally stable via useCallback in parent,
+  // but compare to be safe:
+  if (prevProps.onClick !== nextProps.onClick) return false;
+  if (prevProps.setMenuOpen !== nextProps.setMenuOpen) return false;
+  if (prevProps.onDeleteNote !== nextProps.onDeleteNote) return false;
+  if (prevProps.onArchiveNote !== nextProps.onArchiveNote) return false;
+  if (prevProps.onDuplicateNote !== nextProps.onDuplicateNote) return false;
+  if (prevProps.onExportLatex !== nextProps.onExportLatex) return false;
+
+  // dotRef usually stable, but compare anyway:
+  if (prevProps.dotRef !== nextProps.dotRef) return false;
+
+  return true; // props equal, skip re-render
+}
+
+export default React.memo(NoteListItem, areEqual);

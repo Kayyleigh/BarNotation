@@ -88,4 +88,4 @@ const ResizableSidebar: React.FC<ResizableSidebarProps> = ({
   );
 };
 
-export default ResizableSidebar;
+export default React.memo(ResizableSidebar);

@@ -1,3 +1,5 @@
+import type { TextCellType } from "./textTypes";
+
 export interface NoteMetadata {
   title: string;        // The displayed title of the note
   author?: string;      // Optional author name
@@ -18,8 +20,38 @@ export interface Note {
   cells: CellData[];
 }
 
-export type CellData = {
+export type TextCellContent = {
+  text: string;
+  type: TextCellType;
+};
+
+// export type CellData = {
+//   id: string;
+//   type: "math" | "text";
+//   content: string;
+// };
+
+type TextCellData = {
   id: string;
-  type: "math" | "text";
-  content: string;
+  type: "text";
+  content: TextCellContent;  // { text: string; type: string }
+};
+
+type MathCellData = {
+  id: string;
+  type: "math";
+  // content: EditorState;  // later use this? It's a huge flaw that I don't yet 
+  content: string;  // for now, store LaTeX here
+};
+
+export type CellData = TextCellData | MathCellData;
+
+// For notes menu:
+export type NoteSummary = {
+  id: string;
+  title: string;
+  cellCount: number;
+  archived: boolean;
+  createdAt?: number;
+  updatedAt?: number;
 };
