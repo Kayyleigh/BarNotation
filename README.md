@@ -332,12 +332,12 @@ Planned features and improvements include:
 - [X] (✅ Done but not in walkthrough yet) Cell and collection duplication option
 - [ ] Enable custom library zoom level
 - [ ] Implement soft delete, i.e. all deleted notes, collections and entries move to a bin so they can be recovered for a little bit before perma delete. (Especially entries since those are easy to accidentally delete)
-- [X] "Lock mode" in preview mode as extra strict version where you cannot interact at all anymore. Just for viewing. 
+- [X] (✅ Done but not in walkthrough yet) "Lock mode" in preview mode as extra strict version where you cannot interact at all anymore. Just for viewing. 
 - [ ] Proper persistent storage (I currently put everything in the browser localStorage)
 - [ ] Full notebook export as LaTeX
 - [ ] Customizable hotkeys
 - [ ] Overview of existing command sequences
-- [X] Hierarchical notebook sections (e.g., sections, subsections)
+- [X] (✅ Done but not in walkthrough yet) Hierarchical notebook sections (e.g., sections, subsections)
 - [ ] Autocomplete of existing command sequences when typing in `command-input` nodes
 - [ ] Proper user guide 
 - [ ] Bulk select of collection entries (for copying to another collection or bulk-delete)
