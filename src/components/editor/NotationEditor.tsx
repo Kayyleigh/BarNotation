@@ -598,8 +598,16 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
   //   (type: "text" | "math") => addCell(type, visibleCells.length), //TODO do not hardcode text math like that for extensibility
   //   [addCell, visibleCells.length]
   // );
-  const handleInsertAtEnd = useCallback(
-    (type: "text" | "math") => addCellRef.current(type, visibleCells.length),
+
+  const handleInsertAtIndex = useCallback((type: "math" | "text", idx: number) => {
+      addCellRef.current(type, idx);
+    },
+    [addCellRef]
+  );
+
+  const handleInsertAtEnd = useCallback((type: "text" | "math") => {
+      addCellRef.current(type, visibleCells.length);
+    },
     [visibleCells.length, addCellRef]
   );
 
@@ -641,7 +649,7 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
             defaultZoom={defaultZoom}
             resetZoomSignal={resetZoomSignal}
             // addCell={addCell}
-            addCell={(type: "math" | "text") => addCellRef.current(type, index)}
+            addCell={handleInsertAtIndex} // < --- THIS 
             updateCellContent={updateCellContent}
             deleteCell={deleteCell}
             duplicateCell={duplicateCell}
@@ -671,5 +679,5 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
   );
 };
 
-export default NotationEditor;
+export default React.memo(NotationEditor);
 

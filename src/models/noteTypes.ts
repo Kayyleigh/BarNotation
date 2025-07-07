@@ -45,3 +45,13 @@ type MathCellData = {
 };
 
 export type CellData = TextCellData | MathCellData;
+
+// For notes menu:
+export type NoteSummary = {
+  id: string;
+  title: string;
+  cellCount: number;
+  archived: boolean;
+  createdAt?: number;
+  updatedAt?: number;
+};

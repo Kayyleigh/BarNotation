@@ -7,6 +7,7 @@ import ModalsLayer from "./components/layout/ModalsLayer";
 const App: React.FC = () => {
   const [showHotkeys, setShowHotkeys] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  // const [showNotesArchive, setShowNotesArchive] = useState(false);
   const [authorName, setAuthorName] = useState(() =>
     localStorage.getItem("defaultAuthor") || ""
   );
@@ -21,28 +22,28 @@ const App: React.FC = () => {
   );
 
   // Toggle functions
-  const toggleDarkMode = () => setIsDarkMode((prev) => !prev);
-  const toggleShowColorInPreview = () => setShowColorInPreview((prev) => !prev);
-  const toggleNerdMode = () => setNerdMode((prev) => !prev);
+  const toggleDarkMode = useCallback(() => setIsDarkMode((prev) => !prev), []);
+  const toggleShowColorInPreview = useCallback(() => setShowColorInPreview((prev) => !prev), []);
+  const toggleNerdMode = useCallback(() => setNerdMode((prev) => !prev), []);
 
   const handleOpenSettings = useCallback(() => setShowSettings(true), []);
   const handleOpenHotkeys = useCallback(() => setShowHotkeys(true), []);
   const handleCloseSettings = useCallback(() => setShowSettings(false), []);
   const handleCloseHotkeys = useCallback(() => setShowHotkeys(false), []);
+  // const handleOpenNotesArchive = useCallback(() => setShowNotesArchive(true), []);
+  // const handleCloseNotesArchive = useCallback(() => setShowNotesArchive(false), []);
 
-  const settingsProps = useMemo(
-    () => ({
-      isDarkMode,
-      toggleDarkMode,
-      showColorInPreview,
-      toggleShowColorInPreview,
-      authorName,
-      setAuthorName,
-      nerdMode,
-      toggleNerdMode,
-    }),
-    [isDarkMode, showColorInPreview, authorName, nerdMode]
-  );
+  const settingsProps = useMemo(() => ({
+    isDarkMode,
+    toggleDarkMode,
+    showColorInPreview,
+    toggleShowColorInPreview,
+    authorName,
+    setAuthorName,
+    nerdMode,
+    toggleNerdMode,
+  }), [isDarkMode, toggleDarkMode, showColorInPreview, toggleShowColorInPreview, authorName, nerdMode, toggleNerdMode]);
+  
 
   return (
     <ToastProvider>
@@ -54,6 +55,7 @@ const App: React.FC = () => {
         nerdMode={nerdMode}
         isDarkMode={isDarkMode}
         showColorInPreview={showColorInPreview}
+        // onOpenNotesArchive={handleOpenNotesArchive}
       />
       <ModalsLayer
         showHotkeys={showHotkeys}

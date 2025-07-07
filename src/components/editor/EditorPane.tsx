@@ -9,19 +9,20 @@ import EditorHeaderBar from "./EditorHeaderBar";
 import NotationEditor from "./NotationEditor";
 import styles from "./Editor.module.css";
 import type { NoteMetadata, TextCellContent } from "../../models/noteTypes";
-import type { MathNode } from "../../models/types";
+// import type { MathNode } from "../../models/types";
 import { useEditorHistory } from "../../hooks/EditorHistoryContext";
 import { createRootWrapper } from "../../models/nodeFactories";
 import { createEditorState, type EditorState } from "../../logic/editor-state";
 import { EditorModeProvider } from "../../hooks/EditorModeProvider";
+import type { DragSource } from "../../hooks/DragContext";
 
-type DropSource = {
-  sourceType: "cell" | "library";
-  cellId?: string;
-  containerId: string;
-  index: number;
-  node: MathNode;
-};
+// type DropSource = {
+//   sourceType: "cell" | "library";
+//   cellId?: string;
+//   containerId: string;
+//   index: number;
+//   node: MathNode;
+// };
 
 type DropTarget = {
   cellId: string;
@@ -34,7 +35,7 @@ interface EditorPaneProps {
   noteMetadata: NoteMetadata;
   setNoteMetadata: (noteId: string, metadata: Partial<NoteMetadata>) => void;
   style?: React.CSSProperties;
-  onDropNode: (from: DropSource, to: DropTarget) => void;
+  onDropNode: (from: DragSource, to: DropTarget) => void;
 }
 
 // LocalStorage helpers
@@ -143,6 +144,7 @@ const EditorPane: React.FC<EditorPaneProps> = ({
   );
 
   const addCellRef = useRef(addCell);
+
   useEffect(() => {
     addCellRef.current = addCell;
   }, [addCell]);

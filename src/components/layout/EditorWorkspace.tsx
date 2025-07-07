@@ -200,12 +200,14 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [undo, redo]);
 
+  const editorPaneStyle = React.useMemo(() => ({ width: "100%", height: "100%" }), []);
+
   return (
     <div className="editor-workspace" style={{ display: "flex", height: "100%", width: "100%" }}>
       {noteId && noteMetadata ? (
         <div style={{ flexGrow: 1, minWidth: 0 }}>
           <EditorPane
-            style={{ width: "100%", height: "100%" }}
+            style={editorPaneStyle}
             noteId={noteId}
             onDropNode={onDropNode}
             noteMetadata={noteMetadata}
