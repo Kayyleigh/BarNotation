@@ -381,6 +381,7 @@ import clsx from "clsx";
 import { useEditorMode } from "../../hooks/useEditorMode";
 import { computeDisplayNumbers } from "../../utils/noteUtils";
 import cellStyles from "./cells/cell.module.css";
+import Tooltip from "../tooltips/Tooltip";
 
 interface NotationEditorProps {
   defaultZoom: number;
@@ -600,14 +601,14 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
   // );
 
   const handleInsertAtIndex = useCallback((type: "math" | "text", idx: number) => {
-      addCellRef.current(type, idx);
-    },
+    addCellRef.current(type, idx);
+  },
     [addCellRef]
   );
 
   const handleInsertAtEnd = useCallback((type: "text" | "math") => {
-      addCellRef.current(type, visibleCells.length);
-    },
+    addCellRef.current(type, visibleCells.length);
+  },
     [visibleCells.length, addCellRef]
   );
 
@@ -675,6 +676,17 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
             />
           </div>}
       </div>
+      {mode === "locked" && (
+        <div className={styles.lockedBadge}>
+        <div style={{ position: "relative"}}>
+        <Tooltip text="You are in locked mode. Unlock to continue editing.">
+        🔒
+        </Tooltip>          
+        </div>
+        </div>
+
+
+      )}
     </main>
   );
 };
