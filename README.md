@@ -14,7 +14,7 @@ BarNotation is a real-time math note-taking app designed especially for students
 BarNotation enables users to build their notes as a sequence of "cells", either *Text* or *Math*, with intuitive keyboard entry, structural transformations, and drag-and-drop support for editing, reordering, and organizing notes and math expressions.
 
 <p align="center">
-  <img src="readme-images/screenshot-random-use-0607.png" alt="Random usage screenshot of the editor" width="540"/>
+  <img src="readme-images/screenshot-random-use-0707.png" alt="Random usage screenshot of the editor" width="540"/>
 </p>
 <p align="center">
   <em>See the <a href="#-screenshots">📷 Screenshots</a> section for a visual walkthrough!</em>
@@ -332,12 +332,12 @@ Planned features and improvements include:
 - [X] (✅ Done but not in walkthrough yet) Cell and collection duplication option
 - [ ] Enable custom library zoom level
 - [ ] Implement soft delete, i.e. all deleted notes, collections and entries move to a bin so they can be recovered for a little bit before perma delete. (Especially entries since those are easy to accidentally delete)
-- [ ] "Lock mode" in preview mode as extra strict version where you cannot interact at all anymore. Just for viewing. 
+- [X] "Lock mode" in preview mode as extra strict version where you cannot interact at all anymore. Just for viewing. 
 - [ ] Proper persistent storage (I currently put everything in the browser localStorage)
 - [ ] Full notebook export as LaTeX
 - [ ] Customizable hotkeys
 - [ ] Overview of existing command sequences
-- [ ] Hierarchical notebook sections (e.g., sections, subsections)
+- [X] Hierarchical notebook sections (e.g., sections, subsections)
 - [ ] Autocomplete of existing command sequences when typing in `command-input` nodes
 - [ ] Proper user guide 
 - [ ] Bulk select of collection entries (for copying to another collection or bulk-delete)
