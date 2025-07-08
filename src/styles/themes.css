@@ -24,6 +24,7 @@
     --app-background: var(--background-color);
 
     --main-header-bg: var(--background-color);
+    --editor-header-bg: var(--app-background);
   
     /* ===== Typography & Scaling ===== */
     --math-font-family: 'STIX Two Math', 'Cambria Math', 'Times New Roman', serif;

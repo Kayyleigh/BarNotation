@@ -1,0 +1,105 @@
+.editorHeaderBar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    padding: 0.3rem;
+    background-color: var(--editor-header-bg);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    box-sizing: border-box;
+    align-items: flex-end;
+    z-index: 1;
+  }
+  
+  .buttonBar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    align-items: flex-end;
+  }
+  
+  /* Standard button */
+  .button {
+    background: inherit;
+    color: var(--button-color);
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .button:hover {
+    background: var(--button-bg);
+  }
+  
+  .previewToggleButton {
+    /* Can add unique styling here if needed */
+  }
+  
+  .zoomControlsGroup {
+    display: flex;
+    align-items: flex-end;
+    flex-wrap: nowrap;
+  }
+  
+  .zoomButton {
+    background: inherit;
+    color: var(--button-color);
+    border: none;
+    cursor: pointer;
+  }
+
+  .zoomButton.resetZoomButton {
+    padding: 0.4rem 0.15rem 0.4rem 0.8rem;
+    border-radius: 5px 0 0 5px;
+  }
+  .zoomButton.zoomDropdownButton {
+    padding: 0.4rem 0.8rem 0.4rem 0.25rem;
+    border-radius: 0 5px 5px 0;
+  }
+  
+  .zoomButton:hover {
+    background: var(--button-bg);
+  }
+  
+  .zoomDropdownWrapper {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .zoomDropdownPanel {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: var(--panel-bg, #fff);
+    border: 1px solid var(--border-color, #ccc);
+    border-radius: 6px;
+    padding: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    width: 260px;
+    z-index: 1000;
+  }
+  
+  .zoomDropdownPanel label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  
+  .zoomDropdownPanel input[type="range"] {
+    width: 100%;
+  }
+  
+  .zoomDropdownPreview {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.75rem;
+  }
+  
+  .zoomDropdownPreview span:first-child {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--main-text-color, #333);
+  }
+  

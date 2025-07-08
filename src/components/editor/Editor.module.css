@@ -1,5 +1,6 @@
 .editorPane {
   display: flex;
+  position: relative;
   flex-direction: column;
   height: 100%;
 }
@@ -11,7 +12,6 @@
 }
 
 .editorLayout {
-  position: relative;
   overflow-y: auto;
   padding-bottom: 2em;
 }
@@ -138,4 +138,19 @@
   overflow: hidden;
   text-align: center;
   padding: 1em 0;
+}
+
+.lockedBadge {
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
+  background-color: var(--main-header-bg);
+  padding: 1rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 100;
+  opacity: 0.95;
+  cursor: default;
 }
