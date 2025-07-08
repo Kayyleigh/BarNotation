@@ -386,7 +386,7 @@ Enjoy the library but not the editor? Just drag your math into an external LaTeX
 ## 📁 Project Structure
 
 The app is built in **React** with **TypeScript** and uses **Vite** as the build tool.
-
+<div>
 <style>
 details {
   margin-left: 2em;
@@ -497,6 +497,8 @@ summary {
 </details>
 
 </details>
+</div>
+
 
 > [!CAUTION]
 > Since this app is under heavy development right now, this filetree is already outdated. I will not keep it up-to-date between larger working versions of the app, since files frequently get added, deleted, renamed or modified. 
