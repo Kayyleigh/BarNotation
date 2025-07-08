@@ -1,4 +1,5 @@
 {
+    "src/": "Click to see the full source folder",
     "src/App.tsx": "Main entry point wrapper (renders main component)",
     "src/index.css": "Tailwind import (likely unused)",
     "src/main.tsx": "Bootstraps App inside React.StrictMode",

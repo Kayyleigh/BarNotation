@@ -65,7 +65,7 @@ function renderMarkdown(nodes, descriptions, prefix = "", indentLevel = 0) {
 
         // Wrap children in collapsible details, indent everything properly
         const detailsBlock = `<details>
-  <summary><code>${displayName}</code> — ${desc}</summary>
+  <summary><code>${displayName}</code> — ${desc}<br></summary>
 
 ${innerMarkdown}
 
@@ -74,10 +74,10 @@ ${innerMarkdown}
         return detailsBlock;
       } else {
         // Leaf file — just a bullet item with indent
-        return `●	\`${displayName}\` — ${desc}`;
+        return `●	\`${displayName}\` — ${desc}<br>`;
       }
     })
-    .join("\n");
+    .join("");
 }
 
 const styleBlock = `<style>
