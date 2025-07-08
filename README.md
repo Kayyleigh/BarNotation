@@ -14,7 +14,7 @@ BarNotation is a real-time math note-taking app designed especially for students
 BarNotation enables users to build their notes as a sequence of "cells", either *Text* or *Math*, with intuitive keyboard entry, structural transformations, and drag-and-drop support for editing, reordering, and organizing notes and math expressions.
 
 <p align="center">
-  <img src="readme-images/random-use-0807.png" alt="Random usage screenshot of the editor" width="540"/>
+  <img src="docs/readme-images/random-use-0807.png" alt="Random usage screenshot of the editor" width="540"/>
 </p>
 <p align="center">
   <em>See the <a href="#-screenshots">📷 Screenshots</a> section for a visual walkthrough!</em>
@@ -56,7 +56,7 @@ BarNotation enables users to build their notes as a sequence of "cells", either 
 - **Editor Modes**:
   - Work in visible cells using Edit Mode
   - Switch to Preview mode to see roughly how LaTeX would render
-  - Toggle Locked mode to disable interaction and get a clean overview with minimal clutter. 
+  - Toggle Locked mode to disable interaction and get a clean overview with minimal clutter
 - **LaTeX Integration**:
   - View the LaTeX translation of math cells
   - Copy LaTeX with `Ctrl+C`
@@ -71,20 +71,20 @@ BarNotation supports a growing list of structured math elements:
 
 | **Type**                | **Node Interface**    | **Description**                                                                                                           | &nbsp; &nbsp; **Render Preview**&nbsp; &nbsp; | **How to Obtain**                                      |
 | ----------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------- | -------------------------- | ------------------------------------------------------ |
-| `text`                  | `TextNode`            | A single character or rendered special symbol.                                                                            | <div align="center"><img src="readme-images/node-type-render-screenshots/render-text.png" alt="Text node example" width="100" /></div> | Type directly |
-| `multi-digit`           | `MultiDigitNode`      | A sequence of digit `TextNode`s treated as one number.                                                                    | <div align="center"><img src="readme-images/node-type-render-screenshots/render-multidigit.png" alt="Multi-digit example" width="100" /></div> | Type multiple digits in a row |
-| `command-input`         | `CommandInputNode`    | A sequence representing a LaTeX command. Turns into another node type when your sequence matches a known one.             | <div align="center"><img src="readme-images/node-type-render-screenshots/render-command.png" alt="Command input example" width="100" /></div> | Start with `\` and type a sequence |
-| `styled`                | `StyledNode`          | An expression with non-standard font. Some commands like `\lim ` automatically lead to styled "lim" (just like LaTeX).    | <div align="center"><img src="readme-images/node-type-render-screenshots/render-styled.png" alt="Styled node example" width="100" /></div> | E.g. `\upright `, `\text ` |  
+| `text`                  | `TextNode`            | A single character or rendered special symbol.                                                                            | <div align="center"><img src="docs/readme-images/node-type-render-screenshots/render-text.png" alt="Text node example" width="100" /></div> | Type directly |
+| `multi-digit`           | `MultiDigitNode`      | A sequence of digit `TextNode`s treated as one number.                                                                    | <div align="center"><img src="docs/readme-images/node-type-render-screenshots/render-multidigit.png" alt="Multi-digit example" width="100" /></div> | Type multiple digits in a row |
+| `command-input`         | `CommandInputNode`    | A sequence representing a LaTeX command. Turns into another node type when your sequence matches a known one.             | <div align="center"><img src="docs/readme-images/node-type-render-screenshots/render-command.png" alt="Command input example" width="100" /></div> | Start with `\` and type a sequence |
+| `styled`                | `StyledNode`          | An expression with non-standard font. Some commands like `\lim ` automatically lead to styled "lim" (just like LaTeX).    | <div align="center"><img src="docs/readme-images/node-type-render-screenshots/render-styled.png" alt="Styled node example" width="100" /></div> | E.g. `\upright `, `\text ` |  
 | `root-wrapper`          | `RootWrapperNode`     | Holds your math cell's expression, used in toLatex to turn it into a block equation.                                      | (None)| Auto-created once per MathCell |
-| `inline-container`      | `InlineContainerNode` | Container for an expression (sequence of nodes).                                                                          | <div align="center"><img src="readme-images/node-type-render-screenshots/render-ic.png" alt="Inline container example" width="100" /></div> | For every transform that leads to new child nodes, child is inline-container |
-| `group`                 | `GroupNode`           | Bracketed expression.                                                                                                     | <div align="center"><img src="readme-images/node-type-render-screenshots/render-group.png" alt="Group node example" width="100" /></div> | Type brackets. App recognizes when pair is found |
-| `fraction`              | `FractionNode`        | A fraction with numerator and denominator.                                                                                | <div align="center"><img src="readme-images/node-type-render-screenshots/render-frac.png" alt="Fraction example" width="100" /></div> | `/` or `\frac `|  
-| `nth-root`              | `NthRootNode`         | A root with an optional index.                                                                                            | <div align="center"><img src="readme-images/node-type-render-screenshots/render-sqrt.png" alt="Nth root example" width="100" /></div> | Type `\sqrt` |
-| `big-operator`          | `BigOperatorNode`     | Operators with upper/lower bounds like `∑`, `∏`.                                                                          | <div align="center"><img src="readme-images/node-type-render-screenshots/render-bigop.png" alt="Big operator example" width="100" /></div> | E.g. `\sum `, `\int ` |
-| `childed`               | `ChildedNode`         | Sub/superscript left or right of base, jump to new child depending on applied shortcut. Left side only reached by cursor. | <div align="center"><img src="readme-images/node-type-render-screenshots/render-subsup.png" alt="Sub/superscript example" width="100" /></div> | `^` (= `Shift` + `6`) or `_` (= `Shift` + `-`) |
-| `actsymb`               | `ChildedNode`         | Actuarial-style notation, same as above but app knows to use latex syntax as defined by the `\actuarialsymbol` package.   | <div align="center"><img src="readme-images/node-type-render-screenshots/render-actsymb.png" alt="Actuarial symbol example" width="100" /></div> | `Side` + `height`, where `Side` is [`Shift` + `Ctrl` (left) or `Alt` (right)] and `height` is [`6` (up) or `-` (down)]
-| `accented` (predefined) | `AccentedNode`        | Decorations above or below. | <div align="center"><img src="readme-images/node-type-render-screenshots/render-angl.png" alt="Predefined accent example" width="100" /></div> | Type commands like `\hat`, `\angl`, `\bar` |
-| `accented` (custom)     | `AccentedNode`        | Custom over/under annotations (overset/underset).                                                                         | <div align="center"><img src="readme-images/node-type-render-screenshots/render-underset.png" alt="Custom accent example" width="100" /></div> | `Shift` + `ArrowUp` or `ArrowDown` |
+| `inline-container`      | `InlineContainerNode` | Container for an expression (sequence of nodes).                                                                          | <div align="center"><img src="docs/readme-images/node-type-render-screenshots/render-ic.png" alt="Inline container example" width="100" /></div> | For every transform that leads to new child nodes, child is inline-container |
+| `group`                 | `GroupNode`           | Bracketed expression.                                                                                                     | <div align="center"><img src="docs/readme-images/node-type-render-screenshots/render-group.png" alt="Group node example" width="100" /></div> | Type brackets. App recognizes when pair is found |
+| `fraction`              | `FractionNode`        | A fraction with numerator and denominator.                                                                                | <div align="center"><img src="docs/readme-images/node-type-render-screenshots/render-frac.png" alt="Fraction example" width="100" /></div> | `/` or `\frac `|  
+| `nth-root`              | `NthRootNode`         | A root with an optional index.                                                                                            | <div align="center"><img src="docs/readme-images/node-type-render-screenshots/render-sqrt.png" alt="Nth root example" width="100" /></div> | Type `\sqrt` |
+| `big-operator`          | `BigOperatorNode`     | Operators with upper/lower bounds like `∑`, `∏`.                                                                          | <div align="center"><img src="docs/readme-images/node-type-render-screenshots/render-bigop.png" alt="Big operator example" width="100" /></div> | E.g. `\sum `, `\int ` |
+| `childed`               | `ChildedNode`         | Sub/superscript left or right of base, jump to new child depending on applied shortcut. Left side only reached by cursor. | <div align="center"><img src="docs/readme-images/node-type-render-screenshots/render-subsup.png" alt="Sub/superscript example" width="100" /></div> | `^` (= `Shift` + `6`) or `_` (= `Shift` + `-`) |
+| `actsymb`               | `ChildedNode`         | Actuarial-style notation, same as above but app knows to use latex syntax as defined by the `\actuarialsymbol` package.   | <div align="center"><img src="docs/readme-images/node-type-render-screenshots/render-actsymb.png" alt="Actuarial symbol example" width="100" /></div> | `Side` + `height`, where `Side` is [`Shift` + `Ctrl` (left) or `Alt` (right)] and `height` is [`6` (up) or `-` (down)]
+| `accented` (predefined) | `AccentedNode`        | Decorations above or below. | <div align="center"><img src="docs/readme-images/node-type-render-screenshots/render-angl.png" alt="Predefined accent example" width="100" /></div> | Type commands like `\hat`, `\angl`, `\bar` |
+| `accented` (custom)     | `AccentedNode`        | Custom over/under annotations (overset/underset).                                                                         | <div align="center"><img src="docs/readme-images/node-type-render-screenshots/render-underset.png" alt="Custom accent example" width="100" /></div> | `Shift` + `ArrowUp` or `ArrowDown` |
 
 <!-- ## 📷 Screenshots
 
@@ -97,7 +97,7 @@ A simple, cell-based interface for math and text. Drag, type, and transform as y
 
 Create new notebook and set Title, author and date:
 <p align="center">
-  <img src="readme-images/tutorial_08072025/barnotation_newnote.gif" alt="BarNotation editing interface showing math and text cells" width="426"/>
+  <img src="docs/readme-images/tutorial_08072025/barnotation_newnote.gif" alt="BarNotation editing interface showing math and text cells" width="426"/>
 </p>
 note: date is not synced with creation date. Creation date is for app usage so you better distinguish your collections, while the date metadata field is for the future latex export feature. 
 
@@ -106,13 +106,13 @@ note: date is not synced with creation date. Creation date is for app usage so y
 Type directly into a rendered math expression! Use hotkeys and special command sequences to transfrom nodes into more complex structures:
 
 <p align="center">
-  <img src="readme-images/tutorial_08072025/barnotation_newmath.gif" alt="BarNotation editing interface showing math and text cells" width="426"/>
+  <img src="docs/readme-images/tutorial_08072025/barnotation_newmath.gif" alt="BarNotation editing interface showing math and text cells" width="426"/>
 </p>
 
 Insert text cells with plain text for your paragraphs, or turn them into section, subsection or subsubsection headers! 
 
 <p align="center">
-  <img src="readme-images/tutorial_08072025/barnotation_textcells_reorder.gif" alt="BarNotation editing interface showing math and text cells" width="426"/>
+  <img src="docs/readme-images/tutorial_08072025/barnotation_textcells_reorder.gif" alt="BarNotation editing interface showing math and text cells" width="426"/>
 </p>
 
 Not happy with the cell ordering? Drag the cell margin to move it to the desired spot! 
@@ -122,13 +122,13 @@ Save any expression for reuse. Just drag it into the library panel, and back int
 
 
 <p align="center">
-  <img src="readme-images/tutorial_08072025/barnotation_dragfromlib.gif" alt="Creating a new custom math collection" width="426"/>
+  <img src="docs/readme-images/tutorial_08072025/barnotation_dragfromlib.gif" alt="Creating a new custom math collection" width="426"/>
 </p>
 
 Create your own custom collections! Copy math from notes, or **drag between tabs**.
 
 <p align="center">
-  <img src="readme-images/tutorial_08072025/barnotation_newcollection.gif" alt="Creating a new custom math collection" width="426"/>
+  <img src="docs/readme-images/tutorial_08072025/barnotation_newcollection.gif" alt="Creating a new custom math collection" width="426"/>
 </p>
 
 > [!TIP]
@@ -140,14 +140,14 @@ Create your own custom collections! Copy math from notes, or **drag between tabs
 Just drag to rearrange!
 
 <p align="center">
-  <img src="readme-images/tutorial_08072025/barnotation_collection_reorder.gif" alt="Reordering collection tabs" width="426"/>
+  <img src="docs/readme-images/tutorial_08072025/barnotation_collection_reorder.gif" alt="Reordering collection tabs" width="426"/>
 </p>
 
 #### 📥 Archive Collections You’re Not Using  
 Wildly different courses this semester, but expect similar ones in the future? Archive your collections to de-clutter your workspace!
 
 <p align="center">
-  <img src="readme-images/tutorial_08072025/barnotation_collectionarchive.gif" alt="(Un)archiving math collections" width="426"/>
+  <img src="docs/readme-images/tutorial_08072025/barnotation_collectionarchive.gif" alt="(Un)archiving math collections" width="426"/>
 </p>
 
 Archived collections are searchable and previewable, so no worries if you named a dozen of them "My Collection".
@@ -156,7 +156,7 @@ Archived collections are searchable and previewable, so no worries if you named 
 Check how your note would roughly render in LaTeX.
 
 <p align="center">
-  <img src="readme-images/tutorial_08072025/barnotation_previewmode_texthierarchy.gif" alt="Preview mode showing LaTeX output" width="426"/>
+  <img src="docs/readme-images/tutorial_08072025/barnotation_previewmode_texthierarchy.gif" alt="Preview mode showing LaTeX output" width="426"/>
 </p>
 
 In preview mode, you can see your section header numbering update in real-time!
@@ -165,27 +165,27 @@ In preview mode, you can see your section header numbering update in real-time!
 When in preview mode, you can additionally **"lock"** your editor at any time to disable interaction, for a max clean overview of your notes!
 
 <p align="center">
-  <img src="readme-images/tutorial_08072025/barnotation_lockedmode.gif" alt="Preview mode showing LaTeX output" width="426"/>
+  <img src="docs/readme-images/tutorial_08072025/barnotation_lockedmode.gif" alt="Preview mode showing LaTeX output" width="426"/>
 </p>
 
 ### 🔍 Fine-Grained Zoom Control
 Global customizable zoom default, and separate zoom control per math cell so you can easily keep control over your deeply nested expressions
 
 <p align="center">
-  <img src="readme-images/tutorial_08072025/barnotation_zooming.gif" alt="Preview mode showing LaTeX output" width="426"/>
+  <img src="docs/readme-images/tutorial_08072025/barnotation_zooming.gif" alt="Preview mode showing LaTeX output" width="426"/>
 </p>
 
 ### 🎨 Customizable Workspace 
 Toggle math coloring for preview mode, set your (default author) name, toggle collection entry re-use visibility. You can also set the app to light mode, but its severe lack of visual appeal would bring too much dishonor to this walkthrough to show it here.
 
 <p align="center">
-  <img src="readme-images/tutorial_08072025/barnotation_settings.gif" alt="Preview mode showing LaTeX output" width="426"/>
+  <img src="docs/readme-images/tutorial_08072025/barnotation_settings.gif" alt="Preview mode showing LaTeX output" width="426"/>
 </p>
 
 ### ⌨️ Hotkey Overview
 See all hotkeys whenever you need! 
 <p align="center">
-  <img src="readme-images/tutorial_08072025/barnotation_hotkey_modal.gif" alt="Preview mode showing LaTeX output" width="426"/>
+  <img src="docs/readme-images/tutorial_08072025/barnotation_hotkey_modal.gif" alt="Preview mode showing LaTeX output" width="426"/>
 </p>
 
 > [!Note]
@@ -195,14 +195,14 @@ See all hotkeys whenever you need!
 Archive notebooks you no longer need in your workspace when you dont want to delete them. 
 
 <p align="center">
-  <img src="readme-images/tutorial_08072025/barnotation_notearchive.gif" alt="Preview mode showing LaTeX output" width="426"/>
+  <img src="docs/readme-images/tutorial_08072025/barnotation_notearchive.gif" alt="Preview mode showing LaTeX output" width="426"/>
 </p>
 
 ### 🌍 LaTeX In and Out  
 Hate my app, but enjoy the math library? No problem! Just drag your snippets straight into any LaTeX editor (here: [Overleaf](https://www.overleaf.com/)).
 
 <p align="center">
-  <img src="readme-images/tutorial_08072025/barnotation_latex_support.gif" alt="Dragging math expressions into an external LaTeX editor" width="426"/>
+  <img src="docs/readme-images/tutorial_08072025/barnotation_latex_support.gif" alt="Dragging math expressions into an external LaTeX editor" width="426"/>
 </p>
 
 Drag-and-drop:
@@ -231,14 +231,14 @@ Clipboard:
 BarNotation offers a clean, cell-based interface for blending math and text. Type, drag, and transform as you go.
 
 <p align="center">
-  <img src="readme-images/tutorial_08072025/barnotation_ui.png" alt="User Interface of BarNotation" width="700"/>
+  <img src="docs/readme-images/tutorial_08072025/barnotation_ui.png" alt="User Interface of BarNotation" width="700"/>
 </p>
 
 #### Create a New Notebook
 
 Set your title, author, and date metadata when starting fresh:  
 <p align="center">
-  <img src="readme-images/tutorial_08072025/barnotation_newnote.gif" alt="Creating a new notebook with metadata fields" width="426"/>
+  <img src="docs/readme-images/tutorial_08072025/barnotation_newnote.gif" alt="Creating a new notebook with metadata fields" width="426"/>
 </p>
 
 > [!NOTE]
@@ -249,7 +249,7 @@ Set your title, author, and date metadata when starting fresh:
 Type straight into rendered math expressions! Use hotkeys and command sequences to build complex structures.  
 
 <p align="center">
-  <img src="readme-images/tutorial_08072025/barnotation_newmath.gif" alt="Typing into a math cell with transformations" width="426"/>
+  <img src="docs/readme-images/tutorial_08072025/barnotation_newmath.gif" alt="Typing into a math cell with transformations" width="426"/>
 </p>
 
 #### Insert and Reorder Text Cells
@@ -257,7 +257,7 @@ Type straight into rendered math expressions! Use hotkeys and command sequences 
 Add plain text cells or upgrade them to section headers! Reorder cells by dragging the left margin.
 
 <p align="center">
-  <img src="readme-images/tutorial_08072025/barnotation_textcells_reorder.gif" alt="Reordering and converting text cells" width="426"/>
+  <img src="docs/readme-images/tutorial_08072025/barnotation_textcells_reorder.gif" alt="Reordering and converting text cells" width="426"/>
 </p>
 
 ### 📚 Drag-and-Drop Library with Custom Collections
@@ -265,11 +265,11 @@ Add plain text cells or upgrade them to section headers! Reorder cells by draggi
 Save any expression for reuse: just drag it into the Library and back again whenever you need! Anything in the library is available to you **across the entire app**!
 
 <div align="center">
-  <img src="readme-images/tutorial_08072025/barnotation_dragfromlib.gif" alt="Dragging math from library into a cell" width="340"/>
+  <img src="docs/readme-images/tutorial_08072025/barnotation_dragfromlib.gif" alt="Dragging math from library into a cell" width="340"/>
   &nbsp
   &nbsp
   &nbsp
-  <img src="readme-images/tutorial_08072025/barnotation_newcollection.gif" alt="Creating a new math collection by dragging" width="340"/>
+  <img src="docs/readme-images/tutorial_08072025/barnotation_newcollection.gif" alt="Creating a new math collection by dragging" width="340"/>
 </div>
 
 Create custom collections from scratch, dragging from cells or copying from other collections! Or you can duplicate an existing collection to save some time.
@@ -283,14 +283,14 @@ Create custom collections from scratch, dragging from cells or copying from othe
 Organize your collections by dragging tabs into your preferred order.
 
 <p align="center">
-  <img src="readme-images/tutorial_08072025/barnotation_collection_reorder.gif" alt="Dragging collection tabs to reorder them" width="426"/>
+  <img src="docs/readme-images/tutorial_08072025/barnotation_collection_reorder.gif" alt="Dragging collection tabs to reorder them" width="426"/>
 </p>
 
 #### Archive Old Collections
 Wildly different courses this semester, but expect similar ones in the future? Archive your collections to de-clutter your workspace! Search the archive and preview collection entries to find the correct collections back later.
 
 <p align="center">
-  <img src="readme-images/tutorial_08072025/barnotation_collectionarchive.gif" alt="Archiving and unarchiving collections" width="426"/>
+  <img src="docs/readme-images/tutorial_08072025/barnotation_collectionarchive.gif" alt="Archiving and unarchiving collections" width="426"/>
 </p>
 
 
@@ -299,7 +299,7 @@ Wildly different courses this semester, but expect similar ones in the future? A
 See how your note would roughly render in LaTeX. Including live-updating section numbering!
 
 <p align="center">
-  <img src="readme-images/tutorial_08072025/barnotation_previewmode_texthierarchy.gif" alt="LaTeX-style preview with live header numbering" width="426"/>
+  <img src="docs/readme-images/tutorial_08072025/barnotation_previewmode_texthierarchy.gif" alt="LaTeX-style preview with live header numbering" width="426"/>
 </p>
 
 
@@ -308,7 +308,7 @@ See how your note would roughly render in LaTeX. Including live-updating section
 Need a distraction-free overview? Lock the editor in preview mode for a polished look.
 
 <p align="center">
-  <img src="readme-images/tutorial_08072025/barnotation_lockedmode.gif" alt="Locked preview mode disabling interactions" width="426"/>
+  <img src="docs/readme-images/tutorial_08072025/barnotation_lockedmode.gif" alt="Locked preview mode disabling interactions" width="426"/>
 </p>
 
 
@@ -317,7 +317,7 @@ Need a distraction-free overview? Lock the editor in preview mode for a polished
 Change global zoom settings, but retain per-cell zoom control to handle deeply nested math without straining your eyes.
 
 <p align="center">
-  <img src="readme-images/tutorial_08072025/barnotation_zooming.gif" alt="Zooming in on individual math cells" width="426"/>
+  <img src="docs/readme-images/tutorial_08072025/barnotation_zooming.gif" alt="Zooming in on individual math cells" width="426"/>
 </p>
 
 
@@ -326,7 +326,7 @@ Change global zoom settings, but retain per-cell zoom control to handle deeply n
 Toggle math coloring, author defaults, and library reuse visibility. Light mode exists, but its current visual appeal would be a disgrace to my GitHub page. 
 
 <p align="center">
-  <img src="readme-images/tutorial_08072025/barnotation_settings.gif" alt="Settings panel showing various customization options" width="426"/>
+  <img src="docs/readme-images/tutorial_08072025/barnotation_settings.gif" alt="Settings panel showing various customization options" width="426"/>
 </p>
 
 > [!Note]
@@ -337,7 +337,7 @@ Toggle math coloring, author defaults, and library reuse visibility. Light mode 
 Can't remember a hotkey? Open the cheat sheet anytime.
 
 <p align="center">
-  <img src="readme-images/tutorial_08072025/barnotation_hotkey_modal.gif" alt="Hotkey modal listing available shortcuts" width="426"/>
+  <img src="docs/readme-images/tutorial_08072025/barnotation_hotkey_modal.gif" alt="Hotkey modal listing available shortcuts" width="426"/>
 </p>
 
 > [!NOTE]  
@@ -349,7 +349,7 @@ Can't remember a hotkey? Open the cheat sheet anytime.
 Keep your workspace clean by archiving notebooks you don't need right now but still don't want to delete.
 
 <p align="center">
-  <img src="readme-images/tutorial_08072025/barnotation_notearchive.gif" alt="Archiving notebooks from the workspace" width="426"/>
+  <img src="docs/readme-images/tutorial_08072025/barnotation_notearchive.gif" alt="Archiving notebooks from the workspace" width="426"/>
 </p>
 
 > [!TIP]
@@ -360,7 +360,7 @@ Keep your workspace clean by archiving notebooks you don't need right now but st
 Enjoy the library but not the editor? Just drag your math into an external LaTeX editor like [Overleaf](https://www.overleaf.com/).
 
 <div align="center">
-  <img src="readme-images/tutorial_08072025/barnotation_latex_support.gif" alt="LaTeX dragging and copying to and from Overleaf" width="426"/>
+  <img src="docs/readme-images/tutorial_08072025/barnotation_latex_support.gif" alt="LaTeX dragging and copying to and from Overleaf" width="426"/>
 </div>
 
 #### Supported Interactions
@@ -374,7 +374,7 @@ Enjoy the library but not the editor? Just drag your math into an external LaTeX
 - `Ctrl+C` in a math cell → puts the LaTeX of the node **left to your cursor** into clipboard
 - To copy the **entire** math cell's LaTeX block, use the per-cell preview feature
 
-> [!IMPORTANT]  
+> [!TIP]  
 > Any pasted LaTeX will be interpreted into structured math. Accidentally paste a full novel? Just `Ctrl+Z` to undo.
 
 > [!NOTE]  
@@ -389,145 +389,240 @@ Enjoy the library but not the editor? Just drag your math into an external LaTeX
 
 The app is built in **React** with **TypeScript** and uses **Vite** as the build tool.
 
-<details>
-<summary><strong>Click to view full file tree</strong></summary>
+<style>
+details {
+  margin-left: 2em;
+}
+summary {
+  margin-left: -2em;
+}
+</style>
 
-```
-.
-├── App.tsx                        # Root app wrapper, renders main layout
-├── index.css                      # Tailwind import, unused elsewhere
-├── main.tsx                       # Loads App in React.StrictMode
-├── vite-env.d.ts                  # Vite environment type declarations
-│
-├── assets
-│   └── logo.svg                   # Full logo used in MainHeaderBar
-│
-├── components
-│   ├── cells                      # Core editor cell components
-│   │   ├── BaseCell.tsx           # Shared logic for Math/Text cells
-│   │   ├── InsertCellButtons.tsx  # UI for adding new Math/Text cells
-│   │   ├── MathCell.tsx           # MathEditor cell 
-│   │   └── TextCell.tsx           # Textarea cell
-│   │
-│   ├── common                     # General reusable UI components
-│   │   ├── SearchBar.tsx          # Styled search bar component
-│   │   ├── SearchBar.module.css   # Styling for search bar
-│   │   ├── ToastProvider.tsx      # Global toast/alert handler
-│   │   └── toast.module.css       # Styling for toast alerts
-│   │
-│   ├── editor                     # Main math note editor pane
-│   │   ├── EditorHeaderBar.tsx    # Toolbar for math editor (zoom, latex toggle, etc)
-│   │   ├── EditorPane.tsx         # Handles cell list and editor pane state
-│   │   ├── NotationEditor.tsx     # Renders the math/text cell list (1 notebook)
-│   │   ├── NoteMetadataSection.tsx # Title, author, date metadata
-│   │   └── *.module.css           # CSS modules for components above
-│   │
-│   ├── icons
-│   │   └── CollapseIcon.tsx       # Arrow icon for collapsing UI sections
-│   │
-│   ├── layout                     # Page-level layout components
-│   │   ├── EditorWorkspace.tsx    # Wraps EditorPane and MathLibrary (also drag context)
-│   │   ├── MainHeaderBar.tsx      # Header bar with logo/settings/etc
-│   │   ├── MainLayout.tsx         # Page layout: header, sidebar, workspace
-│   │   ├── ResizableSidebar.tsx   # Resizable note history/sidebar component
-│   │   └── *.module.css           # Styling for layout components
-│   │
-│   ├── mathExpression             # Math editor internals
-│   │   ├── MathEditor.tsx         # Interactive math input component (1 expression)
-│   │   ├── MathRenderer.tsx       # Recursive renderer with interactivity
-│   │   ├── MathRenderers.tsx      # Specific renderers for each MathNode type
-│   │   ├── MathView.tsx           # Non-interactive renderer (e.g. in Library)
-│   │   ├── LatexViewer.tsx        # Shows raw LaTeX output for 1 expression
-│   │   ├── DummyStartNodeRenderer.tsx # Dummy node for beginning of container
-│   │   └── *.module.css           # Styling for math display components
-│   │
-│   ├── mathLibrary                # Math library for saved/prebuilt nodes
-│   │   ├── MathLibrary.tsx        # Displays saved/standard math expressions
-│   │   ├── TabDropdownPortal.tsx  # Dropdown for library tab actions
-│   │   └── *.module.css           # Styling for library panel
-│   │
-│   ├── modals                     # Overlay modal components
-│   │   ├── HotkeyOverlay.tsx      # Overlay with keyboard shortcuts
-│   │   ├── LibCollectionArchiveModal.tsx # Archive/restore library collection
-│   │   ├── SettingsModal.tsx      # Overlay for user settings/preferences
-│   │   └── *.module.css           # Styling for modals
-│   │
-│   ├── notesMenu                  # Note switching and actions UI
-│   │   ├── NotesMenu.tsx          # Sidebar for switching between notes
-│   │   ├── NoteActionsDropdown.tsx # Dropdown for rename/delete note
-│   │   └── *.module.css           # Styling for menu components
-│   │
-│   └── tooltips
-│       ├── Tooltip.tsx            # Tooltip wrapper for hover hints
-│       └── tooltip.css            # Tooltip styling
-|
-├── constants
-│   └── premadeMathCollections.ts  # Initial math collections for library
-│
-├── hooks                         # Shared hooks and contexts
-│   ├── DragContext.ts             # Global drag context types
-│   ├── DragProvider.tsx           # Provides drag context
-│   ├── useDragContext.ts          # Access drag context
-│   ├── useCellDragState.ts        # Drag state hook for cells
-│   ├── useDragState.ts            # Node drag state (OUTDATED)
-│   ├── EditorHistoryContext.tsx   # Global editor history context
-│   ├── EditorHistoryProvider.tsx  # Provides history context
-│   ├── useEditorHistory.ts        # Local editor history hook (OUTDATED)
-│   ├── useHoverState.ts           # Hover state for math nodes
-│   ├── useZoom.ts                 # MathEditor zoom state hook
-│   ├── toastContext.ts            # Toast context provider
-│   └── useToast.ts                # Hook for showing toasts
-│
-├── logic                         # Math editor state and input logic
-│   ├── cursor.ts                  # Cursor position in expression tree
-│   ├── deletion.ts                # Handle backspace/delete logic
-│   ├── editor-state.ts            # Core editor state (node + cursor)
-│   ├── global-history.ts          # Full notebook history state
-│   ├── handle-keydown.ts          # Keyboard input handler
-│   ├── history.ts                 # (OUTDATED) local editor history
-│   ├── insertion.ts               # Text/char insertion logic
-│   ├── navigation.ts              # Arrow key navigation logic
-│   ├── node-manipulation.ts       # Insertion/deletion of nodes
-│   └── transformations.ts         # Node transforms (e.g., fractionize)
-│
-├── models                        # Data types and model logic
-│   ├── latexParser.ts             # Parse LaTeX into MathNode tree
-│   ├── libraryTypes.ts            # Types for saved library items
-│   ├── nodeFactories.ts           # MathNode constructors
-│   ├── nodeToLatex.ts             # Convert MathNode to LaTeX string
-│   ├── noteTypes.ts               # Note/Cell/Metadata type defs
-│   ├── specialSequences.ts        # Shortcuts like \frac → FractionNode
-│   ├── transformations.ts         # Alternate transforms (legacy-ish)
-│   └── types.ts                   # Core MathNode and variant types
-│
-├── styles
-│   ├── accents.css                # Accent math node styling (hats, tildes, etc)
-│   ├── cells.css                  # Cell styling (insert zones, focus, etc)
-│   ├── hotkeyOverlay.css          # Hotkey overlay + settings shared styles
-│   ├── latexOutputColoring.css    # LaTeX viewer syntax highlighting
-│   ├── math-node.css              # Current math node styling
-│   ├── math-node-old.css          # Legacy math node styling (unused?)
-│   ├── math.css                   # Legacy general math styles
-│   ├── settings.css               # Styling for toggles/settings UI
-│   ├── styles.css                 # Global styles for layout and overlays
-│   └── themes.css                 # Theme + DOM defaults + scrollbar overrides
-│
-└── utils
-    ├── accentUtils.ts             # Decorations for accented nodes + required packages
-    ├── bracketUtils.ts            # Bracket types and characters
-    ├── collectionUtils.ts         # Init functions for math collections
-    ├── mathHoverUtils.ts          # Hover behavior for math nodes
-    ├── navigationUtils.ts         # Cursor/child traversal logic
-    ├── noop.ts                    # Empty function used in MathView (non-interative Math render)
-    ├── subsupUtils.ts             # Sup/subscript position helpers
-    ├── textContainerUtils.ts      # (Unused) splitting container logic
-    └── treeUtils.ts               # Tree update, find nodes, get logical children
-```
+<details>
+  <summary><code>src/</code> — Click to see the full source folder</summary>
+
+●	`App.tsx` — Main entry point wrapper (renders main component)
+●	`index.css` — Tailwind import (likely unused)
+●	`main.tsx` — Bootstraps App inside React.StrictMode
+●	`vite-env.d.ts` — Vite environment type declarations
+<details>
+  <summary><code>assets/</code> — Static assets</summary>
+
+●	`logo.svg` — Full logo SVG (used in header)
+
+</details>
+<details>
+  <summary><code>components/</code> — React components grouped by function</summary>
+
+<details>
+  <summary><code>common/</code> — </summary>
+
+●	`SearchBar.module.css` — 
+●	`SearchBar.tsx` — 
+●	`SortDropdown.module.css` — 
+●	`SortDropdown.tsx` — 
+●	`toast.module.css` — 
+●	`ToastProvider.tsx` — 
+●	`ToastRenderer.tsx` — 
+
+</details>
+<details>
+  <summary><code>editor/</code> — Editor and Notation-related components</summary>
+
+●	`CellRow.tsx` — 
+●	`Editor.module.css` — Styling for EditorPane/NotationEditor
+●	`EditorHeaderBar.module.css` — 
+●	`EditorHeaderBar.tsx` — EditorPane header (controls, zoom, add cell)
+●	`EditorPane.tsx` — Manages cells and header/editor coordination
+●	`NotationEditor.tsx` — Renders single Notebook's cell list
+●	`NoteMetadataSection.module.css` — CSS for note metadata section
+●	`NoteMetadataSection.tsx` — Note metadata (title, author, date)
+<details>
+  <summary><code>cells/</code> — </summary>
+
+●	`BaseCell.tsx` — 
+●	`cell.module.css` — 
+●	`InsertCellButtons.tsx` — 
+●	`MathCell.tsx` — 
+●	`TextCell.tsx` — 
+
 </details>
 
-> [!NOTE]
+</details>
+<details>
+  <summary><code>icons/</code> — UI icon components</summary>
+
+●	`CollapseIcon.tsx` — Collapse arrow icon
+
+</details>
+<details>
+  <summary><code>layout/</code> — Layout and layout-related components</summary>
+
+●	`EditorWorkspace.module.css` — CSS for workspace styling
+●	`EditorWorkspace.tsx` — Wrapper for EditorPane & MathLibrary
+●	`MainHeaderBar.tsx` — Outdated header bar (logo, settings)
+●	`MainLayout.tsx` — Overall app layout structure
+●	`ModalsLayer.tsx` — 
+●	`ResizableSidebar.module.css` — CSS for resizable sidebar
+●	`ResizableSidebar.tsx` — Resizable sidebar component
+
+</details>
+<details>
+  <summary><code>mathExpression/</code> — Math expression rendering/editing</summary>
+
+●	`DummyStartNodeRenderer.tsx` — Dummy start node for drag/drop
+●	`LatexViewer.module.css` — CSS for LaTeX viewer
+●	`LatexViewer.tsx` — Displays LaTeX of a math expression
+●	`MathEditor.module.css` — 
+●	`MathEditor.tsx` — Math expression editor
+●	`MathRenderer.tsx` — Recursive expression renderer with drag
+●	`MathRenderers.tsx` — Renderers for individual MathNode types
+●	`MathView.tsx` — Non-interactive math viewer (used in Library)
+
+</details>
+<details>
+  <summary><code>mathLibrary/</code> — Math Library components</summary>
+
+●	`CollectionTabs.tsx` — 
+●	`LibraryEntries.tsx` — 
+●	`MathLibrary.module.css` — CSS for library panel
+●	`MathLibrary.tsx` — Math node library panel
+●	`TabDropdownPortal.module.css` — CSS for library dropdown
+●	`TabDropdownPortal.tsx` — Library dropdown (rename, archive, delete)
+
+</details>
+<details>
+  <summary><code>modals/</code> — Modal components</summary>
+
+●	`ArchiveModal.module.css` — 
+●	`ArchiveModal.tsx` — 
+●	`HotkeyOverlay.module.css` — 
+●	`HotkeyOverlay.tsx` — Hotkey info overlay
+●	`LibCollectionArchiveModal.module.css` — 
+●	`LibCollectionArchiveModal.tsx` — 
+●	`Modal.module.css` — 
+●	`Modal.tsx` — 
+●	`NotebookArchiveModal.module.css` — 
+●	`NotebookArchiveModal.tsx` — 
+●	`SettingsModal.module.css` — 
+●	`SettingsModal.tsx` — Settings/preferences modal (e.g., theme)
+
+</details>
+<details>
+  <summary><code>notesMenu/</code> — Note switching/opening menu</summary>
+
+●	`NoteActionsDropdown.module.css` — 
+●	`NoteActionsDropdown.tsx` — 
+●	`NoteListItem.tsx` — 
+●	`NotesMenu.module.css` — 
+●	`NotesMenu.tsx` — Menu to switch or open notes
+
+</details>
+<details>
+  <summary><code>tooltips/</code> — Tooltip UI components</summary>
+
+●	`tooltip.css` — CSS for tooltips
+●	`Tooltip.tsx` — Tooltip wrapper for hover text
+
+</details>
+</details>
+<details>
+  <summary><code>constants/</code> — </summary>
+
+●	`premadeMathCollections.ts` — 
+
+</details>
+<details>
+  <summary><code>hooks/</code> — React hooks for state and interaction</summary>
+
+●	`DragContext.ts` — Global drag context
+●	`DragProvider.tsx` — 
+●	`EditorHistoryContext.tsx` — Context for editor history
+●	`EditorHistoryProvider.tsx` — Provider for history context
+●	`EditorModeContext.ts` — 
+●	`EditorModeProvider.tsx` — 
+●	`HoverContext.ts` — 
+●	`HoverProvider.tsx` — 
+●	`toastContext.ts` — 
+●	`useCellDragState.ts` — Hook for dragging cells (in notebook)
+●	`useDragContext.ts` — 
+●	`useDragState.ts` — Hook for dragging MathNodes (OUTDATED)
+●	`useEditorHistory.ts` — Hook for editor history (OUTDATED)
+●	`useEditorMode.ts` — 
+●	`useHover.ts` — 
+●	`useHoverState.ts` — Hover state for MathNodes
+●	`useToast.ts` — 
+●	`useZoom.ts` — Zoom control hook for MathEditor
+
+</details>
+<details>
+  <summary><code>logic/</code> — Core MathEditor logic (cursor, input, history)</summary>
+
+●	`cursor.ts` — CursorPosition: container + index
+●	`deletion.ts` — Backspace handler
+●	`editor-state.ts` — Editor state type (rootNode, cursor)
+●	`global-history.ts` — Global cell history (id-order mapping)
+●	`handle-keydown.ts` — MathEditor keydown handler
+●	`history.ts` — HistoryState (OUTDATED format)
+●	`insertion.ts` — Character insertion logic
+●	`navigation.ts` — Arrow key navigation in MathEditor
+●	`node-manipulation.ts` — MathNode insert/delete logic
+●	`transformations.ts` — MathNode transformations (e.g. wrap in fraction)
+
+</details>
+<details>
+  <summary><code>models/</code> — Types and models for nodes, notes, etc.</summary>
+
+●	`latexParser.ts` — Parses LaTeX into MathNode tree
+●	`libraryTypes.ts` — LibraryEntry interface (metadata, LaTeX, etc.)
+●	`nodeFactories.ts` — Factories for MathNode types
+●	`nodeToLatex.ts` — Converts MathNode to LaTeX string
+●	`noteTypes.ts` — Types for CellData, NoteMetadata, Note
+●	`specialSequences.ts` — Escape → MathNode mappings
+●	`textTypes.ts` — 
+●	`transformations.ts` — Helper transforms (WIP/boilerplate)
+●	`types.ts` — Full MathNode type definition
+
+</details>
+<details>
+  <summary><code>styles/</code> — Global CSS styles</summary>
+
+●	`accents.css` — CSS for accented math nodes
+●	`cells.css` — Styles for cells and insert zones
+●	`hotkeyOverlay.css` — CSS for hotkey overlay & settings modal
+●	`latexOutputColoring.css` — LaTeX viewer syntax coloring
+●	`math-node-old.css` — 
+●	`math-node.css` — Styling for MathNode components
+●	`math.css` — Outdated math styles
+●	`settings.css` — Settings toggles styling
+●	`styles.css` — Base UI styles: headers, overlays, containers
+●	`textStyles.module.css` — 
+●	`themes.css` — Root theme styles (dark/light, scrollbars)
+
+</details>
+<details>
+  <summary><code>utils/</code> — Utility functions for MathNode operations</summary>
+
+●	`accentUtils.ts` — Maps decorations to LaTeX packages
+●	`bracketUtils.ts` — Bracket style definitions
+●	`collectionUtils.ts` — Init functions for library collections
+●	`dateUtils.ts` — 
+●	`mathHoverUtils.ts` — MathNode hover event handlers
+●	`navigationUtils.ts` — Cursor movement helpers
+●	`noop.ts` — `noop` function: `() => {}`
+●	`noteUtils.tsx` — 
+●	`stringUtils.ts` — 
+●	`subsupUtils.ts` — CornerPosition helper (used in transforms)
+●	`textContainerUtils.ts` — Unused: split MultiDigit nodes
+●	`treeUtils.ts` — Tree manipulation for MathNodes
+
+</details>
+
+</details>
+
+> [!CAUTION]
 > Since this app is under heavy development right now, this filetree is already outdated. I will not keep it up-to-date between larger working versions of the app, since files frequently get added, deleted, renamed or modified. 
-> _Filetree last updated: **??? (Before July 8. Will update this soon probably)**._
+> _Filetree last updated: **July 8, 2025** (Incomplete, file tree styling is now done by script but I need to finish the descriptions for some)._
 
 ---
 
