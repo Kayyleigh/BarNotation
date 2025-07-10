@@ -386,123 +386,159 @@ Enjoy the library but not the editor? Just drag your math into an external LaTeX
 ## 📁 Project Structure
 
 The app is built in **React** with **TypeScript** and uses **Vite** as the build tool.
-<div>
-<style>
-details {
-  margin-left: 2em;
-}
-summary {
-  margin-left: -2em;
-}
-</style>
 
-<details>
-  <summary><code>src/</code> — Click to see the full source folder<br></summary>
+<details><summary><code>src/</code> — Click to see the full source folder</summary>
 
-●	`App.tsx` — Main entry point wrapper (renders main component)<br>●	`index.css` — Tailwind import (likely unused)<br>●	`main.tsx` — Bootstraps App inside React.StrictMode<br>●	`vite-env.d.ts` — Vite environment type declarations<br><details>
-  <summary><code>assets/</code> — Static assets<br></summary>
-
-●	`logo.svg` — Full logo SVG (used in header)<br>
-
-</details><details>
-  <summary><code>components/</code> — React components grouped by function<br></summary>
-
-<details>
-  <summary><code>common/</code> — <br></summary>
-
-●	`SearchBar.module.css` — <br>●	`SearchBar.tsx` — <br>●	`SortDropdown.module.css` — <br>●	`SortDropdown.tsx` — <br>●	`toast.module.css` — <br>●	`ToastProvider.tsx` — <br>●	`ToastRenderer.tsx` — <br>
-
-</details><details>
-  <summary><code>editor/</code> — Editor and Notation-related components<br></summary>
-
-●	`CellRow.tsx` — <br>●	`Editor.module.css` — Styling for EditorPane/NotationEditor<br>●	`EditorHeaderBar.module.css` — <br>●	`EditorHeaderBar.tsx` — EditorPane header (controls, zoom, add cell)<br>●	`EditorPane.tsx` — Manages cells and header/editor coordination<br>●	`NotationEditor.tsx` — Renders single Notebook's cell list<br>●	`NoteMetadataSection.module.css` — CSS for note metadata section<br>●	`NoteMetadataSection.tsx` — Note metadata (title, author, date)<br><details>
-  <summary><code>cells/</code> — <br></summary>
-
-●	`BaseCell.tsx` — <br>●	`cell.module.css` — <br>●	`InsertCellButtons.tsx` — <br>●	`MathCell.tsx` — <br>●	`TextCell.tsx` — <br>
-
+  - [`App.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/App.tsx) — Main entry point wrapper (renders main component)
+  - [`index.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/index.css) — Tailwind import (likely unused)
+  - [`main.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/main.tsx) — Bootstraps App inside React.StrictMode
+  - [`vite-env.d.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/vite-env.d.ts) — Vite environment type declarations
+  - [`assets/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/assets/) — Static assets
+    - [`logo.svg`](https://github.com/Kayyleigh/BarNotation/blob/main/src/assets/logo.svg) — Full logo SVG (used in header)
+  - [`components/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/) — React components grouped by function
+    - [`common/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/common/) — Shared UI used across the app
+      - [`SearchBar.module.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/common/SearchBar.module.css) — Styling for the searchbar component
+      - [`SearchBar.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/common/SearchBar.tsx) — Searchbar component used to filter lists
+      - [`SortDropdown.module.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/common/SortDropdown.module.css) — Styling for the sort dropdown
+      - [`SortDropdown.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/common/SortDropdown.tsx) — Dropdown component for sorting lists
+      - [`toast.module.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/common/toast.module.css) — Styling for toasts
+      - [`ToastProvider.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/common/ToastProvider.tsx) — React provider for toasts
+      - [`ToastRenderer.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/common/ToastRenderer.tsx) — Component for toasts
+    - [`editor/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/editor/) — Editor and Notation-related components
+      - [`CellRow.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/editor/CellRow.tsx) — Row in the editor: a cell and its preceding insert buttons
+      - [`Editor.module.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/editor/Editor.module.css) — Styling for EditorPane/NotationEditor
+      - [`EditorHeaderBar.module.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/editor/EditorHeaderBar.module.css) — Styling for the editor header bar
+      - [`EditorHeaderBar.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/editor/EditorHeaderBar.tsx) — EditorPane header (controls, zoom, add cell, etc.)
+      - [`EditorPane.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/editor/EditorPane.tsx) — Manages cells and header/editor coordination
+      - [`NotationEditor.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/editor/NotationEditor.tsx) — Renders single Notebook's cell list
+      - [`NoteMetadataSection.module.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/editor/NoteMetadataSection.module.css) — CSS for note metadata section
+      - [`NoteMetadataSection.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/editor/NoteMetadataSection.tsx) — Note metadata (title, author, date)
+      - [`cells/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/editor/cells/) — Reusable cell components (math/text)
+        - [`BaseCell.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/editor/cells/BaseCell.tsx) — Basic shared cell structure
+        - [`cell.module.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/editor/cells/cell.module.css) — Cell styling
+        - [`InsertCellButtons.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/editor/cells/InsertCellButtons.tsx) — Insert Math/Text Cell buttons
+        - [`MathCell.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/editor/cells/MathCell.tsx) — Cell with MathEditor
+        - [`TextCell.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/editor/cells/TextCell.tsx) — Cell with simple textarea
+    - [`icons/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/icons/) — UI icon components
+      - [`CollapseIcon.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/icons/CollapseIcon.tsx) — Collapse arrow icon
+    - [`layout/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/layout/) — Layout and layout-related components
+      - [`EditorWorkspace.module.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/layout/EditorWorkspace.module.css) — CSS for workspace styling
+      - [`EditorWorkspace.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/layout/EditorWorkspace.tsx) — Wrapper for EditorPane & MathLibrary
+      - [`MainHeaderBar.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/layout/MainHeaderBar.tsx) — Outdated header bar (logo, settings)
+      - [`MainLayout.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/layout/MainLayout.tsx) — Overall app layout structure
+      - [`ModalsLayer.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/layout/ModalsLayer.tsx) — Top-level component to efficiently render (e.g. settings) modals
+      - [`ResizableSidebar.module.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/layout/ResizableSidebar.module.css) — CSS for resizable sidebar
+      - [`ResizableSidebar.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/layout/ResizableSidebar.tsx) — Resizable sidebar component
+    - [`mathExpression/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/mathExpression/) — Math expression rendering/editing
+      - [`DummyStartNodeRenderer.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/mathExpression/DummyStartNodeRenderer.tsx) — Dummy start node for drag/drop
+      - [`LatexViewer.module.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/mathExpression/LatexViewer.module.css) — CSS for LaTeX viewer
+      - [`LatexViewer.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/mathExpression/LatexViewer.tsx) — Displays LaTeX of a math expression
+      - [`MathEditor.module.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/mathExpression/MathEditor.module.css) — #TODO
+      - [`MathEditor.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/mathExpression/MathEditor.tsx) — Math expression editor
+      - [`MathRenderer.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/mathExpression/MathRenderer.tsx) — Recursive expression renderer with drag
+      - [`MathRenderers.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/mathExpression/MathRenderers.tsx) — Renderers for individual MathNode types
+      - [`MathView.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/mathExpression/MathView.tsx) — Non-interactive math viewer (used in Library)
+    - [`mathLibrary/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/mathLibrary/) — Math Library components
+      - [`CollectionTabs.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/mathLibrary/CollectionTabs.tsx) — Rendering Collection tab header in library panel
+      - [`LibraryEntries.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/mathLibrary/LibraryEntries.tsx) — Rendering entries of a single collection in the library panel
+      - [`MathLibrary.module.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/mathLibrary/MathLibrary.module.css) — CSS for library panel
+      - [`MathLibrary.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/mathLibrary/MathLibrary.tsx) — Math node library panel (uses CollectionTabs and LibraryEntries)
+      - [`TabDropdownPortal.module.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/mathLibrary/TabDropdownPortal.module.css) — CSS for library dropdown
+      - [`TabDropdownPortal.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/mathLibrary/TabDropdownPortal.tsx) — Library dropdown (rename, archive, delete)
+    - [`modals/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/modals/) — Modal components
+      - [`ArchiveModal.module.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/modals/ArchiveModal.module.css) — Archive modal styling
+      - [`ArchiveModal.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/modals/ArchiveModal.tsx) — Archive modal with searchbar and dropdown
+      - [`HotkeyOverlay.module.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/modals/HotkeyOverlay.module.css) — Hotkey overview modal
+      - [`HotkeyOverlay.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/modals/HotkeyOverlay.tsx) — Hotkey info overlay
+      - [`LibCollectionArchiveModal.module.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/modals/LibCollectionArchiveModal.module.css) — Styling for library collection archive model
+      - [`LibCollectionArchiveModal.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/modals/LibCollectionArchiveModal.tsx) — Library collection archive model (builds upon ArchiveModal)
+      - [`Modal.module.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/modals/Modal.module.css) — Basic modal styling
+      - [`Modal.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/modals/Modal.tsx) — Modal basics with outside click = close
+      - [`NotebookArchiveModal.module.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/modals/NotebookArchiveModal.module.css) — Styling for notes archive modal
+      - [`NotebookArchiveModal.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/modals/NotebookArchiveModal.tsx) — Notes archive model (builds upon ArchiveModal)
+      - [`SettingsModal.module.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/modals/SettingsModal.module.css) — Styling for settings modal
+      - [`SettingsModal.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/modals/SettingsModal.tsx) — Settings/preferences modal (e.g., theme)
+    - [`notesMenu/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/notesMenu/) — Note switching/opening menu
+      - [`NoteActionsDropdown.module.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/notesMenu/NoteActionsDropdown.module.css) — Styling for the note options dropdown
+      - [`NoteActionsDropdown.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/notesMenu/NoteActionsDropdown.tsx) — Dropdown of note entry using portal
+      - [`NoteListItem.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/notesMenu/NoteListItem.tsx) — One entry in the notes menu
+      - [`NotesMenu.module.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/notesMenu/NotesMenu.module.css) — Styling for the notes menu
+      - [`NotesMenu.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/notesMenu/NotesMenu.tsx) — Menu to switch or open notes
+    - [`tooltips/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/tooltips/) — Tooltip UI components
+      - [`tooltip.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/tooltips/tooltip.css) — CSS for tooltips
+      - [`Tooltip.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/tooltips/Tooltip.tsx) — Tooltip wrapper for hover text
+  - [`constants/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/constants/) — Default values used in the app
+    - [`premadeMathCollections.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/constants/premadeMathCollections.ts) — Predefined library collections
+  - [`hooks/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/) — React hooks for state and interaction
+    - [`DragContext.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/DragContext.ts) — Global drag context
+    - [`DragProvider.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/DragProvider.tsx) — #TODO
+    - [`EditorHistoryContext.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/EditorHistoryContext.tsx) — Context for editor history
+    - [`EditorHistoryProvider.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/EditorHistoryProvider.tsx) — Provider for history context
+    - [`EditorModeContext.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/EditorModeContext.ts) — #TODO
+    - [`EditorModeProvider.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/EditorModeProvider.tsx) — #TODO
+    - [`HoverContext.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/HoverContext.ts) — #TODO
+    - [`HoverProvider.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/HoverProvider.tsx) — #TODO
+    - [`toastContext.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/toastContext.ts) — #TODO
+    - [`useCellDragState.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/useCellDragState.ts) — Hook for dragging cells (in notebook)
+    - [`useDragContext.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/useDragContext.ts) — #TODO
+    - [`useDragState.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/useDragState.ts) — Hook for dragging MathNodes (OUTDATED)
+    - [`useEditorHistory.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/useEditorHistory.ts) — Hook for editor history (OUTDATED)
+    - [`useEditorMode.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/useEditorMode.ts) — #TODO
+    - [`useHover.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/useHover.ts) — #TODO
+    - [`useHoverState.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/useHoverState.ts) — Hover state for MathNodes
+    - [`useToast.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/useToast.ts) — #TODO
+    - [`useZoom.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/useZoom.ts) — Zoom control hook for MathEditor
+  - [`logic/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/logic/) — Core MathEditor logic (cursor, input, history)
+    - [`cursor.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/logic/cursor.ts) — CursorPosition: container + index
+    - [`deletion.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/logic/deletion.ts) — Backspace handler
+    - [`editor-state.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/logic/editor-state.ts) — Editor state type (rootNode, cursor)
+    - [`global-history.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/logic/global-history.ts) — Global cell history (id-order mapping)
+    - [`handle-keydown.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/logic/handle-keydown.ts) — MathEditor keydown handler
+    - [`history.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/logic/history.ts) — HistoryState (OUTDATED format)
+    - [`insertion.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/logic/insertion.ts) — Character insertion logic
+    - [`navigation.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/logic/navigation.ts) — Arrow key navigation in MathEditor
+    - [`node-manipulation.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/logic/node-manipulation.ts) — MathNode insert/delete logic
+    - [`transformations.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/logic/transformations.ts) — MathNode transformations (e.g. wrap in fraction)
+  - [`models/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/models/) — Types and models for nodes, notes, etc.
+    - [`latexParser.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/models/latexParser.ts) — Parses LaTeX into MathNode tree
+    - [`libraryTypes.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/models/libraryTypes.ts) — LibraryEntry interface (metadata, LaTeX, etc.)
+    - [`nodeFactories.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/models/nodeFactories.ts) — Factories for MathNode types
+    - [`nodeToLatex.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/models/nodeToLatex.ts) — Converts MathNode to LaTeX string
+    - [`noteTypes.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/models/noteTypes.ts) — Types for CellData, NoteMetadata, Note
+    - [`specialSequences.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/models/specialSequences.ts) — Escape → MathNode mappings
+    - [`textTypes.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/models/textTypes.ts) — Text types for text hierarchy
+    - [`transformations.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/models/transformations.ts) — Helper transforms (WIP/boilerplate)
+    - [`types.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/models/types.ts) — Full MathNode type definition
+  - [`styles/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/styles/) — Global CSS styles
+    - [`accents.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/styles/accents.css) — CSS for accented math nodes
+    - [`cells.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/styles/cells.css) — Styles for cells and insert zones
+    - [`hotkeyOverlay.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/styles/hotkeyOverlay.css) — CSS for hotkey overlay & settings modal
+    - [`latexOutputColoring.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/styles/latexOutputColoring.css) — LaTeX viewer syntax coloring
+    - [`math-node-old.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/styles/math-node-old.css) — Math styling (OUTDATED)
+    - [`math-node.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/styles/math-node.css) — Styling for MathNode components
+    - [`math.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/styles/math.css) — Outdated math styles
+    - [`settings.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/styles/settings.css) — Settings toggles styling
+    - [`styles.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/styles/styles.css) — Base UI styles: headers, overlays, containers
+    - [`textStyles.module.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/styles/textStyles.module.css) — App-wide sizing definitions of text types: plain text, (sub(sub))sections
+    - [`themes.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/styles/themes.css) — Root theme styles (dark/light, scrollbars)
+  - [`utils/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/utils/) — Utility functions
+    - [`accentUtils.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/utils/accentUtils.ts) — Maps decorations to LaTeX packages
+    - [`bracketUtils.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/utils/bracketUtils.ts) — Bracket style definitions
+    - [`collectionUtils.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/utils/collectionUtils.ts) — Init functions for library collections
+    - [`dateUtils.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/utils/dateUtils.ts) — Creation/archived date formatting incl. "just now", "yesterday", etc
+    - [`mathHoverUtils.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/utils/mathHoverUtils.ts) — MathNode hover event handlers
+    - [`navigationUtils.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/utils/navigationUtils.ts) — Cursor movement helpers
+    - [`noop.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/utils/noop.ts) — `noop` function: `() => {}`
+    - [`noteUtils.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/utils/noteUtils.tsx) — Derives section header numbering for text node hierarchy
+    - [`stringUtils.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/utils/stringUtils.ts) — Basic string manipulation
+    - [`subsupUtils.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/utils/subsupUtils.ts) — CornerPosition helper (used in transforms)
+    - [`textContainerUtils.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/utils/textContainerUtils.ts) — Unused: split MultiDigit nodes
+    - [`treeUtils.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/utils/treeUtils.ts) — Utilities for MathNodes
 </details>
-
-</details><details>
-  <summary><code>icons/</code> — UI icon components<br></summary>
-
-●	`CollapseIcon.tsx` — Collapse arrow icon<br>
-
-</details><details>
-  <summary><code>layout/</code> — Layout and layout-related components<br></summary>
-
-●	`EditorWorkspace.module.css` — CSS for workspace styling<br>●	`EditorWorkspace.tsx` — Wrapper for EditorPane & MathLibrary<br>●	`MainHeaderBar.tsx` — Outdated header bar (logo, settings)<br>●	`MainLayout.tsx` — Overall app layout structure<br>●	`ModalsLayer.tsx` — <br>●	`ResizableSidebar.module.css` — CSS for resizable sidebar<br>●	`ResizableSidebar.tsx` — Resizable sidebar component<br>
-
-</details><details>
-  <summary><code>mathExpression/</code> — Math expression rendering/editing<br></summary>
-
-●	`DummyStartNodeRenderer.tsx` — Dummy start node for drag/drop<br>●	`LatexViewer.module.css` — CSS for LaTeX viewer<br>●	`LatexViewer.tsx` — Displays LaTeX of a math expression<br>●	`MathEditor.module.css` — <br>●	`MathEditor.tsx` — Math expression editor<br>●	`MathRenderer.tsx` — Recursive expression renderer with drag<br>●	`MathRenderers.tsx` — Renderers for individual MathNode types<br>●	`MathView.tsx` — Non-interactive math viewer (used in Library)<br>
-
-</details><details>
-  <summary><code>mathLibrary/</code> — Math Library components<br></summary>
-
-●	`CollectionTabs.tsx` — <br>●	`LibraryEntries.tsx` — <br>●	`MathLibrary.module.css` — CSS for library panel<br>●	`MathLibrary.tsx` — Math node library panel<br>●	`TabDropdownPortal.module.css` — CSS for library dropdown<br>●	`TabDropdownPortal.tsx` — Library dropdown (rename, archive, delete)<br>
-
-</details><details>
-  <summary><code>modals/</code> — Modal components<br></summary>
-
-●	`ArchiveModal.module.css` — <br>●	`ArchiveModal.tsx` — <br>●	`HotkeyOverlay.module.css` — <br>●	`HotkeyOverlay.tsx` — Hotkey info overlay<br>●	`LibCollectionArchiveModal.module.css` — <br>●	`LibCollectionArchiveModal.tsx` — <br>●	`Modal.module.css` — <br>●	`Modal.tsx` — <br>●	`NotebookArchiveModal.module.css` — <br>●	`NotebookArchiveModal.tsx` — <br>●	`SettingsModal.module.css` — <br>●	`SettingsModal.tsx` — Settings/preferences modal (e.g., theme)<br>
-
-</details><details>
-  <summary><code>notesMenu/</code> — Note switching/opening menu<br></summary>
-
-●	`NoteActionsDropdown.module.css` — <br>●	`NoteActionsDropdown.tsx` — <br>●	`NoteListItem.tsx` — <br>●	`NotesMenu.module.css` — <br>●	`NotesMenu.tsx` — Menu to switch or open notes<br>
-
-</details><details>
-  <summary><code>tooltips/</code> — Tooltip UI components<br></summary>
-
-●	`tooltip.css` — CSS for tooltips<br>●	`Tooltip.tsx` — Tooltip wrapper for hover text<br>
-
-</details><details>
-  <summary><code>zOutdated/</code> — <br></summary>
-
-●	`HeaderBar.tsx` — <br>●	`MathCell.tsx` — <br>●	`MathNotationTool.tsx` — <br>●	`TextCell.tsx` — <br>●	`Toolbar.tsx` — <br>
-
-</details>
-
-</details><details>
-  <summary><code>constants/</code> — <br></summary>
-
-●	`premadeMathCollections.ts` — <br>
-
-</details><details>
-  <summary><code>hooks/</code> — React hooks for state and interaction<br></summary>
-
-●	`DragContext.ts` — Global drag context<br>●	`DragProvider.tsx` — <br>●	`EditorHistoryContext.tsx` — Context for editor history<br>●	`EditorHistoryProvider.tsx` — Provider for history context<br>●	`EditorModeContext.ts` — <br>●	`EditorModeProvider.tsx` — <br>●	`HoverContext.ts` — <br>●	`HoverProvider.tsx` — <br>●	`toastContext.ts` — <br>●	`useCellDragState.ts` — Hook for dragging cells (in notebook)<br>●	`useDragContext.ts` — <br>●	`useDragState.ts` — Hook for dragging MathNodes (OUTDATED)<br>●	`useEditorHistory.ts` — Hook for editor history (OUTDATED)<br>●	`useEditorMode.ts` — <br>●	`useHover.ts` — <br>●	`useHoverState.ts` — Hover state for MathNodes<br>●	`useToast.ts` — <br>●	`useZoom.ts` — Zoom control hook for MathEditor<br>
-
-</details><details>
-  <summary><code>logic/</code> — Core MathEditor logic (cursor, input, history)<br></summary>
-
-●	`cursor.ts` — CursorPosition: container + index<br>●	`deletion.ts` — Backspace handler<br>●	`editor-state.ts` — Editor state type (rootNode, cursor)<br>●	`global-history.ts` — Global cell history (id-order mapping)<br>●	`handle-keydown.ts` — MathEditor keydown handler<br>●	`history.ts` — HistoryState (OUTDATED format)<br>●	`insertion.ts` — Character insertion logic<br>●	`navigation.ts` — Arrow key navigation in MathEditor<br>●	`node-manipulation.ts` — MathNode insert/delete logic<br>●	`transformations.ts` — MathNode transformations (e.g. wrap in fraction)<br>
-
-</details><details>
-  <summary><code>models/</code> — Types and models for nodes, notes, etc.<br></summary>
-
-●	`latexParser.ts` — Parses LaTeX into MathNode tree<br>●	`libraryTypes.ts` — LibraryEntry interface (metadata, LaTeX, etc.)<br>●	`nodeFactories.ts` — Factories for MathNode types<br>●	`nodeToLatex.ts` — Converts MathNode to LaTeX string<br>●	`noteTypes.ts` — Types for CellData, NoteMetadata, Note<br>●	`specialSequences.ts` — Escape → MathNode mappings<br>●	`textTypes.ts` — <br>●	`transformations.ts` — Helper transforms (WIP/boilerplate)<br>●	`types.ts` — Full MathNode type definition<br>
-
-</details><details>
-  <summary><code>styles/</code> — Global CSS styles<br></summary>
-
-●	`accents.css` — CSS for accented math nodes<br>●	`cells.css` — Styles for cells and insert zones<br>●	`hotkeyOverlay.css` — CSS for hotkey overlay & settings modal<br>●	`latexOutputColoring.css` — LaTeX viewer syntax coloring<br>●	`math-node-old.css` — <br>●	`math-node.css` — Styling for MathNode components<br>●	`math.css` — Outdated math styles<br>●	`settings.css` — Settings toggles styling<br>●	`styles.css` — Base UI styles: headers, overlays, containers<br>●	`textStyles.module.css` — <br>●	`themes.css` — Root theme styles (dark/light, scrollbars)<br>
-
-</details><details>
-  <summary><code>utils/</code> — Utility functions for MathNode operations<br></summary>
-
-●	`accentUtils.ts` — Maps decorations to LaTeX packages<br>●	`bracketUtils.ts` — Bracket style definitions<br>●	`collectionUtils.ts` — Init functions for library collections<br>●	`dateUtils.ts` — <br>●	`mathHoverUtils.ts` — MathNode hover event handlers<br>●	`navigationUtils.ts` — Cursor movement helpers<br>●	`noop.ts` — `noop` function: `() => {}`<br>●	`noteUtils.tsx` — <br>●	`stringUtils.ts` — <br>●	`subsupUtils.ts` — CornerPosition helper (used in transforms)<br>●	`textContainerUtils.ts` — Unused: split MultiDigit nodes<br>●	`treeUtils.ts` — Tree manipulation for MathNodes<br>
-
-</details>
-
-</details>
-</div>
-
 
 > [!CAUTION]
 > Since this app is under heavy development right now, this filetree is already outdated. I will not keep it up-to-date between larger working versions of the app, since files frequently get added, deleted, renamed or modified. 
-> _Filetree last updated: **July 8, 2025** (Incomplete, file tree styling is now done by script but I need to finish the descriptions for some)._
+> _Filetree last updated: **July 10, 2025**._
 
 ---
 
