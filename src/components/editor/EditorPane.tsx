@@ -15,6 +15,7 @@ import { createRootWrapper } from "../../models/nodeFactories";
 import { createEditorState, type EditorState } from "../../logic/editor-state";
 import { EditorModeProvider } from "../../hooks/EditorModeProvider";
 import type { DragSource } from "../../hooks/DragContext";
+import { MAX_ZOOM, MIN_ZOOM } from "../../constants/editorConstants";
 
 // type DropSource = {
 //   sourceType: "cell" | "library";
@@ -149,13 +150,6 @@ const EditorPane: React.FC<EditorPaneProps> = ({
     addCellRef.current = addCell;
   }, [addCell]);
 
-  // const handleInsert = useCallback(
-  //   (type: "math" | "text") => {
-  //     addCellRef.current(type, index); // or undefined for end
-  //   },
-  //   [index] // 👈 not `addCell`, just `index`
-  // );
-
   const deleteCell = useCallback(
     (id: string) => {
       const newOrder = order.filter((cellId) => cellId !== id);
@@ -209,7 +203,7 @@ const EditorPane: React.FC<EditorPaneProps> = ({
   }, [defaultZoom]);
 
   const handleZoomChange = useCallback((value: number) => {
-    const clamped = Math.max(0.5, Math.min(2, value));
+    const clamped = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, value));
     setDefaultZoom(clamped);
     localStorage.setItem("defaultZoom", clamped.toString());
     resetAllZooms();
@@ -234,7 +228,7 @@ const EditorPane: React.FC<EditorPaneProps> = ({
     );
   }, []);
 
-  // 📥 Effects
+  // Effects
   useEffect(() => {
     if (!noteId) return;
     const loaded = loadNoteState(noteId);

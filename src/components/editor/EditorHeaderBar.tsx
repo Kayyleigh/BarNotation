@@ -244,13 +244,14 @@
 
 // export default EditorHeaderBar;
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import clsx from "clsx";
 import Tooltip from "../tooltips/Tooltip";
 import { useToast } from "../../hooks/useToast";
 import { useEditorMode } from "../../hooks/useEditorMode";
 
 import styles from "./EditorHeaderBar.module.css";
+import { MAX_ZOOM, MIN_ZOOM } from "../../constants/editorConstants";
 
 interface EditorHeaderBarProps {
   defaultZoom: number;
@@ -277,6 +278,21 @@ const EditorHeaderBar: React.FC<EditorHeaderBarProps> = ({
 }) => {
   const { mode, togglePreview, toggleLocked } = useEditorMode();
   const { showToast } = useToast();
+
+  const [editingZoom, setEditingZoom] = useState(false);
+  const [editingZoomValue, setEditingZoomValue] = useState(defaultZoom * 100);
+
+  useEffect(() => {
+    if (editingZoom) {
+      setEditingZoomValue(Math.round(defaultZoom * 100));
+    }
+  }, [editingZoom, defaultZoom]);
+
+  const applyManualZoom = () => {
+    const clamped = Math.max(MIN_ZOOM * 100, Math.min(MAX_ZOOM * 100, editingZoomValue));
+    setEditingZoom(false);
+    handleZoomChange(clamped / 100);
+  };
 
   return (
     <div className={styles.editorHeaderBar}>
@@ -338,10 +354,35 @@ const EditorHeaderBar: React.FC<EditorHeaderBarProps> = ({
 
         <div className={styles.zoomControlsGroup}>
           <Tooltip text="Reset all zoom levels">
-            <button onClick={resetAllZooms} className={clsx(styles.button, styles.zoomButton, styles.resetZoomButton)}>
-              ⛶ {Math.round(defaultZoom * 100)}%
+            <button
+              onClick={resetAllZooms}
+              className={clsx(styles.button, styles.zoomButton, styles.resetZoomButton)}
+              onDoubleClick={(e) => {
+                e.preventDefault();
+                setEditingZoom(true);
+              }}
+            >
+              ⛶{" "}
+              {editingZoom ? (
+                <input
+                  type="number"
+                  min={MIN_ZOOM * 100}
+                  max={MAX_ZOOM * 100}
+                  autoFocus
+                  value={Math.round(editingZoomValue)}
+                  onChange={(e) => setEditingZoomValue(Number(e.target.value))}
+                  onBlur={applyManualZoom}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") applyManualZoom();
+                  }}
+                  className={styles.manualZoomInput}
+                />
+              ) : (
+                <span>{Math.round(defaultZoom * 100)}%</span>
+              )}
             </button>
           </Tooltip>
+
 
           <div className={styles.zoomDropdownWrapper} ref={dropdownRef}>
             <Tooltip text="Change default zoom level">
@@ -358,8 +399,8 @@ const EditorHeaderBar: React.FC<EditorHeaderBarProps> = ({
                 <label>Default Zoom</label>
                 <input
                   type="range"
-                  min="0.5"
-                  max="2"
+                  min={MIN_ZOOM}
+                  max={MAX_ZOOM}
                   step="0.01"
                   value={defaultZoom}
                   onChange={(e) => handleZoomChange(parseFloat(e.target.value))}

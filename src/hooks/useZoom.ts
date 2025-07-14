@@ -1,14 +1,17 @@
 import { useEffect, useState, type RefObject } from "react";
+import { MAX_ZOOM, MIN_ZOOM } from "../constants/editorConstants";
 
 export function useZoom(
   ref: RefObject<HTMLElement | null>,
   resetSignal: number,
   defaultZoom: number
 ) {
+  // Independent, absolute zoom level (e.g., 1.0 = 100%, 1.2 = 120%)
   const [zoomLevel, setZoomLevel] = useState(defaultZoom);
-  const BASE_SIZE = 1.6; // rem
 
-  // Apply zoom to local editor scope
+  const BASE_SIZE = 1; // rem
+
+  // Apply zoom to editor DOM
   useEffect(() => {
     const node = ref.current;
     if (!node) return;
@@ -27,23 +30,23 @@ export function useZoom(
     const handleWheel = (e: WheelEvent) => {
       if (e.ctrlKey) {
         e.preventDefault();
-        setZoomLevel((z) => Math.max(0.5, Math.min(2, z - e.deltaY * 0.01)));
+        setZoomLevel((z) => Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, z - e.deltaY * 0.01)));
       }
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      const isMac = navigator.platform.includes("Mac");
+      const isMac = navigator.userAgent.includes("Mac");
       const ctrlKey = isMac ? e.metaKey : e.ctrlKey;
 
       if (ctrlKey && (e.key === "+" || e.key === "=")) {
         e.preventDefault();
-        setZoomLevel((z) => Math.min(2, z + 0.1));
+        setZoomLevel((z) => Math.min(MAX_ZOOM, z + 0.1));
       } else if (ctrlKey && e.key === "-") {
         e.preventDefault();
-        setZoomLevel((z) => Math.max(0.5, z - 0.1));
+        setZoomLevel((z) => Math.max(MIN_ZOOM, z - 0.1));
       } else if (ctrlKey && e.key === "0") {
         e.preventDefault();
-        setZoomLevel(defaultZoom); // <- Fix here
+        setZoomLevel(defaultZoom); // reset to latest provided default
       }
     };
 
@@ -54,11 +57,11 @@ export function useZoom(
       node.removeEventListener("wheel", handleWheel);
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [ref, defaultZoom]); // <- Track defaultZoom
+  }, [ref, defaultZoom]);
 
-  // Reset zoom externally (global reset button)
+  // Reset on external signal or new defaultZoom
   useEffect(() => {
-    setZoomLevel(defaultZoom); // <- Fix here
+    setZoomLevel(defaultZoom);
   }, [resetSignal, defaultZoom]);
 
   return zoomLevel;

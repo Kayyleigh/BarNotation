@@ -1100,6 +1100,7 @@ export function renderStyledNode(
     ...inheritedStyle,
     ...node.style,
   };
+
   const styleClass = getStyleClass(combinedStyle);
 
   const handleEnter = () => handleMouseEnter([...ancestorIds], setHoverPath);
@@ -1109,6 +1110,7 @@ export function renderStyledNode(
     ...baseProps,
     node: childNode,
     containerId: childNode.id,
+    inheritedStyle: combinedStyle,
     index,
   });
 
