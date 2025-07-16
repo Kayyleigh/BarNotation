@@ -28,7 +28,7 @@
 // }> = ({ width, onWidthChange, onDropNode, addEntryRef, updateEntryRef }) => {
 //   console.warn(`Rendering MathLibrary with: ${width}, ${addEntryRef}, ${updateEntryRef?.current}`)
 //   const { showToast } = useToast();
-  
+
 //   const { draggingNode, setDraggingNode, setDropTarget } = useDragContext();
 
 //   const premade = React.useMemo(() => createPremadeCollections(), []);
@@ -43,9 +43,9 @@
 //         setLoadingCollections(false);
 //         return defaultColls;
 //       }
-  
+
 //       const savedCollections: LibraryCollection[] = JSON.parse(raw);
-  
+
 //       // Merge saved + premade, keeping saved collections first to override premade if conflict
 //       setLoadingCollections(false);
 //       return [
@@ -256,56 +256,56 @@
 //     e.dataTransfer.effectAllowed = "move";
 //     // You can optionally set drag image or dataTransfer data if needed
 //   };
-  
+
 //   const onTabDragOver = (e: React.DragEvent, idx: number) => {
 //     if (draggingTabIdx === null) return; // Do not treat as dragOver when source is not a tab
 
 //     e.preventDefault();
-  
+
 //     // Calculate if mouse is on left or right half of the tab
 //     const target = e.currentTarget as HTMLElement;
 //     const rect = target.getBoundingClientRect();
 //     const mouseX = e.clientX;
 //     const midpoint = rect.left + rect.width / 2;
-  
+
 //     const position = mouseX < midpoint ? "left" : "right";
-  
+
 //     dragOverTabIdx.current = idx;
 //     setDragOverPosition(position);
 //   };
-  
+
 //   const onTabDrop = (e: React.DragEvent, visibleIdx: number) => {
 //     e.preventDefault();
 //     if (draggingTabIdx === null) return;
-  
+
 //     let newVisibleIdx = visibleIdx;
 //     if (dragOverPosition === "right") {
 //       newVisibleIdx += 1;
 //     }
-  
+
 //     // Adjust for forward movement (classic off-by-one)
 //     if (draggingTabIdx < newVisibleIdx) {
 //       newVisibleIdx--;
 //     }
-  
+
 //     // Clamp to valid range
 //     const visibleTabs = collections.filter(c => !c.archived);
 //     newVisibleIdx = Math.max(0, Math.min(newVisibleIdx, visibleTabs.length - 1));
-  
+
 //     if (draggingTabIdx === newVisibleIdx) {
 //       resetDragState();
 //       return;
 //     }
-  
+
 //     // Map visible indices to real indices in collections[]
 //     const fromId = visibleTabs[draggingTabIdx].id;
 //     const toId = visibleTabs[newVisibleIdx].id;
-  
+
 //     const fromIndex = collections.findIndex(c => c.id === fromId);
 //     const toIndex = collections.findIndex(c => c.id === toId);
-  
+
 //     if (fromIndex === -1 || toIndex === -1) return;
-  
+
 //     // Reorder in collections
 //     setCollections((colls) => {
 //       const updated = [...colls];
@@ -313,17 +313,17 @@
 //       updated.splice(toIndex, 0, moved);
 //       return updated;
 //     });
-  
+
 //     resetDragState();
 //   };
-  
-  
+
+
 //   const resetDragState = () => {
 //     setDraggingTabIdx(null);
 //     setDragOverPosition(null);
 //     dragOverTabIdx.current = null;
 //   };
-  
+
 //   const onTabDragEnd = () => {
 //     setDraggingTabIdx(null);
 //     dragOverTabIdx.current = null;
@@ -392,7 +392,7 @@
 //         <div className={styles.tabHeaderLeft}>
 //           {collections.filter(c => !c.archived).map((c, idx) => {
 //             const isDragOver = dragOverTabIdx.current === idx;
-  
+
 //             return (
 //               <div
 //                 key={c.id}
@@ -445,7 +445,7 @@
 //                     {c.name}
 //                   </span>
 //                 )}
-  
+
 //                 {(c.id === activeColl && editingCollId !== c.id) && (
 //                   <div className={styles.tabActions}>
 //                     <button
@@ -513,7 +513,7 @@
 //           </Tooltip>
 //         </div>
 //       </div>
-  
+
 //       {loadingCollections ? (
 //         <div className={styles.loadingContainer}>
 //           <div className={styles.spinner} />
@@ -537,7 +537,7 @@
 //               <option value="latex-desc">Z → A</option>
 //             </select>
 //           </div>
-  
+
 //           <div
 //             className={styles.libraryDropZone}
 //             onDragOver={(e) => {
@@ -599,7 +599,6 @@
 // export default MathLibrary;
 
 import { useEffect, useState, useCallback, useTransition } from "react";
-import ResizableSidebar from "../layout/ResizableSidebar";
 import LibCollectionArchiveModal from "../modals/LibCollectionArchiveModal";
 import LibraryEntries from "./LibraryEntries";
 import type { LibraryCollection, LibraryEntry } from "../../models/libraryTypes";
@@ -626,15 +625,11 @@ export type SortOption =
   | "latex-desc";
 
 interface MathLibraryProps {
-  width: number;
-  onWidthChange: (width: number) => void;
   onDropNode: (from: DropSource, to: DropTarget) => void;
   updateEntryRef: React.RefObject<(id: string) => void>; //unused?
 }
 
 const MathLibrary: React.FC<MathLibraryProps> = ({
-  width,
-  onWidthChange,
   updateEntryRef,
 }) => {
   console.warn(`Rendering MathLibrary`);
@@ -687,13 +682,13 @@ const MathLibrary: React.FC<MathLibraryProps> = ({
 
   useEffect(() => {
     if (!loadingCollection) return; // Only set fallback if loading is active
-  
+
     const timer = setTimeout(() => {
       setLoadingCollection(false);
     }, 0);
-  
+
     return () => clearTimeout(timer);
-  }, [activeColl, loadingCollection]);  
+  }, [activeColl, loadingCollection]);
 
   const [editingCollId, setEditingCollId] = useState<string | null>(null);
   const [menuOpenFor, setMenuOpenFor] = useState<string | null>(null);
@@ -762,12 +757,12 @@ const MathLibrary: React.FC<MathLibraryProps> = ({
       // Same logic as your original function
       if (!draggingNode) {
         const plainText = e.dataTransfer.getData("text/plain")?.trim();
-  
+
         if (!plainText) return;
-  
+
         const targetCollection = findCollection(dropCollectionId);
         if (!targetCollection) return;
-  
+
         try {
           const parsed = parseLatex(plainText);
           const newEntry: LibraryEntry = {
@@ -777,12 +772,12 @@ const MathLibrary: React.FC<MathLibraryProps> = ({
             draggedCount: 0,
             latex: plainText,
           };
-  
+
           const updatedEntries = [...targetCollection.entries];
           const insertIndex = dropIndex ?? updatedEntries.length;
-  
+
           updatedEntries.splice(insertIndex, 0, newEntry);
-  
+
           setCollections(prev =>
             prev.map(c =>
               c.id === targetCollection.id
@@ -790,13 +785,13 @@ const MathLibrary: React.FC<MathLibraryProps> = ({
                 : c
             )
           );
-  
+
           showToast({ type: "success", message: "LaTeX added to library." });
         } catch (err) {
           console.error("Invalid LaTeX dropped:", err);
           showToast({ type: "error", message: "Failed to parse LaTeX." });
         }
-  
+
         return;
       }
 
@@ -879,7 +874,7 @@ const MathLibrary: React.FC<MathLibraryProps> = ({
   );
 
   const activeCollection = collections.find(c => c.id === activeColl);
-  const placeholderText = `Search ${activeCollection ? activeCollection.name : "Collection"}...`;  
+  const placeholderText = `Search ${activeCollection ? activeCollection.name : "Collection"}...`;
 
   const sortOptions = [
     { label: "Newest", value: "date" },
@@ -900,100 +895,92 @@ const MathLibrary: React.FC<MathLibraryProps> = ({
   );
 
   return (
-    <ResizableSidebar
-      side="right"
-      title="Math Library"
-      width={width}
-      onWidthChange={onWidthChange}
-      storageKey="mathLibraryWidth"
-    >
-      <div className={styles.libraryContainer}>
-        <CollectionTabs
-          collections={collections}
-          activeColl={activeColl}
-          setActiveColl={changeActiveCollection}
-          editingCollId={editingCollId}
-          setEditingCollId={setEditingCollId}
-          setCollections={setCollections}
-          menuOpenFor={menuOpenFor}
-          setMenuOpenFor={setMenuOpenFor}
-          onDropEntryToCollection={(entry, collectionId) => {
-            const coll = findCollection(collectionId);
-            if (!coll) return;
-            const exists = coll.entries.some((e) => e.latex === entry.latex);
-            if (exists) {
-              showToast({ type: "warning", message: `Entry ${entry.latex} already exists in ${coll.name}.` });
-              return;
-            }
-            const newEntry = { ...entry, addedAt: Date.now(), draggedCount: 0 };
-            updateCollectionEntries(collectionId, [...coll.entries, newEntry]);
-            showToast({ type: "success", message: `Entry ${entry.latex} added to ${coll.name}.` });
+    <div className={styles.libraryContainer}>
+      <CollectionTabs
+        collections={collections}
+        activeColl={activeColl}
+        setActiveColl={changeActiveCollection}
+        editingCollId={editingCollId}
+        setEditingCollId={setEditingCollId}
+        setCollections={setCollections}
+        menuOpenFor={menuOpenFor}
+        setMenuOpenFor={setMenuOpenFor}
+        onDropEntryToCollection={(entry, collectionId) => {
+          const coll = findCollection(collectionId);
+          if (!coll) return;
+          const exists = coll.entries.some((e) => e.latex === entry.latex);
+          if (exists) {
+            showToast({ type: "warning", message: `Entry ${entry.latex} already exists in ${coll.name}.` });
+            return;
+          }
+          const newEntry = { ...entry, addedAt: Date.now(), draggedCount: 0 };
+          updateCollectionEntries(collectionId, [...coll.entries, newEntry]);
+          showToast({ type: "success", message: `Entry ${entry.latex} added to ${coll.name}.` });
+        }}
+      />
+
+      <div className={styles.controls}>
+        <SearchBar
+          placeholder={placeholderText}
+          value={searchTerm}
+          onChange={setSearchTerm}
+          className={styles.librarySearch}
+          tooltip="Search on LaTeX substring"
+        />
+        <SortDropdown
+          options={sortOptions}
+          value={sortOption}
+          onChange={(val) => setSortOption(val as SortOption)}
+          className={styles.sortDropdown}
+          aria-label="Sort library entries"
+        />
+      </div>
+
+      {activeColl ? (
+        loadingCollection ? (
+          <div className={styles.loadingContainer}>
+            <div className={styles.spinner} />
+            <p className={styles.loadingText}>Loading collections, this may take a while...</p>
+          </div>
+        ) : (
+          <LibraryEntries
+            onRendered={() => setLoadingCollection(false)} //TODO
+            collections={collections}
+            setCollections={setCollections}
+            activeColl={activeColl}
+            sortOption={sortOption}
+            searchTerm={searchTerm}
+            onDrop={memoizedOnDrop}
+          />
+        )
+      ) : (
+        <p>No active collection available.</p>
+      )}
+      {archiveModalOpen && (
+        <LibCollectionArchiveModal
+          archived={collections.filter((c) => c.archived)}
+          onClose={() => setArchiveModalOpen(false)}
+          onUnarchive={(id) => {
+            const unarchived = collections.find((c) => c.id === id);
+            setCollections((prev) =>
+              prev.map((c) => (c.id === id ? { ...c, archived: false } : c))
+            );
+            showToast({
+              type: "success",
+              message: `Unarchived "${unarchived?.name || "Collection"}"`,
+            });
+          }}
+          onDelete={(id) => {
+            const deleted = collections.find((c) => c.id === id);
+            setCollections((prev) => prev.filter((c) => c.id !== id));
+            showToast({
+              type: "success",
+              message: `Deleted "${deleted?.name || "Collection"}"`,
+            });
           }}
         />
-
-        <div className={styles.controls}>
-          <SearchBar
-            placeholder={placeholderText}
-            value={searchTerm}
-            onChange={setSearchTerm}
-            className={styles.librarySearch}
-            tooltip="Search on LaTeX substring"
-          />
-          <SortDropdown
-            options={sortOptions}
-            value={sortOption}
-            onChange={(val) => setSortOption(val as SortOption)}
-            className={styles.sortDropdown}
-            aria-label="Sort library entries"
-          />
-        </div>
-
-        {activeColl ? (
-          loadingCollection ? (
-            <div className={styles.loadingContainer}>
-              <div className={styles.spinner} />
-              <p className={styles.loadingText}>Loading collections, this may take a while...</p>
-            </div>
-          ) : (
-            <LibraryEntries
-              onRendered={() => setLoadingCollection(false)}
-              collections={collections}
-              setCollections={setCollections}
-              activeColl={activeColl}
-              sortOption={sortOption}
-              searchTerm={searchTerm}
-              onDrop={memoizedOnDrop}
-            />
-          )
-        ) : (
-          <p>No active collection available.</p>
-        )}
-        {archiveModalOpen && (
-          <LibCollectionArchiveModal
-            archived={collections.filter((c) => c.archived)}
-            onClose={() => setArchiveModalOpen(false)}
-            onUnarchive={(id) => {
-              const unarchived = collections.find((c) => c.id === id);
-              setCollections((prev) =>
-                prev.map((c) => (c.id === id ? { ...c, archived: false } : c))
-              );
-              showToast({
-                type: "success",
-                message: `Unarchived "${unarchived?.name || "Collection"}"`,
-              });
-            }}
-            onDelete={(id) => {
-              const deleted = collections.find((c) => c.id === id);
-              setCollections((prev) => prev.filter((c) => c.id !== id));
-              showToast({
-                type: "success",
-                message: `Deleted "${deleted?.name || "Collection"}"`,
-              });
-            }}
-          />
-        )}
-      </div>
-    </ResizableSidebar>
+      )}
+    </div>
   );
 };
 

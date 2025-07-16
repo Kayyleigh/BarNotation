@@ -14,6 +14,8 @@ import { createRootWrapper } from "../../models/nodeFactories";
 import { createEmptySnapshot, type EditorSnapshot } from "../../logic/global-history";
 import type { CellData, Note, NoteMetadata } from "../../models/noteTypes";
 import { useToast } from "../../hooks/useToast";
+import ResizableSidebar from "./ResizableSidebar";
+import { ResizableProvider } from "../../hooks/ResizableProvider";
 
 function loadEditorSnapshotForNote(noteId: string): EditorSnapshot {
   const rootNode = createRootWrapper();
@@ -54,14 +56,75 @@ const MainLayout: React.FC<MainLayoutProps> = ({
 }) => {
   const { showToast } = useToast();
 
-  const getStoredNumber = (key: string, fallback: number) => {
-    const raw = localStorage.getItem(key);
-    const parsed = raw ? parseInt(raw, 10) : NaN;
-    return isNaN(parsed) ? fallback : parsed;
-  };
+  // const getStoredNumber = (key: string, fallback: number) => {
+  //   const raw = localStorage.getItem(key);
+  //   const parsed = raw ? parseInt(raw, 10) : NaN;
+  //   return isNaN(parsed) ? fallback : parsed;
+  // };
 
-  const [leftWidth, setLeftWidth] = useState(() => getStoredNumber("notesMenuWidth", 200));
-  const [rightWidth, setRightWidth] = useState(() => getStoredNumber("mathLibraryWidth", 600));
+  // const [leftWidth, setLeftWidth] = useState(() => getStoredNumber("notesMenuWidth", 200));
+  // const [rightWidth, setRightWidth] = useState(() => getStoredNumber("mathLibraryWidth", 600));
+
+  // const COLLAPSED_WIDTH = 40;
+
+  // const [isLeftCollapsed, setIsLeftCollapsed] = useState(() => {
+  //   return localStorage.getItem("isLeftCollapsed") === "true";
+  // });
+  // const [isRightCollapsed, setIsRightCollapsed] = useState(() => {
+  //   return localStorage.getItem("isRightCollapsed") === "true";
+  // });
+
+  // const [storedLeftWidth, setStoredLeftWidth] = useState(() => {
+  //   const raw = localStorage.getItem("storedLeftWidth");
+  //   return raw ? parseInt(raw, 10) : 200;
+  // });
+  // const [storedRightWidth, setStoredRightWidth] = useState(() => {
+  //   const raw = localStorage.getItem("storedRightWidth");
+  //   return raw ? parseInt(raw, 10) : 600;
+  // });
+
+  // useEffect(() => {
+  //   if (isLeftCollapsed) {
+  //     setLeftWidth(COLLAPSED_WIDTH);
+  //   } else {
+  //     setLeftWidth(storedLeftWidth);
+  //   }
+  // }, []);
+
+  // useEffect(() => {
+  //   if (isRightCollapsed) {
+  //     setRightWidth(COLLAPSED_WIDTH);
+  //   } else {
+  //     setRightWidth(storedRightWidth);
+  //   }
+  // }, []);
+
+  // const toggleLeftCollapse = () => {
+  //   if (isLeftCollapsed) {
+  //     setLeftWidth(storedLeftWidth);
+  //   } else {
+  //     setStoredLeftWidth(leftWidth);
+  //     localStorage.setItem("storedLeftWidth", String(leftWidth));
+  //     setLeftWidth(COLLAPSED_WIDTH);
+  //   }
+  //   const newState = !isLeftCollapsed;
+  //   setIsLeftCollapsed(newState);
+  //   localStorage.setItem("isLeftCollapsed", String(newState));
+  // };
+
+  // const toggleRightCollapse = () => {
+  //   if (isRightCollapsed) {
+  //     setRightWidth(storedRightWidth);
+  //   } else {
+  //     setStoredRightWidth(rightWidth);
+  //     localStorage.setItem("storedRightWidth", String(rightWidth));
+  //     setRightWidth(COLLAPSED_WIDTH);
+  //   }
+  //   const newState = !isRightCollapsed;
+  //   setIsRightCollapsed(newState);
+  //   localStorage.setItem("isRightCollapsed", String(newState));
+  // };
+
 
   // Use lazy state initialization from localStorage
   const [notes, setNotes] = useState<Note[]>(() => {
@@ -84,15 +147,16 @@ const MainLayout: React.FC<MainLayoutProps> = ({
       : createEmptySnapshot();
   }, [selectedNoteId]);
 
+  //TODO is this wrong??
   // Save left width
-  useEffect(() => {
-    localStorage.setItem("notesMenuWidth", leftWidth.toString());
-  }, [leftWidth]);
+  // useEffect(() => {
+  //   localStorage.setItem("notesMenuWidth", leftWidth.toString());
+  // }, [leftWidth]);
 
-  // Save right width
-  useEffect(() => {
-    localStorage.setItem("mathLibraryWidth", rightWidth.toString());
-  }, [rightWidth]);
+  // // Save right width
+  // useEffect(() => {
+  //   localStorage.setItem("mathLibraryWidth", rightWidth.toString());
+  // }, [rightWidth]);
 
   // Save theme preference
   useEffect(() => {
@@ -149,11 +213,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({
         updatedAt: note.metadata.updatedAt,
       }));
   }, [notes]);
-  
+
 
   const prevArchivedIdsRef = React.useRef(new Set<string>());
   const prevNotesRef = React.useRef<Note[]>([]);
-  
+
   const archivedNotes = React.useMemo(() => {
     if (
       !prevNotesRef.current.length ||
@@ -175,7 +239,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     // no change, return previous filtered array
     return notes.filter(note => prevArchivedIdsRef.current.has(note.id));
   }, [notes]);
-  
+
   // Handler to update metadata (like title) of a note:
   const updateNoteMetadata = useCallback((noteId: string, newMetadata: Partial<NoteMetadata>) => {
     setNotes((prevNotes) =>
@@ -342,42 +406,48 @@ const MainLayout: React.FC<MainLayoutProps> = ({
         onOpenSettings={onOpenSettings}
         onOpenHotkeys={onOpenHotkeys}
       />
-      <div style={{ display: "flex", height: "calc(100vh - 50px)", width: "100%" }}>
-        <div style={{ flex: "0 0 auto", width: `${leftWidth}px` }}>
-          <NotesMenu
-            width={leftWidth}
-            onWidthChange={setLeftWidth}
-            selectedNoteId={selectedNoteId}
-            onSelectNote={setSelectedNoteId}
-            noteSummaries={menuNotes}
-            onCreateNote={createNewNote}
-            onDeleteNote={handleDeleteNote}
-            onArchiveNote={archiveNote}
-            onUnarchiveNote={handleUnarchiveNote}
-            onDuplicateNote={duplicateNote}
-            onExportLatex={exportLatex}
-            archivedNotes={archivedNotes}
-          />
+      <ResizableProvider> 
+        <div style={{ display: "flex", height: "calc(100vh - 50px)", width: "100%" }}> {/* TODO no height hardcoding of menu bar */}
+          <ResizableSidebar
+            side="left"
+            title="Notes"
+            // storageKey="notes-menu"
+
+          // isCollapsed={isLeftCollapsed}
+          // onCollapseToggle={toggleLeftCollapse}
+          // onWidthChange={setLeftWidth}
+          >
+            <NotesMenu
+              selectedNoteId={selectedNoteId}
+              onSelectNote={setSelectedNoteId}
+              noteSummaries={menuNotes}
+              onCreateNote={createNewNote}
+              onDeleteNote={handleDeleteNote}
+              onArchiveNote={archiveNote}
+              onUnarchiveNote={handleUnarchiveNote}
+              onDuplicateNote={duplicateNote}
+              onExportLatex={exportLatex}
+              archivedNotes={archivedNotes}
+            />
+          </ResizableSidebar>
+          <div style={{ flex: 1, display: "flex", minWidth: 0 }}>
+            {/* {selectedNoteId && selectedNote && initialSnapshot ? ( */}
+            <EditorHistoryProvider initialSnapshot={initialSnapshot}>
+              <DragProvider>
+                <EditorWorkspace
+                  noteId={selectedNoteId}
+                  noteMetadata={selectedNoteMetadata}
+                  setNoteMetadata={updateNoteMetadata}
+                  noteCells={selectedNoteCells}
+                  setNoteCells={updateNoteCells}
+                // editorStates={editorStates}
+                // setEditorStates={setEditorStates}
+                />
+              </DragProvider>
+            </EditorHistoryProvider>
+          </div>
         </div>
-        <div style={{ flexGrow: 1, display: "flex", minWidth: 0 }}>
-          {/* {selectedNoteId && selectedNote && initialSnapshot ? ( */}
-          <EditorHistoryProvider initialSnapshot={initialSnapshot}>
-            <DragProvider>
-              <EditorWorkspace
-                noteId={selectedNoteId}
-                rightWidth={rightWidth}
-                setRightWidth={setRightWidth}
-                noteMetadata={selectedNoteMetadata}
-                setNoteMetadata={updateNoteMetadata}
-                noteCells={selectedNoteCells}
-                setNoteCells={updateNoteCells}
-              // editorStates={editorStates}
-              // setEditorStates={setEditorStates}
-              />
-            </DragProvider>
-          </EditorHistoryProvider>
-        </div>
-      </div>
+      </ResizableProvider>
     </div>
   );
 };

@@ -204,7 +204,7 @@ const LibraryEntries: React.FC<LibraryEntriesProps> = ({
   // );
 
   useEffect(() => {
-    if (filteredEntries.length > 0 || collection?.entries.length === 0) {
+    if (filteredEntries.length > 0 || collection?.entries.length === 0) { //TODO??
       onRendered?.();
     }
   }, [filteredEntries, collection?.entries.length, onRendered]);
