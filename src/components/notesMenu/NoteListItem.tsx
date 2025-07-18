@@ -46,30 +46,31 @@ const NoteListItem: React.FC<Props> = ({
       tabIndex={0}
       role="button"
     >
-      <div className={styles.noteTextBlock}>
-        <div className={styles.noteTitle}>{note.title}</div>
-        <div className={styles.noteMeta}>
-          <span>
-            {note.cellCount} cell{note.cellCount === 1 ? "" : "s"}
-          </span>
-          <span className={styles.noteDate}>
-            {note.createdAt && (
-              <span className={styles.noteDate}>{formatCreatedAt(note.createdAt)}</span>
-            )}
-          </span>
+      <div className={styles.noteContent}>
+        <div className={styles.noteTextBlock}>
+          <div className={styles.noteTitle}>{note.title}</div>
+          <div className={styles.noteMeta}>
+            <span>
+              {note.cellCount} cell{note.cellCount === 1 ? "" : "s"}
+            </span>
+            <span className={styles.noteDate}>
+              {note.createdAt && <span>{formatCreatedAt(note.createdAt)}</span>}
+            </span>
+          </div>
         </div>
+        <button
+          ref={localRef}
+          className={styles.moreButton}
+          onClick={(e) => {
+            e.stopPropagation();
+            setMenuOpen(!menuOpen);
+          }}
+          aria-label="Note options"
+        >
+          ⋯
+        </button>
       </div>
-      <button
-        ref={localRef}
-        className={styles.moreButton}
-        onClick={(e) => {
-          e.stopPropagation();
-          setMenuOpen(!menuOpen);
-        }}
-        aria-label="Note options"
-      >
-        ⋯
-      </button>
+
       {menuOpen && localRef.current && (
         <NoteActionsDropdown
           anchorRef={localRef}

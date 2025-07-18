@@ -382,6 +382,7 @@ import { useEditorMode } from "../../hooks/useEditorMode";
 import { computeDisplayNumbers } from "../../utils/noteUtils";
 import cellStyles from "./cells/cell.module.css";
 import Tooltip from "../tooltips/Tooltip";
+import { useResizablePanels } from "../../hooks/ResizableContext";
 
 interface NotationEditorProps {
   defaultZoom: number;
