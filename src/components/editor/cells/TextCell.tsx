@@ -421,6 +421,27 @@ const TextCell: React.FC<TextCellProps> = ({ value, onChange, displayNumber }) =
   const [inputValue, setInputValue] = useState(value.text);
   const prevValueTextRef = useRef(value.text);
 
+  useEffect(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+  
+    const resize = () => {
+      el.style.height = "auto";
+      el.style.height = `${el.scrollHeight}px`;
+    };
+  
+    resize(); // initial call
+  
+    const observer = new ResizeObserver(resize);
+    observer.observe(el);
+  
+    // Also observe parent if width affects wrapping
+    const parent = el.parentElement;
+    if (parent) observer.observe(parent);
+  
+    return () => observer.disconnect();
+  }, []);  
+
   // Sync inputValue from external text changes only (not local edits)
   useEffect(() => {
     if (value.text !== prevValueTextRef.current) {
