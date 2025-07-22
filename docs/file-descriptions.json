@@ -165,6 +165,10 @@
     "src/hooks/useDragContext.ts": "Hook to access drag-and-drop context",
     "src/hooks/useEditorMode.ts": "Hook to access editor mode context",
     "src/hooks/useHover.ts": "Hook to access hover path context",
-    "src/hooks/useToast.ts": "Hook to trigger toast notifications"
+    "src/hooks/useToast.ts": "Hook to trigger toast notifications",
+
+    "src/hooks/latexViewRefresh/LatexRefreshContext.ts": "Context for triggering LaTeX refresh",
+    "src/hooks/latexViewRefresh/LatexRefreshProvider.tsx": "Context provider for LaTeX refresh",
+    "src/hooks/latexViewRefresh/useLatexRefresh.ts": "Hook to trigger LaTeX refresh"
   }
   

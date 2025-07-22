@@ -16,6 +16,7 @@ import { createEditorState, type EditorState } from "../../logic/editor-state";
 import { EditorModeProvider } from "../../hooks/EditorModeProvider";
 import type { DragSource } from "../../hooks/DragContext";
 import { MAX_ZOOM, MIN_ZOOM } from "../../constants/editorConstants";
+import { LatexRefreshProvider } from "../../hooks/latexViewRefresh/LatexRefreshProvider";
 
 type DropTarget = {
   cellId: string;
@@ -77,6 +78,7 @@ const EditorPane: React.FC<EditorPaneProps> = ({
   // const [isPreviewMode, setIsPreviewMode] = useState(() =>
   //   localStorage.getItem("previewMode") === "on"
   // );
+  // TODO: make it init for each cell a "false" at creation of cell or at load?
   const [showLatexMap, setShowLatexMap] = useState<Record<string, boolean>>({});
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
@@ -217,9 +219,18 @@ const EditorPane: React.FC<EditorPaneProps> = ({
   useEffect(() => {
     if (!noteId) return;
     const loaded = loadNoteState(noteId);
-    persistState(
-      loaded ?? { order: [], states: {}, textContents: {} }
-    );
+    const state = loaded ?? { order: [], states: {}, textContents: {} };
+
+    // Initialize showLatexMap with false for math cells only
+    const initialLatexMap: Record<string, boolean> = {};
+    for (const id of state.order) {
+      if (state.states[id]) {
+        initialLatexMap[id] = false;
+      }
+    }
+    setShowLatexMap(initialLatexMap);
+
+    persistState(state);
   }, [noteId, persistState]);
 
   useEffect(() => {
@@ -237,36 +248,38 @@ const EditorPane: React.FC<EditorPaneProps> = ({
   return (
     <EditorModeProvider>
       <div className={styles.editorPane} style={style}>
-        <EditorHeaderBar
-          defaultZoom={defaultZoom}
-          resetAllZooms={resetAllZooms}
-          handleZoomChange={handleZoomChange}
-          showAllLatex={showAllLatex}
-          hideAllLatex={hideAllLatex}
-          showZoomDropdown={showZoomDropdown}
-          setShowZoomDropdown={setShowZoomDropdown}
-          dropdownRef={dropdownRef}
-          onAddCell={addCell} //ref instead?? Actually this one only needs the ability to add at the end!!
-        />
-        <NotationEditor
-          noteId={noteId}
-          resetZoomSignal={resetZoomSignal}
-          defaultZoom={defaultZoom}
-          order={order}
-          addCellRef={addCellRef}//ref instead??
-          deleteCell={deleteCell}
-          duplicateCell={duplicateCell}
-          updateOrder={updateOrder}
-          editorStates={editorStates}
-          setEditorStates={setEditorStates}
-          textContents={textContents}
-          setTextContents={setTextContents}
-          showLatexMap={showLatexMap}
-          setShowLatexMap={setShowLatexMap}
-          metadata={noteMetadata}
-          setMetadata={setNoteMetadata}
-          onDropNode={onDropNode}
-        />
+        <LatexRefreshProvider>
+          <EditorHeaderBar
+            defaultZoom={defaultZoom}
+            resetAllZooms={resetAllZooms}
+            handleZoomChange={handleZoomChange}
+            showAllLatex={showAllLatex}
+            hideAllLatex={hideAllLatex}
+            showZoomDropdown={showZoomDropdown}
+            setShowZoomDropdown={setShowZoomDropdown}
+            dropdownRef={dropdownRef}
+            onAddCell={addCell} //ref instead?? Actually this one only needs the ability to add at the end!!
+          />
+          <NotationEditor
+            noteId={noteId}
+            resetZoomSignal={resetZoomSignal}
+            defaultZoom={defaultZoom}
+            order={order}
+            addCellRef={addCellRef}//ref instead??
+            deleteCell={deleteCell}
+            duplicateCell={duplicateCell}
+            updateOrder={updateOrder}
+            editorStates={editorStates}
+            setEditorStates={setEditorStates}
+            textContents={textContents}
+            setTextContents={setTextContents}
+            showLatexMap={showLatexMap}
+            setShowLatexMap={setShowLatexMap}
+            metadata={noteMetadata}
+            setMetadata={setNoteMetadata}
+            onDropNode={onDropNode}
+          />
+        </LatexRefreshProvider>
       </div>
     </EditorModeProvider>
   );
