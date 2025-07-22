@@ -1,3 +1,4 @@
+// components/notesMenu/NoteListItem.tsx
 import React, { useRef, useEffect } from "react";
 import NoteActionsDropdown from "./NoteActionsDropdown";
 import styles from "./NotesMenu.module.css";

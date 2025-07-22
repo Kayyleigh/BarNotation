@@ -1,3 +1,4 @@
+// components/layout/EditorWorkspace.tsx
 import React, { useCallback, useEffect, useRef } from "react";
 import EditorPane from "../editor/EditorPane";
 import MathLibrary from "../mathLibrary/MathLibrary";

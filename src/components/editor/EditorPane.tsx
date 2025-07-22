@@ -17,14 +17,6 @@ import { EditorModeProvider } from "../../hooks/EditorModeProvider";
 import type { DragSource } from "../../hooks/DragContext";
 import { MAX_ZOOM, MIN_ZOOM } from "../../constants/editorConstants";
 
-// type DropSource = {
-//   sourceType: "cell" | "library";
-//   cellId?: string;
-//   containerId: string;
-//   index: number;
-//   node: MathNode;
-// };
-
 type DropTarget = {
   cellId: string;
   containerId: string;
@@ -209,13 +201,6 @@ const EditorPane: React.FC<EditorPaneProps> = ({
     resetAllZooms();
   }, [resetAllZooms]);
 
-  // const togglePreviewMode = useCallback(() => {
-  //   setIsPreviewMode((prev) => {
-  //     localStorage.setItem("previewMode", prev ? "off" : "on");
-  //     return !prev;
-  //   });
-  // }, []);
-
   const showAllLatex = useCallback(() => {
     setShowLatexMap((prev) =>
       Object.fromEntries(Object.keys(prev).map((key) => [key, true]))
@@ -265,7 +250,6 @@ const EditorPane: React.FC<EditorPaneProps> = ({
         />
         <NotationEditor
           noteId={noteId}
-          // isPreviewMode={isPreviewMode}
           resetZoomSignal={resetZoomSignal}
           defaultZoom={defaultZoom}
           order={order}

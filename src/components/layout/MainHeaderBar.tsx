@@ -1,3 +1,4 @@
+// components/layout/MainHeaderBar.tsx
 import React from "react";
 import clsx from "clsx";
 import Tooltip from "../tooltips/Tooltip";

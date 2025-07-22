@@ -1,3 +1,4 @@
+// components/mathExpression/LatexViewer.tsx
 import React, { useState, useEffect, useCallback } from "react";
 import { nodeToLatex } from "../../models/nodeToLatex";
 import type { MathNode } from "../../models/types";

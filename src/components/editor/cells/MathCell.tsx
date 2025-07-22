@@ -1,3 +1,4 @@
+// components/editor/cells/MathCell.tsx
 import React, { useState } from "react";
 import MathEditor from "../../mathExpression/MathEditor";
 import type { EditorState } from "../../../logic/editor-state";

@@ -1,3 +1,4 @@
+// components/mathLibrary/TabDropdownPortal.tsx
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 import styles from "./TabDropdownPortal.module.css";
