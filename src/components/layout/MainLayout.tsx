@@ -33,6 +33,7 @@ function loadEditorSnapshotForNote(noteId: string): EditorSnapshot {
 }
 
 const LOCAL_STORAGE_KEY = "notes";
+const SELECTED_NOTE_KEY = "selectedNoteId";
 
 type MainLayoutProps = {
   onOpenSettings: () => void;
@@ -56,76 +57,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({
 }) => {
   const { showToast } = useToast();
 
-  // const getStoredNumber = (key: string, fallback: number) => {
-  //   const raw = localStorage.getItem(key);
-  //   const parsed = raw ? parseInt(raw, 10) : NaN;
-  //   return isNaN(parsed) ? fallback : parsed;
-  // };
-
-  // const [leftWidth, setLeftWidth] = useState(() => getStoredNumber("notesMenuWidth", 200));
-  // const [rightWidth, setRightWidth] = useState(() => getStoredNumber("mathLibraryWidth", 600));
-
-  // const COLLAPSED_WIDTH = 40;
-
-  // const [isLeftCollapsed, setIsLeftCollapsed] = useState(() => {
-  //   return localStorage.getItem("isLeftCollapsed") === "true";
-  // });
-  // const [isRightCollapsed, setIsRightCollapsed] = useState(() => {
-  //   return localStorage.getItem("isRightCollapsed") === "true";
-  // });
-
-  // const [storedLeftWidth, setStoredLeftWidth] = useState(() => {
-  //   const raw = localStorage.getItem("storedLeftWidth");
-  //   return raw ? parseInt(raw, 10) : 200;
-  // });
-  // const [storedRightWidth, setStoredRightWidth] = useState(() => {
-  //   const raw = localStorage.getItem("storedRightWidth");
-  //   return raw ? parseInt(raw, 10) : 600;
-  // });
-
-  // useEffect(() => {
-  //   if (isLeftCollapsed) {
-  //     setLeftWidth(COLLAPSED_WIDTH);
-  //   } else {
-  //     setLeftWidth(storedLeftWidth);
-  //   }
-  // }, []);
-
-  // useEffect(() => {
-  //   if (isRightCollapsed) {
-  //     setRightWidth(COLLAPSED_WIDTH);
-  //   } else {
-  //     setRightWidth(storedRightWidth);
-  //   }
-  // }, []);
-
-  // const toggleLeftCollapse = () => {
-  //   if (isLeftCollapsed) {
-  //     setLeftWidth(storedLeftWidth);
-  //   } else {
-  //     setStoredLeftWidth(leftWidth);
-  //     localStorage.setItem("storedLeftWidth", String(leftWidth));
-  //     setLeftWidth(COLLAPSED_WIDTH);
-  //   }
-  //   const newState = !isLeftCollapsed;
-  //   setIsLeftCollapsed(newState);
-  //   localStorage.setItem("isLeftCollapsed", String(newState));
-  // };
-
-  // const toggleRightCollapse = () => {
-  //   if (isRightCollapsed) {
-  //     setRightWidth(storedRightWidth);
-  //   } else {
-  //     setStoredRightWidth(rightWidth);
-  //     localStorage.setItem("storedRightWidth", String(rightWidth));
-  //     setRightWidth(COLLAPSED_WIDTH);
-  //   }
-  //   const newState = !isRightCollapsed;
-  //   setIsRightCollapsed(newState);
-  //   localStorage.setItem("isRightCollapsed", String(newState));
-  // };
-
-
   // Use lazy state initialization from localStorage
   const [notes, setNotes] = useState<Note[]>(() => {
     const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
@@ -139,24 +70,25 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     return [];
   });
 
-  const [selectedNoteId, setSelectedNoteId] = useState<string | null>(notes.length ? notes[0].id : null);
+  const [selectedNoteId, setSelectedNoteIdState] = useState<string | null>(() => {
+    const storedId = localStorage.getItem(SELECTED_NOTE_KEY);
+    return storedId ?? (notes.length ? notes[0].id : null);
+  });
+
+  const setSelectedNoteId = useCallback((id: string | null) => {
+    setSelectedNoteIdState(id);
+    if (id) {
+      localStorage.setItem(SELECTED_NOTE_KEY, id);
+    } else {
+      localStorage.removeItem(SELECTED_NOTE_KEY);
+    }
+  }, []);
 
   const initialSnapshot = useMemo(() => {
     return selectedNoteId
       ? loadEditorSnapshotForNote(selectedNoteId)
       : createEmptySnapshot();
   }, [selectedNoteId]);
-
-  //TODO is this wrong??
-  // Save left width
-  // useEffect(() => {
-  //   localStorage.setItem("notesMenuWidth", leftWidth.toString());
-  // }, [leftWidth]);
-
-  // // Save right width
-  // useEffect(() => {
-  //   localStorage.setItem("mathLibraryWidth", rightWidth.toString());
-  // }, [rightWidth]);
 
   // Save theme preference
   useEffect(() => {
@@ -186,6 +118,12 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   useEffect(() => {
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(notes));
   }, [notes]);
+
+  useEffect(() => {
+    if (selectedNoteId && !notes.some(note => note.id === selectedNoteId)) {
+      setSelectedNoteId(null);
+    }
+  }, [selectedNoteId, notes, setSelectedNoteId]);
 
   // Save default author name
   useEffect(() => {
@@ -290,7 +228,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     } else {
       showToast({ type: "success", message: `Note deleted.` });
     }
-  }, [selectedNoteId, showToast]);
+  }, [selectedNoteId, setSelectedNoteId, showToast]);
 
   const updateNoteCells = useCallback((noteId: string, newCells: CellData[]) => {
     setNotes((prevNotes) =>
@@ -328,7 +266,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     };
     setNotes((prev) => [newNote, ...prev]);
     setSelectedNoteId(newId);
-  }, [authorName]);
+  }, [authorName, setSelectedNoteId]);
 
   const archiveNote = useCallback((id: string) => {
     let noteTitle: string | null = null;
@@ -355,7 +293,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     if (noteTitle) {
       showToast({ type: "success", message: `Note "${noteTitle}" archived.` });
     }
-  }, [selectedNoteId, showToast]);
+  }, [selectedNoteId, setSelectedNoteId, showToast]);
 
 
   const duplicateNote = useCallback((id: string) => {
@@ -384,7 +322,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
 
     setNotes(prevNotes => [duplicatedNote, ...prevNotes]);
     setSelectedNoteId(newId);
-  }, [notes]);
+  }, [notes, setSelectedNoteId]);
 
   const exportLatex = useCallback((id: string) => {
     // const note = notes.find(n => n.id === id);
@@ -406,16 +344,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({
         onOpenSettings={onOpenSettings}
         onOpenHotkeys={onOpenHotkeys}
       />
-      <ResizableProvider> 
+      <ResizableProvider>
         <div style={{ display: "flex", height: "calc(100vh - 50px)", width: "100%" }}> {/* TODO no height hardcoding of menu bar */}
           <ResizableSidebar
             side="left"
             title="Notes"
-            // storageKey="notes-menu"
-
-          // isCollapsed={isLeftCollapsed}
-          // onCollapseToggle={toggleLeftCollapse}
-          // onWidthChange={setLeftWidth}
           >
             <NotesMenu
               selectedNoteId={selectedNoteId}
