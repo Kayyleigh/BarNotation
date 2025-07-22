@@ -15,14 +15,7 @@ import { createRootWrapper } from "../../models/nodeFactories";
 import { createEditorState, type EditorState } from "../../logic/editor-state";
 import { EditorModeProvider } from "../../hooks/EditorModeProvider";
 import type { DragSource } from "../../hooks/DragContext";
-
-// type DropSource = {
-//   sourceType: "cell" | "library";
-//   cellId?: string;
-//   containerId: string;
-//   index: number;
-//   node: MathNode;
-// };
+import { MAX_ZOOM, MIN_ZOOM } from "../../constants/editorConstants";
 
 type DropTarget = {
   cellId: string;
@@ -149,13 +142,6 @@ const EditorPane: React.FC<EditorPaneProps> = ({
     addCellRef.current = addCell;
   }, [addCell]);
 
-  // const handleInsert = useCallback(
-  //   (type: "math" | "text") => {
-  //     addCellRef.current(type, index); // or undefined for end
-  //   },
-  //   [index] // 👈 not `addCell`, just `index`
-  // );
-
   const deleteCell = useCallback(
     (id: string) => {
       const newOrder = order.filter((cellId) => cellId !== id);
@@ -209,18 +195,11 @@ const EditorPane: React.FC<EditorPaneProps> = ({
   }, [defaultZoom]);
 
   const handleZoomChange = useCallback((value: number) => {
-    const clamped = Math.max(0.5, Math.min(2, value));
+    const clamped = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, value));
     setDefaultZoom(clamped);
     localStorage.setItem("defaultZoom", clamped.toString());
     resetAllZooms();
   }, [resetAllZooms]);
-
-  // const togglePreviewMode = useCallback(() => {
-  //   setIsPreviewMode((prev) => {
-  //     localStorage.setItem("previewMode", prev ? "off" : "on");
-  //     return !prev;
-  //   });
-  // }, []);
 
   const showAllLatex = useCallback(() => {
     setShowLatexMap((prev) =>
@@ -234,7 +213,7 @@ const EditorPane: React.FC<EditorPaneProps> = ({
     );
   }, []);
 
-  // 📥 Effects
+  // Effects
   useEffect(() => {
     if (!noteId) return;
     const loaded = loadNoteState(noteId);
@@ -271,7 +250,6 @@ const EditorPane: React.FC<EditorPaneProps> = ({
         />
         <NotationEditor
           noteId={noteId}
-          // isPreviewMode={isPreviewMode}
           resetZoomSignal={resetZoomSignal}
           defaultZoom={defaultZoom}
           order={order}

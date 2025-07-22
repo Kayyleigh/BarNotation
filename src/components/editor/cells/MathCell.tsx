@@ -1,3 +1,4 @@
+// components/editor/cells/MathCell.tsx
 import React, { useState } from "react";
 import MathEditor from "../../mathExpression/MathEditor";
 import type { EditorState } from "../../../logic/editor-state";
@@ -34,7 +35,7 @@ const MathCell: React.FC<MathCellProps> = ({
 
   const style: React.CSSProperties = {
     textAlign: isEditMode ? "left": "center",
-    zoom: isEditMode ? defaultZoom : 1,
+    // zoom: isEditMode ? defaultZoom : 1,
     boxShadow: isEditMode ? undefined : "none",
     border: isEditMode ? undefined : "none",
   };

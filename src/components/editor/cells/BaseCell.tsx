@@ -1,3 +1,4 @@
+// components/editor/cells/BaseCell.tsx
 import React, { useState } from "react";
 import clsx from "clsx";
 import Tooltip from "../../tooltips/Tooltip";

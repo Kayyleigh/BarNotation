@@ -1,3 +1,4 @@
+// components/common/SearchBar.tsx
 import React from "react";
 import styles from "./SearchBar.module.css";
 import Tooltip from "../tooltips/Tooltip";

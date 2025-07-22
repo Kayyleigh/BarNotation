@@ -27,6 +27,7 @@ const makeStyledSequence = (sequence: string, style: TextStyle): SpecialSequence
 
 export const stylingOptions: SpecialSequence[] = [
   makeStyledSequence("\\text ", { fontStyling: { fontStyle: "upright" , fontStyleAlias: "\\text" } }),
+  makeStyledSequence("\\textrm ", { fontStyling: { fontStyle: "upright" , fontStyleAlias: "\\textrm" } }),
   makeStyledSequence("\\mathrm ", { fontStyling: { fontStyle: "upright" , fontStyleAlias: "\\mathrm" } }),
   makeStyledSequence("\\operatorname ", { fontStyling: { fontStyle: "upright" , fontStyleAlias: "\\operatorname" } }),
   makeStyledSequence("\\mathbf ", { fontStyling: { fontStyle: "bold" , fontStyleAlias: "\\mathbf" } }),

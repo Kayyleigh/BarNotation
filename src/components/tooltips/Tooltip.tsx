@@ -1,3 +1,4 @@
+// components/tooltips/Tooltip.tsx
 import React, { useRef, useState } from "react";
 import "./tooltip.css";
 
@@ -51,4 +52,4 @@ const Tooltip: React.FC<TooltipProps> = ({ text, children, style }) => {
   );
 };
 
-export default Tooltip;
+export default React.memo(Tooltip); //DID NOT DO SHIT. AND maybe it's not a problem maybe profiler is buggy

@@ -146,17 +146,6 @@ const LibraryEntries: React.FC<LibraryEntriesProps> = ({
     [draggingNode, activeColl, setDropTarget]
   );
 
-  // const handleDropOnEntryAtIndex = useCallback(
-  //   (index: number) => (e: React.DragEvent) => {
-  //     e.preventDefault();
-  //     e.stopPropagation();
-  //     onDrop(e, index);
-  //     setDraggingNode(null);
-  //     setDropTarget(null);
-  //   },
-  //   [onDrop, setDraggingNode, setDropTarget]
-  // );
-
   const handleDragLeaveEntry = useCallback(() => {
     if (dropTarget?.cellId === "library") {
       setDropTarget(null);
@@ -198,13 +187,9 @@ const LibraryEntries: React.FC<LibraryEntriesProps> = ({
     () => filteredEntries.map((_, idx) => handleDragOverEntryAtIndex(idx)),
     [filteredEntries, handleDragOverEntryAtIndex]
   );
-  // const dropHandlers = useMemo(
-  //   () => filteredEntries.map((_, idx) => handleDropOnEntryAtIndex(idx)),
-  //   [filteredEntries, handleDropOnEntryAtIndex]
-  // );
 
   useEffect(() => {
-    if (filteredEntries.length > 0 || collection?.entries.length === 0) {
+    if (filteredEntries.length > 0 || collection?.entries.length === 0) { //TODO??
       onRendered?.();
     }
   }, [filteredEntries, collection?.entries.length, onRendered]);

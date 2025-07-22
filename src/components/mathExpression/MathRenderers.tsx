@@ -1096,10 +1096,11 @@ export function renderStyledNode(
   const { inheritedStyle, ancestorIds, setHoverPath, hoverPath } = baseProps;
   const isHovered = getIsHovered(node, hoverPath);
 
-  const combinedStyle: TextStyle = {
+  const combinedStyle: TextStyle = { //TODO memo this?
     ...inheritedStyle,
     ...node.style,
   };
+
   const styleClass = getStyleClass(combinedStyle);
 
   const handleEnter = () => handleMouseEnter([...ancestorIds], setHoverPath);
@@ -1109,6 +1110,7 @@ export function renderStyledNode(
     ...baseProps,
     node: childNode,
     containerId: childNode.id,
+    inheritedStyle: combinedStyle,
     index,
   });
 

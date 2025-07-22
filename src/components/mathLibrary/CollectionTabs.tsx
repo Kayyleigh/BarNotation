@@ -202,7 +202,7 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
   };
 
 
-  // ---- New: drag/drop for dropping entries into tabs (including inactive tabs) ----
+  // ---- Drag/drop for dropping entries into tabs (including inactive tabs) ----
 
   // Called when dragging over a tab — if draggingNode exists and is a library entry, allow drop on the tab
   const onTabDragOverEntry = useCallback(

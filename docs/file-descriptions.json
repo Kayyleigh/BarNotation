@@ -153,6 +153,18 @@
     "src/utils/treeUtils.ts": "Utilities for MathNodes",
     "src/utils/dateUtils.ts": "Creation/archived date formatting incl. \"just now\", \"yesterday\", etc",
     "src/utils/noteUtils.tsx": "Derives section header numbering for text node hierarchy",
-    "src/utils/stringUtils.ts": "Basic string manipulation"
+    "src/utils/stringUtils.ts": "Basic string manipulation",
+
+    "src/components/mathExpression/MathEditor.module.css": "Styling for the MathEditor",
+    "src/hooks/DragProvider.tsx": "Context provider for drag-and-drop state",
+    "src/hooks/EditorModeContext.ts": "Editor mode context (edit, preview, locked)",
+    "src/hooks/EditorModeProvider.tsx": "Context provider for editor mode, synced with localStorage",
+    "src/hooks/HoverContext.ts": "Hover state context for MathNode paths",
+    "src/hooks/HoverProvider.tsx": "Context provider for hover path state",
+    "src/hooks/toastContext.ts": "Context for triggering toast notifications",
+    "src/hooks/useDragContext.ts": "Hook to access drag-and-drop context",
+    "src/hooks/useEditorMode.ts": "Hook to access editor mode context",
+    "src/hooks/useHover.ts": "Hook to access hover path context",
+    "src/hooks/useToast.ts": "Hook to trigger toast notifications"
   }
   

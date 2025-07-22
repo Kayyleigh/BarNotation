@@ -1,4 +1,4 @@
-// components/NoteActionsDropdown.tsx
+// components/notesMenu/NoteActionsDropdown.tsx
 import React, { useLayoutEffect, useRef, useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import styles from "./NoteActionsDropdown.module.css";

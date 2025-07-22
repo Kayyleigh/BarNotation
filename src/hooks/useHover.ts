@@ -1,3 +1,4 @@
+// hooks/useHover.ts
 import { useContext } from "react";
 import { HoverContext } from "./HoverContext";
 

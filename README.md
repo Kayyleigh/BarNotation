@@ -433,7 +433,7 @@ The app is built in **React** with **TypeScript** and uses **Vite** as the build
       - [`DummyStartNodeRenderer.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/mathExpression/DummyStartNodeRenderer.tsx) — Dummy start node for drag/drop
       - [`LatexViewer.module.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/mathExpression/LatexViewer.module.css) — CSS for LaTeX viewer
       - [`LatexViewer.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/mathExpression/LatexViewer.tsx) — Displays LaTeX of a math expression
-      - [`MathEditor.module.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/mathExpression/MathEditor.module.css) — #TODO
+      - [`MathEditor.module.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/mathExpression/MathEditor.module.css) — Styling for the MathEditor
       - [`MathEditor.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/mathExpression/MathEditor.tsx) — Math expression editor
       - [`MathRenderer.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/mathExpression/MathRenderer.tsx) — Recursive expression renderer with drag
       - [`MathRenderers.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/mathExpression/MathRenderers.tsx) — Renderers for individual MathNode types
@@ -471,22 +471,22 @@ The app is built in **React** with **TypeScript** and uses **Vite** as the build
     - [`premadeMathCollections.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/constants/premadeMathCollections.ts) — Predefined library collections
   - [`hooks/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/) — React hooks for state and interaction
     - [`DragContext.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/DragContext.ts) — Global drag context
-    - [`DragProvider.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/DragProvider.tsx) — #TODO
+    - [`DragProvider.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/DragProvider.tsx) — Context provider for drag-and-drop state
     - [`EditorHistoryContext.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/EditorHistoryContext.tsx) — Context for editor history
     - [`EditorHistoryProvider.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/EditorHistoryProvider.tsx) — Provider for history context
-    - [`EditorModeContext.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/EditorModeContext.ts) — #TODO
-    - [`EditorModeProvider.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/EditorModeProvider.tsx) — #TODO
-    - [`HoverContext.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/HoverContext.ts) — #TODO
-    - [`HoverProvider.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/HoverProvider.tsx) — #TODO
-    - [`toastContext.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/toastContext.ts) — #TODO
+    - [`EditorModeContext.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/EditorModeContext.ts) — Editor mode context (edit, preview, locked)
+    - [`EditorModeProvider.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/EditorModeProvider.tsx) — Context provider for editor mode, synced with localStorage
+    - [`HoverContext.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/HoverContext.ts) — Hover state context for MathNode paths
+    - [`HoverProvider.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/HoverProvider.tsx) — Context provider for hover path state
+    - [`toastContext.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/toastContext.ts) — Context for triggering toast notifications
     - [`useCellDragState.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/useCellDragState.ts) — Hook for dragging cells (in notebook)
-    - [`useDragContext.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/useDragContext.ts) — #TODO
+    - [`useDragContext.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/useDragContext.ts) — Hook to access drag-and-drop context
     - [`useDragState.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/useDragState.ts) — Hook for dragging MathNodes (OUTDATED)
     - [`useEditorHistory.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/useEditorHistory.ts) — Hook for editor history (OUTDATED)
-    - [`useEditorMode.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/useEditorMode.ts) — #TODO
-    - [`useHover.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/useHover.ts) — #TODO
+    - [`useEditorMode.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/useEditorMode.ts) — Hook to access editor mode context
+    - [`useHover.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/useHover.ts) — Hook to access hover path context
     - [`useHoverState.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/useHoverState.ts) — Hover state for MathNodes
-    - [`useToast.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/useToast.ts) — #TODO
+    - [`useToast.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/useToast.ts) — Hook to trigger toast notifications
     - [`useZoom.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/useZoom.ts) — Zoom control hook for MathEditor
   - [`logic/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/logic/) — Core MathEditor logic (cursor, input, history)
     - [`cursor.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/logic/cursor.ts) — CursorPosition: container + index
@@ -538,7 +538,7 @@ The app is built in **React** with **TypeScript** and uses **Vite** as the build
 
 > [!CAUTION]
 > Since this app is under heavy development right now, this filetree is already outdated. I will not keep it up-to-date between larger working versions of the app, since files frequently get added, deleted, renamed or modified. 
-> _Filetree last updated: **July 10, 2025**._
+> _Filetree last updated: **July 22, 2025**._
 
 ---
 

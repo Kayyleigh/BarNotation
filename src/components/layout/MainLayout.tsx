@@ -14,6 +14,8 @@ import { createRootWrapper } from "../../models/nodeFactories";
 import { createEmptySnapshot, type EditorSnapshot } from "../../logic/global-history";
 import type { CellData, Note, NoteMetadata } from "../../models/noteTypes";
 import { useToast } from "../../hooks/useToast";
+import ResizableSidebar from "./ResizableSidebar";
+import { ResizableProvider } from "../../hooks/ResizableProvider";
 
 function loadEditorSnapshotForNote(noteId: string): EditorSnapshot {
   const rootNode = createRootWrapper();
@@ -31,6 +33,7 @@ function loadEditorSnapshotForNote(noteId: string): EditorSnapshot {
 }
 
 const LOCAL_STORAGE_KEY = "notes";
+const SELECTED_NOTE_KEY = "selectedNoteId";
 
 type MainLayoutProps = {
   onOpenSettings: () => void;
@@ -54,15 +57,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({
 }) => {
   const { showToast } = useToast();
 
-  const getStoredNumber = (key: string, fallback: number) => {
-    const raw = localStorage.getItem(key);
-    const parsed = raw ? parseInt(raw, 10) : NaN;
-    return isNaN(parsed) ? fallback : parsed;
-  };
-
-  const [leftWidth, setLeftWidth] = useState(() => getStoredNumber("notesMenuWidth", 200));
-  const [rightWidth, setRightWidth] = useState(() => getStoredNumber("mathLibraryWidth", 600));
-
   // Use lazy state initialization from localStorage
   const [notes, setNotes] = useState<Note[]>(() => {
     const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
@@ -76,23 +70,25 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     return [];
   });
 
-  const [selectedNoteId, setSelectedNoteId] = useState<string | null>(notes.length ? notes[0].id : null);
+  const [selectedNoteId, setSelectedNoteIdState] = useState<string | null>(() => {
+    const storedId = localStorage.getItem(SELECTED_NOTE_KEY);
+    return storedId ?? (notes.length ? notes[0].id : null);
+  });
+
+  const setSelectedNoteId = useCallback((id: string | null) => {
+    setSelectedNoteIdState(id);
+    if (id) {
+      localStorage.setItem(SELECTED_NOTE_KEY, id);
+    } else {
+      localStorage.removeItem(SELECTED_NOTE_KEY);
+    }
+  }, []);
 
   const initialSnapshot = useMemo(() => {
     return selectedNoteId
       ? loadEditorSnapshotForNote(selectedNoteId)
       : createEmptySnapshot();
   }, [selectedNoteId]);
-
-  // Save left width
-  useEffect(() => {
-    localStorage.setItem("notesMenuWidth", leftWidth.toString());
-  }, [leftWidth]);
-
-  // Save right width
-  useEffect(() => {
-    localStorage.setItem("mathLibraryWidth", rightWidth.toString());
-  }, [rightWidth]);
 
   // Save theme preference
   useEffect(() => {
@@ -123,6 +119,12 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(notes));
   }, [notes]);
 
+  useEffect(() => {
+    if (selectedNoteId && !notes.some(note => note.id === selectedNoteId)) {
+      setSelectedNoteId(null);
+    }
+  }, [selectedNoteId, notes, setSelectedNoteId]);
+
   // Save default author name
   useEffect(() => {
     localStorage.setItem("defaultAuthor", authorName);
@@ -149,11 +151,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({
         updatedAt: note.metadata.updatedAt,
       }));
   }, [notes]);
-  
+
 
   const prevArchivedIdsRef = React.useRef(new Set<string>());
   const prevNotesRef = React.useRef<Note[]>([]);
-  
+
   const archivedNotes = React.useMemo(() => {
     if (
       !prevNotesRef.current.length ||
@@ -175,7 +177,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     // no change, return previous filtered array
     return notes.filter(note => prevArchivedIdsRef.current.has(note.id));
   }, [notes]);
-  
+
   // Handler to update metadata (like title) of a note:
   const updateNoteMetadata = useCallback((noteId: string, newMetadata: Partial<NoteMetadata>) => {
     setNotes((prevNotes) =>
@@ -226,7 +228,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     } else {
       showToast({ type: "success", message: `Note deleted.` });
     }
-  }, [selectedNoteId, showToast]);
+  }, [selectedNoteId, setSelectedNoteId, showToast]);
 
   const updateNoteCells = useCallback((noteId: string, newCells: CellData[]) => {
     setNotes((prevNotes) =>
@@ -264,7 +266,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     };
     setNotes((prev) => [newNote, ...prev]);
     setSelectedNoteId(newId);
-  }, [authorName]);
+  }, [authorName, setSelectedNoteId]);
 
   const archiveNote = useCallback((id: string) => {
     let noteTitle: string | null = null;
@@ -291,7 +293,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     if (noteTitle) {
       showToast({ type: "success", message: `Note "${noteTitle}" archived.` });
     }
-  }, [selectedNoteId, showToast]);
+  }, [selectedNoteId, setSelectedNoteId, showToast]);
 
 
   const duplicateNote = useCallback((id: string) => {
@@ -320,7 +322,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
 
     setNotes(prevNotes => [duplicatedNote, ...prevNotes]);
     setSelectedNoteId(newId);
-  }, [notes]);
+  }, [notes, setSelectedNoteId]);
 
   const exportLatex = useCallback((id: string) => {
     // const note = notes.find(n => n.id === id);
@@ -342,42 +344,43 @@ const MainLayout: React.FC<MainLayoutProps> = ({
         onOpenSettings={onOpenSettings}
         onOpenHotkeys={onOpenHotkeys}
       />
-      <div style={{ display: "flex", height: "calc(100vh - 50px)", width: "100%" }}>
-        <div style={{ flex: "0 0 auto", width: `${leftWidth}px` }}>
-          <NotesMenu
-            width={leftWidth}
-            onWidthChange={setLeftWidth}
-            selectedNoteId={selectedNoteId}
-            onSelectNote={setSelectedNoteId}
-            noteSummaries={menuNotes}
-            onCreateNote={createNewNote}
-            onDeleteNote={handleDeleteNote}
-            onArchiveNote={archiveNote}
-            onUnarchiveNote={handleUnarchiveNote}
-            onDuplicateNote={duplicateNote}
-            onExportLatex={exportLatex}
-            archivedNotes={archivedNotes}
-          />
+      <ResizableProvider>
+        <div style={{ display: "flex", height: "calc(100vh - 50px)", width: "100%" }}> {/* TODO no height hardcoding of menu bar */}
+          <ResizableSidebar
+            side="left"
+            title="Notes"
+          >
+            <NotesMenu
+              selectedNoteId={selectedNoteId}
+              onSelectNote={setSelectedNoteId}
+              noteSummaries={menuNotes}
+              onCreateNote={createNewNote}
+              onDeleteNote={handleDeleteNote}
+              onArchiveNote={archiveNote}
+              onUnarchiveNote={handleUnarchiveNote}
+              onDuplicateNote={duplicateNote}
+              onExportLatex={exportLatex}
+              archivedNotes={archivedNotes}
+            />
+          </ResizableSidebar>
+          <div style={{ flex: 1, display: "flex", minWidth: 0 }}>
+            {/* {selectedNoteId && selectedNote && initialSnapshot ? ( */}
+            <EditorHistoryProvider initialSnapshot={initialSnapshot}>
+              <DragProvider>
+                <EditorWorkspace
+                  noteId={selectedNoteId}
+                  noteMetadata={selectedNoteMetadata}
+                  setNoteMetadata={updateNoteMetadata}
+                  noteCells={selectedNoteCells}
+                  setNoteCells={updateNoteCells}
+                // editorStates={editorStates}
+                // setEditorStates={setEditorStates}
+                />
+              </DragProvider>
+            </EditorHistoryProvider>
+          </div>
         </div>
-        <div style={{ flexGrow: 1, display: "flex", minWidth: 0 }}>
-          {/* {selectedNoteId && selectedNote && initialSnapshot ? ( */}
-          <EditorHistoryProvider initialSnapshot={initialSnapshot}>
-            <DragProvider>
-              <EditorWorkspace
-                noteId={selectedNoteId}
-                rightWidth={rightWidth}
-                setRightWidth={setRightWidth}
-                noteMetadata={selectedNoteMetadata}
-                setNoteMetadata={updateNoteMetadata}
-                noteCells={selectedNoteCells}
-                setNoteCells={updateNoteCells}
-              // editorStates={editorStates}
-              // setEditorStates={setEditorStates}
-              />
-            </DragProvider>
-          </EditorHistoryProvider>
-        </div>
-      </div>
+      </ResizableProvider>
     </div>
   );
 };

@@ -1,3 +1,4 @@
+// components/editor/NoteMetadataSection.tsx
 import React, { useEffect, useRef } from "react";
 import styles from "./NoteMetadataSection.module.css";
 import clsx from "clsx";

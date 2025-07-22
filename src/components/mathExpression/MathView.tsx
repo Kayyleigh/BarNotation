@@ -1,6 +1,5 @@
-// components/MathView.tsx
+// components/mathExpression/MathView.tsx
 import React from "react";
-
 import type { MathNode } from "../../models/types";
 import { MathRenderer } from "./MathRenderer";
 import { dummyCursorPosition } from "../../logic/cursor";

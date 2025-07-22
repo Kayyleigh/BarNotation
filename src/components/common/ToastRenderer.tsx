@@ -1,3 +1,4 @@
+// components/common/ToastRenderer.tsx
 import React from "react";
 import styles from "./toast.module.css";
 import type { Toast } from "../../hooks/toastContext";
