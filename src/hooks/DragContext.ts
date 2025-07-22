@@ -1,3 +1,4 @@
+// hooks/DragContext.ts
 import { createContext } from "react";
 import type { MathNode } from "../models/types";
 
