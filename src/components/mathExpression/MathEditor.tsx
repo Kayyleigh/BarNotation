@@ -206,6 +206,8 @@ const MathEditor: React.FC<MathEditorProps> = ({
             ancestorIds={emptyAncestorIds}
             onDropNode={handleDropNode}
             showPlaceholder={false}
+            editorState={editorState}
+            updateEditorState={updateEditorState}
           />
         </div>
       </div>

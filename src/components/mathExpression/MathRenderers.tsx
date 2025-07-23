@@ -579,6 +579,8 @@ import { getCloseSymbol, getOpenSymbol, isClosingBracket, isOpeningBracket } fro
 import { getIsHovered, handleMouseEnter, handleMouseLeave } from "../../utils/mathHoverUtils";
 import DummyStartNodeRenderer from "./DummyStartNodeRenderer";
 import { CommandInputNodeComponent } from "./CommandInputNodeComponent";
+import { specialSequences } from "../../models/specialSequences";
+import { deleteNodeById, insertNodeAtIndex } from "../../logic/node-manipulation";
 
 // Helper to get CSS classes for font styles
 function getStyleClass(style: TextStyle) {
@@ -615,6 +617,8 @@ export function renderContainerChildren(
     onDropNode,
     ancestorIds,
     showPlaceholder,
+    editorState,
+    updateEditorState
   } = baseProps;
 
   const nodes: React.ReactNode[] = [];
@@ -675,6 +679,8 @@ export function renderContainerChildren(
             onDropNode={onDropNode}
             ancestorIds={ancestorIds}
             showPlaceholder={showPlaceholder}
+            editorState={editorState}
+            updateEditorState={updateEditorState}
           />
         </span>
       );
@@ -774,8 +780,14 @@ export function renderCommandInputNode(
       node={node}
       isSelected={isSelected}
       onSelectSuggestion={(sequence) => {
-        // baseProps.onCommandSuggestionSelected?.(sequence);
-        console.log(sequence)
+        const match = specialSequences.find(seq => seq.sequence === sequence);
+        if (!match) return;
+
+        const transformedNode = match.createNode();
+        const stateWithoutCmd = deleteNodeById(baseProps.editorState, node.id);
+        const stateWithTargetNode = insertNodeAtIndex(stateWithoutCmd, baseProps.containerId, baseProps.index, transformedNode);
+
+        baseProps.updateEditorState(stateWithTargetNode);
       }}
       baseProps={baseProps}
     />
@@ -1045,6 +1057,8 @@ export function renderAccentedNode(
     inheritedStyle: baseProps.inheritedStyle,
     onDropNode: baseProps.onDropNode,
     showPlaceholder: baseProps.showPlaceholder,
+    editorState: baseProps.editorState,
+    updateEditorState: baseProps.updateEditorState
   };
 
   const updatedAncestors = [node.id, ...(baseProps.ancestorIds ?? [])];
