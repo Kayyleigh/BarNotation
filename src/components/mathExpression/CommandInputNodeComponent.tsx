@@ -57,12 +57,12 @@ export function CommandInputNodeComponent({
       return;
     }
 
+    const lowerInput = inputString.toLowerCase();
     const matches = specialSequences
       .map(seq => seq.sequence)
-      .filter(seq => seq.startsWith(inputString));
+      .filter(seq => seq.toLowerCase().startsWith(lowerInput));
 
     setMatching(matches);
-    console.log("there are", matches.length, "matches!")
     setHighlight(0);
     setShowDropdown(matches.length > 0);
   }, [inputString, isSelected]);
