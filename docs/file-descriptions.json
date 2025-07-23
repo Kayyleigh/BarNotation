@@ -169,6 +169,15 @@
 
     "src/hooks/latexViewRefresh/LatexRefreshContext.ts": "Context for triggering LaTeX refresh",
     "src/hooks/latexViewRefresh/LatexRefreshProvider.tsx": "Context provider for LaTeX refresh",
-    "src/hooks/latexViewRefresh/useLatexRefresh.ts": "Hook to trigger LaTeX refresh"
+    "src/hooks/latexViewRefresh/useLatexRefresh.ts": "Hook to trigger LaTeX refresh",
+
+    "src/components/mathExpression/CommandInputNodeComponent.module.css": "Styling for the command input component",
+    "src/components/mathExpression/CommandInputNodeComponent.tsx": "Command input component with autocomplete dropdown",
+    "src/constants/editorConstants.ts": "Constants for editor (widths, standard zoom levels, etc.)",
+    "src/hooks/ResizableContext.tsx": "Context for resizing side panels",
+    "src/hooks/ResizableProvider.tsx": "Context provider for resizing side panels",
+    "src/hooks/useResizablePanels.ts": "Hook to trigger side panel resizing",
+    "src/hooks/latexViewRefresh/": "hook, context and provider for latex view refresh trigger",
+    "src/models/commandRegistry.ts": "New registry for commands (Probably redundant)"
   }
   
