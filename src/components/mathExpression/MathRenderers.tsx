@@ -41,7 +41,7 @@
 //   // onUpdateDropTarget: (targetId: string, targetIndex: number) => void;
 //   // onHandleDrop: () => void;
 //   // onClearDrag: () => void;
-  
+
 //   parentContainerId?: string;
 //   index?: number;
 //   inheritedStyle?: TextStyle;
@@ -191,7 +191,7 @@
 //   const { index, parentContainerId, onCursorChange, inheritedStyle } = props;
 
 //   const isSelected = props.cursor.containerId === node.id; //TODO: remove? I don't think I am using this anymore
-  
+
 //   const className = clsx(
 //     "math-node",
 //     "type-text",
@@ -578,6 +578,7 @@ import { MathRenderer, type BaseRenderProps, type MathRendererProps } from "./Ma
 import { getCloseSymbol, getOpenSymbol, isClosingBracket, isOpeningBracket } from "../../utils/bracketUtils";
 import { getIsHovered, handleMouseEnter, handleMouseLeave } from "../../utils/mathHoverUtils";
 import DummyStartNodeRenderer from "./DummyStartNodeRenderer";
+import { CommandInputNodeComponent } from "./CommandInputNodeComponent";
 
 // Helper to get CSS classes for font styles
 function getStyleClass(style: TextStyle) {
@@ -675,7 +676,7 @@ export function renderContainerChildren(
             ancestorIds={ancestorIds}
             showPlaceholder={showPlaceholder}
           />
-        </span>        
+        </span>
       );
     }
   }
@@ -732,33 +733,52 @@ export function renderMultiDigitNode(
   );
 }
 
-// 3. Command Input Node
+// // 3. Command Input Node
+// export function renderCommandInputNode(
+//   node: CommandInputNode,
+//   baseProps: BaseRenderProps & MathRendererProps
+// ): React.ReactNode {
+//   const styleClass = getStyleClass(baseProps.inheritedStyle);
+//   return (
+//     <span
+//       data-nodeid={node.id}
+//       className={clsx("math-node", "type-command-input", styleClass, { hovered: getIsHovered(node, baseProps.hoverPath) })}
+//       style={getInlineStyle(baseProps.inheritedStyle)}
+//       onMouseEnter={() => handleMouseEnter([...baseProps.ancestorIds], baseProps.setHoverPath)}
+//       onMouseLeave={(e) =>
+//         handleMouseLeave(e, baseProps.ancestorIds, baseProps.setHoverPath)
+//       }
+//     >
+//       {renderContainerChildren(node.children, {
+//         ...baseProps,
+//         containerId: node.id,
+//         inheritedStyle: { 
+//           fontStyling: { 
+//             fontStyle: 'command', 
+//             fontStyleAlias: "" 
+//           } 
+//         }
+//       })}
+//     </span>
+//   );
+// }
+
 export function renderCommandInputNode(
   node: CommandInputNode,
   baseProps: BaseRenderProps & MathRendererProps
 ): React.ReactNode {
-  const styleClass = getStyleClass(baseProps.inheritedStyle);
+  const isSelected = baseProps.cursor?.containerId === node.id;
+
   return (
-    <span
-      data-nodeid={node.id}
-      className={clsx("math-node", "type-command-input", styleClass, { hovered: getIsHovered(node, baseProps.hoverPath) })}
-      style={getInlineStyle(baseProps.inheritedStyle)}
-      onMouseEnter={() => handleMouseEnter([...baseProps.ancestorIds], baseProps.setHoverPath)}
-      onMouseLeave={(e) =>
-        handleMouseLeave(e, baseProps.ancestorIds, baseProps.setHoverPath)
-      }
-    >
-      {renderContainerChildren(node.children, {
-        ...baseProps,
-        containerId: node.id,
-        inheritedStyle: { 
-          fontStyling: { 
-            fontStyle: 'command', 
-            fontStyleAlias: "" 
-          } 
-        }
-      })}
-    </span>
+    <CommandInputNodeComponent
+      node={node}
+      isSelected={isSelected}
+      onSelectSuggestion={(sequence) => {
+        // baseProps.onCommandSuggestionSelected?.(sequence);
+        console.log(sequence)
+      }}
+      baseProps={baseProps}
+    />
   );
 }
 
@@ -776,9 +796,9 @@ export function renderInlineContainerNode(
     <span
       data-nodeid={node.id}
       className={clsx(
-        "math-node", 
-        "type-inline-container", 
-        styleClass, 
+        "math-node",
+        "type-inline-container",
+        styleClass,
         { hovered: getIsHovered(node, baseProps.hoverPath) }
       )}
       style={getInlineStyle(baseProps.inheritedStyle)}
@@ -1155,8 +1175,8 @@ export function renderRootWrapperNode(
     <span
       data-nodeid={node.id}
       className={clsx(
-        "math-node", 
-        "type-root-wrapper", 
+        "math-node",
+        "type-root-wrapper",
         styleClass,
         { hovered: isHovered }
       )}
