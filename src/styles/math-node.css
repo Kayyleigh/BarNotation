@@ -120,6 +120,10 @@
     font-family: 'Courier New', Courier, monospace;
   }
 
+  .math-node .math-style-multidigit {
+    color: var(--math-color-multi-digit-text);
+  }
+
   .placeholder-square {
     opacity: 0.2;
     pointer-events: none; /* optional: prevents interaction */

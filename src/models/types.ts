@@ -56,7 +56,7 @@ export interface BaseNode {
 }
 
 export interface FontStyling {
-  fontStyle: "normal" | "italic" | "upright" | "command" | "bold" | "calligraphic" | "blackboard";
+  fontStyle: "normal" | "italic" | "upright" | "command" | "multidigit" | "bold" | "calligraphic" | "blackboard";
   fontStyleAlias: string;
 }
 
