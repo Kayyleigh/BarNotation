@@ -94,7 +94,7 @@ const MathEditor: React.FC<MathEditorProps> = ({
 
   const onCursorChange = useCallback(
     (cursor: CursorPosition) => {
-      console.log(`In onCursorChange`)
+      console.log(`In onCursorChange with`, cursor)
       if (cursor === editorState.cursor) return;
       updateEditorState(setCursor(editorState, cursor));
     },
