@@ -14,7 +14,6 @@
     "src/components/common/SortDropdown.module.css": "Styling for the sort dropdown",
     "src/components/common/SortDropdown.tsx": "Dropdown component for sorting lists",
     "src/components/common/toast.module.css": "Styling for toasts",
-    "src/components/common/ToastProvider.tsx": "React provider for toasts",
     "src/components/common/ToastRenderer.tsx": "Component for toasts",
 
     "src/components/editor/": "Editor and Notation-related components",
@@ -165,6 +164,7 @@
     "src/hooks/editorMode/useEditorMode.ts": "Hook to access editor mode context",
     "src/hooks/mathHover/useHover.ts": "Hook to access hover path context",
     "src/hooks/toast/useToast.ts": "Hook to trigger toast notifications",
+    "src/hooks/toast/ToastProvider.tsx": "React provider for toasts",
 
     "src/hooks/latexViewRefresh/LatexRefreshContext.ts": "Context for triggering LaTeX refresh",
     "src/hooks/latexViewRefresh/LatexRefreshProvider.tsx": "Context provider for LaTeX refresh",

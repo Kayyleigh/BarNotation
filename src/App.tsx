@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useMemo } from "react";
 import './styles/themes.css';
 import MainLayout from "./components/layout/MainLayout";
-import { ToastProvider } from "./components/common/ToastProvider";
+import { ToastProvider } from "./hooks/toast/ToastProvider";
 import ModalsLayer from "./components/layout/ModalsLayer";
 
 const App: React.FC = () => {
