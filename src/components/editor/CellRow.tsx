@@ -111,7 +111,7 @@ const CellRow: React.FC<CellRowProps> = ({
                 text={showLatexMap[cell.id] ? "Hide LaTeX output" : "Show LaTeX output"}
               >
                 <button
-                  className={clsx("button", "preview-button")}
+                  className={styles.cellToolbarButton}
                   onClick={() => toggleShowLatex(cell.id)}
                   type="button"
                 >
