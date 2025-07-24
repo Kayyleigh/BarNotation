@@ -1,6 +1,6 @@
 // components/mathLibrary/LibraryEntries.tsx
 import React, { useMemo, useCallback, useEffect } from "react";
-import { useDragContext } from "../../hooks/useDragContext";
+import { useDragContext } from "../../hooks/mathDrag/useDragContext";
 import type { LibraryCollection } from "../../models/libraryTypes";
 import styles from "./MathLibrary.module.css";
 import type { SortOption } from "./MathLibrary";
@@ -65,8 +65,6 @@ const LibraryEntries: React.FC<LibraryEntriesProps> = ({
   onDrop,
   onRendered,
 }) => {
-  console.warn(`Rendering LibraryEntries`);
-
   const { draggingNode, setDraggingNode, dropTarget, setDropTarget } = useDragContext();
 
   // Find the active collection

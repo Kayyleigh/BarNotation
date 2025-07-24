@@ -7,15 +7,15 @@ import "../../styles/themes.css";
 import "../../styles/styles.css";
 import "../../styles/math-node.css";
 import "../../styles/cells.css";
-import { DragProvider } from "../../hooks/DragProvider";
-import { EditorHistoryProvider } from "../../hooks/EditorHistoryProvider";
+import { DragProvider } from "../../hooks/mathDrag/DragProvider";
+import { EditorHistoryProvider } from "../../hooks/editorHistory/EditorHistoryProvider";
 import { createInitialCursor } from "../../logic/cursor";
 import { createRootWrapper } from "../../models/nodeFactories";
 import { createEmptySnapshot, type EditorSnapshot } from "../../logic/global-history";
 import type { CellData, Note, NoteMetadata } from "../../models/noteTypes";
-import { useToast } from "../../hooks/useToast";
+import { useToast } from "../../hooks/toast/useToast";
 import ResizableSidebar from "./ResizableSidebar";
-import { ResizableProvider } from "../../hooks/ResizableProvider";
+import { ResizableProvider } from "../../hooks/resizablePanels/ResizableProvider";
 
 function loadEditorSnapshotForNote(noteId: string): EditorSnapshot {
   const rootNode = createRootWrapper();

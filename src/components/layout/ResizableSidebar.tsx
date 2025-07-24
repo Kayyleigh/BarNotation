@@ -4,8 +4,8 @@ import styles from "./ResizableSidebar.module.css";
 import Tooltip from "../tooltips/Tooltip";
 import CollapseIcon from "../icons/CollapseIcon";
 import { PANEL_EDGE_WIDTH } from "../../constants/editorConstants";
-import type { PanelSide } from "../../hooks/useResizablePanels";
-import { useResizablePanels } from "../../hooks/ResizableContext";
+import type { PanelSide } from "../../hooks/resizablePanels/useResizablePanels";
+import { useResizablePanels } from "../../hooks/resizablePanels/ResizableContext";
 
 interface ResizableSidebarProps {
   side: PanelSide; // "left" | "right"

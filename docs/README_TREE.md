@@ -41,6 +41,8 @@
       - [`ResizableSidebar.module.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/layout/ResizableSidebar.module.css) — CSS for resizable sidebar
       - [`ResizableSidebar.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/layout/ResizableSidebar.tsx) — Resizable sidebar component
     - [`mathExpression/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/mathExpression/) — Math expression rendering/editing
+      - [`CommandInputNodeComponent.module.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/mathExpression/CommandInputNodeComponent.module.css) — Styling for the command input component
+      - [`CommandInputNodeComponent.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/mathExpression/CommandInputNodeComponent.tsx) — Command input component with autocomplete dropdown
       - [`DummyStartNodeRenderer.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/mathExpression/DummyStartNodeRenderer.tsx) — Dummy start node for drag/drop
       - [`LatexViewer.module.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/mathExpression/LatexViewer.module.css) — CSS for LaTeX viewer
       - [`LatexViewer.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/mathExpression/LatexViewer.tsx) — Displays LaTeX of a math expression
@@ -79,26 +81,40 @@
       - [`tooltip.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/tooltips/tooltip.css) — CSS for tooltips
       - [`Tooltip.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/tooltips/Tooltip.tsx) — Tooltip wrapper for hover text
   - [`constants/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/constants/) — Default values used in the app
+    - [`editorConstants.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/constants/editorConstants.ts) — Constants for editor (widths, standard zoom levels, etc.)
     - [`premadeMathCollections.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/constants/premadeMathCollections.ts) — Predefined library collections
   - [`hooks/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/) — React hooks for state and interaction
-    - [`DragContext.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/DragContext.ts) — Global drag context
-    - [`DragProvider.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/DragProvider.tsx) — Context provider for drag-and-drop state
-    - [`EditorHistoryContext.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/EditorHistoryContext.tsx) — Context for editor history
-    - [`EditorHistoryProvider.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/EditorHistoryProvider.tsx) — Provider for history context
-    - [`EditorModeContext.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/EditorModeContext.ts) — Editor mode context (edit, preview, locked)
-    - [`EditorModeProvider.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/EditorModeProvider.tsx) — Context provider for editor mode, synced with localStorage
-    - [`HoverContext.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/HoverContext.ts) — Hover state context for MathNode paths
-    - [`HoverProvider.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/HoverProvider.tsx) — Context provider for hover path state
-    - [`toastContext.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/toastContext.ts) — Context for triggering toast notifications
-    - [`useCellDragState.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/useCellDragState.ts) — Hook for dragging cells (in notebook)
-    - [`useDragContext.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/useDragContext.ts) — Hook to access drag-and-drop context
-    - [`useDragState.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/useDragState.ts) — Hook for dragging MathNodes (OUTDATED)
-    - [`useEditorHistory.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/useEditorHistory.ts) — Hook for editor history (OUTDATED)
-    - [`useEditorMode.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/useEditorMode.ts) — Hook to access editor mode context
-    - [`useHover.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/useHover.ts) — Hook to access hover path context
-    - [`useHoverState.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/useHoverState.ts) — Hover state for MathNodes
-    - [`useToast.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/useToast.ts) — Hook to trigger toast notifications
-    - [`useZoom.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/useZoom.ts) — Zoom control hook for MathEditor
+    - [`cellDrag/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/cellDrag/) — hook for cell dragging
+      - [`useCellDragState.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/cellDrag/useCellDragState.ts) — Hook for dragging cells (in notebook)
+    - [`editorHistory/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/editorHistory/) — hook, context and provider for editor history
+      - [`EditorHistoryContext.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/editorHistory/EditorHistoryContext.tsx) — Context for editor history
+      - [`EditorHistoryProvider.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/editorHistory/EditorHistoryProvider.tsx) — Provider for history context
+      - [`useEditorHistory.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/editorHistory/useEditorHistory.ts) — Hook for editor history
+    - [`editorMode/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/editorMode/) — hook, context and provider for editor mode
+      - [`EditorModeContext.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/editorMode/EditorModeContext.ts) — Editor mode context (edit, preview, locked)
+      - [`EditorModeProvider.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/editorMode/EditorModeProvider.tsx) — Context provider for editor mode, synced with localStorage
+      - [`useEditorMode.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/editorMode/useEditorMode.ts) — Hook to access editor mode context
+    - [`latexViewRefresh/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/latexViewRefresh/) — hook, context and provider for latex view refresh
+      - [`LatexRefreshContext.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/latexViewRefresh/LatexRefreshContext.ts) — Context for triggering LaTeX refresh
+      - [`LatexRefreshProvider.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/latexViewRefresh/LatexRefreshProvider.tsx) — Context provider for LaTeX refresh
+      - [`useLatexRefresh.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/latexViewRefresh/useLatexRefresh.ts) — Hook to trigger LaTeX refresh
+    - [`mathDrag/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/mathDrag/) — hook, context and provider for math drag-and-drop
+      - [`DragContext.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/mathDrag/DragContext.ts) — Global drag context
+      - [`DragProvider.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/mathDrag/DragProvider.tsx) — Context provider for drag-and-drop state
+      - [`useDragContext.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/mathDrag/useDragContext.ts) — Hook to access drag-and-drop context
+    - [`mathHover/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/mathHover/) — hook, context and provider for math hover
+      - [`HoverContext.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/mathHover/HoverContext.ts) — Hover state context for MathNode paths
+      - [`HoverProvider.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/mathHover/HoverProvider.tsx) — Context provider for hover path state
+      - [`useHover.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/mathHover/useHover.ts) — Hook to access hover path context
+    - [`mathZoom/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/mathZoom/) — hook for math zoom
+      - [`useZoom.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/mathZoom/useZoom.ts) — Zoom control hook for MathEditor
+    - [`resizablePanels/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/resizablePanels/) — hook, context and provider for side panel resizing
+      - [`ResizableContext.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/resizablePanels/ResizableContext.tsx) — Context for resizing side panels
+      - [`ResizableProvider.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/resizablePanels/ResizableProvider.tsx) — Context provider for resizing side panels
+      - [`useResizablePanels.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/resizablePanels/useResizablePanels.ts) — Hook to trigger side panel resizing
+    - [`toast/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/toast/) — hook and context for toast popup messages
+      - [`toastContext.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/toast/toastContext.ts) — Context for triggering toast notifications
+      - [`useToast.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/toast/useToast.ts) — Hook to trigger toast notifications
   - [`logic/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/logic/) — Core MathEditor logic (cursor, input, history)
     - [`cursor.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/logic/cursor.ts) — CursorPosition: container + index
     - [`deletion.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/logic/deletion.ts) — Backspace handler
@@ -111,6 +127,7 @@
     - [`node-manipulation.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/logic/node-manipulation.ts) — MathNode insert/delete logic
     - [`transformations.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/logic/transformations.ts) — MathNode transformations (e.g. wrap in fraction)
   - [`models/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/models/) — Types and models for nodes, notes, etc.
+    - [`commandRegistry.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/models/commandRegistry.ts) — New registry for commands (Probably redundant)
     - [`latexParser.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/models/latexParser.ts) — Parses LaTeX into MathNode tree
     - [`libraryTypes.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/models/libraryTypes.ts) — LibraryEntry interface (metadata, LaTeX, etc.)
     - [`nodeFactories.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/models/nodeFactories.ts) — Factories for MathNode types

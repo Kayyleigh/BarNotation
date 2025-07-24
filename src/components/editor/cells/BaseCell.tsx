@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import clsx from "clsx";
 import Tooltip from "../../tooltips/Tooltip";
 import styles from "./cell.module.css";
-import { useEditorMode } from "../../../hooks/useEditorMode";
+import { useEditorMode } from "../../../hooks/editorMode/useEditorMode";
 
 export type BaseCellProps = {
   typeLabel: string;

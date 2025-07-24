@@ -2,9 +2,9 @@
 import React from "react";
 import clsx from "clsx";
 import type { CursorPosition } from "../../logic/cursor";
-import { useDragContext } from "../../hooks/useDragContext";
+import { useDragContext } from "../../hooks/mathDrag/useDragContext";
 import type { DropTarget } from "../layout/EditorWorkspace";
-import type { DragSource } from "../../hooks/DragContext";
+import type { DragSource } from "../../hooks/mathDrag/DragContext";
 import { handleMouseEnter, handleMouseLeave } from "../../utils/mathHoverUtils";
 
 type Props = {

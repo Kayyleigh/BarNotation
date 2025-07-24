@@ -4,7 +4,7 @@ import EditorPane from "../editor/EditorPane";
 import MathLibrary from "../mathLibrary/MathLibrary";
 import { deleteNodeById, insertNodeAtIndex } from "../../logic/node-manipulation";
 import { cloneTreeWithNewIds, isDescendantOrSelf } from "../../utils/treeUtils";
-import { useEditorHistory } from "../../hooks/EditorHistoryContext";
+import { useEditorHistory } from "../../hooks/editorHistory/EditorHistoryContext";
 import { nodeToLatex } from "../../models/nodeToLatex";
 import type { CellData, NoteMetadata } from "../../models/noteTypes";
 import styles from "./EditorWorkspace.module.css";

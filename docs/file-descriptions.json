@@ -94,16 +94,15 @@
     "src/constants/premadeMathCollections.ts": "Predefined library collections",
 
     "src/hooks/": "React hooks for state and interaction",
-    "src/hooks/DragContext.ts": "Global drag context",
-    "src/hooks/useDragContext.tsx": "Global drag context consumer",
-    "src/hooks/DragProvider.ts": "Provider for global drag state",
-    "src/hooks/EditorHistoryContext.tsx": "Context for editor history",
-    "src/hooks/EditorHistoryProvider.tsx": "Provider for history context",
-    "src/hooks/useCellDragState.ts": "Hook for dragging cells (in notebook)",
-    "src/hooks/useDragState.ts": "Hook for dragging MathNodes (OUTDATED)",
-    "src/hooks/useEditorHistory.ts": "Hook for editor history (OUTDATED)",
-    "src/hooks/useHoverState.ts": "Hover state for MathNodes",
-    "src/hooks/useZoom.ts": "Zoom control hook for MathEditor",
+    "src/hooks/mathDrag/DragContext.ts": "Global drag context",
+    "src/hooks/mathDrag/useDragContext.tsx": "Global drag context consumer",
+    "src/hooks/mathDrag/DragProvider.ts": "Provider for global drag state",
+    "src/hooks/editorHistory/EditorHistoryContext.tsx": "Context for editor history",
+    "src/hooks/editorHistory/EditorHistoryProvider.tsx": "Provider for history context",
+    "src/hooks/cellDrag/useCellDragState.ts": "Hook for dragging cells (in notebook)",
+    "src/hooks/editorHistory/useEditorHistory.ts": "Hook for editor history",
+    "src/hooks/mathHover/useHoverState.ts": "Hover state for MathNodes",
+    "src/hooks/mathZoom/useZoom.ts": "Zoom control hook for MathEditor",
 
     "src/logic/": "Core MathEditor logic (cursor, input, history)",
     "src/logic/cursor.ts": "CursorPosition: container + index",
@@ -156,15 +155,40 @@
     "src/utils/stringUtils.ts": "Basic string manipulation",
 
     "src/components/mathExpression/MathEditor.module.css": "Styling for the MathEditor",
-    "src/hooks/DragProvider.tsx": "Context provider for drag-and-drop state",
-    "src/hooks/EditorModeContext.ts": "Editor mode context (edit, preview, locked)",
-    "src/hooks/EditorModeProvider.tsx": "Context provider for editor mode, synced with localStorage",
-    "src/hooks/HoverContext.ts": "Hover state context for MathNode paths",
-    "src/hooks/HoverProvider.tsx": "Context provider for hover path state",
-    "src/hooks/toastContext.ts": "Context for triggering toast notifications",
-    "src/hooks/useDragContext.ts": "Hook to access drag-and-drop context",
-    "src/hooks/useEditorMode.ts": "Hook to access editor mode context",
-    "src/hooks/useHover.ts": "Hook to access hover path context",
-    "src/hooks/useToast.ts": "Hook to trigger toast notifications"
+    "src/hooks/mathDrag/DragProvider.tsx": "Context provider for drag-and-drop state",
+    "src/hooks/editorMode/EditorModeContext.ts": "Editor mode context (edit, preview, locked)",
+    "src/hooks/editorMode/EditorModeProvider.tsx": "Context provider for editor mode, synced with localStorage",
+    "src/hooks/mathHover/HoverContext.ts": "Hover state context for MathNode paths",
+    "src/hooks/mathHover/HoverProvider.tsx": "Context provider for hover path state",
+    "src/hooks/toast/toastContext.ts": "Context for triggering toast notifications",
+    "src/hooks/mathDrag/useDragContext.ts": "Hook to access drag-and-drop context",
+    "src/hooks/editorMode/useEditorMode.ts": "Hook to access editor mode context",
+    "src/hooks/mathHover/useHover.ts": "Hook to access hover path context",
+    "src/hooks/toast/useToast.ts": "Hook to trigger toast notifications",
+
+    "src/hooks/latexViewRefresh/LatexRefreshContext.ts": "Context for triggering LaTeX refresh",
+    "src/hooks/latexViewRefresh/LatexRefreshProvider.tsx": "Context provider for LaTeX refresh",
+    "src/hooks/latexViewRefresh/useLatexRefresh.ts": "Hook to trigger LaTeX refresh",
+
+    "src/components/mathExpression/CommandInputNodeComponent.module.css": "Styling for the command input component",
+    "src/components/mathExpression/CommandInputNodeComponent.tsx": "Command input component with autocomplete dropdown",
+    "src/constants/editorConstants.ts": "Constants for editor (widths, standard zoom levels, etc.)",
+    "src/hooks/resizablePanels/ResizableContext.tsx": "Context for resizing side panels",
+    "src/hooks/resizablePanels/ResizableProvider.tsx": "Context provider for resizing side panels",
+    "src/hooks/resizablePanels/useResizablePanels.ts": "Hook to trigger side panel resizing",
+    
+    "src/models/commandRegistry.ts": "New registry for commands (Probably redundant)",
+
+    "src/hooks/cellDrag/": "hook for cell dragging",
+    "src/hooks/editorHistory/": "hook, context and provider for editor history",
+    "src/hooks/editorMode/": "hook, context and provider for editor mode",
+    "src/hooks/latexViewRefresh/": "hook, context and provider for latex view refresh",
+    "src/hooks/mathDrag/": "hook, context and provider for math drag-and-drop",
+    "src/hooks/mathHover/": "hook, context and provider for math hover",
+    "src/hooks/mathZoom/": "hook for math zoom",
+    "src/hooks/resizablePanels/": "hook, context and provider for side panel resizing",
+    "src/hooks/toast/": "hook and context for toast popup messages"
+
+
   }
   

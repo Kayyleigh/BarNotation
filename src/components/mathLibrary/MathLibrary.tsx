@@ -4,12 +4,12 @@ import LibCollectionArchiveModal from "../modals/LibCollectionArchiveModal";
 import LibraryEntries from "./LibraryEntries";
 import type { LibraryCollection, LibraryEntry } from "../../models/libraryTypes";
 import { createPremadeCollections } from "../../utils/collectionUtils";
-import { useToast } from "../../hooks/useToast";
+import { useToast } from "../../hooks/toast/useToast";
 import styles from "./MathLibrary.module.css";
 import CollectionTabs from "./CollectionTabs";
 import SearchBar from "../common/SearchBar";
 import type { DropSource, DropTarget } from "../layout/EditorWorkspace";
-import { useDragContext } from "../../hooks/useDragContext";
+import { useDragContext } from "../../hooks/mathDrag/useDragContext";
 import { nodeToLatex } from "../../models/nodeToLatex";
 import { parseLatex } from "../../models/latexParser";
 import React from "react";
@@ -33,8 +33,6 @@ interface MathLibraryProps {
 const MathLibrary: React.FC<MathLibraryProps> = ({
   updateEntryRef,
 }) => {
-  console.warn(`Rendering MathLibrary`);
-
   const { showToast } = useToast();
 
   // React 18 startTransition hook for deferred updates

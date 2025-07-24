@@ -2,7 +2,7 @@
 import React, { useMemo } from "react";
 import clsx from "clsx";
 import type { MathNode, TextStyle } from "../../models/types";
-import { useDragContext } from "../../hooks/useDragContext";
+import { useDragContext } from "../../hooks/mathDrag/useDragContext";
 import {
   renderTextNode,
   renderInlineContainerNode,
@@ -19,7 +19,8 @@ import {
 } from "./MathRenderers";
 import type { CursorPosition } from "../../logic/cursor";
 import type { DropTarget } from "../layout/EditorWorkspace";
-import type { DragSource } from "../../hooks/DragContext";
+import type { DragSource } from "../../hooks/mathDrag/DragContext";
+import type { EditorState } from "../../logic/editor-state";
 
 export type MathRendererProps = {
   node: MathNode;
@@ -38,6 +39,8 @@ export type MathRendererProps = {
   ) => void;
   ancestorIds: string[];
   showPlaceholder?: boolean;
+  updateEditorState: (newState: EditorState) => void;
+  editorState: EditorState;
 };
 
 export type BaseRenderProps = {
@@ -53,6 +56,8 @@ export type BaseRenderProps = {
   onDropNode: MathRendererProps["onDropNode"];
   ancestorIds: string[];
   showPlaceholder?: boolean;
+  updateEditorState: (newState: EditorState) => void;
+  editorState: EditorState;
 };
 
 const InnerMathRenderer: React.FC<MathRendererProps> = ({
@@ -69,6 +74,8 @@ const InnerMathRenderer: React.FC<MathRendererProps> = ({
   onDropNode,
   ancestorIds,
   showPlaceholder,
+  editorState,
+  updateEditorState
 }) => {
   const { draggingNode, setDraggingNode, dropTarget, setDropTarget } = useDragContext();
 
@@ -131,6 +138,8 @@ const InnerMathRenderer: React.FC<MathRendererProps> = ({
     onDropNode,
     ancestorIds,
     showPlaceholder,
+    editorState,
+    updateEditorState
   };
 
   const newAncestorIds = useMemo(() => [...(ancestorIds), node.id], [ancestorIds, node.id]);
@@ -211,6 +220,7 @@ const InnerMathRenderer: React.FC<MathRendererProps> = ({
 };
 
 function areEqual(prev: MathRendererProps, next: MathRendererProps) {
+  //TODO AVOID UNNECESSARY RERENDERS DUE TO EDITORSTATE CHANGING
   const nodeId = prev.node.id;
 
   const prevHoverPath = prev.hoverPath;

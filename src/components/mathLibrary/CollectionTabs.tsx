@@ -5,10 +5,10 @@ import type { LibraryCollection, LibraryEntry } from "../../models/libraryTypes"
 import styles from "./MathLibrary.module.css";
 import clsx from "clsx";
 import TabDropdownPortal from "./TabDropdownPortal";
-import { useDragContext } from "../../hooks/useDragContext";
+import { useDragContext } from "../../hooks/mathDrag/useDragContext";
 import { nodeToLatex } from "../../models/nodeToLatex";
 import React from "react";
-import { useToast } from "../../hooks/useToast";
+import { useToast } from "../../hooks/toast/useToast";
 
 interface CollectionTabsProps {
   collections: LibraryCollection[];
@@ -33,8 +33,6 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
   setMenuOpenFor,
   onDropEntryToCollection,
 }) => {
-  console.warn(`Rendering CollectionTabs`);
-
   const { showToast } = useToast();
 
   const buttonRefs = useRef<Record<string, HTMLButtonElement | null>>({});

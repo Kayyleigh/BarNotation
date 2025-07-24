@@ -3,9 +3,9 @@ import React, { useState } from "react";
 import MathEditor from "../../mathExpression/MathEditor";
 import type { EditorState } from "../../../logic/editor-state";
 import type { DropTarget } from "../../layout/EditorWorkspace";
-import type { DragSource } from "../../../hooks/DragContext";
-import { HoverProvider } from "../../../hooks/HoverProvider";
-import { useEditorMode } from "../../../hooks/useEditorMode";
+import type { DragSource } from "../../../hooks/mathDrag/DragContext";
+import { HoverProvider } from "../../../hooks/mathHover/HoverProvider";
+import { useEditorMode } from "../../../hooks/editorMode/useEditorMode";
 import styles from "./cell.module.css";
 
 type MathCellProps = {

@@ -72,6 +72,8 @@
     /* --math-color-command-input-text: #929270; */
     --math-color-command-input-text: #5f8700;
   
+    --math-color-multi-digit-text: #547046;
+
     /* ===== Editor Container ===== */
     --math-editor-bg: white;
     --math-editor-border: #ccc;
@@ -161,6 +163,11 @@
     --editor-margin-right: 0.75em;
     /* --editor-margin-left: calc(var(--cell-dragspot-width) + var(--cell-selection-indicator-offset-left)); */
     --editor-margin-left: 2.65em;
+
+    /* Command input autocomplete */
+    --command-autocomplete-dropdown-bg: var(--main-header-bg);
+    --command-autocomplete-dropdown-text: var(--main-text-color);
+    --command-autocomplete-highlight-bg: var(--math-hover-bg);
   }
   
   .dark {
@@ -200,6 +207,8 @@
     --math-color-upright-bg: #c586c01a; 
   
     --math-color-command-input-text: #dcdcaa;
+
+    --math-color-multi-digit-text: #b5cea8;
   
     /* ===== Latex Container ===== */
     --latex-text-color: #8B8B8D;

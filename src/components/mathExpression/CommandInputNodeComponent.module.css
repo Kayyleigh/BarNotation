@@ -1,0 +1,42 @@
+.autocompleteBox {
+  background: var(--command-autocomplete-dropdown-bg);
+  color: var(--command-autocomplete-dropdown-text);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+  max-height: 10em;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 14px;
+  min-width: 220px;
+}
+
+.autocompleteItem {
+  padding: 0.5em 1em;
+  cursor: pointer;
+}
+
+.autocompleteItem.highlighted,
+.autocompleteItem:hover {
+  background-color: var(--command-autocomplete-highlight-bg);
+}
+
+/* New row layout */
+.autocompleteRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1em;
+}
+
+/* Optional: constrain the MathView so it doesn’t overflow */
+.mathPreview {
+  display: flex;
+  align-items: center;
+  max-width: 100px;
+  white-space: nowrap;
+}
+
+.commandLabel {
+  flex-shrink: 0;
+}

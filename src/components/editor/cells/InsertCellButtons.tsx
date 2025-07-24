@@ -2,7 +2,7 @@
 import React, { useState, useCallback } from "react";
 import clsx from "clsx";
 import Tooltip from "../../tooltips/Tooltip";
-import { useEditorMode } from "../../../hooks/useEditorMode";
+import { useEditorMode } from "../../../hooks/editorMode/useEditorMode";
 import styles from "../Editor.module.css";
 
 interface InsertCellButtonsProps {

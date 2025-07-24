@@ -1,5 +1,5 @@
 import { useEffect, useState, type RefObject } from "react";
-import { MAX_ZOOM, MIN_ZOOM } from "../constants/editorConstants";
+import { MAX_ZOOM, MIN_ZOOM } from "../../constants/editorConstants";
 
 export function useZoom(
   ref: RefObject<HTMLElement | null>,

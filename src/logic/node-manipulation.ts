@@ -87,7 +87,7 @@ export function deleteNodeById(state: EditorState, nodeId: string): EditorState 
   };
 }
 
-// Inserts the given node at the cursor position
+// Inserts the given node at the cursor position //TODO not sure if broken
 export function insertNodeAtCursor(state: EditorState, newNode: MathNode): EditorState {
   const container = findNodeById(state.rootNode, state.cursor.containerId);
   console.log(`Inserting ${newNode.type} into ${container?.type}`);

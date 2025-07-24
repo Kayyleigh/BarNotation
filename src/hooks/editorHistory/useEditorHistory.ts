@@ -1,6 +1,6 @@
 import { useState } from "react";
-import type { EditorState } from "../logic/editor-state";
-import type { HistoryState } from "../logic/history";
+import type { EditorState } from "../../logic/editor-state";
+import type { HistoryState } from "../../logic/history";
 
 export function useEditorHistory(initialState: EditorState) {
     const [history, setHistory] = useState<HistoryState>({
