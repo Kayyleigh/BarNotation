@@ -2,8 +2,8 @@
 import React, { useEffect, useState } from "react";
 import clsx from "clsx";
 import Tooltip from "../tooltips/Tooltip";
-import { useToast } from "../../hooks/useToast";
-import { useEditorMode } from "../../hooks/useEditorMode";
+import { useToast } from "../../hooks/toast/useToast";
+import { useEditorMode } from "../../hooks/editorMode/useEditorMode";
 
 import styles from "./EditorHeaderBar.module.css";
 import { MAX_ZOOM, MIN_ZOOM } from "../../constants/editorConstants";

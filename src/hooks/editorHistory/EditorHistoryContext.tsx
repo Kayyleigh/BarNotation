@@ -1,6 +1,6 @@
 // hooks/EditorHistoryContext.tsx
 import { createContext, useContext } from "react";
-import type { EditorSnapshot, HistoryState } from "../logic/global-history";
+import type { EditorSnapshot, HistoryState } from "../../logic/global-history";
 
 interface EditorHistoryContextValue {
   history: HistoryState;

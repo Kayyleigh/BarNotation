@@ -3,7 +3,7 @@ import React, { useEffect, useRef } from "react";
 import styles from "./NoteMetadataSection.module.css";
 import clsx from "clsx";
 import type { NoteMetadata } from "../../models/noteTypes";
-import { useEditorMode } from "../../hooks/useEditorMode";
+import { useEditorMode } from "../../hooks/editorMode/useEditorMode";
 
 interface Props {
   metadata: NoteMetadata;

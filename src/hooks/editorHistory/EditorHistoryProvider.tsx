@@ -1,41 +1,3 @@
-// // hooks/EditorHistoryProvider.tsx
-// import React, { useState, useCallback } from "react";
-// import { EditorHistoryContext } from "./EditorHistoryContext";
-// import { createInitialHistory, applyUpdate, undo, redo } from "../logic/global-history";
-// import type { EditorState } from "../logic/editor-state";
-// import type { HistoryState } from "../logic/global-history";
-
-// type EditorStatesMap = Record<string, EditorState>;
-
-// export const EditorHistoryProvider: React.FC<{ children: React.ReactNode; initialStates: EditorStatesMap }> = ({
-//   children,
-//   initialStates,
-// }) => {
-//   const [history, setHistory] = useState<HistoryState<EditorStatesMap>>(
-//     createInitialHistory(initialStates)
-//   );
-
-//   const updateState = useCallback((newStates: EditorStatesMap) => {
-//     setHistory(prev => applyUpdate(prev, newStates));
-//   }, []);
-
-//   const handleUndo = useCallback(() => {
-//     setHistory(prev => undo(prev));
-//   }, []);
-
-//   const handleRedo = useCallback(() => {
-//     setHistory(prev => redo(prev));
-//   }, []);
-
-//   return (
-//     <EditorHistoryContext.Provider
-//       value={{ history, updateState, undo: handleUndo, redo: handleRedo }}
-//     >
-//       {children}
-//     </EditorHistoryContext.Provider>
-//   );
-// };
-
 // hooks/EditorHistoryProvider.tsx
 import React, { useState, useCallback, useMemo } from "react";
 import { EditorHistoryContext } from "./EditorHistoryContext";
@@ -46,7 +8,7 @@ import {
   redo,
   type EditorSnapshot,
   type HistoryState,
-} from "../logic/global-history";
+} from "../../logic/global-history";
 
 export const EditorHistoryProvider: React.FC<{
   children: React.ReactNode;

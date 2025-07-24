@@ -4,7 +4,7 @@ import { setCursor } from "../../logic/editor-state";
 import { handleKeyDown } from "../../logic/handle-keydown";
 import { MathRenderer } from "./MathRenderer";
 import LatexViewer from "./LatexViewer";
-import { useZoom } from "../../hooks/useZoom";
+import { useZoom } from "../../hooks/mathZoom/useZoom";
 import {
   insertNodeAtCursor,
   deleteSelectedNode,
@@ -14,12 +14,12 @@ import { parseLatex } from "../../models/latexParser";
 import { nodeToLatex } from "../../models/nodeToLatex";
 import { findNodeById } from "../../utils/treeUtils";
 import type { EditorState } from "../../logic/editor-state";
-import { useDragContext } from "../../hooks/useDragContext";
 import type { CursorPosition } from "../../logic/cursor";
 import type { DropTarget } from "../layout/EditorWorkspace";
-import type { DragSource } from "../../hooks/DragContext";
+import type { DragSource } from "../../hooks/mathDrag/DragContext";
+import { useDragContext } from "../../hooks/mathDrag/useDragContext";
 import type { TextStyle } from "../../models/types";
-import { useHover } from "../../hooks/useHover";
+import { useHover } from "../../hooks/mathHover/useHover";
 
 interface MathEditorProps {
   resetZoomSignal: number;

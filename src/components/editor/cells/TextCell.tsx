@@ -10,7 +10,7 @@ import clsx from "clsx";
 import styles from "./cell.module.css";
 import textStyles from "../../../styles/textStyles.module.css";
 import type { TextCellContent } from "../../../models/noteTypes";
-import { useEditorMode } from "../../../hooks/useEditorMode";
+import { useEditorMode } from "../../../hooks/editorMode/useEditorMode";
 
 type TextCellProps = {
   value: TextCellContent;

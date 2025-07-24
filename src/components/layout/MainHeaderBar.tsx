@@ -2,7 +2,7 @@
 import React from "react";
 import clsx from "clsx";
 import Tooltip from "../tooltips/Tooltip";
-import { useToast } from "../../hooks/useToast";
+import { useToast } from "../../hooks/toast/useToast";
 
 interface HeaderBarProps {
   onOpenSettings: () => void;

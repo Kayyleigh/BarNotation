@@ -2,7 +2,7 @@
 import React, { useMemo } from "react";
 import clsx from "clsx";
 import type { MathNode, TextStyle } from "../../models/types";
-import { useDragContext } from "../../hooks/useDragContext";
+import { useDragContext } from "../../hooks/mathDrag/useDragContext";
 import {
   renderTextNode,
   renderInlineContainerNode,
@@ -19,7 +19,7 @@ import {
 } from "./MathRenderers";
 import type { CursorPosition } from "../../logic/cursor";
 import type { DropTarget } from "../layout/EditorWorkspace";
-import type { DragSource } from "../../hooks/DragContext";
+import type { DragSource } from "../../hooks/mathDrag/DragContext";
 import type { EditorState } from "../../logic/editor-state";
 
 export type MathRendererProps = {

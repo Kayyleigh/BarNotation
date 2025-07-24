@@ -8,17 +8,17 @@ import React, {
   useTransition,
 } from "react";
 import InsertCellButtons from "./cells/InsertCellButtons";
-import { useCellDragState } from "../../hooks/useCellDragState";
+import { useCellDragState } from "../../hooks/cellDrag/useCellDragState";
 import styles from "./Editor.module.css";
 import NoteMetaDataSection from "./NoteMetadataSection";
 import type { CellData, NoteMetadata, TextCellContent } from "../../models/noteTypes";
 import type { EditorState } from "../../logic/editor-state";
 import { nodeToLatex } from "../../models/nodeToLatex";
 import type { DropTarget } from "../layout/EditorWorkspace";
-import type { DragSource } from "../../hooks/DragContext";
+import type { DragSource } from "../../hooks/mathDrag/DragContext";
 import CellRow from "./CellRow";
 import clsx from "clsx";
-import { useEditorMode } from "../../hooks/useEditorMode";
+import { useEditorMode } from "../../hooks/editorMode/useEditorMode";
 import { computeDisplayNumbers } from "../../utils/noteUtils";
 import cellStyles from "./cells/cell.module.css";
 import Tooltip from "../tooltips/Tooltip";
