@@ -41,7 +41,6 @@ const NotesMenu: React.FC<NotesMenuProps> = ({
   onUnarchiveNote,
   archivedNotes,
 }) => {
-  console.warn(`Rendering NotesMenu`)
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState<SortBy>("modified");
   const [menuOpenForId, setMenuOpenForId] = useState<string | null>(null);

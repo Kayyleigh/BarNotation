@@ -33,8 +33,6 @@ interface MathLibraryProps {
 const MathLibrary: React.FC<MathLibraryProps> = ({
   updateEntryRef,
 }) => {
-  console.warn(`Rendering MathLibrary`);
-
   const { showToast } = useToast();
 
   // React 18 startTransition hook for deferred updates

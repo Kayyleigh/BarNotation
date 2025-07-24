@@ -33,8 +33,6 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
   setMenuOpenFor,
   onDropEntryToCollection,
 }) => {
-  console.warn(`Rendering CollectionTabs`);
-
   const { showToast } = useToast();
 
   const buttonRefs = useRef<Record<string, HTMLButtonElement | null>>({});

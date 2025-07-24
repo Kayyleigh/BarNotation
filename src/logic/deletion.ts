@@ -1,7 +1,6 @@
 import type { EditorState } from "./editor-state";
 import { findNodeById, findParentContainerAndIndex, findParentOfInlineContainer, getLogicalChildren, isEmptyNode, updateNodeById } from "../utils/treeUtils";
 import {
-  nodeToMathText,
   type InlineContainerNode,
   type MathNode,
 } from "../models/types";
@@ -17,7 +16,7 @@ export const handleBackspace = (state: EditorState): EditorState => {
   if (!container) return state;
 
   if (container.type === "command-input" || container.type === "multi-digit") {
-    console.log(`You are in ${container.type}`)
+    // console.log(`You are in ${container.type}`)
 
     // Case: At start of empty node
     if (cursor.index === 0 && container.children.every(isEmptyNode)) { //TODO now if not empty it will disappear cursor
@@ -59,7 +58,7 @@ export const handleBackspace = (state: EditorState): EditorState => {
     
       const updatedRoot = updateNodeById(state.rootNode, container.id, updatedContainer);
     
-      console.log(`You are at ${cursor.index} in ${container.type} with ${nodeToMathText(container)}`)
+      // console.log(`You are at ${cursor.index} in ${container.type} with ${nodeToMathText(container)}`)
 
       // If new index is last of text container, move to parent
       if (cursor.index === container.children.length) {

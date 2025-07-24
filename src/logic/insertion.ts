@@ -58,7 +58,7 @@ export const handleCharacterInsert = (state: EditorState, char: string): EditorS
   // ========== CASE 4-A: Append digit to MultiDigitNode ==========
 
   if (/\d/.test(char) && prevNode?.type === "multi-digit") {
-    console.log(`Case 4-A reached with ${prevNode.children.map(child => child.content)}, with new ${char}`)
+    // console.log(`Case 4-A reached with ${prevNode.children.map(child => child.content)}, with new ${char}`)
     const newTextNode = createTextNode(char);
     const updatedPrev = {
       ...prevNode,
@@ -88,7 +88,7 @@ export const handleCharacterInsert = (state: EditorState, char: string): EditorS
   // ========== CASE 4-B: Append to CommandInputNode ==========
 
   if (prevNode?.type === "command-input") {
-    console.log(`Case 4-B reached with ${prevNode.children.map(child => child.content)}, with new ${char}`)
+    // console.log(`Case 4-B reached with ${prevNode.children.map(child => child.content)}, with new ${char}`)
 
     const oldSequence = prevNode.children.map(child => child.content).join("");
 
@@ -223,7 +223,7 @@ export const handleCharacterInsert = (state: EditorState, char: string): EditorS
   // ========== CASE 4-C: New CommandInputNode if "\" ==========
 
   if (char === "\\") {
-    console.log(`Case 4-C reached with new ${char}`)
+    // console.log(`Case 4-C reached with new ${char}`)
 
     const newCommandNode = createCommandInputNode([createTextNode(char)])
 
@@ -250,7 +250,7 @@ export const handleCharacterInsert = (state: EditorState, char: string): EditorS
   // ========== CASE 4-D: Merge 2 digits ==========
 
   if (/\d/.test(char) && prevNode?.type === "text" && /\d/.test(prevNode.content)) {
-    console.log(`Case 4-D reached with new ${char}`)
+    // console.log(`Case 4-D reached with new ${char}`)
 
     const newMultiDigitNode = createMultiDigitNode([prevNode, createTextNode(char)])
 

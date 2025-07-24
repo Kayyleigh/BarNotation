@@ -65,8 +65,6 @@ const LibraryEntries: React.FC<LibraryEntriesProps> = ({
   onDrop,
   onRendered,
 }) => {
-  console.warn(`Rendering LibraryEntries`);
-
   const { draggingNode, setDraggingNode, dropTarget, setDropTarget } = useDragContext();
 
   // Find the active collection

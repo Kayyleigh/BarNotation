@@ -103,7 +103,6 @@ export function handleKeyDown(
   // Character input: only printable characters
   if (key.length === 1 && !e.ctrlKey && !e.metaKey) {
     e.preventDefault();
-    console.log(`you input ${key}`)
     return handleCharacterInsert(state, key);
   }
 
