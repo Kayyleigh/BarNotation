@@ -261,6 +261,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
         dateOrPeriod: "",
         archived: false,
         createdAt: Date.now(),
+        updatedAt: Date.now(),
       },
       cells: [],
     };
@@ -268,6 +269,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     setSelectedNoteId(newId);
   }, [authorName, setSelectedNoteId]);
 
+  // Note archiving logic
   const archiveNote = useCallback((id: string) => {
     let noteTitle: string | null = null;
 
@@ -295,11 +297,10 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     }
   }, [selectedNoteId, setSelectedNoteId, showToast]);
 
-
+  // Note duplication logic
   const duplicateNote = useCallback((id: string) => {
     const original = notes.find(note => note.id === id);
     if (!original) return;
-    console.warn(`I found ${original}`)
 
     const newId = `note-${Date.now()}`;
     const duplicatedNote: Note = {
@@ -309,6 +310,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
         ...original.metadata,
         title: `${original.metadata.title} (Copy)`,
         createdAt: Date.now(),
+        updatedAt: Date.now(),
       },
       cells: [
         ...original.cells,
@@ -316,7 +318,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     };
     const originalEditorState = localStorage.getItem(`note-editor-state-${original.id}`);
     if (originalEditorState) {
-      console.warn(`I am going to set the state in storage`)
       localStorage.setItem(`note-editor-state-${newId}`, originalEditorState);
     }
 

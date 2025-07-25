@@ -21,7 +21,7 @@ export function formatRelativeDate(timestamp: number, label: string): string {
     const diffMinutes = Math.floor(diffMs / (1000 * 60));
     const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
 
-    if (diffMinutes < 2) {
+    if (diffMinutes < 1) {
         return `${label} just now`;
     } else if (diffMinutes < 60) {
         return `${label} ${pluralize(diffMinutes, "minute")} ago`;
@@ -55,7 +55,7 @@ export function formatCreatedAt(timestamp: number): string {
 }
 
 export function formatModifiedAt(timestamp: number): string {
-    return formatRelativeDate(timestamp, "Modified");
+    return formatRelativeDate(timestamp, "Edited");
 }
 
 export function formatArchivedAt(timestamp: number): string {

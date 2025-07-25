@@ -3,7 +3,7 @@ import React, { useRef, useEffect } from "react";
 import NoteActionsDropdown from "./NoteActionsDropdown";
 import styles from "./NotesMenu.module.css";
 import type { NoteSummary } from "../../models/noteTypes";
-import { formatCreatedAt } from "../../utils/dateUtils";
+import { formatCreatedAt, formatModifiedAt } from "../../utils/dateUtils";
 
 type Props = {
   note: NoteSummary;
@@ -56,6 +56,7 @@ const NoteListItem: React.FC<Props> = ({
             </span>
             <span className={styles.noteDate}>
               {note.createdAt && <span>{formatCreatedAt(note.createdAt)}</span>}
+              {note.updatedAt && <span>, {formatModifiedAt(note.updatedAt)}</span>}
             </span>
           </div>
         </div>
