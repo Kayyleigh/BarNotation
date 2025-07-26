@@ -85,13 +85,13 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
         </Tooltip>
       </label>
 
-      <div className={styles.settingsActions}>
+      {/* <div className={styles.settingsActions}>
         <Tooltip text="Apply changes and return to editor">
           <button className={`${styles.button} ${styles.primary}`} onClick={onClose}>
             Apply & Close
           </button>
         </Tooltip>
-      </div>
+      </div> */}
     </Modal>
   );
 };
