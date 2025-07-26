@@ -2,6 +2,7 @@
 import React, { useEffect, useRef } from "react";
 import styles from "./Modal.module.css"; // Shared modal styles
 import Tooltip from "../tooltips/Tooltip";
+import { useI18n } from "../../i18n/useI18n";
 
 interface ModalProps {
   onClose: () => void;
@@ -11,6 +12,8 @@ interface ModalProps {
 }
 
 const Modal: React.FC<ModalProps> = ({ onClose, children, className, showCloseButton = true }) => {
+  const { t } = useI18n();
+  
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -35,7 +38,7 @@ const Modal: React.FC<ModalProps> = ({ onClose, children, className, showCloseBu
     <div className={styles.overlay}>
       <div className={`${styles.modalContent} ${className || ""}`} ref={contentRef}>
         <div className={styles.close}>
-        <Tooltip text="Close">
+        <Tooltip text={t("modals.close")}>
           {showCloseButton && (
             <button className={styles.closeButton} onClick={onClose}>✕</button>
           )}

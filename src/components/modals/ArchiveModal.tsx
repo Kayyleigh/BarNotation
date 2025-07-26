@@ -1,17 +1,16 @@
-// components/modals/ArchiveModal.tsx
 import React from "react";
 import styles from "./ArchiveModal.module.css";
 import SearchBar from "../common/SearchBar";
 import { SortDropdown } from "../common/SortDropdown";
+import { useI18n } from "../../i18n/useI18n";
 
-// Generic props with type-safe sortValue
 interface ArchiveModalProps<T, SortVal extends string> {
   title: string;
   search: string;
   onSearchChange: (s: string) => void;
   sortValue: SortVal;
   onSortChange: (val: SortVal) => void;
-  sortOptions: { label: string; value: SortVal }[]; // Match type of sortValue
+  sortOptions: { label: string; value: SortVal }[];
   items: T[];
   renderItem: (item: T) => React.ReactNode;
   emptyMessage?: string;
@@ -19,7 +18,6 @@ interface ArchiveModalProps<T, SortVal extends string> {
   searchPlaceholder?: string;
 }
 
-// Generic functional component
 function ArchiveModal<T, SortVal extends string>({
   title,
   search,
@@ -29,10 +27,12 @@ function ArchiveModal<T, SortVal extends string>({
   sortOptions,
   items,
   renderItem,
-  emptyMessage = "No items found.",
+  emptyMessage,
   searchTooltip,
   searchPlaceholder,
 }: ArchiveModalProps<T, SortVal>) {
+  const { t } = useI18n();
+
   return (
     <div className={styles.container}>
       <h2>{title}</h2>
@@ -42,7 +42,7 @@ function ArchiveModal<T, SortVal extends string>({
           value={search}
           onChange={onSearchChange}
           tooltip={searchTooltip}
-          placeholder={searchPlaceholder ?? "Search..."}
+          placeholder={searchPlaceholder ?? t("modals.archiveModal.searchPlaceholder")}
           className={styles.searchBar}
         />
 
@@ -55,11 +55,11 @@ function ArchiveModal<T, SortVal extends string>({
       </div>
 
       {items.length === 0 ? (
-        <p className={styles.empty}>{emptyMessage}</p>
+        <p className={styles.empty}>
+          {emptyMessage ?? t("modals.archiveModal.noItemsFound")}
+        </p>
       ) : (
-        <ul className={styles.list}>
-          {items.map(renderItem)}
-        </ul>
+        <ul className={styles.list}>{items.map(renderItem)}</ul>
       )}
     </div>
   );
