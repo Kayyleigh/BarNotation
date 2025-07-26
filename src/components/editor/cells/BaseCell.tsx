@@ -5,6 +5,7 @@ import Tooltip from "../../tooltips/Tooltip";
 import styles from "./cell.module.css";
 import editorStyles from "../Editor.module.css";
 import { useEditorMode } from "../../../hooks/editorMode/useEditorMode";
+import { useI18n } from "../../../i18n/useI18n";
 
 export type BaseCellProps = {
   typeLabel: string;
@@ -32,6 +33,8 @@ const BaseCell: React.FC<BaseCellProps> = ({
   handlePointerDown,
 }) => {
   const { mode } = useEditorMode();
+  const { t } = useI18n(); // use language hook
+
   const isEditMode = mode === "edit";
   const isLockedMode = mode === "locked";
 
@@ -40,7 +43,6 @@ const BaseCell: React.FC<BaseCellProps> = ({
   const showToolbar = !isLockedMode && (isSelected || (isEditMode && hovered));
   const allowClick = !isLockedMode;
 
-  // Event handlers only set if needed
   const onMouseEnter = isEditMode ? () => setHovered(true) : undefined;
   const onMouseLeave = isEditMode ? () => setHovered(false) : undefined;
   const onClickHandler = allowClick ? onClick : undefined;
@@ -59,7 +61,7 @@ const BaseCell: React.FC<BaseCellProps> = ({
       onClick={onClickHandler}
     >
       {!isLockedMode && (
-        <Tooltip text="Drag to re-order cells">
+        <Tooltip text={t("editor.cell.drag")}>
           <div className={styles.cellMargin}>
             {isSelected && <div className={styles.selectedIndicator} />}
             <div className={styles.dragSpot} onPointerDown={handlePointerDown} />
@@ -76,13 +78,21 @@ const BaseCell: React.FC<BaseCellProps> = ({
           {showToolbar && (
             <div className={styles.cellToolbar}>
               {toolbarExtras}
-              <Tooltip text="Duplicate cell">
-                <button className={editorStyles.cellToolbarButton} onClick={onDuplicate} type="button">
-                  Duplicate
+              <Tooltip text={t("editor.cell.duplicate")}>
+                <button
+                  className={editorStyles.cellToolbarButton}
+                  onClick={onDuplicate}
+                  type="button"
+                >
+                  {t("editor.cell.duplicateBtn")}
                 </button>
               </Tooltip>
-              <Tooltip text="Delete cell">
-                <button className={clsx(editorStyles.cellToolbarButton, editorStyles.deleteButton)} onClick={onDelete} type="button">
+              <Tooltip text={t("editor.cell.delete")}>
+                <button
+                  className={clsx(editorStyles.cellToolbarButton, editorStyles.deleteButton)}
+                  onClick={onDelete}
+                  type="button"
+                >
                   🗑️
                 </button>
               </Tooltip>

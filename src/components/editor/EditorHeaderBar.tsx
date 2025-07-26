@@ -8,6 +8,7 @@ import { useEditorMode } from "../../hooks/editorMode/useEditorMode";
 import styles from "./EditorHeaderBar.module.css";
 import { MAX_ZOOM, MIN_ZOOM } from "../../constants/editorConstants";
 import { useTriggerLatexRefresh } from "../../hooks/latexViewRefresh/useLatexRefresh";
+import { useI18n } from "../../i18n/useI18n";
 
 interface EditorHeaderBarProps {
   defaultZoom: number;
@@ -32,6 +33,8 @@ const EditorHeaderBar: React.FC<EditorHeaderBarProps> = ({
   dropdownRef,
   onAddCell,
 }) => {
+  const { t } = useI18n(); // use language hook
+
   const { mode, togglePreview, toggleLocked } = useEditorMode();
   const { showToast } = useToast();
 
@@ -55,127 +58,128 @@ const EditorHeaderBar: React.FC<EditorHeaderBarProps> = ({
   return (
     <div className={styles.editorHeaderBar}>
       <div className={styles.buttonBar}>
-        <Tooltip text="Add math cell">
+        <Tooltip text={t("editor.addMath")}>
           <button onClick={() => onAddCell("math")} className={styles.button}>
-            ➕ Math
+            ➕ {t("editor.math")}
           </button>
         </Tooltip>
 
-        <Tooltip text="Add text cell">
+        <Tooltip text={t("editor.addText")}>
           <button onClick={() => onAddCell("text")} className={styles.button}>
-            ➕ Text
+            ➕ {t("editor.text")}
           </button>
         </Tooltip>
 
-        <Tooltip text="Remove empty cells">
+        <Tooltip text={t("editor.cleanup")}>
           <button
             onClick={() =>
-              showToast({ message: `Cleanup is not yet implemented`, type: "warning" })
+              showToast({ message: t("editor.cleanupWip"), type: "warning" })
             }
             className={styles.button}
           >
-            🧹 Clean
+            🧹 {t("editor.clean")}
           </button>
         </Tooltip>
 
-        <Tooltip text="Show all LaTeX">
-          <button onClick={() => {
-            showAllLatex();
-            triggerLatexRefresh();
-          }}
-          className={styles.button}>
-          👁️ LaTeX
-        </button>
-      </Tooltip>
-
-      <Tooltip text="Hide all LaTeX">
-        <button onClick={hideAllLatex} className={styles.button}>
-          🙈 LaTeX
-        </button>
-      </Tooltip>
-
-      <Tooltip text={mode === "edit" ? "Enter preview mode" : "Return to edit mode"}>
-        <button
-          onClick={togglePreview}
-          className={clsx(styles.button, styles.previewToggleButton)}
-        >
-          {mode === "edit" ? "📜 Preview" : "✏️ Edit"}
-        </button>
-      </Tooltip>
-
-      {(mode === "preview" || mode === "locked") && (
-        <Tooltip text={mode === "locked" ? "Unlock" : "Lock"}>
+        <Tooltip text={t("editor.showLatex")}>
           <button
-            onClick={toggleLocked}
+            onClick={() => {
+              showAllLatex();
+              triggerLatexRefresh();
+            }}
+            className={styles.button}
+          >
+            👁️ LaTeX
+          </button>
+        </Tooltip>
+
+        <Tooltip text={t("editor.hideLatex")}>
+          <button onClick={hideAllLatex} className={styles.button}>
+            🙈 LaTeX
+          </button>
+        </Tooltip>
+
+        <Tooltip text={mode === "edit" ? t("editor.enterPreview") : t("editor.returnEdit")}>
+          <button
+            onClick={togglePreview}
             className={clsx(styles.button, styles.previewToggleButton)}
           >
-            {mode === "locked" ? "🔓 Unlock" : "🔒 Lock"}
-          </button>
-        </Tooltip>
-      )}
-
-      <div className={styles.zoomControlsGroup}>
-        <Tooltip text="Reset all zoom levels">
-          <button
-            onClick={resetAllZooms}
-            className={clsx(styles.button, styles.zoomButton, styles.resetZoomButton)}
-            onDoubleClick={(e) => {
-              e.preventDefault();
-              setEditingZoom(true);
-            }}
-          >
-            ⛶{" "}
-            {editingZoom ? (
-              <input
-                type="number"
-                min={MIN_ZOOM * 100}
-                max={MAX_ZOOM * 100}
-                autoFocus
-                value={Math.round(editingZoomValue)}
-                onChange={(e) => setEditingZoomValue(Number(e.target.value))}
-                onBlur={applyManualZoom}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") applyManualZoom();
-                }}
-                className={styles.manualZoomInput}
-              />
-            ) : (
-              <span>{Math.round(defaultZoom * 100)}%</span>
-            )}
+            {mode === "edit" ? "📜 " + t("editor.preview") : "✏️ " + t("editor.edit")}
           </button>
         </Tooltip>
 
-
-        <div className={styles.zoomDropdownWrapper} ref={dropdownRef}>
-          <Tooltip text="Change default zoom level">
+        {(mode === "preview" || mode === "locked") && (
+          <Tooltip text={mode === "locked" ? t("editor.unlock") : t("editor.lock")}>
             <button
-              onClick={() => setShowZoomDropdown((v) => !v)}
-              className={clsx(styles.button, styles.zoomButton, styles.zoomDropdownButton)}
+              onClick={toggleLocked}
+              className={clsx(styles.button, styles.previewToggleButton)}
             >
-              <span>{showZoomDropdown ? "▴" : "▾"}</span>
+              {mode === "locked" ? "🔓 " + t("editor.unlock") : "🔒 " + t("editor.lock")}
+            </button>
+          </Tooltip>
+        )}
+
+        <div className={styles.zoomControlsGroup}>
+          <Tooltip text={t("editor.resetZoom")}>
+            <button
+              onClick={resetAllZooms}
+              className={clsx(styles.button, styles.zoomButton, styles.resetZoomButton)}
+              onDoubleClick={(e) => {
+                e.preventDefault();
+                setEditingZoom(true);
+              }}
+            >
+              ⛶{" "}
+              {editingZoom ? (
+                <input
+                  type="number"
+                  min={MIN_ZOOM * 100}
+                  max={MAX_ZOOM * 100}
+                  autoFocus
+                  value={Math.round(editingZoomValue)}
+                  onChange={(e) => setEditingZoomValue(Number(e.target.value))}
+                  onBlur={applyManualZoom}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") applyManualZoom();
+                  }}
+                  className={styles.manualZoomInput}
+                />
+              ) : (
+                <span>{Math.round(defaultZoom * 100)}%</span>
+              )}
             </button>
           </Tooltip>
 
-          {showZoomDropdown && (
-            <div className={styles.zoomDropdownPanel}>
-              <label>Default Zoom</label>
-              <input
-                type="range"
-                min={MIN_ZOOM}
-                max={MAX_ZOOM}
-                step="0.01"
-                value={defaultZoom}
-                onChange={(e) => handleZoomChange(parseFloat(e.target.value))}
-              />
-              <div className={styles.zoomDropdownPreview}>
-                <span>{Math.round(defaultZoom * 100)}%</span>
+          <div className={styles.zoomDropdownWrapper} ref={dropdownRef}>
+            <Tooltip text={t("editor.changeZoom")}>
+              <button
+                onClick={() => setShowZoomDropdown((v) => !v)}
+                className={clsx(styles.button, styles.zoomButton, styles.zoomDropdownButton)}
+              >
+                <span>{showZoomDropdown ? "▴" : "▾"}</span>
+              </button>
+            </Tooltip>
+
+            {showZoomDropdown && (
+              <div className={styles.zoomDropdownPanel}>
+                <label>{t("editor.defaultZoom")}</label>
+                <input
+                  type="range"
+                  min={MIN_ZOOM}
+                  max={MAX_ZOOM}
+                  step="0.01"
+                  value={defaultZoom}
+                  onChange={(e) => handleZoomChange(parseFloat(e.target.value))}
+                />
+                <div className={styles.zoomDropdownPreview}>
+                  <span>{Math.round(defaultZoom * 100)}%</span>
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
     </div>
-    </div >
   );
 };
 

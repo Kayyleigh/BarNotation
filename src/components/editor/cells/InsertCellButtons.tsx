@@ -4,6 +4,7 @@ import clsx from "clsx";
 import Tooltip from "../../tooltips/Tooltip";
 import { useEditorMode } from "../../../hooks/editorMode/useEditorMode";
 import styles from "../Editor.module.css";
+import { useI18n } from "../../../i18n/useI18n";
 
 interface InsertCellButtonsProps {
   onInsert: (type: "math" | "text") => void;
@@ -15,6 +16,8 @@ const InsertCellButtons: React.FC<InsertCellButtonsProps> = ({
   isPermanent = false
 }) => {
   const { mode } = useEditorMode();
+  const { t } = useI18n(); // use language hook
+
   const isLocked = mode === "locked";
   const isEdit = mode === "edit";
 
@@ -40,25 +43,25 @@ const InsertCellButtons: React.FC<InsertCellButtonsProps> = ({
       style={{ pointerEvents: isLocked ? "none" : "auto" }}
       aria-hidden={isLocked}
     >
-      <Tooltip text={isLocked ? "Cannot add cells in locked mode" : "Add math cell"}>
+      <Tooltip text={isLocked ? t("editor.lockedAdd") : t("editor.addMath")}>
         <button
           className={clsx(styles.mathCellButton, "button")}
           onClick={() => handleInsert("math")}
           disabled={isLocked}
           type="button"
         >
-          + Math
+          + {t("editor.math")}
         </button>
       </Tooltip>
 
-      <Tooltip text={isLocked ? "Cannot add cells in locked mode" : "Add text cell"}>
+      <Tooltip text={isLocked ? t("editor.lockedAdd") : t("editor.addText")}>
         <button
           className={clsx(styles.textCellButton, "button")}
           onClick={() => handleInsert("text")}
           disabled={isLocked}
           type="button"
         >
-          + Text
+          + {t("editor.text")}
         </button>
       </Tooltip>
     </div>

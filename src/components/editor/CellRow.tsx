@@ -15,6 +15,7 @@ import type { DragSource, DropTarget } from "../../hooks/mathDrag/DragContext";
 import { useEditorMode } from "../../hooks/editorMode/useEditorMode";
 import { noop } from "../../utils/noop";
 import { TEXT_CELL_TYPES, TEXT_TYPE_LABELS } from "../../models/textTypes";
+import { useI18n } from "../../i18n/useI18n";
 
 interface CellRowProps {
   cell: CellData;
@@ -63,6 +64,8 @@ const CellRow: React.FC<CellRowProps> = ({
   setSelectedCellId,
   onDropNode,
 }) => {
+  const { t } = useI18n(); // use language hook
+
   const ref = useRef<HTMLDivElement>(null);
   const { mode } = useEditorMode();
   const isLocked = mode === "locked";
@@ -97,7 +100,7 @@ const CellRow: React.FC<CellRowProps> = ({
       >
         <BaseCell
           // typeLabel={cell.type === "math" ? "Math" : "Text"}
-          typeLabel={cell.type === "math" ? "Math" : TEXT_TYPE_LABELS[cell.content.type] ?? "Text"}
+          typeLabel={cell.type === "math" ? t("cellRow.math") : TEXT_TYPE_LABELS[cell.content.type] ?? t("cellRow.text")}
           isSelected={!isLocked && selectedCellId === cell.id}
           isDragging={!isLocked && draggingCellId === cell.id}
           onClick={!isLocked ? () => setSelectedCellId(cell.id) : noop}
@@ -107,15 +110,13 @@ const CellRow: React.FC<CellRowProps> = ({
           toolbarExtras={
             !isLocked &&
             (cell.type === "math" ? (
-              <Tooltip
-                text={showLatexMap[cell.id] ? "Hide LaTeX output" : "Show LaTeX output"}
-              >
+              <Tooltip text={showLatexMap[cell.id] ? t("cellRow.hideLatex") : t("cellRow.showLatex")}>
                 <button
                   className={styles.cellToolbarButton}
                   onClick={() => toggleShowLatex(cell.id)}
                   type="button"
                 >
-                  {showLatexMap[cell.id] ? "🙈 LaTeX" : "👁️ LaTeX"}
+                  {showLatexMap[cell.id] ? `🙈 ${t("cellRow.latex")}` : `👁️ ${t("cellRow.latex")}`}
                 </button>
               </Tooltip>
             ) : (
@@ -136,7 +137,8 @@ const CellRow: React.FC<CellRowProps> = ({
                         type: typeOption as typeof cell.content.type,
                       })
                     }
-                    title={typeOption.charAt(0).toUpperCase() + typeOption.slice(1)}
+                    title={t(`cellRow.${typeOption}`)}
+                  // title={t(`cellRow.${typeOption}`).charAt(0).toUpperCase() + t(`cellRow.${typeOption}`).slice(1)}
                   >
                     A
                   </button>
@@ -171,7 +173,7 @@ const CellRow: React.FC<CellRowProps> = ({
               />
             )
           ) : (
-            <p>Loading cell...</p>
+            <p>{t("cellRow.loading")}</p>
           )}
         </BaseCell>
       </div>
