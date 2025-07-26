@@ -55,6 +55,38 @@ const en = {
     },
   },
 
+  layout: {
+    mathLibraryPanel: "Math Library",
+    notesMenuPanel: "Notes",
+    notesMenu: {
+      newNoteTitle: "My New Note",
+      noteUnarchived: 'Note "{{title}}" unarchived.',
+      noteDeleted: 'Note "{{title}}" deleted.',
+      noteArchived: 'Note "{{title}}" archived.',
+    }, 
+    sidebar: {
+      show: "Show {{title}}",
+      hide: "Hide {{title}}",
+      expand: "Expand {{title}}",
+      collapse: "Collapse {{title}}",
+    },
+    header: {
+      hotkeys: {
+        label: "Hotkeys",
+        tooltip: "Show hotkey overview",
+      },
+      userGuide: {
+        label: "User Guide",
+        tooltip: "Open user guide",
+        toast: "User guide is not yet written",
+      },
+      settings: {
+        label: "Settings",
+        tooltip: "Change your settings",
+      },
+    },
+  }, 
+
   settings: {
     title: "Settings",
     theme: "Theme",

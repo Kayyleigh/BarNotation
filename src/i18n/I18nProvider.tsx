@@ -34,19 +34,26 @@ export const I18nProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.setItem("language", lang);
   }, [lang]);
 
-  const t = (path: string): string => {
+  const t = (path: string, vars?: Record<string, string>): string => {
     const parts = path.split(".");
     let value: unknown = translations[lang];
   
     for (const part of parts) {
       if (typeof value === "object" && value !== null && part in value) {
-        value = (value as Record<string, unknown>)[part]; // narrow the type
+        value = (value as Record<string, unknown>)[part];
       } else {
-        return path; // fallback to showing the key
+        return path; // fallback if key not found
       }
     }
   
-    return typeof value === "string" ? value : path;
+    if (typeof value !== "string") return path;
+  
+    if (!vars) return value;
+  
+    // Interpolate variables like {{title}}
+    return value.replace(/\{\{(.*?)\}\}/g, (_, key) =>
+      vars[key.trim()] ?? `{{${key}}}`
+    );
   };
 
   return (

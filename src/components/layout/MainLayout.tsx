@@ -16,6 +16,7 @@ import type { CellData, Note, NoteMetadata } from "../../models/noteTypes";
 import { useToast } from "../../hooks/toast/useToast";
 import ResizableSidebar from "./ResizableSidebar";
 import { ResizableProvider } from "../../hooks/resizablePanels/ResizableProvider";
+import { useI18n } from "../../i18n/useI18n";
 
 function loadEditorSnapshotForNote(noteId: string): EditorSnapshot {
   const rootNode = createRootWrapper();
@@ -55,6 +56,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   showColorInPreview,
   nerdMode,
 }) => {
+  const { t } = useI18n(); // use language hook
+  
   const { showToast } = useToast();
 
   // Use lazy state initialization from localStorage
@@ -203,9 +206,9 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     });
 
     if (noteTitle) {
-      showToast({ type: "success", message: `Note "${noteTitle}" unarchived.` });
+      showToast({ type: "success", message: t("layout.notesMenu.noteUnarchived", { title: noteTitle }) });
     }
-  }, [showToast]);
+  }, [showToast, t]);
 
   const handleDeleteNote = useCallback((id: string) => {
     let deletedNoteTitle: string | null = null;
@@ -224,11 +227,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({
 
     // Do the toast after state update:
     if (deletedNoteTitle) {
-      showToast({ type: "success", message: `Note "${deletedNoteTitle}" deleted.` });
+      showToast({ type: "success", message: t("layout.notesMenu.noteDeleted", { title: deletedNoteTitle }) });
     } else {
       showToast({ type: "success", message: `Note deleted.` });
     }
-  }, [selectedNoteId, setSelectedNoteId, showToast]);
+  }, [selectedNoteId, setSelectedNoteId, showToast, t]);
 
   const updateNoteCells = useCallback((noteId: string, newCells: CellData[]) => {
     setNotes((prevNotes) =>
@@ -255,7 +258,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     const newNote: Note = {
       id: newId,
       metadata: {
-        title: "My New Note",
+        title: t("layout.notesMenu.newNoteTitle"), // "My New Note"
         courseCode: "",
         author: authorName,
         dateOrPeriod: "",
@@ -267,7 +270,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     };
     setNotes((prev) => [newNote, ...prev]);
     setSelectedNoteId(newId);
-  }, [authorName, setSelectedNoteId]);
+  }, [authorName, setSelectedNoteId, t]);
 
   // Note archiving logic
   const archiveNote = useCallback((id: string) => {
@@ -293,9 +296,9 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     });
 
     if (noteTitle) {
-      showToast({ type: "success", message: `Note "${noteTitle}" archived.` });
+      showToast({ type: "success", message: t("layout.notesMenu.noteArchived", { title: noteTitle }) });
     }
-  }, [selectedNoteId, setSelectedNoteId, showToast]);
+  }, [selectedNoteId, setSelectedNoteId, showToast, t]);
 
   // Note duplication logic
   const duplicateNote = useCallback((id: string) => {
@@ -349,7 +352,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
         <div style={{ display: "flex", height: "calc(100vh - 50px)", width: "100%" }}> {/* TODO no height hardcoding of menu bar */}
           <ResizableSidebar
             side="left"
-            title="Notes"
+            title={t("layout.notesMenuPanel")}
           >
             <NotesMenu
               selectedNoteId={selectedNoteId}

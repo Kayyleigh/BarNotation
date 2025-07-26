@@ -57,6 +57,37 @@ const nl = {
     },
   },
 
+  layout: {
+    mathLibraryPanel: "Math Library",
+    notesMenuPanel: "Notities",
+    notesMenu: {
+      newNoteTitle: "Mijn nieuwe notitie",
+      noteUnarchived: 'Notitie "{{title}}" is hersteld.',
+      noteDeleted: 'Notitie "{{title}}" is verwijderd.',
+      noteArchived: 'Notitie "{{title}}" is gearchiveerd.',
+    }, 
+    sidebar: {
+      show: "Toon {{title}}",
+      hide: "Verberg {{title}}",
+      expand: "Vergroot {{title}}",
+      collapse: "Verklein {{title}}",
+    },
+    header: {
+      hotkeys: {
+        label: "Sneltoetsen",
+        tooltip: "Toon sneltoetsen-overzicht",
+      },
+      userGuide: {
+        label: "Handleiding",
+        tooltip: "Open de gebruikershandleiding",
+        toast: "De handleiding is nog niet geschreven",
+      },
+      settings: {
+        label: "Instellingen",
+        tooltip: "Wijzig je instellingen",
+      },
+    },
+  },
 
   settings: {
     title: "Instellingen",
