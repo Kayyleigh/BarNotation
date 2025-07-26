@@ -2,6 +2,7 @@
 import React from "react";
 import styles from "./SearchBar.module.css";
 import Tooltip from "../tooltips/Tooltip";
+import { useI18n } from "../../i18n/useI18n";
 
 interface SearchBarProps {
   value: string;
@@ -14,15 +15,17 @@ interface SearchBarProps {
 const SearchBar: React.FC<SearchBarProps> = ({
   value,
   onChange,
-  placeholder = "Search...",
-  tooltip = "Search",
+  placeholder,
+  tooltip,
   className = "",
 }) => {
+  const { t } = useI18n(); // Use language hook
+
   return (
-    <Tooltip text={tooltip} style={{ width: "100%" }}>
+    <Tooltip text={tooltip || t("search.tooltip")} style={{ width: "100%" }}>
       <div className={`${styles.searchBar} ${className}`}>
         <input
-          placeholder={placeholder}
+          placeholder={placeholder || t("search.placeholder")}
           value={value}
           onChange={(e) => onChange(e.target.value)}
         />
@@ -30,7 +33,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
           <button
             className={styles.clearButton}
             onClick={() => onChange("")}
-            title="Clear search"
+            title={t("search.clear")}
           >
             ×
           </button>

@@ -1,9 +1,10 @@
 // components/common/SortDropdown.tsx
 import Tooltip from "../tooltips/Tooltip";
 import styles from "./SortDropdown.module.css"; // optional default styles
+import { useI18n } from "../../i18n/useI18n"; // import i18n hook
 
 export interface SortOption<T extends string> {
-  label: string;
+  label: string; // could be a translation key or raw text
   value: T;
 }
 
@@ -12,7 +13,7 @@ interface SortDropdownProps<T extends string> {
   onChange: (value: T) => void;
   options: SortOption<T>[];
   className?: string; // for custom style overrides
-  tooltip?: string;
+  tooltip?: string; // can be a translation key or raw text
   "aria-label"?: string;
 }
 
@@ -24,18 +25,21 @@ export function SortDropdown<T extends string>({
   tooltip,
   ...rest
 }: SortDropdownProps<T>) {
+  const { t } = useI18n();
+
   return (
-    <Tooltip text={tooltip ?? "Sorted by"}>
+    <Tooltip text={tooltip ? t(tooltip) : t("sortDropdown.sortedBy")}>
       <select
         value={value}
         onChange={(e) => onChange(e.target.value as T)}
         className={`${styles.sortDropdown} ${className}`}
-        title={tooltip}
+        title={tooltip ? t(tooltip) : t("sortDropdown.sortedBy")}
         {...rest}
       >
         {options.map((opt) => (
           <option key={opt.value} value={opt.value}>
-            {opt.label}
+            {/* If label is a translation key, translate it; otherwise, show raw */}
+            {t(opt.label)}
           </option>
         ))}
       </select>
