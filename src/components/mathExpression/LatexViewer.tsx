@@ -1,10 +1,11 @@
 // components/mathExpression/LatexViewer.tsx
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { nodeToLatex } from "../../models/nodeToLatex";
 import type { MathNode } from "../../models/types";
 import styles from "./LatexViewer.module.css";
 import "../../styles/latexOutputColoring.css";
 import { useLatexRefreshSignal } from "../../hooks/latexViewRefresh/useLatexRefresh";
+import { useI18n } from "../../i18n/useI18n";
 
 interface LatexViewerProps {
   rootNode: MathNode;
@@ -12,6 +13,8 @@ interface LatexViewerProps {
 }
 
 const LatexViewer: React.FC<LatexViewerProps> = ({ rootNode, showLatex }) => {
+  const { t } = useI18n(); // use language hook
+
   const [latex, setLatex] = useState<string>("");
   const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
   const [isOutdated, setIsOutdated] = useState(true);
@@ -26,8 +29,8 @@ const LatexViewer: React.FC<LatexViewerProps> = ({ rootNode, showLatex }) => {
     setIsOutdated(true);
   }, [rootNode]);
 
-  const refreshLatex = () => {
-    setLatex("Refreshing...");
+  const refreshLatex = useCallback(() => {
+    setLatex(t("latex.refreshing"));
     setTimeout(() => {
       try {
         const latexCode = nodeToLatex(latestRootNode.current, true);
@@ -37,21 +40,29 @@ const LatexViewer: React.FC<LatexViewerProps> = ({ rootNode, showLatex }) => {
         setCopied(false);
       } catch (err) {
         console.warn("LaTeX generation failed:", err);
-        setLatex("⚠ Error generating LaTeX");
+        setLatex(t("latex.error"));
       }
     }, 250);
-  };
+  }, [t]);
+
+  // update useEffect that uses refreshLatex:
+  useEffect(() => {
+    if (!prevShowLatex.current && showLatex) {
+      refreshLatex();
+    }
+    prevShowLatex.current = showLatex;
+  }, [showLatex, refreshLatex]);
 
   useEffect(() => {
     if (!prevShowLatex.current && showLatex) {
       refreshLatex();
     }
     prevShowLatex.current = showLatex;
-  }, [showLatex]);
+  }, [refreshLatex, showLatex]);
 
   useEffect(() => {
     // Respond to global refresh signal only
-    setLatex("Refreshing...");
+    setLatex(t("latex.refreshing"));
     setTimeout(() => {
       try {
         const latexCode = nodeToLatex(latestRootNode.current, true);
@@ -61,10 +72,10 @@ const LatexViewer: React.FC<LatexViewerProps> = ({ rootNode, showLatex }) => {
         setCopied(false);
       } catch (err) {
         console.warn("LaTeX generation failed:", err);
-        setLatex("⚠ Error generating LaTeX");
+        setLatex(t("latex.error"));
       }
     }, 250);
-  }, [signal]);
+  }, [signal, t]);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(nodeToLatex(latestRootNode.current, false));
@@ -74,36 +85,36 @@ const LatexViewer: React.FC<LatexViewerProps> = ({ rootNode, showLatex }) => {
 
   const timeString = lastRefreshed
     ? lastRefreshed.toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: false,
-      })
-    : "Never";
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    })
+    : t("latex.never");
 
   return (
     <div className={`${styles.latexViewer} ${showLatex ? "" : styles.hide}`}>
       <div className={styles.latexHeader}>
         <button
           onClick={refreshLatex}
-          className={`${styles.refreshButton} ${
-            isOutdated ? styles.outdated : styles.fresh
-          }`}
+          className={`${styles.refreshButton} ${isOutdated ? styles.outdated : styles.fresh
+            }`}
         >
-          {isOutdated ? "⟲ Refresh LaTeX*" : "✓ Refreshed LaTeX"}
+          {isOutdated ? t("latex.refreshPrompt") : t("latex.freshPrompt")}
         </button>
-        <span className={styles.latexTimestamp}>Last refreshed: {timeString}</span>
+        <span className={styles.latexTimestamp}>
+          {t("latex.lastRefreshed")}: {timeString}
+        </span>
       </div>
 
       <div className={styles.latexBoxWrapper}>
         <pre
-          className={`${styles.latexBox} ${
-            latex === "Refreshing..." ? styles.latexRefreshing : ""
-          }`}
+          className={`${styles.latexBox} ${latex === t("latex.refreshing") ? styles.latexRefreshing : ""
+            }`}
           dangerouslySetInnerHTML={{ __html: latex }}
         />
         <button className={styles.copyButton} onClick={handleCopy}>
-          {copied ? "✔ Copied" : "📋 Copy"}
+          {copied ? t("latex.copied") : t("latex.copy")}
         </button>
       </div>
     </div>

@@ -87,6 +87,17 @@ const en = {
     },
   }, 
 
+  latex: {
+    refreshPrompt: "⟲ Refresh LaTeX*",
+    freshPrompt: "✓ Refreshed LaTeX",
+    lastRefreshed: "Last refreshed",
+    refreshing: "Refreshing...",
+    error: "⚠ Error generating LaTeX",
+    copy: "📋 Copy",
+    copied: "✔ Copied",
+    never: "Never"
+  },
+
   settings: {
     title: "Settings",
     theme: "Theme",

@@ -89,6 +89,17 @@ const nl = {
     },
   },
 
+  latex: {
+    refreshPrompt: "⟲ LaTeX vernieuwen*",
+    freshPrompt: "✓ LaTeX vernieuwd",
+    lastRefreshed: "Laatst vernieuwd",
+    refreshing: "Bezig met vernieuwen...",
+    error: "⚠ Fout bij genereren van LaTeX",
+    copy: "📋 Kopiëren",
+    copied: "✔ Gekopieerd",
+    never: "Nooit"
+  },
+
   settings: {
     title: "Instellingen",
     theme: "Thema",
