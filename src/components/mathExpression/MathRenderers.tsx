@@ -581,6 +581,7 @@ import DummyStartNodeRenderer from "./DummyStartNodeRenderer";
 import { CommandInputNodeComponent } from "./CommandInputNodeComponent";
 import { specialSequences } from "../../models/specialSequences";
 import { deleteNodeById, insertNodeAtIndex } from "../../logic/node-manipulation";
+import { handleCharacterInsert, replaceCommandWithNode } from "../../logic/insertion";
 
 // Helper to get CSS classes for font styles
 function getStyleClass(style: TextStyle) {
@@ -777,6 +778,34 @@ export function renderMultiDigitNode(
 //   );
 // }
 
+// ALSO WORKS; MAY BE MORE EFFICIENT
+// export function renderCommandInputNode(
+//   node: CommandInputNode,
+//   baseProps: BaseRenderProps & MathRendererProps
+// ): React.ReactNode {
+//   const isSelected = baseProps.cursor?.containerId === node.id;
+
+//   return (
+//     <CommandInputNodeComponent
+//       node={node}
+//       isSelected={isSelected}
+//       onSelectSuggestion={(sequence) => {
+//         const match = specialSequences.find(seq => seq.sequence === sequence);
+//         if (!match) return;
+
+//         const transformedNode = match.createNode();
+//         const stateWithoutCmd = deleteNodeById(baseProps.editorState, node.id);
+//         const stateWithTargetNode = insertNodeAtIndex(stateWithoutCmd, baseProps.containerId, baseProps.index, transformedNode);
+
+//         baseProps.updateEditorState(stateWithTargetNode);
+//         console.log(stateWithTargetNode.cursor, stateWithTargetNode.rootNode)
+//       }}
+//       baseProps={baseProps}
+//     />
+//   );
+// }
+
+
 export function renderCommandInputNode(
   node: CommandInputNode,
   baseProps: BaseRenderProps & MathRendererProps
@@ -792,10 +821,9 @@ export function renderCommandInputNode(
         if (!match) return;
 
         const transformedNode = match.createNode();
-        const stateWithoutCmd = deleteNodeById(baseProps.editorState, node.id);
-        const stateWithTargetNode = insertNodeAtIndex(stateWithoutCmd, baseProps.containerId, baseProps.index, transformedNode);
+        const updatedState = replaceCommandWithNode(baseProps.editorState, node.id, transformedNode);
 
-        baseProps.updateEditorState(stateWithTargetNode);
+        baseProps.updateEditorState(updatedState);
       }}
       baseProps={baseProps}
     />

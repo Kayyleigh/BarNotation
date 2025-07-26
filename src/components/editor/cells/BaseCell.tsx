@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import clsx from "clsx";
 import Tooltip from "../../tooltips/Tooltip";
 import styles from "./cell.module.css";
+import editorStyles from "../Editor.module.css";
 import { useEditorMode } from "../../../hooks/editorMode/useEditorMode";
 
 export type BaseCellProps = {
@@ -76,12 +77,12 @@ const BaseCell: React.FC<BaseCellProps> = ({
             <div className={styles.cellToolbar}>
               {toolbarExtras}
               <Tooltip text="Duplicate cell">
-                <button className="button" onClick={onDuplicate} type="button">
+                <button className={editorStyles.cellToolbarButton} onClick={onDuplicate} type="button">
                   Duplicate
                 </button>
               </Tooltip>
               <Tooltip text="Delete cell">
-                <button className="button delete-button" onClick={onDelete} type="button">
+                <button className={clsx(editorStyles.cellToolbarButton, editorStyles.deleteButton)} onClick={onDelete} type="button">
                   🗑️
                 </button>
               </Tooltip>

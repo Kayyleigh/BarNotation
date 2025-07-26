@@ -95,6 +95,12 @@ export function CommandInputNodeComponent({
     };
   }, []);
 
+  useEffect(() => {
+    if (isSelected && anchorRef.current) {
+      anchorRef.current.focus();
+    }
+  }, [isSelected]);
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (matching.length === 0) return;
 

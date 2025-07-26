@@ -1,10 +1,11 @@
 import type { EditorState } from "./editor-state";
 import { createCommandInputNode, createMultiDigitNode, createTextNode } from "../models/nodeFactories";
-import { findNodeById, updateNodeById } from "../utils/treeUtils";
+import { findNodeById, findParentContainerAndIndex, updateNodeById } from "../utils/treeUtils";
 import { specialSequences } from "../models/specialSequences";
-import { type InlineContainerNode, type TextNode } from "../models/types";
+import { type InlineContainerNode, type MathNode, type TextNode } from "../models/types";
 import { getCloseSymbol, getOpenSymbol, getStyleFromSymbol, isClosingBracket, isOpeningBracket, type BracketStyle } from "../utils/bracketUtils";
 import { transformToGroupNode } from "./transformations";
+import { deleteNodeById, insertNodeAtIndex } from "./node-manipulation";
 
 export const handleCharacterInsertInTextContainer = (state: EditorState, char: string): EditorState => {
   const container = findNodeById(state.rootNode, state.cursor.containerId);
@@ -95,13 +96,14 @@ export const handleCharacterInsert = (state: EditorState, char: string): EditorS
     // Prepare sequence for pattern matching
     const newSequence = oldSequence + char;
     
-    //TODO auto completion logic?
+    // auto completion logic is in ComandInputComponent and the renderer function in MathRenderes.tsx 
 
     const match = specialSequences.find(seq => seq.sequence === newSequence);
 
     if (match) {
       const transformedNode = match.createNode();
 
+      // special sequence bracket handling (e.g. `\lceil` and `\rceil`)
       if (transformedNode.type === "text" && 
         (isOpeningBracket(transformedNode.content) || isClosingBracket(transformedNode.content))) {
         const style = getStyleFromSymbol(transformedNode.content);
@@ -400,3 +402,90 @@ export const handleBracketInsert = (
 
   return state;
 };
+
+export function replaceCommandWithNode(
+  state: EditorState,
+  commandNodeId: string,
+  replacementNode: MathNode
+): EditorState {
+  // Step 0: Find the command input node
+  const commandNode = findNodeById(state.rootNode, commandNodeId);
+  if (!commandNode || commandNode.type !== "command-input") return state;
+
+  // Step 1: Find parent container and index of command node
+  const parentInfo = findParentContainerAndIndex(state.rootNode, commandNodeId);
+  if (!parentInfo || parentInfo.container.type !== "inline-container") return state;
+
+  const { container } = parentInfo;
+  const index = container.children.findIndex(child => child.id === commandNodeId);
+  if (index === -1) return state;
+
+  // Step 2: Handle special bracket input (e.g. \lceil, \rceil)
+  if (
+    replacementNode.type === "text" &&
+    (isOpeningBracket(replacementNode.content) || isClosingBracket(replacementNode.content))
+  ) {
+    const style = getStyleFromSymbol(replacementNode.content) || "parentheses";
+    const side = isOpeningBracket(replacementNode.content) ? "open" : "close";
+
+    const updatedChildren = [
+      ...container.children.slice(0, index),
+      ...container.children.slice(index + 1), // Remove command node
+    ];
+
+    const updatedRoot = updateNodeById(state.rootNode, container.id, {
+      ...container,
+      children: updatedChildren,
+    });
+
+    return handleBracketInsert(
+      {
+        ...state,
+        rootNode: updatedRoot,
+      },
+      style,
+      side
+    );
+  }
+
+  // Step 3: Replace the command node inline with the new node
+  const updatedChildren = [
+    ...container.children.slice(0, index),
+    replacementNode,
+    ...container.children.slice(index + 1),
+  ];
+
+  const updatedRoot = updateNodeById(state.rootNode, container.id, {
+    ...container,
+    children: updatedChildren,
+  });
+
+  // Step 4: Decide cursor target
+  let targetContainerId = container.id;
+  let targetIndex = index + 1;
+
+  if (replacementNode.type === "nth-root") {
+    targetContainerId = replacementNode.base.id;
+    targetIndex = 0;
+  }
+
+  if (replacementNode.type === "accented") {
+    targetContainerId = replacementNode.base.id;
+    targetIndex = 0;
+  }
+
+  if (replacementNode.type === "styled") {
+    if (replacementNode.child.type === "inline-container") {
+      targetContainerId = replacementNode.child.id;
+      targetIndex = 0;
+    }
+  }
+
+  return {
+    rootNode: updatedRoot,
+    cursor: {
+      containerId: targetContainerId,
+      index: targetIndex,
+    },
+  };
+}

@@ -13,7 +13,6 @@
       - [`SortDropdown.module.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/common/SortDropdown.module.css) — Styling for the sort dropdown
       - [`SortDropdown.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/common/SortDropdown.tsx) — Dropdown component for sorting lists
       - [`toast.module.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/common/toast.module.css) — Styling for toasts
-      - [`ToastProvider.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/common/ToastProvider.tsx) — React provider for toasts
       - [`ToastRenderer.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/common/ToastRenderer.tsx) — Component for toasts
     - [`editor/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/editor/) — Editor and Notation-related components
       - [`CellRow.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/editor/CellRow.tsx) — Row in the editor: a cell and its preceding insert buttons
@@ -114,6 +113,7 @@
       - [`useResizablePanels.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/resizablePanels/useResizablePanels.ts) — Hook to trigger side panel resizing
     - [`toast/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/toast/) — hook and context for toast popup messages
       - [`toastContext.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/toast/toastContext.ts) — Context for triggering toast notifications
+      - [`ToastProvider.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/toast/ToastProvider.tsx) — React provider for toasts
       - [`useToast.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/toast/useToast.ts) — Hook to trigger toast notifications
   - [`logic/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/logic/) — Core MathEditor logic (cursor, input, history)
     - [`cursor.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/logic/cursor.ts) — CursorPosition: container + index

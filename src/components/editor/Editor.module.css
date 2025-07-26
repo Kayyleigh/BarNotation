@@ -134,6 +134,25 @@
   color: #1c4940;
 }
 
+.cellToolbarButton {
+  background: var(--button-bg);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--button-color);
+  height: 1.5rem;
+  font-size: 0.7rem;
+  align-self: center;
+}
+
+.cellToolbarButton:hover {
+  background: var(--button-color-hover);
+}
+
+.deleteButton:hover {
+  background: var(--delete-button-hover-bg);
+}
+
 .lockedMath {
   overflow: hidden;
   text-align: center;
