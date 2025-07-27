@@ -174,6 +174,8 @@ const nl = {
       restoreTooltip: "Notitie herstellen",
       deleteTooltip: "Permanent verwijderen",
       confirmDelete: `“{{title}}” permanent verwijderen?`,
+      archivedAt: "Gearchiveerd op {{date}}",
+      createdAt: "Gemaakt op {{date}}",
       by: "Door",
       cellSingular: "cel",
       cellPlural: "cellen",
@@ -297,6 +299,18 @@ const nl = {
       deleteTooltip: "Permanent verwijderen",
     },
   },
+  date: {
+    created: "Gemaakt",
+    edited: "Bewerkt",
+    archived: "Gearchiveerd",
+    justNow: "zonet",
+    minutesAgo: "{{count}} minuut geleden",
+    minutesAgo_plural: "{{count}} minuuten geleden",
+    hoursAgo: "{{count}} uur geleden",
+    hoursAgo_plural: "{{count}} uur geleden",
+    yesterday: "gisteren",
+  },
+  
 };
 
 export default nl;

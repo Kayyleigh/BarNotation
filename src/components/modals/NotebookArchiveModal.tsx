@@ -144,7 +144,7 @@ interface Props {
 }
 
 const NotebookArchiveModal: React.FC<Props> = ({ notes, onClose, onUnarchive, onDelete }) => {
-  const { t } = useI18n();
+  const { t, lang } = useI18n(); // get language hook (and lang for locale for date formatting)
 
   const [search, setSearch] = useState("");
   const [sortValue, setSortValue] = useState<SortValue>("archived_desc");
@@ -219,14 +219,25 @@ const NotebookArchiveModal: React.FC<Props> = ({ notes, onClose, onUnarchive, on
                 )}
                 <div className={archiveStyles.dateLine}>
                   {note.metadata.archivedAt && (
-                    <time title={`Archived at ${new Date(note.metadata.archivedAt).toLocaleString()}`}>
-                      {formatArchivedAt(note.metadata.archivedAt)}
+                    <time
+                      title={t("modals.notebookArchive.archivedAt", {
+                        date: new Date(note.metadata.archivedAt).toLocaleString(lang),
+                      })}
+                    >
+                      {formatArchivedAt(note.metadata.archivedAt, t, lang)}
                     </time>
                   )}
                   {note.metadata.createdAt && (
-                    <span>, <time title={`Created at ${new Date(note.metadata.createdAt).toLocaleString()}`}>
-                      {formatCreatedAt(note.metadata.createdAt)}
-                    </time></span>
+                    <span>
+                      ,{" "}
+                      <time
+                        title={t("modals.notebookArchive.createdAt", {
+                          date: new Date(note.metadata.createdAt).toLocaleString(lang),
+                        })}
+                      >
+                        {formatCreatedAt(note.metadata.createdAt, t, lang)}
+                      </time>
+                    </span>
                   )}
                 </div>
               </div>

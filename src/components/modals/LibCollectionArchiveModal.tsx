@@ -191,7 +191,7 @@ const LibCollectionArchiveModal: React.FC<Props> = ({
   onUnarchive,
   onDelete,
 }) => {
-  const { t } = useI18n();
+  const { t, lang } = useI18n(); // get language hook (and lang for locale for date formatting)
 
   const sortOptions: { label: string; value: SortValue }[] = [
     { label: t("modals.collectionArchive.sort.archived_desc"), value: "archived_desc" },
@@ -265,7 +265,7 @@ const LibCollectionArchiveModal: React.FC<Props> = ({
                       dateTime={new Date(col.archivedAt).toISOString()}
                       title={`${t("modals.collectionArchive.archivedAt")} ${new Date(col.archivedAt).toLocaleString()}`}
                     >
-                      {formatArchivedAt(col.archivedAt)}
+                      {formatArchivedAt(col.archivedAt, t, lang)}
                     </time>
                   )}
                   {col.createdAt && col.archivedAt && <span>, </span>}
@@ -274,7 +274,7 @@ const LibCollectionArchiveModal: React.FC<Props> = ({
                       dateTime={new Date(col.createdAt).toISOString()}
                       title={`${t("modals.collectionArchive.createdAt")} ${new Date(col.createdAt).toLocaleString()}`}
                     >
-                      {formatCreatedAt(col.createdAt)}
+                      {formatCreatedAt(col.createdAt, t, lang)}
                     </time>
                   )}
                 </div>

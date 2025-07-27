@@ -172,6 +172,8 @@ const en = {
       restoreTooltip: "Restore notebook",
       deleteTooltip: "Permanently delete",
       confirmDelete: `Delete "{{title}}" permanently?`,
+      archivedAt: "Archived at {{date}}",
+      createdAt: "Created at {{date}}",
       by: "By",
       cellSingular: "cell",
       cellPlural: "cells",
@@ -295,6 +297,17 @@ const en = {
       deleteTooltip: "Delete permanently",
     },
   },  
+  date: {
+    created: "Created",
+    edited: "Edited",
+    archived: "Archived",
+    justNow: "just now",
+    minutesAgo: "{{count}} minute ago",
+    minutesAgo_plural: "{{count}} minutes ago",
+    hoursAgo: "{{count}} hour ago",
+    hoursAgo_plural: "{{count}} hours ago",
+    yesterday: "yesterday",
+  },
 };
 
 export default en;
