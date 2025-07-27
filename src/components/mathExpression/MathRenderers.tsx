@@ -621,7 +621,8 @@ export function renderContainerChildren(
     ancestorIds,
     showPlaceholder,
     editorState,
-    updateEditorState
+    updateEditorState,
+    editorRef
   } = baseProps;
 
   const nodes: React.ReactNode[] = [];
@@ -684,6 +685,7 @@ export function renderContainerChildren(
             showPlaceholder={showPlaceholder}
             editorState={editorState}
             updateEditorState={updateEditorState}
+            editorRef={editorRef}
           />
         </span>
       );
@@ -824,6 +826,20 @@ export function renderCommandInputNode(
         const updatedState = replaceCommandWithNode(baseProps.editorState, node.id, transformedNode);
 
         baseProps.updateEditorState(updatedState);
+
+        setTimeout(() => {
+          baseProps.editorRef?.current?.focus();
+        }, 0);
+        console.log(baseProps.editorRef)
+
+      //   console.log("done.")
+      //   // defer until React processes state update
+      //   setTimeout(() => {
+      //     baseProps.onCursorChange({
+      //       containerId: updatedState.cursor.containerId,
+      //       index: updatedState.cursor.index - 3 // still no typing. Just visible
+      //     });
+      //   }, 1000);
       }}
       baseProps={baseProps}
     />
