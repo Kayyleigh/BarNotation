@@ -61,7 +61,6 @@ export const I18nProvider: React.FC<{ children: React.ReactNode }> = ({ children
   
       if (typeof pluralValue === "string") {
         value = pluralValue;
-        console.log("Using plural version:", pluralValue);
       }
     }
   

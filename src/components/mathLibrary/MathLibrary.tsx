@@ -62,7 +62,7 @@ const MathLibrary: React.FC<MathLibraryProps> = ({
         message: t("mathLibrary.error.loadStorage")
       });
     }
-    return createPremadeCollections();
+    return createPremadeCollections(t);
   });
 
   // Active collection id state

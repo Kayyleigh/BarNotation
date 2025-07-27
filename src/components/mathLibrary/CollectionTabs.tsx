@@ -10,6 +10,7 @@ import { nodeToLatex } from "../../models/nodeToLatex";
 import React from "react";
 import { useToast } from "../../hooks/toast/useToast";
 import { useI18n } from "../../i18n/useI18n";
+import { PREMADE_COLLECTIONS_RAW } from "../../constants/premadeMathCollections";
 
 interface CollectionTabsProps {
   collections: LibraryCollection[];
@@ -255,8 +256,18 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
     [draggingNode, onDropEntryToCollection, setDraggingNode, setDropTarget]
   );
 
-  // Remove old drop handlers using dataTransfer
+  const premadeCollectionsMap = Object.fromEntries(
+    PREMADE_COLLECTIONS_RAW.map(({ id, name }) => [id, name])
+  );
 
+  const getCollectionDisplayName = (collection: LibraryCollection): string => {
+    if (premadeCollectionsMap[collection.id]) {
+      const key = "premadeCollections." + collection.id
+      return t(key);
+    }
+    return collection.name; // fallback to saved name for user collections
+  };
+  
   return (
     <div className={styles.tabRow}>
       <div className={styles.tabHeaderLeft}>
@@ -317,7 +328,8 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
                       setTimeout(() => renameInputRef.current?.focus(), 0);
                     }}
                   >
-                    {c.name}
+                    {/* {c.name} */}
+                    {getCollectionDisplayName(c)}
                   </span>
                 )}
 

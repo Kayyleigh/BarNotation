@@ -308,6 +308,14 @@ const en = {
     hoursAgo_plural: "{{count}} hours ago",
     yesterday: "yesterday",
   },
+
+  premadeCollections: {
+    "premade-structures": "🏗️ Structures",
+    "premade-calculus": "Calculus",
+    "premade-logic": "Logic",
+    "premade-probability": "Probability & Statistics",
+    "greek-letters": "Greek Letters",
+  }
 };
 
 export default en;

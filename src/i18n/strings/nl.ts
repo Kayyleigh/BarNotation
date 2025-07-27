@@ -119,9 +119,9 @@ const nl = {
       overset: "Maak bovenschrift",
       fraction: "Zet node in teller van nieuwe breuk",
       structuralShortcuts: "Structurele Sneltoetsen",
-      rearrangeNodes: "Versleep knopen",
+      rearrangeNodes: "Versleep nodes",
       editingAndNavigation: "Bewerken & Navigatie",
-      navigate: "Navigeer tussen knopen",
+      navigate: "Navigeer tussen nodes",
       delete: "Verwijder node",
       copy: "Kopieer als LaTeX",
       cut: "Knip als LaTeX",
@@ -305,12 +305,19 @@ const nl = {
     archived: "Gearchiveerd",
     justNow: "zonet",
     minutesAgo: "{{count}} minuut geleden",
-    minutesAgo_plural: "{{count}} minuuten geleden",
+    minutesAgo_plural: "{{count}} minuten geleden",
     hoursAgo: "{{count}} uur geleden",
     hoursAgo_plural: "{{count}} uur geleden",
     yesterday: "gisteren",
   },
   
+  premadeCollections: {
+    "premade-structures": "🏗️ Structuren",
+    "premade-calculus": "Calculus", 
+    "premade-logic": "Logica",
+    "premade-probability": "Kansrekening & Statistiek",
+    "greek-letters": "Griekse Letters",
+  }
 };
 
 export default nl;
