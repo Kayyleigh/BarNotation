@@ -187,8 +187,22 @@
     "src/hooks/mathHover/": "hook, context and provider for math hover",
     "src/hooks/mathZoom/": "hook for math zoom",
     "src/hooks/resizablePanels/": "hook, context and provider for side panel resizing",
-    "src/hooks/toast/": "hook and context for toast popup messages"
+    "src/hooks/toast/": "hook and context for toast popup messages",
 
-
+    "src/i18n/": "Multi-lingual support",
+    "src/i18n/I18nContext.ts": "Context for languages",  
+    "src/i18n/I18nProvider.tsx": "Provider for languages",
+    "src/i18n/languages.ts": "List of available languages",    
+    "src/i18n/useI18n.ts": "Hook for languages",      
+    "src/i18n/strings/": "Folder for language files",        
+    "src/i18n/strings/cs.ts": "Czech (NOT YET IMPLEMENTED)",   
+    "src/i18n/strings/de.ts": "German (NOT YET IMPLEMENTED)",   
+    "src/i18n/strings/el.ts": "Greek (NOT YET IMPLEMENTED)",   
+    "src/i18n/strings/en.ts": "English",   
+    "src/i18n/strings/es.ts": "Spanish (NOT YET IMPLEMENTED)",
+    "src/i18n/strings/fr.ts": "French (NOT YET IMPLEMENTED)",
+    "src/i18n/strings/nl.ts": "Dutch",
+    "src/i18n/strings/ro.ts": "Romanian (NOT YET IMPLEMENTED)",
+    "src/i18n/strings/sk.ts": "Slovak (NOT YET IMPLEMENTED)"
   }
   
