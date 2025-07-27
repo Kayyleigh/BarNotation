@@ -4,6 +4,7 @@ import styles from "./NoteMetadataSection.module.css";
 import clsx from "clsx";
 import type { NoteMetadata } from "../../models/noteTypes";
 import { useEditorMode } from "../../hooks/editorMode/useEditorMode";
+import { useI18n } from "../../i18n/useI18n";
 
 interface Props {
   metadata: NoteMetadata;
@@ -12,6 +13,7 @@ interface Props {
 
 const NoteMetaDataSection: React.FC<Props> = ({ metadata, setMetadata }) => {
   const { mode } = useEditorMode();
+  const { t } = useI18n();
 
   const titleRef = useRef<HTMLTextAreaElement | null>(null);
   const authorRef = useRef<HTMLTextAreaElement | null>(null);
@@ -21,7 +23,6 @@ const NoteMetaDataSection: React.FC<Props> = ({ metadata, setMetadata }) => {
     if (mode !== "preview") return;
 
     const refs = [titleRef, authorRef, dateRef];
-
     for (const ref of refs) {
       const el = ref.current;
       if (el) {
@@ -50,19 +51,19 @@ const NoteMetaDataSection: React.FC<Props> = ({ metadata, setMetadata }) => {
           <textarea
             ref={titleRef}
             rows={1}
-            placeholder="Untitled Note"
+            placeholder={t("editor.metadata.untitled")}
             value={metadata.title}
             onChange={(e) => setMetadata({ title: e.target.value })}
             className={styles.previewInputTitle}
           />
         </div>
 
-        {(metadata.author) && (
+        {metadata.author && (
           <div className={styles.previewAuthor}>
             <textarea
               ref={authorRef}
               rows={1}
-              placeholder="Author"
+              placeholder={t("editor.metadata.author")}
               value={metadata.author ?? ""}
               onChange={(e) => setMetadata({ author: e.target.value })}
               className={styles.previewInputAuthor}
@@ -70,12 +71,12 @@ const NoteMetaDataSection: React.FC<Props> = ({ metadata, setMetadata }) => {
           </div>
         )}
 
-        {(metadata.dateOrPeriod) && (
+        {metadata.dateOrPeriod && (
           <div className={styles.previewDate}>
             <textarea
               ref={dateRef}
               rows={1}
-              placeholder="Date or Period"
+              placeholder={t("editor.metadata.date")}
               value={metadata.dateOrPeriod ?? ""}
               onChange={(e) => setMetadata({ dateOrPeriod: e.target.value })}
               className={styles.previewInputDate}
@@ -91,7 +92,7 @@ const NoteMetaDataSection: React.FC<Props> = ({ metadata, setMetadata }) => {
       <div className={styles.titleWrapper}>
         <input
           type="text"
-          placeholder="Untitled Note"
+          placeholder={t("editor.metadata.untitled")}
           value={metadata.title}
           onChange={(e) => setMetadata({ title: e.target.value })}
           className={styles.titleInput}
@@ -102,7 +103,7 @@ const NoteMetaDataSection: React.FC<Props> = ({ metadata, setMetadata }) => {
         <div className={styles.metaBox}>
           <input
             type="text"
-            placeholder="Course Code"
+            placeholder={t("editor.metadata.course")}
             value={metadata.courseCode ?? ""}
             onChange={(e) => setMetadata({ courseCode: e.target.value })}
             className={styles.metaInput}
@@ -111,7 +112,7 @@ const NoteMetaDataSection: React.FC<Props> = ({ metadata, setMetadata }) => {
         <div className={styles.metaBox}>
           <input
             type="text"
-            placeholder="Author"
+            placeholder={t("editor.metadata.author")}
             value={metadata.author ?? ""}
             onChange={(e) => setMetadata({ author: e.target.value })}
             className={styles.metaInput}
@@ -120,7 +121,7 @@ const NoteMetaDataSection: React.FC<Props> = ({ metadata, setMetadata }) => {
         <div className={styles.metaBox}>
           <input
             type="text"
-            placeholder="Date or Period"
+            placeholder={t("editor.metadata.date")}
             value={metadata.dateOrPeriod ?? ""}
             onChange={(e) => setMetadata({ dateOrPeriod: e.target.value })}
             className={styles.metaInput}

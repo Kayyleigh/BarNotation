@@ -2,6 +2,7 @@
 import React from "react";
 import styles from "./toast.module.css";
 import type { Toast } from "../../hooks/toast/toastContext";
+import { useI18n } from "../../i18n/useI18n";
 
 const toastEmojiMap = {
   success: "✅",
@@ -16,6 +17,8 @@ interface ToastRendererProps {
 }
 
 const ToastRenderer: React.FC<ToastRendererProps> = React.memo(({ toasts, onRemove }) => {
+  const { t } = useI18n();
+
   return (
     <div className={styles.toastContainer}>
       {toasts.map((toast) => (
@@ -26,7 +29,10 @@ const ToastRenderer: React.FC<ToastRendererProps> = React.memo(({ toasts, onRemo
           <span className={styles.emoji}>
             {toastEmojiMap[toast.type || "info"]}
           </span>
-          <span className={styles.message}>{toast.message}</span>
+          <span className={styles.message}>
+            {/* If toast.message is a translation key, translate it; otherwise raw */}
+            {t(toast.message)}
+          </span>
           {toast.onAction && toast.actionLabel && (
             <button
               className={styles.toastAction}
@@ -35,7 +41,7 @@ const ToastRenderer: React.FC<ToastRendererProps> = React.memo(({ toasts, onRemo
                 onRemove(toast.id);
               }}
             >
-              {toast.actionLabel}
+              {t(toast.actionLabel)}
             </button>
           )}
         </div>

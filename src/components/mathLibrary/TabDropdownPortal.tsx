@@ -3,6 +3,7 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 import styles from "./TabDropdownPortal.module.css";
 import Tooltip from "../tooltips/Tooltip";
+import { useI18n } from "../../i18n/useI18n";
 
 type Props = {
   anchorRef: React.RefObject<HTMLButtonElement>;
@@ -21,6 +22,8 @@ const TabDropdownPortal: React.FC<Props> = ({
   onArchive,
   onClose,
 }) => {
+  const { t } = useI18n(); // use language hook
+
   const menuRef = useRef<HTMLDivElement>(null);
   const [style, setStyle] = useState<React.CSSProperties>({
     visibility: "hidden",
@@ -65,17 +68,17 @@ const TabDropdownPortal: React.FC<Props> = ({
 
   return ReactDOM.createPortal(
     <div ref={menuRef} className={styles.dropdownMenu} style={style}>
-      <Tooltip text="Rename collection">
-        <button onClick={onRename}>✏️ Rename</button>
+      <Tooltip text={t("mathLibrary.tabMenu.renameTooltip")}>
+        <button onClick={onRename}>✏️ {t("mathLibrary.tabMenu.rename")}</button>
       </Tooltip>
-      <Tooltip text="Duplicate collection">
-        <button onClick={onDuplicate}>📄 Duplicate</button>
+      <Tooltip text={t("mathLibrary.tabMenu.duplicateTooltip")}>
+        <button onClick={onDuplicate}>📄 {t("mathLibrary.tabMenu.duplicate")}</button>
       </Tooltip>
-      <Tooltip text="Move to archive">
-        <button onClick={onArchive}>📦 Archive</button>
+      <Tooltip text={t("mathLibrary.tabMenu.archiveTooltip")}>
+        <button onClick={onArchive}>📦 {t("mathLibrary.tabMenu.archive")}</button>
       </Tooltip>
-      <Tooltip text="Delete permanently">
-        <button className={styles.deleteButton} onClick={onDelete}>🗑️ Delete</button>
+      <Tooltip text={t("mathLibrary.tabMenu.deleteTooltip")}>
+        <button className={styles.deleteButton} onClick={onDelete}>🗑️ {t("mathLibrary.tabMenu.delete")}</button>
       </Tooltip>
     </div>,
     document.body

@@ -6,6 +6,7 @@ import CollapseIcon from "../icons/CollapseIcon";
 import { PANEL_EDGE_WIDTH } from "../../constants/editorConstants";
 import type { PanelSide } from "../../hooks/resizablePanels/useResizablePanels";
 import { useResizablePanels } from "../../hooks/resizablePanels/ResizableContext";
+import { useI18n } from "../../i18n/useI18n";
 
 interface ResizableSidebarProps {
   side: PanelSide; // "left" | "right"
@@ -18,6 +19,8 @@ const ResizableSidebar: React.FC<ResizableSidebarProps> = ({
   title,
   children,
 }) => {
+  const { t } = useI18n(); // use language hook
+
   const { state, setWidth, toggle } = useResizablePanels();
 
   const width = state[side].width;
@@ -93,11 +96,21 @@ const ResizableSidebar: React.FC<ResizableSidebarProps> = ({
       }}
     >
       <div className={styles.resizer} onMouseDown={handleMouseDown}>
-        <Tooltip text={isCollapsed ? `Show ${title}` : `Hide ${title}`}>
+        <Tooltip
+          text={
+            isCollapsed
+              ? t("layout.sidebar.show", { title })
+              : t("layout.sidebar.hide", { title })
+          }
+        >
           <button
             className={styles.toggleButton}
             onClick={toggleCollapse}
-            aria-label={isCollapsed ? `Expand ${title}` : `Collapse ${title}`}
+            aria-label={
+              isCollapsed
+                ? t("layout.sidebar.expand", { title })
+                : t("layout.sidebar.collapse", { title })
+            }
           >
             <CollapseIcon
               size={PANEL_EDGE_WIDTH}
@@ -107,8 +120,8 @@ const ResizableSidebar: React.FC<ResizableSidebarProps> = ({
                     ? "left"
                     : "right"
                   : isCollapsed
-                  ? "right"
-                  : "left"
+                    ? "right"
+                    : "left"
               }
             />
           </button>

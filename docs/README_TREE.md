@@ -115,6 +115,21 @@
       - [`toastContext.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/toast/toastContext.ts) — Context for triggering toast notifications
       - [`ToastProvider.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/toast/ToastProvider.tsx) — React provider for toasts
       - [`useToast.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/toast/useToast.ts) — Hook to trigger toast notifications
+  - [`i18n/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/i18n/) — Multi-lingual support
+    - [`I18nContext.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/i18n/I18nContext.ts) — Context for languages
+    - [`I18nProvider.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/i18n/I18nProvider.tsx) — Provider for languages
+    - [`languages.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/i18n/languages.ts) — List of available languages
+    - [`useI18n.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/i18n/useI18n.ts) — Hook for languages
+    - [`strings/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/i18n/strings/) — Folder for language files
+      - [`cs.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/i18n/strings/cs.ts) — Czech (NOT YET IMPLEMENTED)
+      - [`de.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/i18n/strings/de.ts) — German (NOT YET IMPLEMENTED)
+      - [`el.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/i18n/strings/el.ts) — Greek (NOT YET IMPLEMENTED)
+      - [`en.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/i18n/strings/en.ts) — English
+      - [`es.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/i18n/strings/es.ts) — Spanish (NOT YET IMPLEMENTED)
+      - [`fr.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/i18n/strings/fr.ts) — French (NOT YET IMPLEMENTED)
+      - [`nl.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/i18n/strings/nl.ts) — Dutch
+      - [`ro.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/i18n/strings/ro.ts) — Romanian (NOT YET IMPLEMENTED)
+      - [`sk.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/i18n/strings/sk.ts) — Slovak (NOT YET IMPLEMENTED)
   - [`logic/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/logic/) — Core MathEditor logic (cursor, input, history)
     - [`cursor.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/logic/cursor.ts) — CursorPosition: container + index
     - [`deletion.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/logic/deletion.ts) — Backspace handler

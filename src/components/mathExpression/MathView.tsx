@@ -25,6 +25,8 @@ const MathView: React.FC<MathViewProps> = ({ node, className, showPlaceHolder })
         onCursorChange={noop}
         setHoverPath={noop}
         onDropNode={noop}
+        // editorState={} //TODO make dummy
+        updateEditorState={noop}
         ancestorIds={[]}
         inheritedStyle={{
           fontStyling: { fontStyle: "normal", fontStyleAlias: "" },
