@@ -201,6 +201,100 @@ const en = {
       language: "Language",
     },
   },
+
+  notesMenu: {
+    createTooltip: "Create new notebook",
+    newNote: "New Note",
+    archiveTooltip: "View archived notebooks",
+    archived: "Archived",
+    searchPlaceholder: "Search notes...",
+    searchTooltip: "Search notes by title",
+    notesSection: "Notes",
+    sort: {
+      modified: "Last Modified",
+      created: "Creation Date",
+      title: "Title A → Z",
+      cellCount: "Cell Count",
+    },
+    noNotes: "No notes found.",
+    noteOptions: "Note options",
+    actions: {
+      archive: "Archive",
+      duplicate: "Duplicate",
+      exportLatex: "Export to LaTeX",
+      delete: "Delete",
+    }
+  },
+
+  mathLibrary: {
+    entries: {
+      deleteEntry: "Delete entry",
+      empty: "Drag math expression here",
+      noMatches: "No matches found",
+      ariaLabel: "Entries in collection {{name}}",
+    },
+    error: {
+      loadStorage: "Failed to load library collections from storage.",
+      saveStorage: "Failed to save library collections.",
+      parseLatex: "Failed to parse LaTeX.",
+    },
+    success: {
+      addLatex: "LaTeX added to library.",
+      entryMoved: "Entry moved between collections.",
+      entryAddedTo: `Entry {{latex}} added to {{collection}}.`,
+      unarchived: `Unarchived "{{name}}"`,
+      deleted: `Deleted "{{name}}"`,
+    },
+    warning: {
+      entryExists: "Entry already exists in collection.",
+      entryExistsIn: `Entry {{latex}} already exists in {{collection}}.`,
+    },
+    search: {
+      placeholder: "Search Collection...",
+      placeholderWith: "Search {{name}}...",
+      tooltip: "Search on LaTeX substring",
+    },
+    sort: {
+      newest: "Newest",
+      oldest: "Oldest",
+      mostUsed: "Most Used",
+      leastUsed: "Least Used",
+      aZ: "A → Z",
+      zA: "Z → A",
+      ariaLabel: "Sort library entries",
+    },
+    loading: "Loading collections, this may take a while...",
+    empty: "No active collection available.",
+    default: {
+      collection: "Collection",
+    },
+    tabs: {
+      defaultName: "My Collection",
+      tooltip: {
+        new: "New Collection",
+        archive: "Collections Archive",
+        moreOptions: "More options",
+      },
+      toast: {
+        duplicated: `Duplicated "{{name}}"`,
+        deleted: `Deleted "{{name}}"`,
+        archived: `Archived "{{name}}"`,
+      },
+      confirm: {
+        delete: "Are you sure you want to delete this collection?",
+      },
+    },
+    tabMenu: {
+      rename: "Rename",
+      renameTooltip: "Rename collection",
+      duplicate: "Duplicate",
+      duplicateTooltip: "Duplicate collection",
+      archive: "Archive",
+      archiveTooltip: "Move to archive",
+      delete: "Delete",
+      deleteTooltip: "Delete permanently",
+    },
+  },  
 };
 
 export default en;

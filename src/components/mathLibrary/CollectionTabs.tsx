@@ -9,6 +9,7 @@ import { useDragContext } from "../../hooks/mathDrag/useDragContext";
 import { nodeToLatex } from "../../models/nodeToLatex";
 import React from "react";
 import { useToast } from "../../hooks/toast/useToast";
+import { useI18n } from "../../i18n/useI18n";
 
 interface CollectionTabsProps {
   collections: LibraryCollection[];
@@ -33,6 +34,8 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
   setMenuOpenFor,
   onDropEntryToCollection,
 }) => {
+  const { t } = useI18n(); // use language hook
+  
   const { showToast } = useToast();
 
   const buttonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
@@ -122,19 +125,19 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
 
   const duplicateCollection = useCallback((id: string) => {
     let duplicatedName: string | null = null;
-  
+
     setCollections((currentCollections) => {
       const original = currentCollections.find((c) => c.id === id);
       if (!original) return currentCollections;
-  
+
       duplicatedName = original.name;
-  
+
       // Deep clone entries
       const clonedEntries = original.entries.map((entry) => ({
         ...entry,
         id: crypto.randomUUID(),
       }));
-  
+
       const newCollection = {
         ...original,
         id: crypto.randomUUID(),
@@ -142,25 +145,25 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
         entries: clonedEntries,
         createdAt: Date.now(),
       };
-    
+
       const originalIndex = currentCollections.findIndex((c) => c.id === id);
       const newCollections = [...currentCollections];
       newCollections.splice(originalIndex + 1, 0, newCollection);
-  
+
       setEditingCollId(newCollection.id);
-  
+
       return newCollections;
     });
-  
+
     if (duplicatedName) {
       showToast({
         type: "success",
-        message: `Duplicated "${duplicatedName}"`,
+        message: t("mathLibrary.tabs.toast.duplicated", { name: duplicatedName })
       });
     }
-  
+
     // If setActiveColl here, do it outside setCollections and wrap in startTransition in parent.
-  }, [setCollections, setEditingCollId, showToast]);
+  }, [setCollections, setEditingCollId, showToast, t]);
 
 
   const deleteCollection = (id: string) => {
@@ -175,7 +178,9 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
 
     showToast({
       type: "success",
-      message: `Deleted "${collection?.name || "Collection"}"`,
+      message: t("mathLibrary.tabs.toast.deleted", {
+        name: collection?.name || t("mathLibrary.default.collection"),
+      })
     });
   };
 
@@ -195,7 +200,9 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
 
     showToast({
       type: "success",
-      message: `Archived "${collection?.name || "Collection"}"`,
+      message: t("mathLibrary.tabs.toast.archived", {
+        name: collection?.name || t("mathLibrary.default.collection"),
+      })
     });
   };
 
@@ -321,7 +328,7 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
                         buttonRefs.current[c.id] = el;
                       }}
                       className={styles.collectionTabButton}
-                      title="More options"
+                      title={t("mathLibrary.tabs.tooltip.moreOptions")}
                       onClick={() => setMenuOpenFor(c.id === menuOpenFor ? null : c.id)}
                     >
                       ⋯
@@ -339,7 +346,7 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
                         }}
                         onDelete={() => {
                           if (
-                            window.confirm("Are you sure you want to delete this collection?")
+                            window.confirm(t("mathLibrary.tabs.confirm.delete"))
                           ) {
                             deleteCollection(c.id);
                           }
@@ -358,12 +365,12 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
             );
           })}
 
-        <Tooltip text="New Collection">
+        <Tooltip text={t("mathLibrary.tabs.tooltip.new")}>
           <button
             className={styles.tabAdd}
             onClick={() => {
               const id = crypto.randomUUID();
-              const name = "My Collection";
+              const name = t("mathLibrary.tabs.defaultName");
               setCollections((c) => [...c, { id, name, entries: [], createdAt: Date.now() }]);
               setActiveColl(id);
               setEditingCollId(id);
@@ -379,7 +386,7 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
 
       <div className={styles.tabHeaderRight}>
         {/* Archive Button */}
-        <Tooltip text="Collections Archive">
+        <Tooltip text={t("mathLibrary.tabs.tooltip.archive")}>
           <button className={styles.archiveButton} onClick={() => setMenuOpenFor("archive")}>
             🗂️
           </button>

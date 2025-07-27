@@ -14,6 +14,7 @@ import { nodeToLatex } from "../../models/nodeToLatex";
 import { parseLatex } from "../../models/latexParser";
 import React from "react";
 import { SortDropdown } from "../common/SortDropdown";
+import { useI18n } from "../../i18n/useI18n";
 
 const STORAGE_KEY = "mathLibraryCollections";
 
@@ -33,6 +34,8 @@ interface MathLibraryProps {
 const MathLibrary: React.FC<MathLibraryProps> = ({
   updateEntryRef,
 }) => {
+  const { t } = useI18n(); // use language hook
+
   const { showToast } = useToast();
 
   // React 18 startTransition hook for deferred updates
@@ -56,7 +59,7 @@ const MathLibrary: React.FC<MathLibraryProps> = ({
     } catch {
       showToast({
         type: "error",
-        message: "Failed to load library collections from storage.",
+        message: t("mathLibrary.error.loadStorage")
       });
     }
     return createPremadeCollections();
@@ -104,9 +107,13 @@ const MathLibrary: React.FC<MathLibraryProps> = ({
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(collections));
     } catch {
-      showToast({ type: "error", message: "Failed to save library collections." });
+
+      showToast({
+        type: "error",
+        message: t("mathLibrary.error.saveStorage")
+      });
     }
-  }, [collections, showToast]);
+  }, [collections, showToast, t]);
 
   // Archive modal open handler
   useEffect(() => {
@@ -185,10 +192,10 @@ const MathLibrary: React.FC<MathLibraryProps> = ({
             )
           );
 
-          showToast({ type: "success", message: "LaTeX added to library." });
+          showToast({ type: "success", message: t("mathLibrary.success.addLatex") });
         } catch (err) {
           console.error("Invalid LaTeX dropped:", err);
-          showToast({ type: "error", message: "Failed to parse LaTeX." });
+          showToast({ type: "error", message: t("mathLibrary.error.parseLatex") });
         }
 
         return;
@@ -241,14 +248,14 @@ const MathLibrary: React.FC<MathLibraryProps> = ({
           })
         );
 
-        showToast({ type: "success", message: "Entry moved between collections." });
+        showToast({ type: "success", message: t("mathLibrary.success.entryMoved") }); //TODO maybe take arg to let user know which one? 
       } else if (draggingNode.sourceType === "cell") {
         const latex = draggingNode.node ? nodeToLatex(draggingNode.node) ?? "" : "";
         const exists = targetCollection.entries.some(
           (e) => e.latex === latex
         );
         if (exists) {
-          showToast({ type: "warning", message: "Entry already exists in collection." });
+          showToast({ type: "warning", message: t("mathLibrary.warning.entryExists") }); //TODO maybe take arg to let user know which one? 
         } else {
           const newEntry: LibraryEntry = {
             id: crypto.randomUUID(),
@@ -262,26 +269,35 @@ const MathLibrary: React.FC<MathLibraryProps> = ({
           newEntries.splice(insertIndex, 0, newEntry);
 
           updateCollectionEntries(targetCollection.id, newEntries);
-          showToast({ type: "success", message: `Entry ${newEntry.latex} added to ${targetCollection.name}.` });
+          showToast({
+            type: "success",
+            message: t("mathLibrary.success.entryAddedTo", {
+              latex: newEntry.latex,
+              collection: targetCollection.name,
+            })
+          });
         }
       }
 
       setDraggingNode(null);
       setDropTarget(null);
     },
-    [draggingNode, findCollection, setDraggingNode, setDropTarget, showToast, updateCollectionEntries]
+    [draggingNode, findCollection, setDraggingNode, setDropTarget, showToast, t, updateCollectionEntries]
   );
 
   const activeCollection = collections.find(c => c.id === activeColl);
-  const placeholderText = `Search ${activeCollection ? activeCollection.name : "Collection"}...`;
+
+  const placeholderText = activeCollection
+    ? t("mathLibrary.search.placeholderWith", { name: activeCollection.name })
+    : t("mathLibrary.search.placeholder");
 
   const sortOptions = [
-    { label: "Newest", value: "date" },
-    { label: "Oldest", value: "date-asc" },
-    { label: "Most Used", value: "usage" },
-    { label: "Least Used", value: "usage-asc" },
-    { label: "A → Z", value: "latex" },
-    { label: "Z → A", value: "latex-desc" },
+    { label: t("mathLibrary.sort.newest"), value: "date" },
+    { label: t("mathLibrary.sort.oldest"), value: "date-asc" },
+    { label: t("mathLibrary.sort.mostUsed"), value: "usage" },
+    { label: t("mathLibrary.sort.leastUsed"), value: "usage-asc" },
+    { label: t("mathLibrary.sort.aZ"), value: "latex" },
+    { label: t("mathLibrary.sort.zA"), value: "latex-desc" },
   ];
 
   const memoizedOnDrop = useCallback(
@@ -309,12 +325,24 @@ const MathLibrary: React.FC<MathLibraryProps> = ({
           if (!coll) return;
           const exists = coll.entries.some((e) => e.latex === entry.latex);
           if (exists) {
-            showToast({ type: "warning", message: `Entry ${entry.latex} already exists in ${coll.name}.` });
+            showToast({
+              type: "warning",
+              message: t("mathLibrary.warning.entryExistsIn", {
+                latex: entry.latex,
+                collection: coll.name,
+              })
+            });
             return;
           }
           const newEntry = { ...entry, addedAt: Date.now(), draggedCount: 0 };
           updateCollectionEntries(collectionId, [...coll.entries, newEntry]);
-          showToast({ type: "success", message: `Entry ${entry.latex} added to ${coll.name}.` });
+          showToast({
+            type: "success",
+            message: t("mathLibrary.success.entryAddedTo", {
+              latex: entry.latex,
+              collection: coll.name,
+            })
+          });
         }}
       />
 
@@ -324,14 +352,14 @@ const MathLibrary: React.FC<MathLibraryProps> = ({
           value={searchTerm}
           onChange={setSearchTerm}
           className={styles.librarySearch}
-          tooltip="Search on LaTeX substring"
+          tooltip={t("mathLibrary.search.tooltip")}
         />
         <SortDropdown
           options={sortOptions}
           value={sortOption}
           onChange={(val) => setSortOption(val as SortOption)}
           className={styles.sortDropdown}
-          aria-label="Sort library entries"
+          aria-label={t("mathLibrary.sort.ariaLabel")}
         />
       </div>
 
@@ -339,7 +367,7 @@ const MathLibrary: React.FC<MathLibraryProps> = ({
         loadingCollection ? (
           <div className={styles.loadingContainer}>
             <div className={styles.spinner} />
-            <p className={styles.loadingText}>Loading collections, this may take a while...</p>
+            <p className={styles.loadingText}>{t("mathLibrary.loading")}</p>
           </div>
         ) : (
           <LibraryEntries
@@ -353,7 +381,7 @@ const MathLibrary: React.FC<MathLibraryProps> = ({
           />
         )
       ) : (
-        <p>No active collection available.</p>
+        <p>{t("mathLibrary.empty")}</p>
       )}
       {archiveModalOpen && (
         <LibCollectionArchiveModal
@@ -366,7 +394,9 @@ const MathLibrary: React.FC<MathLibraryProps> = ({
             );
             showToast({
               type: "success",
-              message: `Unarchived "${unarchived?.name || "Collection"}"`,
+              message: t("mathLibrary.success.unarchived", {
+                name: unarchived?.name || t("mathLibrary.default.collection"),
+              })
             });
           }}
           onDelete={(id) => {
@@ -374,7 +404,9 @@ const MathLibrary: React.FC<MathLibraryProps> = ({
             setCollections((prev) => prev.filter((c) => c.id !== id));
             showToast({
               type: "success",
-              message: `Deleted "${deleted?.name || "Collection"}"`,
+              message: t("mathLibrary.success.deleted", {
+                name: deleted?.name || t("mathLibrary.default.collection"),
+              })
             });
           }}
         />

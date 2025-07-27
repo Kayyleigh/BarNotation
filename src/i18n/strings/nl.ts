@@ -203,6 +203,100 @@ const nl = {
       language: "Taal",
     },
   },
-}
+
+  notesMenu: {
+    createTooltip: "Nieuwe notitie aanmaken",
+    newNote: "Nieuwe notitie",
+    archiveTooltip: "Gearchiveerde notities bekijken",
+    archived: "Gearchiveerd",
+    searchPlaceholder: "Zoek notities...",
+    searchTooltip: "Zoek notities op titel",
+    notesSection: "Notities",
+    sort: {
+      modified: "Laatst aangepast",
+      created: "Aanmaakdatum",
+      title: "Titel A → Z",
+      cellCount: "Aantal cellen",
+    },
+    noNotes: "Geen notities gevonden.",
+    noteOptions: "Notitie-opties",
+    actions: {
+      archive: "Archiveren",
+      duplicate: "Dupliceren",
+      exportLatex: "Exporteer naar LaTeX",
+      delete: "Verwijderen",
+    }
+  },
+  
+  mathLibrary: {
+    entries: {
+      deleteEntry: "Verwijder item",
+      empty: "Sleep een wiskundige expressie hierheen",
+      noMatches: "Geen overeenkomsten gevonden",
+      ariaLabel: "Items in collectie {{name}}",
+    },
+    error: {
+      loadStorage: "Kan wiskundebibliotheek niet laden uit opslag.",
+      saveStorage: "Kan wiskundebibliotheek niet opslaan.",
+      parseLatex: "LaTeX kon niet worden geparsed.",
+    },
+    success: {
+      addLatex: "LaTeX toegevoegd aan bibliotheek.",
+      entryMoved: "Item verplaatst tussen collecties.",
+      entryAddedTo: `Item {{latex}} toegevoegd aan {{collection}}.`,
+      unarchived: `"{{name}}" gedearchiveerd`,
+      deleted: `"{{name}}" verwijderd`,
+    },
+    warning: {
+      entryExists: "Item bestaat al in de collectie.",
+      entryExistsIn: `Item {{latex}} bestaat al in {{collection}}.`,
+    },
+    search: {
+      placeholder: "Zoek Collectie...",
+      placeholderWith: "Zoek in {{name}}...",
+      tooltip: "Zoeken op LaTeX-substring",
+    },
+    sort: {
+      newest: "Nieuwste",
+      oldest: "Oudste",
+      mostUsed: "Meest gebruikt",
+      leastUsed: "Minst gebruikt",
+      aZ: "A → Z",
+      zA: "Z → A",
+      ariaLabel: "Sorteer bibliotheekitems",
+    },
+    loading: "Collecties worden geladen, dit kan even duren...",
+    empty: "Geen actieve collectie beschikbaar.",
+    default: {
+      collection: "Collectie",
+    },
+    tabs: {
+      defaultName: "Mijn Collectie",
+      tooltip: {
+        new: "Nieuwe Collectie",
+        archive: "Collectie-archief",
+        moreOptions: "Meer opties",
+      },
+      toast: {
+        duplicated: `Gekopieerd: "{{name}}"`,
+        deleted: `"{{name}}" verwijderd`,
+        archived: `"{{name}}" gearchiveerd`,
+      },
+      confirm: {
+        delete: "Weet je zeker dat je deze collectie wilt verwijderen?",
+      },
+    },
+    tabMenu: {
+      rename: "Hernoemen",
+      renameTooltip: "Collectie hernoemen",
+      duplicate: "Dupliceren",
+      duplicateTooltip: "Collectie dupliceren",
+      archive: "Archiveren",
+      archiveTooltip: "Verplaats naar archief",
+      delete: "Verwijderen",
+      deleteTooltip: "Permanent verwijderen",
+    },
+  },
+};
 
 export default nl;
