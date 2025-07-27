@@ -63,10 +63,18 @@ const NoteActionsDropdown: React.FC<Props> = ({
 
   return ReactDOM.createPortal(
     <div ref={menuRef} className={styles.dropdownMenu} style={style}>
-      <button onClick={onArchive}>📦 {t("notesMenu.actions.archive")}</button>
-      <button onClick={onDuplicate}>📄 {t("notesMenu.actions.duplicate")}</button>
-      <button onClick={onExportLatex}>📤 {t("notesMenu.actions.exportLatex")}</button>
-      <button className={styles.deleteButton} onClick={onDelete}>🗑️ {t("notesMenu.actions.delete")}</button>
+      <button onClick={() => { onArchive(); onClose(); }}>
+        📦 {t("notesMenu.actions.archive")}
+      </button>
+      <button onClick={() => { onDuplicate(); onClose(); }}>
+        📄 {t("notesMenu.actions.duplicate")}
+      </button>
+      <button onClick={() => { onExportLatex(); onClose(); }}>
+        📤 {t("notesMenu.actions.exportLatex")}
+      </button>
+      <button className={styles.deleteButton} onClick={() => { onDelete(); onClose(); }}>
+        🗑️ {t("notesMenu.actions.delete")}
+      </button>
     </div>,
     document.body
   );

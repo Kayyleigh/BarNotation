@@ -41,6 +41,7 @@ export type MathRendererProps = {
   showPlaceholder?: boolean;
   updateEditorState: (newState: EditorState) => void;
   editorState: EditorState;
+  editorRef?: React.RefObject<HTMLDivElement | null>; // needed to allow re-focus after autocomplete
 };
 
 export type BaseRenderProps = {
@@ -58,6 +59,7 @@ export type BaseRenderProps = {
   showPlaceholder?: boolean;
   updateEditorState: (newState: EditorState) => void;
   editorState: EditorState;
+  editorRef?: React.RefObject<HTMLDivElement | null>; // needed to allow re-focus after autocomplete
 };
 
 const InnerMathRenderer: React.FC<MathRendererProps> = ({
@@ -75,7 +77,8 @@ const InnerMathRenderer: React.FC<MathRendererProps> = ({
   ancestorIds,
   showPlaceholder,
   editorState,
-  updateEditorState
+  updateEditorState,
+  editorRef
 }) => {
   const { draggingNode, setDraggingNode, dropTarget, setDropTarget } = useDragContext();
 
@@ -139,7 +142,8 @@ const InnerMathRenderer: React.FC<MathRendererProps> = ({
     ancestorIds,
     showPlaceholder,
     editorState,
-    updateEditorState
+    updateEditorState,
+    editorRef
   };
 
   const newAncestorIds = useMemo(() => [...(ancestorIds), node.id], [ancestorIds, node.id]);
@@ -151,6 +155,8 @@ const InnerMathRenderer: React.FC<MathRendererProps> = ({
   };
 
   let content: React.ReactNode;
+
+  // console.log(node.type, "has", editorRef)
   switch (node.type) {
     case "text":
       content = renderTextNode(node, props);

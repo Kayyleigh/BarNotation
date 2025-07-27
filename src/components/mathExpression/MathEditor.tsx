@@ -208,6 +208,7 @@ const MathEditor: React.FC<MathEditorProps> = ({
             showPlaceholder={false}
             editorState={editorState}
             updateEditorState={updateEditorState}
+            editorRef={editorRef}
           />
         </div>
       </div>
