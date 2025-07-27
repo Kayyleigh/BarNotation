@@ -506,10 +506,11 @@ Planned features and improvements include:
 - [ ] Proper bracket handling (right now all brackets become parentheses, while LaTeX has fancy stuff to make the brackets as tall as the stuff inside)
 - [ ] Better error handling and onboarding experience
 - [ ] Very unsure about this one, but I want to look into allowing inline math in text cells too (probably much less interactive than the math cells) because you can see in the screenshots section that writing "... with parameters mu and sigma" is just kinda ugly and definitely going to be a common issue in real-world settings
+- [ ] Import from LaTeX feature to get an entire note at once. Very useful if export to latex feature exists, since then you can export all your notes and import them on another device. Or make recoverable backups.
 
 > [!NOTE]
 > This is not an exhaustive list, nor is it chronologically ordered. Some of these may already exist on other branches. 
-> _Roadmap last updated: **July 26, 2025**._
+> _Roadmap last updated: **July 27, 2025**._
 
 Not sure how many of these will be done by the end of the summer of 2025, but my goal is to have a usable version of BarNotation available for real-world use **by September 1, 2025**, since that is the beginning of the school year! (Good for the target audience, which is students, but also for me because I am going to be busy with uni as well.) 
 
