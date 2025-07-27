@@ -160,7 +160,10 @@ export function CommandInputNodeComponent({
                 className={clsx(styles.autocompleteItem, {
                   [styles.highlighted]: i === highlight,
                 })}
-                onMouseDown={() => onSelectSuggestion(seq)}
+                onMouseDown={(e) => {
+                  e.preventDefault(); // prevents blur before click fires
+                  onSelectSuggestion(seq);
+                }}
               >
                 <div className={styles.autocompleteRow}>
                   <span className={styles.commandLabel}>{seq}</span>
