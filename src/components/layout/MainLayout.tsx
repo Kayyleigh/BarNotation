@@ -17,6 +17,7 @@ import { useToast } from "../../hooks/toast/useToast";
 import ResizableSidebar from "./ResizableSidebar";
 import { ResizableProvider } from "../../hooks/resizablePanels/ResizableProvider";
 import { useI18n } from "../../i18n/useI18n";
+import ExportLatexModal from "../modals/ExportLatexModal";
 
 function loadEditorSnapshotForNote(noteId: string): EditorSnapshot {
   const rootNode = createRootWrapper();
@@ -57,7 +58,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   nerdMode,
 }) => {
   const { t } = useI18n(); // use language hook
-  
+
   const { showToast } = useToast();
 
   // Use lazy state initialization from localStorage
@@ -77,6 +78,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     const storedId = localStorage.getItem(SELECTED_NOTE_KEY);
     return storedId ?? (notes.length ? notes[0].id : null);
   });
+
+  const [latexExportNoteId, setLatexExportNoteId] = useState<string | null>(null);
 
   const setSelectedNoteId = useCallback((id: string | null) => {
     setSelectedNoteIdState(id);
@@ -329,18 +332,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   }, [notes, setSelectedNoteId]);
 
   const exportLatex = useCallback((id: string) => {
-    // const note = notes.find(n => n.id === id);
-    // if (!note) return;
-
-    // const latexContent = note.cells.map(cell => cell.content).join("\n\n"); // Simple example
-    // const blob = new Blob([latexContent], { type: "text/plain" });
-    // const link = document.createElement("a");
-    // link.href = URL.createObjectURL(blob);
-    // link.download = `${note.metadata.title || "note"}.tex`;
-    // link.click();
-    console.log(`[Placeholder]: latex export for note with id: ${id}`);
-    showToast({ message: `LaTeX export is not yet implemented`, type: "warning" });
-  }, [showToast]);
+    setLatexExportNoteId(id);
+  }, []);
 
   return (
     <div className="main-layout">
@@ -385,6 +378,12 @@ const MainLayout: React.FC<MainLayoutProps> = ({
           </div>
         </div>
       </ResizableProvider>
+      {latexExportNoteId && (
+        <ExportLatexModal
+          note={notes.find(n => n.id === latexExportNoteId)!}
+          onClose={() => setLatexExportNoteId(null)}
+        />
+      )}
     </div>
   );
 };
