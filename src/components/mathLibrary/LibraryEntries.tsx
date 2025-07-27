@@ -6,6 +6,7 @@ import styles from "./MathLibrary.module.css";
 import type { SortOption } from "./MathLibrary";
 import MathView from "../mathExpression/MathView";
 import Tooltip from "../tooltips/Tooltip";
+import { useI18n } from "../../i18n/useI18n";
 
 interface LibraryEntriesProps {
   collections: LibraryCollection[];
@@ -28,6 +29,7 @@ interface LibraryEntryItemProps {
 
 const LibraryEntryItem: React.FC<LibraryEntryItemProps> = React.memo(
   ({ entry, isDropTarget, onDragStart, onDragOver, onDragLeave, onDelete }) => {
+    const { t } = useI18n(); // use language hook
     return (
       <div
         className={`${styles.libraryEntry} ${isDropTarget ? styles.dropTarget : ""}`}
@@ -46,7 +48,7 @@ const LibraryEntryItem: React.FC<LibraryEntryItemProps> = React.memo(
         </div>
         <button
           className={styles.entryDeleteButton}
-          title="Delete entry"
+          title={t("mathLibrary.entries.deleteEntry")}
           onClick={onDelete}
         >
           ✕
@@ -65,6 +67,8 @@ const LibraryEntries: React.FC<LibraryEntriesProps> = ({
   onDrop,
   onRendered,
 }) => {
+  const { t } = useI18n(); // use language hook
+
   const { draggingNode, setDraggingNode, dropTarget, setDropTarget } = useDragContext();
 
   // Find the active collection
@@ -202,7 +206,7 @@ const LibraryEntries: React.FC<LibraryEntriesProps> = ({
       onDragOver={handleDragOverListEnd}
       onDrop={handleDropOnListEnd}
       role="list"
-      aria-label={`Entries in collection ${collection.name}`}
+      aria-label={t("mathLibrary.entries.ariaLabel", { name: collection.name })} 
     >
       {filteredEntries.map((entry, idx) => (
         <LibraryEntryItem
@@ -231,9 +235,9 @@ const LibraryEntries: React.FC<LibraryEntriesProps> = ({
       ))}
       {filteredEntries.length === 0 &&
         (collection.entries.length === 0 ? (
-          <p className={styles.empty}>Drag math expression here</p>
+          <p className={styles.empty}>{t("mathLibrary.entries.empty")}</p>
         ) : (
-          <p className={styles.empty}>No matches found</p>
+          <p className={styles.empty}>{t("mathLibrary.entries.noMatches")}</p>
         ))}
       {dropTarget?.cellId === "library" &&
         dropTarget.containerId === activeColl &&

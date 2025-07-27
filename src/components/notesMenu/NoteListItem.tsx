@@ -4,6 +4,8 @@ import NoteActionsDropdown from "./NoteActionsDropdown";
 import styles from "./NotesMenu.module.css";
 import type { NoteSummary } from "../../models/noteTypes";
 import { formatCreatedAt, formatModifiedAt } from "../../utils/dateUtils";
+import { useI18n } from "../../i18n/useI18n";
+import Tooltip from "../tooltips/Tooltip";
 
 type Props = {
   note: NoteSummary;
@@ -30,6 +32,8 @@ const NoteListItem: React.FC<Props> = ({
   onDuplicateNote,
   onExportLatex,
 }) => {
+  const { t, lang } = useI18n(); // use language hook
+
   const localRef = useRef<HTMLButtonElement>(null!);
 
   // When local ref changes, update the parent
@@ -52,25 +56,27 @@ const NoteListItem: React.FC<Props> = ({
           <div className={styles.noteTitle}>{note.title}</div>
           <div className={styles.noteMeta}>
             <span>
-              {note.cellCount} cell{note.cellCount === 1 ? "" : "s"}
+              {note.cellCount} {note.cellCount === 1 ? t("modals.notebookArchive.cellSingular") : t("modals.notebookArchive.cellPlural")} {/* TODO put both uses of this string into mroe intuitive thingy in the language file */}
             </span>
             <span className={styles.noteDate}>
-              {note.createdAt && <span>{formatCreatedAt(note.createdAt)}</span>}
-              {note.updatedAt && <span>, {formatModifiedAt(note.updatedAt)}</span>}
+              {note.createdAt && <span>{formatCreatedAt(note.createdAt, t, lang)}</span>}
+              {note.updatedAt && <span>, {formatModifiedAt(note.updatedAt, t, lang)}</span>}
             </span>
           </div>
         </div>
-        <button
-          ref={localRef}
-          className={styles.moreButton}
-          onClick={(e) => {
-            e.stopPropagation();
-            setMenuOpen(!menuOpen);
-          }}
-          aria-label="Note options"
-        >
-          ⋯
-        </button>
+        <Tooltip text={t("notesMenu.noteOptions")}>
+          <button
+            ref={localRef}
+            className={styles.moreButton}
+            onClick={(e) => {
+              e.stopPropagation();
+              setMenuOpen(!menuOpen);
+            }}
+            aria-label={t("notesMenu.noteOptions")}
+          >
+            ⋯
+          </button>
+        </Tooltip>
       </div>
 
       {menuOpen && localRef.current && (

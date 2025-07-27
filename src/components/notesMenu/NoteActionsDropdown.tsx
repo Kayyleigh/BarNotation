@@ -2,6 +2,7 @@
 import React, { useLayoutEffect, useRef, useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import styles from "./NoteActionsDropdown.module.css";
+import { useI18n } from "../../i18n/useI18n";
 
 type Props = {
   anchorRef: React.RefObject<HTMLButtonElement>;
@@ -20,6 +21,8 @@ const NoteActionsDropdown: React.FC<Props> = ({
   onExportLatex,
   onClose,
 }) => {
+  const { t } = useI18n(); // use language hook
+
   const menuRef = useRef<HTMLDivElement>(null);
   const [style, setStyle] = useState<React.CSSProperties>({
     visibility: "hidden",
@@ -60,10 +63,10 @@ const NoteActionsDropdown: React.FC<Props> = ({
 
   return ReactDOM.createPortal(
     <div ref={menuRef} className={styles.dropdownMenu} style={style}>
-      <button onClick={onArchive}>📦 Archive</button>
-      <button onClick={onDuplicate}>📄 Duplicate</button>
-      <button onClick={onExportLatex}>📤 Export to LaTeX</button>
-      <button className={styles.deleteButton} onClick={onDelete}>🗑️ Delete</button>
+      <button onClick={onArchive}>📦 {t("notesMenu.actions.archive")}</button>
+      <button onClick={onDuplicate}>📄 {t("notesMenu.actions.duplicate")}</button>
+      <button onClick={onExportLatex}>📤 {t("notesMenu.actions.exportLatex")}</button>
+      <button className={styles.deleteButton} onClick={onDelete}>🗑️ {t("notesMenu.actions.delete")}</button>
     </div>,
     document.body
   );

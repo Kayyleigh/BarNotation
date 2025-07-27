@@ -1,8 +1,4 @@
 // utils/dateUtils.ts
-function pluralize(count: number, singular: string, plural = singular + "s") {
-    return `${count} ${count === 1 ? singular : plural}`;
-}
-
 function isSameDay(a: Date, b: Date) {
     return a.toDateString() === b.toDateString();
 }
@@ -13,51 +9,67 @@ function isYesterday(date: Date) {
     return isSameDay(date, yesterday);
 }
 
-export function formatRelativeDate(timestamp: number, label: string): string {
+export function formatRelativeDate(
+    timestamp: number,
+    labelKey: string,
+    t: (key: string, vars?: { [key: string]: unknown }) => string,
+    locale: string
+  ): string {
     const now = new Date();
     const date = new Date(timestamp);
     const diffMs = now.getTime() - date.getTime();
-
+  
     const diffMinutes = Math.floor(diffMs / (1000 * 60));
     const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-
+  
     if (diffMinutes < 1) {
-        return `${label} just now`;
+      return `${t(labelKey)} ${t("date.justNow")}`;
     } else if (diffMinutes < 60) {
-        return `${label} ${pluralize(diffMinutes, "minute")} ago`;
+      return `${t(labelKey)} ${t("date.minutesAgo", { count: diffMinutes })}`;
     } else if (isSameDay(now, date)) {
-        return `${label} ${pluralize(diffHours, "hour")} ago`;
+      return `${t(labelKey)} ${t("date.hoursAgo", { count: diffHours })}`;
     } else if (isYesterday(date)) {
-        return `${label} yesterday`;
+      return `${t(labelKey)} ${t("date.yesterday")}`;
     } else if (now.getFullYear() === date.getFullYear()) {
-        return (
-            `${label} ` +
-            date.toLocaleDateString(undefined, {
-                month: "short",
-                day: "numeric",
-            })
-        );
+      return (
+        `${t(labelKey)} ` +
+        date.toLocaleDateString(locale, { month: "short", day: "numeric" })
+      );
     } else {
-        return (
-            `${label} ` +
-            date.toLocaleDateString(undefined, {
-                month: "short",
-                day: "numeric",
-                year: "numeric",
-            })
-        );
+      return (
+        `${t(labelKey)} ` +
+        date.toLocaleDateString(locale, {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        })
+      );
     }
-}
+  }
+  
 
 // Specific helpers for clarity and consistency in components
-export function formatCreatedAt(timestamp: number): string {
-    return formatRelativeDate(timestamp, "Created");
-}
-
-export function formatModifiedAt(timestamp: number): string {
-    return formatRelativeDate(timestamp, "Edited");
-}
-
-export function formatArchivedAt(timestamp: number): string {
-    return formatRelativeDate(timestamp, "Archived");
-}
+export function formatCreatedAt(
+    timestamp: number,
+    t: (key: string, vars?: { [key: string]: unknown }) => string,
+    locale: string
+  ): string {
+    return formatRelativeDate(timestamp, "date.created", t, locale);
+  }
+  
+  export function formatModifiedAt(
+    timestamp: number,
+    t: (key: string, vars?: { [key: string]: unknown }) => string,
+    locale: string
+  ): string {
+    return formatRelativeDate(timestamp, "date.edited", t, locale);
+  }
+  
+  export function formatArchivedAt(
+    timestamp: number,
+    t: (key: string, vars?: { [key: string]: unknown }) => string,
+    locale: string
+  ): string {
+    return formatRelativeDate(timestamp, "date.archived", t, locale);
+  }
+  

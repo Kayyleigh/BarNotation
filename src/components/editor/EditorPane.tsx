@@ -382,7 +382,7 @@ const EditorPane: React.FC<EditorPaneProps> = ({
   setNoteMetadata,
   style,
   onDropNode,
-}) => {
+}) => {  
   const { history, updateState } = useEditorHistory();
   const { states: editorStates, order, textContents } = history.present;
 

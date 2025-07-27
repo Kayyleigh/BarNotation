@@ -22,6 +22,7 @@ import { useEditorMode } from "../../hooks/editorMode/useEditorMode";
 import { computeDisplayNumbers } from "../../utils/noteUtils";
 import cellStyles from "./cells/cell.module.css";
 import Tooltip from "../tooltips/Tooltip";
+import { useI18n } from "../../i18n/useI18n";
 
 interface NotationEditorProps {
   defaultZoom: number;
@@ -90,6 +91,8 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
   setMetadata,
   onDropNode,
 }) => {
+  const { t } = useI18n(); // use language hook
+
   const [selectedCellId, setSelectedCellId] = useState<string | null>(null);
   const cellRefs = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -252,14 +255,14 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
         metadata={metadata}
         setMetadata={handleMetadataUpdate}
       />
-
+  
       <div className={styles.cellList}>
         {visibleCells.length === 0 && (
           <div className={styles.emptyMessage}>
-            No cells yet. Add one to get started!
+            {t("editor.emptyMessage")}
           </div>
         )}
-
+  
         {visibleCells.map((cell, index) => (
           <CellRow
             key={cell.id}
@@ -276,8 +279,7 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
             showLatexMap={showLatexMap}
             defaultZoom={defaultZoom}
             resetZoomSignal={resetZoomSignal}
-            // addCell={addCell}
-            addCell={handleInsertAtIndex} // < --- THIS 
+            addCell={handleInsertAtIndex}
             updateCellContent={updateCellContent}
             deleteCell={deleteCell}
             duplicateCell={duplicateCell}
@@ -287,9 +289,8 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
             onDropNode={onDropNode}
           />
         ))}
-
-        {/* Insertion zone after last cell */}
-        {mode !== "locked" &&
+  
+        {mode !== "locked" && (
           <div
             className={clsx(
               styles.insertZone,
@@ -301,22 +302,22 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
               onInsert={handleInsertAtEnd}
               isPermanent={true}
             />
-          </div>}
+          </div>
+        )}
       </div>
+  
       {mode === "locked" && (
         <div className={styles.lockedBadge}>
-        <div style={{ position: "relative"}}>
-        <Tooltip text="You are in locked mode. Unlock to continue editing.">
-        🔒
-        </Tooltip>          
+          <div style={{ position: "relative" }}>
+            <Tooltip text={t("editor.lockedTooltip")}>
+              🔒
+            </Tooltip>
+          </div>
         </div>
-        </div>
-
-
       )}
     </main>
   );
-};
+};  
 
 export default React.memo(NotationEditor);
 

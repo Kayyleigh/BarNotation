@@ -10,6 +10,7 @@ import type { CellData, NoteMetadata } from "../../models/noteTypes";
 import styles from "./EditorWorkspace.module.css";
 import type { MathNode } from "../../models/types";
 import ResizableSidebar from "./ResizableSidebar";
+import { useI18n } from "../../i18n/useI18n";
 
 interface EditorWorkspaceProps {
   noteId: string | null;
@@ -40,6 +41,8 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({
   // noteCells,
   setNoteCells,
 }) => {
+  const { t } = useI18n(); // use language hook
+
   const { history, updateState } = useEditorHistory();
   const { states: editorStates, order, textContents } = history.present;
 
@@ -220,7 +223,7 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({
       )}
       <ResizableSidebar
         side="right"
-        title="Math Library"
+        title={t("layout.mathLibraryPanel")}
       // storageKey="math-library"
       >
         <MathLibrary

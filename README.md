@@ -63,6 +63,8 @@ BarNotation enables users to build their notes as a sequence of "cells", either 
   - Copy LaTeX with `Ctrl+C`
   - Drag math snippets directly into external LaTeX editors like [Overleaf](https://www.overleaf.com/)
   - Drag raw LaTeX directly into the math library to obtain the corresponding structured math
+- **Multilingual support**:
+  - Set the app to English or Dutch! More languages will be added later!
 
 ---
 
@@ -203,6 +205,8 @@ Toggle math coloring, author defaults, and library reuse visibility. Light mode 
   <img src="docs/readme-images/tutorial-26072025/settings-modal.gif" alt="Settings panel showing various customization options" width="700"/>
 </p>
 
+As of 27/07/2025 there is also a dropdown to switch between languages! Currently, only English and Dutch are supported, but I plan to add more soon.
+
 > [!Note]
 > The app is completely offline and local. Thus, the "Default author name" is not an account name, nor will it ever be visible to anyone else than yourself. It is purely there to auto-fill the "author" metadata field of notebooks you create after changing the name.   
 
@@ -215,7 +219,7 @@ Can't remember a hotkey? Open the cheat sheet anytime.
 </p>
 
 > [!NOTE]  
-> A similar cheat sheet for **command sequences** is coming soon! That same update should include the [autocomplete support](#-roadmap).
+> A similar cheat sheet for **command sequences** is coming soon!
 
 
 ### 📓 Notebook Archive
@@ -378,6 +382,21 @@ The app is built in **React** with **TypeScript** and uses **Vite** as the build
       - [`toastContext.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/toast/toastContext.ts) — Context for triggering toast notifications
       - [`ToastProvider.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/toast/ToastProvider.tsx) — React provider for toasts
       - [`useToast.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/hooks/toast/useToast.ts) — Hook to trigger toast notifications
+  - [`i18n/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/i18n/) — Multi-lingual support
+    - [`I18nContext.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/i18n/I18nContext.ts) — Context for languages
+    - [`I18nProvider.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/i18n/I18nProvider.tsx) — Provider for languages
+    - [`languages.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/i18n/languages.ts) — List of available languages
+    - [`useI18n.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/i18n/useI18n.ts) — Hook for languages
+    - [`strings/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/i18n/strings/) — Folder for language files
+      - [`cs.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/i18n/strings/cs.ts) — Czech (NOT YET IMPLEMENTED)
+      - [`de.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/i18n/strings/de.ts) — German (NOT YET IMPLEMENTED)
+      - [`el.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/i18n/strings/el.ts) — Greek (NOT YET IMPLEMENTED)
+      - [`en.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/i18n/strings/en.ts) — English
+      - [`es.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/i18n/strings/es.ts) — Spanish (NOT YET IMPLEMENTED)
+      - [`fr.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/i18n/strings/fr.ts) — French (NOT YET IMPLEMENTED)
+      - [`nl.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/i18n/strings/nl.ts) — Dutch
+      - [`ro.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/i18n/strings/ro.ts) — Romanian (NOT YET IMPLEMENTED)
+      - [`sk.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/i18n/strings/sk.ts) — Slovak (NOT YET IMPLEMENTED)
   - [`logic/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/logic/) — Core MathEditor logic (cursor, input, history)
     - [`cursor.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/logic/cursor.ts) — CursorPosition: container + index
     - [`deletion.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/logic/deletion.ts) — Backspace handler
@@ -427,10 +446,9 @@ The app is built in **React** with **TypeScript** and uses **Vite** as the build
     - [`treeUtils.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/utils/treeUtils.ts) — Utilities for MathNodes
 </details>
 
-
 > [!CAUTION]
-> Since this app is under heavy development right now, this filetree is already outdated. I will not keep it up-to-date between larger working versions of the app, since files frequently get added, deleted, renamed or modified. 
-> _Filetree last updated: **July 24, 2025**._
+> Since this app is under heavy development right now, this filetree may be outdated. I might not keep it up-to-date between larger working versions of the app, since files frequently get added, deleted, renamed or modified. 
+> _Filetree last updated: **July 27, 2025**._
 
 ---
 
@@ -470,6 +488,7 @@ The app should now be running at http://localhost:5173.
 
 Planned features and improvements include:
 
+- [ ] More languages! I will do my best to convince my friends to help me translate to German, French, Spanish, Czech, Slovak, Romanian and Greek.
 - [ ] Enable custom library zoom level
 - [ ] Implement soft delete, i.e. all deleted notes, collections and entries move to a bin so they can be recovered for a little bit before perma delete. (Especially entries since those are easy to accidentally delete)
 - [ ] Proper persistent storage (I currently put everything in the browser localStorage)
