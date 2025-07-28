@@ -621,7 +621,8 @@ export function renderContainerChildren(
     ancestorIds,
     showPlaceholder,
     editorState,
-    updateEditorState
+    updateEditorState,
+    editorRef
   } = baseProps;
 
   const nodes: React.ReactNode[] = [];
@@ -659,10 +660,6 @@ export function renderContainerChildren(
               onCursorChange({ containerId, index: i + 1 });
             }
           }}
-          // onMouseEnter={() => handleMouseEnter([...baseProps.ancestorIds], setHoverPath)}
-          // onMouseLeave={(e) =>
-          //   handleMouseLeave(e, [...ancestorIds], setHoverPath)
-          // }
           className={clsx("math-node-wrapper", {
             hovered: getIsHovered(child, hoverPath),
           })}
@@ -684,6 +681,7 @@ export function renderContainerChildren(
             showPlaceholder={showPlaceholder}
             editorState={editorState}
             updateEditorState={updateEditorState}
+            editorRef={editorRef}
           />
         </span>
       );
@@ -824,6 +822,10 @@ export function renderCommandInputNode(
         const updatedState = replaceCommandWithNode(baseProps.editorState, node.id, transformedNode);
 
         baseProps.updateEditorState(updatedState);
+
+        setTimeout(() => {
+          baseProps.editorRef?.current?.focus();
+        }, 0);
       }}
       baseProps={baseProps}
     />

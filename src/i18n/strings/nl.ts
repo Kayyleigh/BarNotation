@@ -101,7 +101,7 @@ const nl = {
   },
 
   modals: {
-    close: "Sluit",
+    close: "Sluiten",
     archiveModal: {
       noItemsFound: "Geen items gevonden.",
       searchPlaceholder: "Zoeken..."
@@ -203,6 +203,15 @@ const nl = {
       nerdMode: "Ik ben een nerd",
       nerdTooltip: "Toon of verberg de frequenties van node hergebruik",
       language: "Taal",
+    },
+    exportLatex: {
+      title: "Exporteer LaTeX",
+      formatLabel: "Formaat",
+      format: {
+        single: "Enkele kolom",
+        double: "Dubbele kolom",
+      },
+      download: "Download .tex-bestand",
     },
   },
 

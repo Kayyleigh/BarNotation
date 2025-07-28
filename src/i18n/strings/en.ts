@@ -202,6 +202,15 @@ const en = {
       nerdTooltip: "Toggle visibility of node drag frequencies",
       language: "Language",
     },
+    exportLatex: {
+      title: "Export LaTeX",
+      formatLabel: "Format",
+      format: {
+        single: "Single column",
+        double: "Double column",
+      },
+      download: "Download .tex file",
+    },
   },
 
   notesMenu: {
@@ -296,7 +305,7 @@ const en = {
       delete: "Delete",
       deleteTooltip: "Delete permanently",
     },
-  },  
+  },
   date: {
     created: "Created",
     edited: "Edited",

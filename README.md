@@ -475,7 +475,7 @@ The app should now be running at http://localhost:5173.
 
 - **Insert a new cell**: Use the "+" buttons between or after cells, or in the editor header bar
 - **Transform math**: Type a command like `\sqrt`, then hit space. Known commands are based on [LaTeX](https://www.cmor-faculty.rice.edu/~heinken/latex/symbols.pdf)!
-- **Command sequence autocompletion**: use the left arrow on a command sequence to see the autocomplete feature! After selecting an option, it will transform, but you need to click the node afterwards to restore cursor control. (Note: both the necessity of left-arrow and the broken cursor control upon autocomplete are bugs I am trying to fix.) 
+- **Command sequence autocompletion**: use autocomplete to speed up your process! Autocompletion is available as soon as you type `\`, and a matching sequence can be selected by navigating the dropdown using arrows or the mouse. Select one to get the target node, by clicking, tabbing, or pressing enter!   
 - **Move/Copy math**: Drag elements directly within or between cells
 - **Save reusable math**: Drag math to the Library panel on the right
 - **Copy LaTeX**: `Ctrl+C` copies the LaTeX of the node left of your cursor
@@ -490,6 +490,11 @@ Planned features and improvements include:
 
 - [ ] More languages! I will do my best to convince my friends to help me translate to German, French, Spanish, Czech, Slovak, Romanian and Greek.
 - [ ] Enable custom library zoom level
+- [ ] Implement tagging feature for notes in the notes menu (potentially replacing the "course code" idea)
+- [ ] Make text cells support hyperlinks, italic, and bold 
+- [ ] Table cell type
+- [ ] Image cell type
+- [ ] Enable custom command sequences
 - [ ] Implement soft delete, i.e. all deleted notes, collections and entries move to a bin so they can be recovered for a little bit before perma delete. (Especially entries since those are easy to accidentally delete)
 - [ ] Proper persistent storage (I currently put everything in the browser localStorage)
 - [ ] Full notebook export as LaTeX
@@ -506,10 +511,11 @@ Planned features and improvements include:
 - [ ] Proper bracket handling (right now all brackets become parentheses, while LaTeX has fancy stuff to make the brackets as tall as the stuff inside)
 - [ ] Better error handling and onboarding experience
 - [ ] Very unsure about this one, but I want to look into allowing inline math in text cells too (probably much less interactive than the math cells) because you can see in the screenshots section that writing "... with parameters mu and sigma" is just kinda ugly and definitely going to be a common issue in real-world settings
+- [ ] Import from LaTeX feature to get an entire note at once. Very useful if export to latex feature exists, since then you can export all your notes and import them on another device. Or make recoverable backups.
 
 > [!NOTE]
 > This is not an exhaustive list, nor is it chronologically ordered. Some of these may already exist on other branches. 
-> _Roadmap last updated: **July 26, 2025**._
+> _Roadmap last updated: **July 28, 2025**._
 
 Not sure how many of these will be done by the end of the summer of 2025, but my goal is to have a usable version of BarNotation available for real-world use **by September 1, 2025**, since that is the beginning of the school year! (Good for the target audience, which is students, but also for me because I am going to be busy with uni as well.) 
 

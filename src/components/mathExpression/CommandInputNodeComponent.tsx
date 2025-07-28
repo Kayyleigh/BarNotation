@@ -41,6 +41,17 @@ export function CommandInputNodeComponent({
     left: 0
   });
 
+  const { cursor, containerId, index } = baseProps;
+
+  // Check if cursor is directly after this node
+  const isCursorJustAfter =
+    cursor?.containerId === containerId &&
+    cursor?.index === index + 1;
+
+  // Should we show the dropdown?
+  const shouldTriggerDropdown =
+    (isSelected && inputString.startsWith("\\")) || isCursorJustAfter;
+
   const previews = useMemo(() => {
     const result: Record<string, MathNode> = {};
     for (const seq of matching) {
@@ -51,7 +62,7 @@ export function CommandInputNodeComponent({
   }, [matching]);
 
   useEffect(() => {
-    if (!isSelected || !inputString.startsWith("\\")) {
+    if (!shouldTriggerDropdown) {
       setMatching([]);
       setShowDropdown(false);
       return;
@@ -65,7 +76,7 @@ export function CommandInputNodeComponent({
     setMatching(matches);
     setHighlight(0);
     setShowDropdown(matches.length > 0);
-  }, [inputString, isSelected]);
+  }, [inputString, shouldTriggerDropdown]);
 
   useLayoutEffect(() => {
     if (matching.length === 0 || !anchorRef.current) return;
@@ -94,12 +105,12 @@ export function CommandInputNodeComponent({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-
+  
   useEffect(() => {
-    if (isSelected && anchorRef.current) {
+    if ((isSelected || isCursorJustAfter) && anchorRef.current) {
       anchorRef.current.focus();
     }
-  }, [isSelected]);
+  }, [isSelected, isCursorJustAfter]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (matching.length === 0) return;
@@ -160,7 +171,10 @@ export function CommandInputNodeComponent({
                 className={clsx(styles.autocompleteItem, {
                   [styles.highlighted]: i === highlight,
                 })}
-                onMouseDown={() => onSelectSuggestion(seq)}
+                onMouseDown={(e) => {
+                  e.preventDefault(); // prevents blur before click fires
+                  onSelectSuggestion(seq);
+                }}
               >
                 <div className={styles.autocompleteRow}>
                   <span className={styles.commandLabel}>{seq}</span>
