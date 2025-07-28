@@ -88,8 +88,31 @@ const MathEditor: React.FC<MathEditorProps> = ({
   }, [hoveredType, zoomLevel, onHoverInfoChange]);
 
   const onKeyDown = (e: React.KeyboardEvent) => {
+    const prevFocusedNodeContainerId = editorState.cursor?.containerId;
+
     const updated = handleKeyDown(e, editorState);
-    if (updated) updateEditorState(updated);
+  
+    if (updated) {
+      const prevFocusedNodeContainer = findNodeById(updated.rootNode, prevFocusedNodeContainerId);
+      const prevFocusedNode = (prevFocusedNodeContainer?.type === 'inline-container' || prevFocusedNodeContainer?.type === 'command-input' || prevFocusedNodeContainer?.type === 'multi-digit')
+        ? prevFocusedNodeContainer.children[updated.cursor?.index - 1] 
+        : prevFocusedNodeContainer
+
+      console.log(prevFocusedNode)
+      updateEditorState(updated);
+  
+      setTimeout(() => {
+  
+        // If previously focused node was a command-input and is now gone,
+        // restore focus to editor.
+
+        // Only refocus editor if the previously focused node no longer exists
+        if (e.key === "Backspace" && !prevFocusedNode) {
+          editorRef.current?.focus();
+        }
+        // Otherwise, keep focus where it is (e.g. dropdown)
+      }, 0);
+    }
   };
 
   const onCursorChange = useCallback(

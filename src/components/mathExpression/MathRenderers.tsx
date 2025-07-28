@@ -660,10 +660,6 @@ export function renderContainerChildren(
               onCursorChange({ containerId, index: i + 1 });
             }
           }}
-          // onMouseEnter={() => handleMouseEnter([...baseProps.ancestorIds], setHoverPath)}
-          // onMouseLeave={(e) =>
-          //   handleMouseLeave(e, [...ancestorIds], setHoverPath)
-          // }
           className={clsx("math-node-wrapper", {
             hovered: getIsHovered(child, hoverPath),
           })}
@@ -830,16 +826,6 @@ export function renderCommandInputNode(
         setTimeout(() => {
           baseProps.editorRef?.current?.focus();
         }, 0);
-        console.log(baseProps.editorRef)
-
-      //   console.log("done.")
-      //   // defer until React processes state update
-      //   setTimeout(() => {
-      //     baseProps.onCursorChange({
-      //       containerId: updatedState.cursor.containerId,
-      //       index: updatedState.cursor.index - 3 // still no typing. Just visible
-      //     });
-      //   }, 1000);
       }}
       baseProps={baseProps}
     />
