@@ -67,14 +67,14 @@ const MathEditor: React.FC<MathEditorProps> = ({
       setHoverPath([])
       return;
     }
-  
+
     const handleMouseLeave = (e: MouseEvent) => {
       const related = e.relatedTarget as Node | null;
       if (!related || !node.contains(related)) {
         setHoverPath([]); // ← Clear hover when mouse leaves the entire editor
       }
     };
-  
+
     node.addEventListener("mouseleave", handleMouseLeave);
     return () => {
       node.removeEventListener("mouseleave", handleMouseLeave);
@@ -91,24 +91,28 @@ const MathEditor: React.FC<MathEditorProps> = ({
     const prevFocusedNodeContainerId = editorState.cursor?.containerId;
 
     const updated = handleKeyDown(e, editorState);
-  
+
     if (updated) {
       const prevFocusedNodeContainer = findNodeById(updated.rootNode, prevFocusedNodeContainerId);
       const prevFocusedNode = (prevFocusedNodeContainer?.type === 'inline-container' || prevFocusedNodeContainer?.type === 'command-input' || prevFocusedNodeContainer?.type === 'multi-digit')
-        ? prevFocusedNodeContainer.children[updated.cursor?.index - 1] 
+        ? prevFocusedNodeContainer.children[updated.cursor?.index - 1]
         : prevFocusedNodeContainer
 
       updateEditorState(updated);
-  
+
       setTimeout(() => {
-  
+
         // If previously focused node was a command-input and is now gone,
         // restore focus to editor.
 
-        // Only refocus editor if the previously focused node no longer exists
-        if (e.key === "Backspace" && !prevFocusedNode) {
+        const shouldRestoreFocus =
+          !prevFocusedNode ||
+          prevFocusedNode.type !== "command-input"; // TODO make better fix; this ensures it is possible to type more after transformation of command (manual completion) but it re-focuses ALL THE TIME which is usually redundant
+
+        if (shouldRestoreFocus) {
           editorRef.current?.focus();
         }
+
         // Otherwise, keep focus where it is (e.g. dropdown)
       }, 0);
     }
@@ -186,7 +190,7 @@ const MathEditor: React.FC<MathEditorProps> = ({
         onCopy={onCopy}
         onCut={onCut}
         onPaste={onPaste}
-        onMouseLeave={() => setHoverPath([])} 
+        onMouseLeave={() => setHoverPath([])}
         onFocus={() => setIsActive(true)}
         onBlur={(e) => {
           if (!e.currentTarget.contains(e.relatedTarget as Node)) {
