@@ -475,7 +475,7 @@ The app should now be running at http://localhost:5173.
 
 - **Insert a new cell**: Use the "+" buttons between or after cells, or in the editor header bar
 - **Transform math**: Type a command like `\sqrt`, then hit space. Known commands are based on [LaTeX](https://www.cmor-faculty.rice.edu/~heinken/latex/symbols.pdf)!
-- **Command sequence autocompletion**: use the left arrow on a command sequence to see the autocomplete feature! After selecting an option, it will transform, but you need to click the node afterwards to restore cursor control. (Note: both the necessity of left-arrow and the broken cursor control upon autocomplete are bugs I am trying to fix.) 
+- **Command sequence autocompletion**: use autocomplete to speed up your process! Autocompletion is available as soon as you type `\`, and a matching sequence can be selected by navigating the dropdown using arrows or the mouse. Select one to get the target node, by clicking, tabbing, or pressing enter!   
 - **Move/Copy math**: Drag elements directly within or between cells
 - **Save reusable math**: Drag math to the Library panel on the right
 - **Copy LaTeX**: `Ctrl+C` copies the LaTeX of the node left of your cursor

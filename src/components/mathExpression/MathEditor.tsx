@@ -98,7 +98,6 @@ const MathEditor: React.FC<MathEditorProps> = ({
         ? prevFocusedNodeContainer.children[updated.cursor?.index - 1] 
         : prevFocusedNodeContainer
 
-      console.log(prevFocusedNode)
       updateEditorState(updated);
   
       setTimeout(() => {
