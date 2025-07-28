@@ -490,6 +490,11 @@ Planned features and improvements include:
 
 - [ ] More languages! I will do my best to convince my friends to help me translate to German, French, Spanish, Czech, Slovak, Romanian and Greek.
 - [ ] Enable custom library zoom level
+- [ ] Implement tagging feature for notes in the notes menu (potentially replacing the "course code" idea)
+- [ ] Make text cells support hyperlinks, italic, and bold 
+- [ ] Table cell type
+- [ ] Image cell type
+- [ ] Enable custom command sequences
 - [ ] Implement soft delete, i.e. all deleted notes, collections and entries move to a bin so they can be recovered for a little bit before perma delete. (Especially entries since those are easy to accidentally delete)
 - [ ] Proper persistent storage (I currently put everything in the browser localStorage)
 - [ ] Full notebook export as LaTeX
@@ -510,7 +515,7 @@ Planned features and improvements include:
 
 > [!NOTE]
 > This is not an exhaustive list, nor is it chronologically ordered. Some of these may already exist on other branches. 
-> _Roadmap last updated: **July 27, 2025**._
+> _Roadmap last updated: **July 28, 2025**._
 
 Not sure how many of these will be done by the end of the summer of 2025, but my goal is to have a usable version of BarNotation available for real-world use **by September 1, 2025**, since that is the beginning of the school year! (Good for the target audience, which is students, but also for me because I am going to be busy with uni as well.) 
 
