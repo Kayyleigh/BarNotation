@@ -17,6 +17,18 @@ export interface LatexExportTemplate {
   renderFooter(): string;
 }
 
+function getLatexSafeDate(note: Note): string {
+  const fallbackDate = (date?: string | number) =>
+    date ? new Date(date).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "";
+
+  return escapeLatex(
+    note.metadata.dateOrPeriod ||
+    fallbackDate(note.metadata.updatedAt) ||  // If no date is given, take "last edited"
+    fallbackDate(note.metadata.createdAt) ||  // If never edited, take creation date
+    fallbackDate(Date.now())                  // else take date of exporting
+  );
+}
+
 function stripOuterDisplayMath(content: string): string {
   const parser = new DOMParser();
   const doc = parser.parseFromString(`<div>${content}</div>`, "text/html");
@@ -91,11 +103,11 @@ function defaultPreamble(note: Note, options: LatexExportOptions): string {
     ``,
     `\\title{${escapeLatex(note.metadata.title || "Untitled")}}`,
     `\\author{${escapeLatex(note.metadata.author || "Anonymous")}}`,
-    `\\date{${escapeLatex(note.metadata.dateOrPeriod || "\\today")}}`,
+    `\\date{${getLatexSafeDate(note)}}`,
     ``,
     `\\begin{document}`,
     `\\maketitle`
-  );
+  );  
 
   return lines.join("\n");
 }
