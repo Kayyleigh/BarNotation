@@ -10,7 +10,7 @@ export interface LatexExportOptions {
   wrapMathEquations: boolean;
 }
 
-// You could later use this for template extensions
+// Could later use this for template extensions
 export interface LatexExportTemplate {
   renderPreamble(note: Note, options: LatexExportOptions): string;
   renderBody(note: Note, options: LatexExportOptions, includeHtmlStyling: boolean): string;

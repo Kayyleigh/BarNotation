@@ -203,6 +203,12 @@
     "src/i18n/strings/fr.ts": "French (NOT YET IMPLEMENTED)",
     "src/i18n/strings/nl.ts": "Dutch",
     "src/i18n/strings/ro.ts": "Romanian (NOT YET IMPLEMENTED)",
-    "src/i18n/strings/sk.ts": "Slovak (NOT YET IMPLEMENTED)"
+    "src/i18n/strings/sk.ts": "Slovak (NOT YET IMPLEMENTED)",
+
+    "src/components/modals/ExportLatexModal.module.css": "Styling for LaTeX export modal",
+    "src/components/modals/ExportLatexModal.tsx": "LaTeX export modal for viewing/downloading/copying full note's LaTeX",        
+    "src/utils/latexUtils/": "Utility functions for LaTeX exporting",
+    "src/utils/latexUtils/latexDependencies.ts": "Functions to determine required LaTeX packages for preamble",
+    "src/utils/latexUtils/latexExportFormatters.ts": "Formatting functions for LaTeX (preamble; cells to LaTeX)"  
   }
   

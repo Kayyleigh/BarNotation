@@ -60,6 +60,8 @@
     - [`modals/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/modals/) — Modal components
       - [`ArchiveModal.module.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/modals/ArchiveModal.module.css) — Archive modal styling
       - [`ArchiveModal.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/modals/ArchiveModal.tsx) — Archive modal with searchbar and dropdown
+      - [`ExportLatexModal.module.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/modals/ExportLatexModal.module.css) — Styling for LaTeX export modal
+      - [`ExportLatexModal.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/modals/ExportLatexModal.tsx) — LaTeX export modal for viewing/downloading/copying full note's LaTeX
       - [`HotkeyOverlay.module.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/modals/HotkeyOverlay.module.css) — Hotkey overview modal
       - [`HotkeyOverlay.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/modals/HotkeyOverlay.tsx) — Hotkey info overlay
       - [`LibCollectionArchiveModal.module.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/modals/LibCollectionArchiveModal.module.css) — Styling for library collection archive model
@@ -177,4 +179,7 @@
     - [`subsupUtils.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/utils/subsupUtils.ts) — CornerPosition helper (used in transforms)
     - [`textContainerUtils.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/utils/textContainerUtils.ts) — Unused: split MultiDigit nodes
     - [`treeUtils.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/utils/treeUtils.ts) — Utilities for MathNodes
+    - [`latexUtils/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/utils/latexUtils/) — Utility functions for LaTeX exporting
+      - [`latexDependencies.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/utils/latexUtils/latexDependencies.ts) — Functions to determine required LaTeX packages for preamble
+      - [`latexExportFormatters.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/utils/latexUtils/latexExportFormatters.ts) — Formatting functions for LaTeX (preamble; cells to LaTeX)
 </details>
