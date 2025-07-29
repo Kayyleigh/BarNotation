@@ -5,8 +5,7 @@ import Modal from "./Modal";
 import styles from "./ExportLatexModal.module.css";
 import {
   formatNoteToLatex,
-  type LatexFormat,
-  type LatexExportOptions
+  type LatexFormat
 } from "../../utils/latexUtils/latexExportFormatters";
 
 interface ExportLatexModalProps {
@@ -14,19 +13,95 @@ interface ExportLatexModalProps {
   onClose: () => void;
 }
 
+// const ExportLatexModal: React.FC<ExportLatexModalProps> = ({ note, onClose }) => {
+//   const { t } = useI18n();
+//   const [format, setFormat] = useState<LatexFormat>("singleColumn");
+//   const [wrapMathEquations, setWrapMathEquations] = useState<boolean>(false);
+//   const [copied, setCopied] = useState(false);
+
+//   const latexContent = useMemo(() => {
+//     const options: LatexExportOptions = { format, wrapMathEquations };
+//     return formatNoteToLatex(note, options);
+//   }, [note, format, wrapMathEquations]);
+
+//   const handleDownload = () => {
+//     const blob = new Blob([latexContent], { type: "text/plain" });
+//     const link = document.createElement("a");
+//     link.href = URL.createObjectURL(blob);
+//     link.download = `${note.metadata.title || "note"}.tex`;
+//     link.click();
+//   };
+
+//   const handleCopy = async () => {
+//     try {
+//       await navigator.clipboard.writeText(latexContent);
+//       setCopied(true);
+//       setTimeout(() => setCopied(false), 1500);
+//     } catch (err) {
+//       console.warn("Copy failed", err);
+//     }
+//   };
+
+//   return (
+//     <Modal onClose={onClose}>
+//       <h2>{t("modals.exportLatex.title")}</h2>
+
+//       <div className={styles.container}>
+//         <div className={styles.controls}>
+//           <label htmlFor="format">{t("modals.exportLatex.formatLabel")}:</label>
+//           <select
+//             id="format"
+//             value={format}
+//             onChange={(e) => setFormat(e.target.value as LatexFormat)}
+//           >
+//             <option value="singleColumn">{t("modals.exportLatex.format.single")}</option>
+//             <option value="doubleColumn">{t("modals.exportLatex.format.double")}</option>
+//           </select>
+
+//           <label className={styles.checkbox}>
+//             <input
+//               type="checkbox"
+//               checked={wrapMathEquations}
+//               onChange={(e) => setWrapMathEquations(e.target.checked)}
+//             />
+//             {t("modals.exportLatex.wrapEquations")}
+//           </label>
+//         </div>
+
+//         <pre className={styles.latexBox}
+//           dangerouslySetInnerHTML={{ __html: latexContent }}
+//         />
+
+//         <div className={styles.buttons}>
+//           <button onClick={handleDownload}>⬇️ {t("modals.exportLatex.download")}</button>
+//           <button onClick={handleCopy}>
+//             {copied ? t("latex.copied") : t("latex.copy")}
+//           </button>
+//         </div>
+//       </div>
+//     </Modal>
+//   );
+// };
 const ExportLatexModal: React.FC<ExportLatexModalProps> = ({ note, onClose }) => {
   const { t } = useI18n();
   const [format, setFormat] = useState<LatexFormat>("singleColumn");
   const [wrapMathEquations, setWrapMathEquations] = useState<boolean>(false);
   const [copied, setCopied] = useState(false);
 
-  const latexContent = useMemo(() => {
-    const options: LatexExportOptions = { format, wrapMathEquations };
-    return formatNoteToLatex(note, options);
-  }, [note, format, wrapMathEquations]);
+  const exportOptions = useMemo(() => ({ format, wrapMathEquations }), [format, wrapMathEquations]);
+
+  // Raw version for copy/download
+  const plainLatexContent = useMemo(() => {
+    return formatNoteToLatex(note, exportOptions, false);
+  }, [note, exportOptions]);
+
+  // Styled version for preview
+  const styledLatexContent = useMemo(() => {
+    return formatNoteToLatex(note, exportOptions, true);
+  }, [note, exportOptions]);
 
   const handleDownload = () => {
-    const blob = new Blob([latexContent], { type: "text/plain" });
+    const blob = new Blob([plainLatexContent], { type: "text/plain" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
     link.download = `${note.metadata.title || "note"}.tex`;
@@ -35,7 +110,7 @@ const ExportLatexModal: React.FC<ExportLatexModalProps> = ({ note, onClose }) =>
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(latexContent);
+      await navigator.clipboard.writeText(plainLatexContent);
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch (err) {
@@ -69,9 +144,9 @@ const ExportLatexModal: React.FC<ExportLatexModalProps> = ({ note, onClose }) =>
           </label>
         </div>
 
-        <pre className={styles.latexBox}>
-          {latexContent}
-        </pre>
+        <pre className={styles.latexBox}
+          dangerouslySetInnerHTML={{ __html: styledLatexContent }}
+        />
 
         <div className={styles.buttons}>
           <button onClick={handleDownload}>⬇️ {t("modals.exportLatex.download")}</button>

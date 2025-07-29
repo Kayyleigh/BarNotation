@@ -1,3 +1,4 @@
+import { nodeToLatex } from "../../models/nodeToLatex";
 import type { Note, TextCellContent } from "../../models/noteTypes";
 import { TEXT_CELL_TYPES } from "../../models/textTypes";
 
@@ -37,7 +38,11 @@ function textCellToLatex(content: TextCellContent): string {
   }
 }
 
-export function formatNoteToLatex(note: Note, options: LatexExportOptions): string {
+export function formatNoteToLatex(
+  note: Note, 
+  options: LatexExportOptions,
+  includeHtmlStyling: boolean = false
+): string {
   const { format, wrapMathEquations } = options;
 
   const header = [
@@ -55,33 +60,43 @@ export function formatNoteToLatex(note: Note, options: LatexExportOptions): stri
     `\\maketitle`
   ].join("\n");
 
-  const body = note.cells.map((cell) => {
-    if (cell.type === "math") {
-      let content = cell.content.trim();
+  const savedEditorStatesString = localStorage.getItem(`note-editor-state-${note.id}`);
 
-      if (wrapMathEquations) {
-        // Remove wrapping \[ and \]
-        if (content.startsWith("\\[") && content.endsWith("\\]")) {
-          content = content.slice(2, -2).trim();
+  let body = "";
+
+  if (savedEditorStatesString !== null) {
+    body = note.cells.map((cell) => {
+      if (cell.type === "math") {
+              
+        const savedEditorStates = JSON.parse(savedEditorStatesString)
+
+        const rootNode = savedEditorStates.states[cell.id].rootNode
+        let content = nodeToLatex(rootNode, includeHtmlStyling)
+
+        if (wrapMathEquations) {
+          // Remove wrapping \[ and \]
+          if (content.startsWith("\\[") && content.endsWith("\\]")) {
+            content = content.slice(2, -2).trim();
+          }
+
+          // Indent all lines of math content
+          const indented = content
+            .split("\n")
+            .map(line => `  ${line}`) // two-space indentation
+            .join("\n");
+
+          return `\\begin{equation}\n${indented}\n\\end{equation}`;
+        } else {
+          return content;
         }
-
-        // Indent all lines of math content
-        const indented = content
-          .split("\n")
-          .map(line => `  ${line}`) // two-space indentation
-          .join("\n");
-
-        return `\\begin{equation}\n${indented}\n\\end{equation}`;
+        
+      } else if (cell.type === "text") {
+        return textCellToLatex(cell.content);
       } else {
-        return content;
+        return "";
       }
-    } else if (cell.type === "text") {
-      return textCellToLatex(cell.content);
-    } else {
-      return "";
-    }
-  }).join("\n\n");
-
+    }).join("\n\n");
+  }
   const footer = "\\end{document}";
 
   return `${header}\n\n${body}\n\n${footer}`;
