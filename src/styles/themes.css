@@ -89,6 +89,7 @@
     --latex-refresh-button-color-outdated-active: #8a5500;
   
     --latex-text-color-command: #833fba; 
+    --latex-text-color-comment: #777777; 
     --latex-text-color-bracket: #000000;
     --latex-text-color-other: #036a07;
     --latex-text-color-actsymb: #00ff08;
