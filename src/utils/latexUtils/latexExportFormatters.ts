@@ -1,6 +1,7 @@
 import { nodeToLatex } from "../../models/nodeToLatex";
 import type { Note, TextCellContent } from "../../models/noteTypes";
 import { TEXT_CELL_TYPES } from "../../models/textTypes";
+import { noteUsesActuarialSymbols } from "./latexDependencies";
 
 export type LatexFormat = "singleColumn" | "doubleColumn";
 
@@ -80,6 +81,13 @@ function defaultPreamble(note: Note, options: LatexExportOptions): string {
     `\\usepackage{amsmath}`,
     `\\usepackage{amssymb}`,
     `\\usepackage[utf8]{inputenc}`,
+  ];
+
+  if (noteUsesActuarialSymbols(note)) {
+    lines.push(`\\usepackage{actuarialsymbol}`);
+  }
+
+  lines.push(
     ``,
     `\\title{${escapeLatex(note.metadata.title || "Untitled")}}`,
     `\\author{${escapeLatex(note.metadata.author || "Anonymous")}}`,
@@ -87,7 +95,7 @@ function defaultPreamble(note: Note, options: LatexExportOptions): string {
     ``,
     `\\begin{document}`,
     `\\maketitle`
-  ];
+  );
 
   return lines.join("\n");
 }
