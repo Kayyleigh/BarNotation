@@ -34,12 +34,18 @@ function textCellToLatex(content: TextCellContent): string {
 
 export function formatNoteToLatex(note: Note, format: LatexFormat): string {
   const header = [
-    `% Exported LaTeX`,
+    `% Exported LaTeX from BarNotation`,
     `\\documentclass${format === "doubleColumn" ? "[twocolumn]" : ""}{article}`,
     `\\usepackage{amsmath}`,
     `\\usepackage{amssymb}`,
     `\\usepackage[utf8]{inputenc}`,
-    `\\begin{document}`
+    ``,
+    `\\title{${note.metadata.title || "Untitled"}}`,
+    `\\author{${note.metadata.author || "Anonymous"}}`,
+    `\\date{${note.metadata.dateOrPeriod || "\\today"}}`,
+    ``,
+    `\\begin{document}`,
+    `\\maketitle`
   ].join("\n");
 
   const body = note.cells.map((cell) => {
