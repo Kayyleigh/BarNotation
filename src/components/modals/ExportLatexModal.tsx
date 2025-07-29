@@ -3,7 +3,11 @@ import { useI18n } from "../../i18n/useI18n";
 import type { Note } from "../../models/noteTypes";
 import Modal from "./Modal";
 import styles from "./ExportLatexModal.module.css";
-import { formatNoteToLatex, type LatexFormat } from "../../utils/latexUtils/latexExportFormatters";
+import {
+  formatNoteToLatex,
+  type LatexFormat,
+  type LatexExportOptions
+} from "../../utils/latexUtils/latexExportFormatters";
 
 interface ExportLatexModalProps {
   note: Note;
@@ -13,9 +17,13 @@ interface ExportLatexModalProps {
 const ExportLatexModal: React.FC<ExportLatexModalProps> = ({ note, onClose }) => {
   const { t } = useI18n();
   const [format, setFormat] = useState<LatexFormat>("singleColumn");
+  const [wrapMathEquations, setWrapMathEquations] = useState<boolean>(false);
   const [copied, setCopied] = useState(false);
 
-  const latexContent = useMemo(() => formatNoteToLatex(note, format), [note, format]);
+  const latexContent = useMemo(() => {
+    const options: LatexExportOptions = { format, wrapMathEquations };
+    return formatNoteToLatex(note, options);
+  }, [note, format, wrapMathEquations]);
 
   const handleDownload = () => {
     const blob = new Blob([latexContent], { type: "text/plain" });
@@ -50,6 +58,15 @@ const ExportLatexModal: React.FC<ExportLatexModalProps> = ({ note, onClose }) =>
             <option value="singleColumn">{t("modals.exportLatex.format.single")}</option>
             <option value="doubleColumn">{t("modals.exportLatex.format.double")}</option>
           </select>
+
+          <label className={styles.checkbox}>
+            <input
+              type="checkbox"
+              checked={wrapMathEquations}
+              onChange={(e) => setWrapMathEquations(e.target.checked)}
+            />
+            {t("modals.exportLatex.wrapEquations")}
+          </label>
         </div>
 
         <pre className={styles.latexBox}>

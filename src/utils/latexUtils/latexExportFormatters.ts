@@ -3,6 +3,11 @@ import { TEXT_CELL_TYPES } from "../../models/textTypes";
 
 export type LatexFormat = "singleColumn" | "doubleColumn";
 
+export interface LatexExportOptions {
+  format: LatexFormat;
+  wrapMathEquations: boolean;
+}
+
 function escapeLatex(text: string): string {
   return text
     .replace(/\\/g, "\\textbackslash{}")
@@ -12,7 +17,7 @@ function escapeLatex(text: string): string {
 }
 
 function textCellToLatex(content: TextCellContent): string {
-  if (!(content.text)) { // Failsafe for legacy formats
+  if (!content?.text) {
     if (typeof content === "string") return content;
     else return "";
   }
@@ -32,7 +37,9 @@ function textCellToLatex(content: TextCellContent): string {
   }
 }
 
-export function formatNoteToLatex(note: Note, format: LatexFormat): string {
+export function formatNoteToLatex(note: Note, options: LatexExportOptions): string {
+  const { format, wrapMathEquations } = options;
+
   const header = [
     `% Exported LaTeX from BarNotation`,
     `\\documentclass${format === "doubleColumn" ? "[twocolumn]" : ""}{article}`,
@@ -50,12 +57,28 @@ export function formatNoteToLatex(note: Note, format: LatexFormat): string {
 
   const body = note.cells.map((cell) => {
     if (cell.type === "math") {
-      const latex = cell.content;
-      return `${latex}`;
+      let content = cell.content.trim();
+
+      if (wrapMathEquations) {
+        // Remove wrapping \[ and \]
+        if (content.startsWith("\\[") && content.endsWith("\\]")) {
+          content = content.slice(2, -2).trim();
+        }
+
+        // Indent all lines of math content
+        const indented = content
+          .split("\n")
+          .map(line => `  ${line}`) // two-space indentation
+          .join("\n");
+
+        return `\\begin{equation}\n${indented}\n\\end{equation}`;
+      } else {
+        return content;
+      }
     } else if (cell.type === "text") {
       return textCellToLatex(cell.content);
     } else {
-      return ""; // unknown cell type
+      return "";
     }
   }).join("\n\n");
 

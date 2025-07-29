@@ -211,6 +211,7 @@ const nl = {
         single: "Enkele kolom",
         double: "Dubbele kolom",
       },
+      wrapEquations: "Wiskundeblokken omwikkelen met equation environment",
       download: "Download .tex-bestand",
     },
   },

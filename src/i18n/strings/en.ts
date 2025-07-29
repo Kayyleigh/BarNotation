@@ -209,6 +209,7 @@ const en = {
         single: "Single column",
         double: "Double column",
       },
+      wrapEquations: "Wrap math in equation environments",
       download: "Download .tex file",
     },
   },
