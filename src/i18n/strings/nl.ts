@@ -212,7 +212,8 @@ const nl = {
         double: "Dubbele kolom",
       },
       wrapEquations: "Wiskunde in equation environments plaatsen",
-      download: "Download .tex-bestand",
+      download: "Download",
+      downloadTooltip: "Download .tex-bestand",
     },
   },
 

@@ -7,6 +7,7 @@ import {
   formatNoteToLatex,
   type LatexFormat
 } from "../../utils/latexUtils/latexExportFormatters";
+import Tooltip from "../tooltips/Tooltip";
 
 interface ExportLatexModalProps {
   note: Note;
@@ -55,21 +56,25 @@ const ExportLatexModal: React.FC<ExportLatexModalProps> = ({ note, onClose }) =>
 
       <div className={styles.container}>
         <div className={styles.controls}>
-          <label htmlFor="format">{t("modals.exportLatex.formatLabel")}:</label>
-          <select
-            id="format"
-            value={format}
-            onChange={(e) => setFormat(e.target.value as LatexFormat)}
-          >
-            <option value="singleColumn">{t("modals.exportLatex.format.single")}</option>
-            <option value="doubleColumn">{t("modals.exportLatex.format.double")}</option>
-          </select>
+          <div className={styles.controlGroup}>
+            <label htmlFor="format">{t("modals.exportLatex.formatLabel")}:</label>
+            <select
+              id="format"
+              value={format}
+              onChange={(e) => setFormat(e.target.value as LatexFormat)}
+              className={styles.dropdown}
+            >
+              <option value="singleColumn">{t("modals.exportLatex.format.single")}</option>
+              <option value="doubleColumn">{t("modals.exportLatex.format.double")}</option>
+            </select>
+          </div>
 
-          <label className={styles.checkbox}>
+          <label className={`${styles.controlGroup} ${styles.checkboxLabel}`}>
             <input
               type="checkbox"
               checked={wrapMathEquations}
               onChange={(e) => setWrapMathEquations(e.target.checked)}
+              className={styles.checkboxInput}
             />
             {t("modals.exportLatex.wrapEquations")}
           </label>
@@ -80,10 +85,24 @@ const ExportLatexModal: React.FC<ExportLatexModalProps> = ({ note, onClose }) =>
         />
 
         <div className={styles.buttons}>
-          <button onClick={handleDownload}>⬇️ {t("modals.exportLatex.download")}</button>
-          <button onClick={handleCopy}>
-            {copied ? t("latex.copied") : t("latex.copy")}
-          </button>
+          <Tooltip text={t("modals.exportLatex.downloadTooltip")}>
+            <button
+              className={styles.button}
+              onClick={handleDownload}
+              type="button"
+            >
+              ⬇️ {t("modals.exportLatex.download")}
+            </button>
+          </Tooltip>
+          <Tooltip text={t("modals.exportLatex.downloadTooltip")}>
+            <button
+              className={styles.button}
+              onClick={handleCopy}
+              type="button"
+            >
+              {copied ? t("latex.copied") : t("latex.copy")}
+            </button>
+          </Tooltip>
         </div>
       </div>
     </Modal>

@@ -210,7 +210,8 @@ const en = {
         double: "Double column",
       },
       wrapEquations: "Wrap math in equation environments",
-      download: "Download .tex file",
+      download: "Download",
+      downloadTooltip: "Download .tex file",
     },
   },
 
