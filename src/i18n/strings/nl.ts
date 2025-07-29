@@ -211,7 +211,9 @@ const nl = {
         single: "Enkele kolom",
         double: "Dubbele kolom",
       },
-      download: "Download .tex-bestand",
+      wrapEquations: "Wiskunde in equation environments plaatsen",
+      download: "Download",
+      downloadTooltip: "Download .tex-bestand",
     },
   },
 

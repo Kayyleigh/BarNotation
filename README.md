@@ -93,7 +93,7 @@ BarNotation supports a growing list of structured math elements:
 
 > [!CAUTION]  
 > This section may be slightly outdated. Since updating walkthroughs takes time, it only gets refreshed after enough meaningful UI changes. The image in the [Introduction](#barnotation) is always relatively up-to-date.  
-> _Walkthrough last updated: **July 26, 2025**._
+> _Walkthrough last updated: **July 30, 2025**._
 
 ### 📝 Main Editing Interface
 
@@ -223,7 +223,6 @@ Can't remember a hotkey? Open the cheat sheet anytime.
 
 
 ### 📓 Notebook Archive
-
 Keep your workspace clean by archiving notebooks you don't need right now but still don't want to delete.
 
 <p align="center">
@@ -255,11 +254,19 @@ Enjoy the library but not the editor? Just drag your math into an external LaTeX
 > [!TIP]  
 > Any pasted LaTeX will be interpreted into structured math. Accidentally paste a full novel? Just `Ctrl+Z` to undo.
 
+#### Full Note LaTeX Export
+Export your notebook to LaTeX (.tex file) to open it in a different editing app, or just to safely store a backup! 
+
+<p align="center">
+  <img src="docs/readme-images/export-latex-modal.png" alt="Modal for viewing, copying and downloading the full LaTeX for a notebook" width="700"/>
+</p>
+
+- Converts all cells into LaTeX (respecting hierarchy for text)
+- Uses your metadata to fill in the title, author, and date
+- Auto-detects required packages (for the forseeable future, only `actuarialsymbol` is supported)
+
 > [!NOTE]  
-> Full LaTeX **notebook export** is coming soon! It will:
-> - Convert all cells into LaTeX (respecting hierarchy for text)
-> - Use your metadata for title, author, date
-> - Auto-detect required packages (for the forseeable future, only `actuarialsymbol` is supported)
+> I plan to add a feature to **import from LaTeX** as well, but this might happen after the first working version due to time constrains (so not before September 1, 2025). This feature would make .tex files a safe way to store notes from BarNotation to recover files in case something happens to the app, or transfer between devices.
 
 ## 📁 Project Structure
 
@@ -327,6 +334,8 @@ The app is built in **React** with **TypeScript** and uses **Vite** as the build
     - [`modals/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/modals/) — Modal components
       - [`ArchiveModal.module.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/modals/ArchiveModal.module.css) — Archive modal styling
       - [`ArchiveModal.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/modals/ArchiveModal.tsx) — Archive modal with searchbar and dropdown
+      - [`ExportLatexModal.module.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/modals/ExportLatexModal.module.css) — Styling for LaTeX export modal
+      - [`ExportLatexModal.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/modals/ExportLatexModal.tsx) — LaTeX export modal for viewing/downloading/copying full note's LaTeX
       - [`HotkeyOverlay.module.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/modals/HotkeyOverlay.module.css) — Hotkey overview modal
       - [`HotkeyOverlay.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/modals/HotkeyOverlay.tsx) — Hotkey info overlay
       - [`LibCollectionArchiveModal.module.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/modals/LibCollectionArchiveModal.module.css) — Styling for library collection archive model
@@ -444,6 +453,9 @@ The app is built in **React** with **TypeScript** and uses **Vite** as the build
     - [`subsupUtils.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/utils/subsupUtils.ts) — CornerPosition helper (used in transforms)
     - [`textContainerUtils.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/utils/textContainerUtils.ts) — Unused: split MultiDigit nodes
     - [`treeUtils.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/utils/treeUtils.ts) — Utilities for MathNodes
+    - [`latexUtils/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/utils/latexUtils/) — Utility functions for LaTeX exporting
+      - [`latexDependencies.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/utils/latexUtils/latexDependencies.ts) — Functions to determine required LaTeX packages for preamble
+      - [`latexExportFormatters.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/utils/latexUtils/latexExportFormatters.ts) — Formatting functions for LaTeX (preamble; cells to LaTeX)
 </details>
 
 > [!CAUTION]
@@ -497,7 +509,6 @@ Planned features and improvements include:
 - [ ] Enable custom command sequences
 - [ ] Implement soft delete, i.e. all deleted notes, collections and entries move to a bin so they can be recovered for a little bit before perma delete. (Especially entries since those are easy to accidentally delete)
 - [ ] Proper persistent storage (I currently put everything in the browser localStorage)
-- [ ] Full notebook export as LaTeX
 - [ ] Customizable hotkeys (?)
 - [ ] Custom command sequences (?—See the [Discussion on this](https://github.com/Kayyleigh/BarNotation/discussions/14))
 - [ ] Overview of existing command sequences
@@ -515,7 +526,7 @@ Planned features and improvements include:
 
 > [!NOTE]
 > This is not an exhaustive list, nor is it chronologically ordered. Some of these may already exist on other branches. 
-> _Roadmap last updated: **July 28, 2025**._
+> _Roadmap last updated: **July 30, 2025**._
 
 Not sure how many of these will be done by the end of the summer of 2025, but my goal is to have a usable version of BarNotation available for real-world use **by September 1, 2025**, since that is the beginning of the school year! (Good for the target audience, which is students, but also for me because I am going to be busy with uni as well.) 
 
