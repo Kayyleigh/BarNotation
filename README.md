@@ -223,7 +223,6 @@ Can't remember a hotkey? Open the cheat sheet anytime.
 
 
 ### 📓 Notebook Archive
-
 Keep your workspace clean by archiving notebooks you don't need right now but still don't want to delete.
 
 <p align="center">
@@ -255,11 +254,19 @@ Enjoy the library but not the editor? Just drag your math into an external LaTeX
 > [!TIP]  
 > Any pasted LaTeX will be interpreted into structured math. Accidentally paste a full novel? Just `Ctrl+Z` to undo.
 
+#### Full Note LaTeX Export
+Export your notebook to LaTeX (.tex file) to open it in a different editing app, or just to safely store a backup! 
+
+<p align="center">
+  <img src="docs/readme-images/export-latex-modal.png" alt="Modal for viewing, copying and downloading the full LaTeX for a notebook" width="700"/>
+</p>
+
+- Converts all cells into LaTeX (respecting hierarchy for text)
+- Uses your metadata to fill in the title, author, and date
+- Auto-detects required packages (for the forseeable future, only `actuarialsymbol` is supported)
+
 > [!NOTE]  
-> Full LaTeX **notebook export** is coming soon! It will:
-> - Convert all cells into LaTeX (respecting hierarchy for text)
-> - Use your metadata for title, author, date
-> - Auto-detect required packages (for the forseeable future, only `actuarialsymbol` is supported)
+> I plan to add a feature to **import from LaTeX** as well, but this might happen after the first working version due to time constrains (so not before September 1, 2025). This feature would make .tex files a safe way to store notes from BarNotation to recover files in case something happens to the app, or transfer between devices.
 
 ## 📁 Project Structure
 

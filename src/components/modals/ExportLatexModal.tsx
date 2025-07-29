@@ -3,7 +3,11 @@ import { useI18n } from "../../i18n/useI18n";
 import type { Note } from "../../models/noteTypes";
 import Modal from "./Modal";
 import styles from "./ExportLatexModal.module.css";
-import { formatNoteToLatex, type LatexFormat } from "../../utils/latexUtils/latexExportFormatters";
+import {
+  formatNoteToLatex,
+  type LatexFormat
+} from "../../utils/latexUtils/latexExportFormatters";
+import Tooltip from "../tooltips/Tooltip";
 
 interface ExportLatexModalProps {
   note: Note;
@@ -13,12 +17,23 @@ interface ExportLatexModalProps {
 const ExportLatexModal: React.FC<ExportLatexModalProps> = ({ note, onClose }) => {
   const { t } = useI18n();
   const [format, setFormat] = useState<LatexFormat>("singleColumn");
+  const [wrapMathEquations, setWrapMathEquations] = useState<boolean>(false);
   const [copied, setCopied] = useState(false);
 
-  const latexContent = useMemo(() => formatNoteToLatex(note, format), [note, format]);
+  const exportOptions = useMemo(() => ({ format, wrapMathEquations }), [format, wrapMathEquations]);
+
+  // Raw version for copy/download
+  const plainLatexContent = useMemo(() => {
+    return formatNoteToLatex(note, exportOptions, false);
+  }, [note, exportOptions]);
+
+  // Styled version for preview
+  const styledLatexContent = useMemo(() => {
+    return formatNoteToLatex(note, exportOptions, true);
+  }, [note, exportOptions]);
 
   const handleDownload = () => {
-    const blob = new Blob([latexContent], { type: "text/plain" });
+    const blob = new Blob([plainLatexContent], { type: "text/plain" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
     link.download = `${note.metadata.title || "note"}.tex`;
@@ -27,7 +42,7 @@ const ExportLatexModal: React.FC<ExportLatexModalProps> = ({ note, onClose }) =>
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(latexContent);
+      await navigator.clipboard.writeText(plainLatexContent);
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch (err) {
@@ -41,26 +56,53 @@ const ExportLatexModal: React.FC<ExportLatexModalProps> = ({ note, onClose }) =>
 
       <div className={styles.container}>
         <div className={styles.controls}>
-          <label htmlFor="format">{t("modals.exportLatex.formatLabel")}:</label>
-          <select
-            id="format"
-            value={format}
-            onChange={(e) => setFormat(e.target.value as LatexFormat)}
-          >
-            <option value="singleColumn">{t("modals.exportLatex.format.single")}</option>
-            <option value="doubleColumn">{t("modals.exportLatex.format.double")}</option>
-          </select>
+          <div className={styles.controlGroup}>
+            <label htmlFor="format">{t("modals.exportLatex.formatLabel")}:</label>
+            <select
+              id="format"
+              value={format}
+              onChange={(e) => setFormat(e.target.value as LatexFormat)}
+              className={styles.dropdown}
+            >
+              <option value="singleColumn">{t("modals.exportLatex.format.single")}</option>
+              <option value="doubleColumn">{t("modals.exportLatex.format.double")}</option>
+            </select>
+          </div>
+
+          <label className={`${styles.controlGroup} ${styles.checkboxLabel}`}>
+            <input
+              type="checkbox"
+              checked={wrapMathEquations}
+              onChange={(e) => setWrapMathEquations(e.target.checked)}
+              className={styles.checkboxInput}
+            />
+            {t("modals.exportLatex.wrapEquations")}
+          </label>
         </div>
 
-        <pre className={styles.latexBox}>
-          {latexContent}
-        </pre>
+        <pre className={styles.latexBox}
+          dangerouslySetInnerHTML={{ __html: styledLatexContent }}
+        />
 
         <div className={styles.buttons}>
-          <button onClick={handleDownload}>⬇️ {t("modals.exportLatex.download")}</button>
-          <button onClick={handleCopy}>
-            {copied ? t("latex.copied") : t("latex.copy")}
-          </button>
+          <Tooltip text={t("modals.exportLatex.downloadTooltip")}>
+            <button
+              className={styles.button}
+              onClick={handleDownload}
+              type="button"
+            >
+              ⬇️ {t("modals.exportLatex.download")}
+            </button>
+          </Tooltip>
+          <Tooltip text={t("modals.exportLatex.downloadTooltip")}>
+            <button
+              className={styles.button}
+              onClick={handleCopy}
+              type="button"
+            >
+              {copied ? t("latex.copied") : t("latex.copy")}
+            </button>
+          </Tooltip>
         </div>
       </div>
     </Modal>

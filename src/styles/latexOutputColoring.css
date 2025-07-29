@@ -2,6 +2,10 @@
   color: var(--latex-text-color-command);
 }
 
+.latex-comment {
+  color: var(--latex-text-color-comment);
+}
+
 .latex-bracket {
   color: var(--latex-text-color-bracket);
 }
