@@ -2,10 +2,14 @@
 
 Adding a new language requires changes in multiple parts of the app.
 
-### 1. Add Translation Strings
+## 1. Add Translation Strings
 
 - File: `src/i18n/strings/<language-code>.ts`
 - Copy an existing file (e.g. [English (`en.ts`)](/src/i18n/strings/en.ts)) and translate the strings.
+
+You can find your language's code on [this Wikipedia page](https://en.wikipedia.org/wiki/List_of_ISO_639_language_codes).
+
+You are allowed to use generative AI to get initial translation (I did so as well for Dutch), but please go over the resulting strings to verify their correctness as well as contextual appropriateness in the app. Think about what other, similar apps choose to display in your language for the same features.
 
 > [!IMPORTANT]
 > The following language files have been created (but empty) because I hope for them to be done by my friends:
@@ -17,7 +21,7 @@ Adding a new language requires changes in multiple parts of the app.
 > - [Romanian](/src/i18n/strings/ro.ts)
 > - [Slovak](/src/i18n/strings/sk.ts)
 
-### 2. Register Language in the App
+## 2. Register Language in the App
 
 **Add it to the provider**:
 - File: [`src/i18n/I18nProvider.tsx`](/src/i18n/I18nProvider.tsx)
@@ -33,7 +37,7 @@ Make sure `<language-native-name>` is the **native** name of your language, to e
 > [!CAUTION]
 > Do **NOT** set default to "true"!
 
-### 4. Test It
+## 3. Test It
 
 - Run the app and switch to the new language to verify translations are loading correctly.
 
