@@ -540,6 +540,8 @@ This is my first time pushing a project of this size out into the world. However
   - Defining new command sequences
 - Issues and feedback are appreciated!
 
+Find the instructions to contribute [here](CONTRIBUTING.md).
+
 ---
 
 ## 🤝 Acknowledgements
