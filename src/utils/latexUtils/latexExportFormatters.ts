@@ -122,18 +122,18 @@ function defaultBody(note: Note, options: LatexExportOptions, includeHtmlStyling
   if (!savedEditorStatesString) return "";
 
   const savedEditorStates = JSON.parse(savedEditorStatesString);
+  const { order = [], states = {}, textContents = {} } = savedEditorStates;
 
-  return note.cells.map((cell) => {
-    if (cell.type === "math") {
-      const rootNode = savedEditorStates.states[cell.id]?.rootNode;
-      if (!rootNode) return "";
+  return order.map((id: string) => {
+    const mathState = states[id];
+    const textState = textContents[id];
 
-      let content = nodeToLatex(rootNode, includeHtmlStyling);
+    if (mathState?.rootNode) {
+      // It's a math cell
+      let content = nodeToLatex(mathState.rootNode, includeHtmlStyling);
 
       if (wrapMathEquations) {
-        // Remove \[ \] wrapper 
         content = stripOuterDisplayMath(content);
-
         const indented = content
           .split("\n")
           .map(line => `  ${line}`)
@@ -147,8 +147,8 @@ function defaultBody(note: Note, options: LatexExportOptions, includeHtmlStyling
       return content;
     }
 
-    if (cell.type === "text") {
-      const plain = textCellToLatex(cell.content);
+    if (textState?.text) {
+      const plain = textCellToLatex(textState);
       return includeHtmlStyling ? highlightLatex(plain) : plain;
     }
 
