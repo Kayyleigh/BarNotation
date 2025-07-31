@@ -542,6 +542,11 @@ This is my first time pushing a project of this size out into the world. However
 
 Find the instructions to contribute [here](CONTRIBUTING.md).
 
+### Contributors
+A special thanks to my friends who have contributed to BarNotation ❤️
+
+- Czech translations: [Daniel M.](https://github.com/BlekDok)
+
 ---
 
 ## 🤝 Acknowledgements
