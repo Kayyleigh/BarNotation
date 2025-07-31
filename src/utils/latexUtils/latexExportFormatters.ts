@@ -29,7 +29,22 @@ function getLatexSafeDate(note: Note): string {
   );
 }
 
-function stripOuterDisplayMath(content: string): string {
+function stripOuterDisplayMath(content: string, includeHtmlStyling: boolean): string {
+  if (!includeHtmlStyling) {
+    // Raw text: remove plain leading \[ and trailing \]
+    const trimmed = content.trim();
+
+    // Match start and end lines with only \[ and \]
+    const lines = trimmed.split("\n");
+
+    if (lines[0]?.trim() === "\\[" && lines[lines.length - 1]?.trim() === "\\]") {
+      return lines.slice(1, -1).join("\n").trim();
+    }
+
+    return content;
+  }
+
+  // Styled HTML: parse and check span wrappers
   const parser = new DOMParser();
   const doc = parser.parseFromString(`<div>${content}</div>`, "text/html");
   const container = doc.body.firstChild;
@@ -38,7 +53,6 @@ function stripOuterDisplayMath(content: string): string {
 
   const children = Array.from(container.children);
 
-  // Look for \[ at the beginning
   const first = children[0];
   const last = children[children.length - 1];
 
@@ -49,7 +63,6 @@ function stripOuterDisplayMath(content: string): string {
     last?.textContent?.trim() === "\\]" && last.classList.contains("latex-cmd");
 
   if (isStartDisplayMath && isEndDisplayMath) {
-    // Remove outer \[ and \]
     first.remove();
     last.remove();
   }
@@ -107,7 +120,7 @@ function defaultPreamble(note: Note, options: LatexExportOptions): string {
     ``,
     `\\begin{document}`,
     `\\maketitle`
-  );  
+  );
 
   return lines.join("\n");
 }
@@ -122,18 +135,18 @@ function defaultBody(note: Note, options: LatexExportOptions, includeHtmlStyling
   if (!savedEditorStatesString) return "";
 
   const savedEditorStates = JSON.parse(savedEditorStatesString);
+  const { order = [], states = {}, textContents = {} } = savedEditorStates;
 
-  return note.cells.map((cell) => {
-    if (cell.type === "math") {
-      const rootNode = savedEditorStates.states[cell.id]?.rootNode;
-      if (!rootNode) return "";
+  return order.map((id: string) => {
+    const mathState = states[id];
+    const textState = textContents[id];
 
-      let content = nodeToLatex(rootNode, includeHtmlStyling);
+    if (mathState?.rootNode) {
+      // It's a math cell
+      let content = nodeToLatex(mathState.rootNode, includeHtmlStyling);
 
       if (wrapMathEquations) {
-        // Remove \[ \] wrapper 
-        content = stripOuterDisplayMath(content);
-
+        content = stripOuterDisplayMath(content, includeHtmlStyling);
         const indented = content
           .split("\n")
           .map(line => `  ${line}`)
@@ -147,8 +160,8 @@ function defaultBody(note: Note, options: LatexExportOptions, includeHtmlStyling
       return content;
     }
 
-    if (cell.type === "text") {
-      const plain = textCellToLatex(cell.content);
+    if (textState?.text) {
+      const plain = textCellToLatex(textState);
       return includeHtmlStyling ? highlightLatex(plain) : plain;
     }
 

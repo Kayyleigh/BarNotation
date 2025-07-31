@@ -304,7 +304,7 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
                   <div className={styles.collectionNameInput}>
                     <input
                       ref={renameInputRef}
-                      defaultValue={c.name}
+                      defaultValue={getCollectionDisplayName(c) || c.name}
                       onBlur={(e) => renameCollection(c.id, e.target.value)}
                       onKeyDown={(e) => {
                         if (e.key === "Enter")

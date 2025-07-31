@@ -86,7 +86,7 @@ const NotebookArchiveModal: React.FC<Props> = ({ notes, onClose, onUnarchive, on
                   <strong>{note.metadata.title}</strong>
                   <span className={archiveStyles.dot}>·</span>
                   <span className={archiveStyles.entries}>
-                    {note.cells.length} {note.cells.length === 1 ? t("modals.notebookArchive.cellSingular") : t("modals.notebookArchive.cellPlural")}
+                    {note.cells.length} { t("modals.notebookArchive.cell", { count: note.cells.length } )}
                   </span>
                 </div>
                 {note.metadata.author && (

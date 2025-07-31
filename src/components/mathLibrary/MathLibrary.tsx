@@ -287,9 +287,14 @@ const MathLibrary: React.FC<MathLibraryProps> = ({
 
   const activeCollection = collections.find(c => c.id === activeColl);
 
+  const key = "premadeCollections." + activeCollection?.id
+
+  const translated = t(key);
+  const name = translated !== key ? translated : activeCollection?.name;
+  
   const placeholderText = activeCollection
-    ? t("mathLibrary.search.placeholderWith", { name: activeCollection.name })
-    : t("mathLibrary.search.placeholder");
+    ? t("mathLibrary.search.placeholderWith", { name })
+    : t("mathLibrary.search.placeholder");  
 
   const sortOptions = [
     { label: t("mathLibrary.sort.newest"), value: "date" },
