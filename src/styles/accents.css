@@ -2,33 +2,39 @@
 .type-accented::before {
     position: absolute;
     top: -0.1em;
-    left: calc(50% + 0.5 * var(--empty-math-inline-container-width));
+    /* left: calc(50% + 0.5 * var(--empty-math-inline-container-width)); */
     /* transform: calc(translateX(-50%) + var(--empty-math-inline-container-width)); Shift by width of dummy */
     font-size: 0.7em;
     pointer-events: none;
   }
   
   .decoration-hat::before {
+    left: calc(50% + 0.5 * var(--empty-math-inline-container-width));
     content: 'ˆ'; /* Unicode hat accent */
   }
   
   .decoration-bar::before {
+    left: calc(50% + 0.5 * var(--empty-math-inline-container-width));
     content: '‾'; /* Overline */
   }
   
   .decoration-tilde::before {
+    left: calc(50% + 0.5 * var(--empty-math-inline-container-width));
     content: '˜';
   }
   
   .decoration-widehat::before {
+    left: calc(50% + 0.5 * var(--empty-math-inline-container-width));
     content: '⌢'; /* wide hat approximation */
   }
   
   .decoration-ddot::before {
+    left: calc(50% + 0.5 * var(--empty-math-inline-container-width));
     content: '¨'; /* umlaut */
   }
   
   .decoration-mathring::before {
+    left: calc(50% + 0.5 * var(--empty-math-inline-container-width));
     content: '˚'; /* ring */
   }
   
@@ -36,7 +42,7 @@
   .decoration-underline::after {
     content: '';
     position: absolute;
-    bottom: -0.15em;
+    bottom: -0.01em;
     left: 0;
     right: 0;
     height: 1px;
