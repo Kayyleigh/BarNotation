@@ -56,7 +56,7 @@ const NoteListItem: React.FC<Props> = ({
           <div className={styles.noteTitle}>{note.title}</div>
           <div className={styles.noteMeta}>
             <span>
-              {note.cellCount} {note.cellCount === 1 ? t("modals.notebookArchive.cellSingular") : t("modals.notebookArchive.cellPlural")} {/* TODO put both uses of this string into mroe intuitive thingy in the language file */}
+              {note.cellCount} { t("modals.notebookArchive.cell", { count: note.cellCount } )}
             </span>
             <span className={styles.noteDate}>
               {note.createdAt && <span>{formatCreatedAt(note.createdAt, t, lang)}</span>}

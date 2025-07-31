@@ -13,13 +13,15 @@ You are allowed to use generative AI to get initial translation (I did so as wel
 
 > [!IMPORTANT]
 > The following language files have been created (but empty) because I hope for them to be done by my friends:
-> - [Czech](/src/i18n/strings/cs.ts)
 > - [German](/src/i18n/strings/de.ts)
 > - [Greek](/src/i18n/strings/el.ts)
 > - [Spanish](/src/i18n/strings/es.ts)
 > - [French](/src/i18n/strings/fr.ts)
 > - [Romanian](/src/i18n/strings/ro.ts)
 > - [Slovak](/src/i18n/strings/sk.ts)
+
+> [!NOTE]
+> If your language requires a different plural for quantities 2-4 than for 5+, copy from [Czech (`cs.ts`)](/src/i18n/strings/cs.ts). Keys ending in `_plural1` are then used for quantities 2-4, and `_plural2` for 5+!
 
 ## 2. Register Language in the App
 

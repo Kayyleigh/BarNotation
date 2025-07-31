@@ -25,9 +25,9 @@ export function formatRelativeDate(
     if (diffMinutes < 1) {
       return `${t(labelKey)} ${t("date.justNow")}`;
     } else if (diffMinutes < 60) {
-      return `${t(labelKey)} ${t("date.minutesAgo", { count: diffMinutes })}`;
+      return `${t(labelKey)} ${t("date.minuteAgo", { count: diffMinutes })}`;
     } else if (isSameDay(now, date)) {
-      return `${t(labelKey)} ${t("date.hoursAgo", { count: diffHours })}`;
+      return `${t(labelKey)} ${t("date.hourAgo", { count: diffHours })}`;
     } else if (isYesterday(date)) {
       return `${t(labelKey)} ${t("date.yesterday")}`;
     } else if (now.getFullYear() === date.getFullYear()) {

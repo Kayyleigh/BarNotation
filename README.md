@@ -64,7 +64,7 @@ BarNotation enables users to build their notes as a sequence of "cells", either 
   - Drag math snippets directly into external LaTeX editors like [Overleaf](https://www.overleaf.com/)
   - Drag raw LaTeX directly into the math library to obtain the corresponding structured math
 - **Multilingual support**:
-  - Set the app to English or Dutch! More languages will be added later!
+  - Set the app to English, Dutch, or Czech! More languages will be added later!
 
 ---
 
@@ -205,7 +205,7 @@ Toggle math coloring, author defaults, and library reuse visibility. Light mode 
   <img src="docs/readme-images/tutorial-26072025/settings-modal.gif" alt="Settings panel showing various customization options" width="700"/>
 </p>
 
-As of 27/07/2025 there is also a dropdown to switch between languages! Currently, only English and Dutch are supported, but I plan to add more soon.
+As of 27/07/2025 there is also a dropdown to switch between languages! Currently, only English, Dutch and Czech are supported, but I plan to add more soon.
 
 > [!Note]
 > The app is completely offline and local. Thus, the "Default author name" is not an account name, nor will it ever be visible to anyone else than yourself. It is purely there to auto-fill the "author" metadata field of notebooks you create after changing the name.   
@@ -397,7 +397,7 @@ The app is built in **React** with **TypeScript** and uses **Vite** as the build
     - [`languages.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/i18n/languages.ts) — List of available languages
     - [`useI18n.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/i18n/useI18n.ts) — Hook for languages
     - [`strings/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/i18n/strings/) — Folder for language files
-      - [`cs.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/i18n/strings/cs.ts) — Czech (NOT YET IMPLEMENTED)
+      - [`cs.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/i18n/strings/cs.ts) — Czech
       - [`de.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/i18n/strings/de.ts) — German (NOT YET IMPLEMENTED)
       - [`el.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/i18n/strings/el.ts) — Greek (NOT YET IMPLEMENTED)
       - [`en.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/i18n/strings/en.ts) — English
@@ -500,7 +500,7 @@ The app should now be running at http://localhost:5173.
 
 Planned features and improvements include:
 
-- [ ] More languages! I will do my best to convince my friends to help me translate to German, French, Spanish, Czech, Slovak, Romanian and Greek.
+- [ ] More languages! I will do my best to convince my friends to help me translate to German, French, Spanish, Slovak, Romanian and Greek.
 - [ ] Enable custom library zoom level
 - [ ] Implement tagging feature for notes in the notes menu (potentially replacing the "course code" idea)
 - [ ] Make text cells support hyperlinks, italic, and bold 

@@ -1,5 +1,5 @@
 export const AVAILABLE_LANGUAGES = {
-    // cs: { name: "Čeština" },         // Czech
+    cs: { name: "Čeština" },         // Czech
     // de: { name: "Deutsch" },         // German
     // el: { name: "Ελληνικά" },        // Greek
     en: { name: "English", default: true }, // English (default)

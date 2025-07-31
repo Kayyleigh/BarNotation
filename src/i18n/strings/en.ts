@@ -1,3 +1,5 @@
+// English
+
 const en = {
   searchbar: {
     placeholder: "Search...",
@@ -175,8 +177,8 @@ const en = {
       archivedAt: "Archived at {{date}}",
       createdAt: "Created at {{date}}",
       by: "By",
-      cellSingular: "cell",
-      cellPlural: "cells",
+      cell: "cell",
+      cell_plural: "cells",
       sort: {
         recentlyArchived: "Recently Archived",
         longestArchived: "Longest Archived",
@@ -313,10 +315,10 @@ const en = {
     edited: "Edited",
     archived: "Archived",
     justNow: "just now",
-    minutesAgo: "{{count}} minute ago",
-    minutesAgo_plural: "{{count}} minutes ago",
-    hoursAgo: "{{count}} hour ago",
-    hoursAgo_plural: "{{count}} hours ago",
+    minuteAgo: "{{count}} minute ago",
+    minuteAgo_plural: "{{count}} minutes ago",
+    hourAgo: "{{count}} hour ago",
+    hourAgo_plural: "{{count}} hours ago",
     yesterday: "yesterday",
   },
 
