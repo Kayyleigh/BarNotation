@@ -332,6 +332,7 @@ const cs = {
         "premade-logic": "Logika",
         "premade-probability": "Pravděpodobnost a statistika",
         "greek-letters": "Řecká písmena",
+        "premade-actuarial": "Pojistně-matematický",
     }
 };
 

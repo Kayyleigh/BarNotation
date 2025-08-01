@@ -328,6 +328,7 @@ const en = {
     "premade-logic": "Logic",
     "premade-probability": "Probability & Statistics",
     "greek-letters": "Greek Letters",
+    "premade-actuarial": "Actuarial Science",
   }
 };
 

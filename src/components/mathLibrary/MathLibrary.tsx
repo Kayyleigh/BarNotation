@@ -39,7 +39,7 @@ const MathLibrary: React.FC<MathLibraryProps> = ({
   const { showToast } = useToast();
 
   // React 18 startTransition hook for deferred updates
-  const [, startTransition] = useTransition(); //'isPending' is assigned a value but never used.eslint@typescript-eslint/no-unused-vars
+  const [, startTransition] = useTransition();
 
   // Collections state
   const [collections, setCollections] = useState<LibraryCollection[]>(() => {
@@ -64,6 +64,46 @@ const MathLibrary: React.FC<MathLibraryProps> = ({
     }
     return createPremadeCollections(t);
   });
+
+  // // THIS HAS TO GO THROUGH THE PARSIGN AGAIN!!! ONLY USE IF NEEDED
+  // const [collections, setCollections] = useState<LibraryCollection[]>(() => {
+  //   try {
+  //     const stored = localStorage.getItem(STORAGE_KEY);
+  //     const storedCollections: LibraryCollection[] = stored ? JSON.parse(stored) : [];
+  
+  //     // Fix addedAt if stored
+  //     storedCollections.forEach((c) =>
+  //       c.entries.forEach((e) => {
+  //         if (typeof e.addedAt === "string") {
+  //           e.addedAt = new Date(e.addedAt).getTime();
+  //         }
+  //       })
+  //     );
+  
+  //     // Load the current premade collections
+  //     const premade = createPremadeCollections(t);
+  
+  //     // Make a Set of existing collection IDs
+  //     const existingIds = new Set(storedCollections.map(c => c.id));
+  
+  //     // Add only the new premade collections
+  //     const merged = [
+  //       ...storedCollections,
+  //       ...premade.filter(c => !existingIds.has(c.id))
+  //     ];
+  
+  //     return merged;
+  //   } catch {
+  //     showToast({
+  //       type: "error",
+  //       message: t("mathLibrary.error.loadStorage")
+  //     });
+  
+  //     // On error, just fall back to premade
+  //     return createPremadeCollections(t);
+  //   }
+  // });
+
 
   // Active collection id state
   const [activeColl, setActiveColl] = useState<string>(() => {
