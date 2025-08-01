@@ -328,6 +328,7 @@ const nl = {
     "premade-logic": "Logica",
     "premade-probability": "Kansrekening & Statistiek",
     "greek-letters": "Griekse Letters",
+    "premade-actuarial": "Actuariële Wetenschappen",
   }
 };
 
