@@ -17,6 +17,7 @@ import { SortDropdown } from "../common/SortDropdown";
 import { useI18n } from "../../i18n/useI18n";
 
 const STORAGE_KEY = "mathLibraryCollections";
+const ACTIVE_COLL_KEY = "mathLibraryActiveCollection";
 
 export type SortOption =
   | "date"
@@ -106,9 +107,18 @@ const MathLibrary: React.FC<MathLibraryProps> = ({
 
   // Active collection id state
   const [activeColl, setActiveColl] = useState<string>(() => {
-    const first = collections.find((c) => !c.archived);
-    return first ? first.id : "";
-  });
+    try {
+      const storedId = localStorage.getItem(ACTIVE_COLL_KEY);
+      const valid = collections.find((c) => c.id === storedId && !c.archived);
+      if (valid) return valid.id;
+  
+      const first = collections.find((c) => !c.archived);
+      return first ? first.id : "";
+    } catch {
+      const first = collections.find((c) => !c.archived);
+      return first ? first.id : "";
+    }
+  });;
 
   // Loading state for collection entries
   const [loadingCollection, setLoadingCollection] = useState(true);
@@ -120,6 +130,17 @@ const MathLibrary: React.FC<MathLibraryProps> = ({
       setActiveColl(newId);
     });
   };
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(ACTIVE_COLL_KEY, activeColl);
+    } catch {
+      showToast({
+        type: "error",
+        message: t("mathLibrary.error.saveStorage")
+      });
+    }
+  }, [activeColl, showToast, t]);  
 
   useEffect(() => {
     if (!loadingCollection) return; // Only set fallback if loading is active
