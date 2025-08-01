@@ -104,7 +104,6 @@ const MathLibrary: React.FC<MathLibraryProps> = ({
   //   }
   // });
 
-
   // Active collection id state
   const [activeColl, setActiveColl] = useState<string>(() => {
     const first = collections.find((c) => !c.archived);
