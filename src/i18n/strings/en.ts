@@ -7,6 +7,10 @@ const en = {
     clear: "Clear search",
   },
 
+  sortDropdown: {
+    sortedBy: "Sorted by",
+  },
+
   cellRow: {
     math: "Math",
     text: "Text",

@@ -8,6 +8,10 @@ const cs = {
         clear: "Vyčistit vyhledávání",
     },
 
+    sortDropdown: {
+        sortedBy: "Seřazeno podle",
+    },
+
     cellRow: {
         math: "Matematický",
         text: "Text",
