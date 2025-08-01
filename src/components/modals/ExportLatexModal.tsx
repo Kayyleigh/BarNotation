@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useI18n } from "../../i18n/useI18n";
 import type { Note } from "../../models/noteTypes";
 import Modal from "./Modal";
@@ -9,6 +9,8 @@ import {
 } from "../../utils/latexUtils/latexExportFormatters";
 import Tooltip from "../tooltips/Tooltip";
 
+const EXPORT_LATEX_PREFS_KEY = "exportLatexPreferences";
+
 interface ExportLatexModalProps {
   note: Note;
   onClose: () => void;
@@ -16,9 +18,25 @@ interface ExportLatexModalProps {
 
 const ExportLatexModal: React.FC<ExportLatexModalProps> = ({ note, onClose }) => {
   const { t } = useI18n();
-  const [format, setFormat] = useState<LatexFormat>("singleColumn");
-  const [wrapMathEquations, setWrapMathEquations] = useState<boolean>(false);
   const [copied, setCopied] = useState(false);
+
+  const [format, setFormat] = useState<LatexFormat>(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(EXPORT_LATEX_PREFS_KEY) || "{}");
+      return saved.format || "singleColumn";
+    } catch {
+      return "singleColumn";
+    }
+  });
+  
+  const [wrapMathEquations, setWrapMathEquations] = useState<boolean>(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(EXPORT_LATEX_PREFS_KEY) || "{}");
+      return saved.wrapMathEquations ?? false;
+    } catch {
+      return false;
+    }
+  });  
 
   const exportOptions = useMemo(() => ({ format, wrapMathEquations }), [format, wrapMathEquations]);
 
@@ -39,6 +57,13 @@ const ExportLatexModal: React.FC<ExportLatexModalProps> = ({ note, onClose }) =>
     link.download = `${note.metadata.title || "note"}.tex`;
     link.click();
   };
+
+  useEffect(() => {
+    localStorage.setItem(
+      EXPORT_LATEX_PREFS_KEY,
+      JSON.stringify({ format, wrapMathEquations })
+    );
+  }, [format, wrapMathEquations]);
 
   const handleCopy = async () => {
     try {
