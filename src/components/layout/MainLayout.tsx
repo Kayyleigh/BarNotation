@@ -91,10 +91,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   }, []);
 
   const initialSnapshot = useMemo(() => {
-    return selectedNoteId
+    const noteExists = notes.some(note => note.id === selectedNoteId);
+    return noteExists && selectedNoteId
       ? loadEditorSnapshotForNote(selectedNoteId)
       : createEmptySnapshot();
-  }, [selectedNoteId]);
+  }, [selectedNoteId, notes]);
 
   // Save theme preference
   useEffect(() => {
@@ -326,8 +327,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({
       localStorage.setItem(`note-editor-state-${newId}`, originalEditorState);
     }
 
-    setNotes(prevNotes => [duplicatedNote, ...prevNotes]);
-    setSelectedNoteId(newId);
+    setNotes(prevNotes => {
+      const newNoteList = [duplicatedNote, ...prevNotes];
+      setTimeout(() => setSelectedNoteId(newId), 0); // next tick
+      return newNoteList;
+    });
   }, [notes, setSelectedNoteId]);
 
   const exportLatex = useCallback((id: string) => {
