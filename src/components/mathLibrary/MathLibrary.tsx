@@ -18,6 +18,7 @@ import { useI18n } from "../../i18n/useI18n";
 
 const STORAGE_KEY = "mathLibraryCollections";
 const ACTIVE_COLL_KEY = "mathLibraryActiveCollection";
+const SORT_OPTION_KEY = "mathLibrarySortOption";
 
 export type SortOption =
   | "date"
@@ -155,8 +156,24 @@ const MathLibrary: React.FC<MathLibraryProps> = ({
   const [editingCollId, setEditingCollId] = useState<string | null>(null);
   const [menuOpenFor, setMenuOpenFor] = useState<string | null>(null);
   const [archiveModalOpen, setArchiveModalOpen] = useState(false);
-  const [sortOption, setSortOption] = useState<SortOption>("date");
   const [searchTerm, setSearchTerm] = useState("");
+
+  // Sort option (remember across sessions)
+  const [sortOption, setSortOption] = useState<SortOption>(() => {
+    const stored = localStorage.getItem(SORT_OPTION_KEY);
+    const validOptions: SortOption[] = [
+      "date",
+      "date-asc",
+      "usage",
+      "usage-asc",
+      "latex",
+      "latex-desc"
+    ];
+    if (stored && validOptions.includes(stored as SortOption)) {
+      return stored as SortOption;
+    }
+    return "date"; // default fallback
+  });
 
   // Drag context from provider
   const { draggingNode, setDraggingNode, setDropTarget } =
@@ -210,6 +227,17 @@ const MathLibrary: React.FC<MathLibraryProps> = ({
   useEffect(() => {
     updateEntryRef.current = updateEntry;
   }, [updateEntry, updateEntryRef]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(SORT_OPTION_KEY, sortOption);
+    } catch {
+      showToast({
+        type: "error",
+        message: t("mathLibrary.error.saveStorage")
+      });
+    }
+  }, [sortOption, showToast, t]);
 
   // Find collection by id helper
   const findCollection = useCallback(
