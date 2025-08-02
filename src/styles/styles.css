@@ -21,6 +21,10 @@
     box-sizing: border-box;
   }
 
+  .sticky-header button {
+    color: var(--main-header-text-color);
+  }
+
   .header-left {
     display: flex;
     gap: 2em;

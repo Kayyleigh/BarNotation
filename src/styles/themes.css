@@ -20,10 +20,12 @@
   
     --main-text-color: #000000;
   
-    --background-color: white;
+    --background-color: #f3f3f4;
     --app-background: var(--background-color);
 
-    --main-header-bg: var(--background-color);
+    --main-header-bg: #0a302a;
+    --main-header-text-color: #ffffff;
+
     --editor-header-bg: var(--app-background);
   
     /* ===== Typography & Scaling ===== */
@@ -118,19 +120,19 @@
 
 
     /* Sidebar panels */
-    --sidebar-resizer-bg: var(--logo-color-2-light);
+    --sidebar-resizer-bg: #377569;
 
     --sidebar-toggle: white;
     --sidebar-toggle-bg: var(--logo-color-2);
     --sidebar-toggle-bg-hover: var(--logo-color-1-dark);
 
-    --sidebar-panel-bg: white;
+    --sidebar-panel-bg: #ffffff;
     --sidebar-panel-edge: var(--app-background);
 
     --sidebar-text: black;
 
     /* Math Library */
-    --library-tabs-inactive-bg: var(--logo-color-2);
+    --library-tabs-inactive-bg: #377569;
     --library-tabs-hover-bg: var(--logo-color-1);
     --delete-button-hover-bg: #ff8e97;
 
@@ -179,6 +181,7 @@
     --app-background: var(--background-color);
 
     --main-header-bg: #323233;
+    --main-header-text-color: #ffffff;
   
     --math-cursor-color: white;
     --math-drop-cursor-color: white;
