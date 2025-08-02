@@ -42,7 +42,7 @@ type MainLayoutProps = {
   onOpenHotkeys: () => void;
   authorName: string;
   setAuthorName: (value: string) => void;
-  isDarkMode: boolean;
+  theme: string;
   showColorInPreview: boolean;
   nerdMode: boolean;
   // onOpenNotesArchive: () => void;
@@ -53,7 +53,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   onOpenHotkeys,
   authorName,
   // setAuthorName,
-  isDarkMode,
+  theme,
   showColorInPreview,
   nerdMode,
 }) => {
@@ -99,14 +99,13 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   // Save theme preference
   useEffect(() => {
     const root = document.documentElement;
-    if (isDarkMode) {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
+    root.className = ""; // clear all theme classes
+    if (theme !== "light") {
+      root.classList.add(theme);
     }
-
-    localStorage.setItem("mathEditorTheme", isDarkMode ? "dark" : "light");
-  }, [isDarkMode]);
+  
+    localStorage.setItem("mathEditorTheme", theme);
+  }, [theme]);
 
   // Save preview coloring preference
   useEffect(() => {
