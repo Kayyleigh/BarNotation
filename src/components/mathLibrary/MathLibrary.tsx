@@ -393,6 +393,71 @@ const MathLibrary: React.FC<MathLibraryProps> = ({
     { label: t("mathLibrary.sort.zA"), value: "latex-desc" },
   ];
 
+  const handleSetSearchTerm = useCallback((val: string) => {
+    setSearchTerm(val);
+  }, []);
+  
+  const handleSortChange = useCallback((val: string) => {
+    setSortOption(val as SortOption);
+  }, []);
+  
+  const handleDropEntryToCollection = useCallback(
+    (entry: LibraryEntry, collectionId: string) => {
+      const coll = findCollection(collectionId);
+      if (!coll) return;
+      const exists = coll.entries.some((e) => e.latex === entry.latex);
+      if (exists) {
+        showToast({
+          type: "warning",
+          message: t("mathLibrary.warning.entryExistsIn", {
+            latex: entry.latex,
+            collection: coll.name,
+          }),
+        });
+        return;
+      }
+      const newEntry = { ...entry, addedAt: Date.now(), draggedCount: 0 };
+      updateCollectionEntries(collectionId, [...coll.entries, newEntry]);
+      showToast({
+        type: "success",
+        message: t("mathLibrary.success.entryAddedTo", {
+          latex: entry.latex,
+          collection: coll.name,
+        }),
+      });
+    },
+    [findCollection, showToast, t, updateCollectionEntries]
+  );
+  
+  const handleUnarchive = useCallback((id: string) => {
+    const unarchived = collections.find((c) => c.id === id);
+    setCollections((prev) =>
+      prev.map((c) => (c.id === id ? { ...c, archived: false } : c))
+    );
+    showToast({
+      type: "success",
+      message: t("mathLibrary.success.unarchived", {
+        name: unarchived?.name || t("mathLibrary.default.collection"),
+      }),
+    });
+  }, [collections, showToast, t]);
+  
+  const handleDelete = useCallback((id: string) => {
+    const deleted = collections.find((c) => c.id === id);
+    setCollections((prev) => prev.filter((c) => c.id !== id));
+    showToast({
+      type: "success",
+      message: t("mathLibrary.success.deleted", {
+        name: deleted?.name || t("mathLibrary.default.collection"),
+      }),
+    });
+  }, [collections, showToast, t]);
+  
+  const handleCloseArchiveModal = useCallback(() => {
+    setArchiveModalOpen(false);
+  }, []);
+  
+
   const memoizedOnDrop = useCallback(
     (e: React.DragEvent<Element>, dropIndex: number | null) => {
       e.preventDefault();
@@ -413,49 +478,26 @@ const MathLibrary: React.FC<MathLibraryProps> = ({
         setCollections={setCollections}
         menuOpenFor={menuOpenFor}
         setMenuOpenFor={setMenuOpenFor}
-        onDropEntryToCollection={(entry, collectionId) => {
-          const coll = findCollection(collectionId);
-          if (!coll) return;
-          const exists = coll.entries.some((e) => e.latex === entry.latex);
-          if (exists) {
-            showToast({
-              type: "warning",
-              message: t("mathLibrary.warning.entryExistsIn", {
-                latex: entry.latex,
-                collection: coll.name,
-              })
-            });
-            return;
-          }
-          const newEntry = { ...entry, addedAt: Date.now(), draggedCount: 0 };
-          updateCollectionEntries(collectionId, [...coll.entries, newEntry]);
-          showToast({
-            type: "success",
-            message: t("mathLibrary.success.entryAddedTo", {
-              latex: entry.latex,
-              collection: coll.name,
-            })
-          });
-        }}
+        onDropEntryToCollection={handleDropEntryToCollection}
       />
-
+  
       <div className={styles.controls}>
         <SearchBar
           placeholder={placeholderText}
           value={searchTerm}
-          onChange={setSearchTerm}
+          onChange={handleSetSearchTerm}
           className={styles.librarySearch}
           tooltip={t("mathLibrary.search.tooltip")}
         />
         <SortDropdown
           options={sortOptions}
           value={sortOption}
-          onChange={(val) => setSortOption(val as SortOption)}
+          onChange={handleSortChange}
           className={styles.sortDropdown}
           aria-label={t("mathLibrary.sort.ariaLabel")}
         />
       </div>
-
+  
       {activeColl ? (
         loadingCollection ? (
           <div className={styles.loadingContainer}>
@@ -464,7 +506,7 @@ const MathLibrary: React.FC<MathLibraryProps> = ({
           </div>
         ) : (
           <LibraryEntries
-            onRendered={() => setLoadingCollection(false)} //TODO
+            onRendered={() => setLoadingCollection(false)} // TODO optional: can also be memoized
             collections={collections}
             setCollections={setCollections}
             activeColl={activeColl}
@@ -476,36 +518,17 @@ const MathLibrary: React.FC<MathLibraryProps> = ({
       ) : (
         <p>{t("mathLibrary.empty")}</p>
       )}
+  
       {archiveModalOpen && (
         <LibCollectionArchiveModal
           archived={collections.filter((c) => c.archived)}
-          onClose={() => setArchiveModalOpen(false)}
-          onUnarchive={(id) => {
-            const unarchived = collections.find((c) => c.id === id);
-            setCollections((prev) =>
-              prev.map((c) => (c.id === id ? { ...c, archived: false } : c))
-            );
-            showToast({
-              type: "success",
-              message: t("mathLibrary.success.unarchived", {
-                name: unarchived?.name || t("mathLibrary.default.collection"),
-              })
-            });
-          }}
-          onDelete={(id) => {
-            const deleted = collections.find((c) => c.id === id);
-            setCollections((prev) => prev.filter((c) => c.id !== id));
-            showToast({
-              type: "success",
-              message: t("mathLibrary.success.deleted", {
-                name: deleted?.name || t("mathLibrary.default.collection"),
-              })
-            });
-          }}
+          onClose={handleCloseArchiveModal}
+          onUnarchive={handleUnarchive}
+          onDelete={handleDelete}
         />
       )}
     </div>
-  );
+  );  
 };
 
 export default React.memo(MathLibrary);
