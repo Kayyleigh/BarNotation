@@ -36,7 +36,7 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
   onDropEntryToCollection,
 }) => {
   const { t } = useI18n(); // use language hook
-  
+
   const { showToast } = useToast();
 
   const buttonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
@@ -267,7 +267,7 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
     }
     return collection.name; // fallback to saved name for user collections
   };
-  
+
   return (
     <div className={styles.tabRow}>
       <div className={styles.tabHeaderLeft}>
@@ -320,17 +320,34 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
                     />
                   </div>
                 ) : (
-                  <span
+                  // <span
+                  //   className={styles.collectionTab}
+                  //   onClick={() => setActiveColl(c.id)}
+                  //   onDoubleClick={() => {
+                  //     setEditingCollId(c.id);
+                  //     setTimeout(() => renameInputRef.current?.focus(), 0);
+                  //   }}
+                  // >
+                  //   {/* {c.name} */}
+                  //   {getCollectionDisplayName(c)}
+                  // </span>
+                  <button
                     className={styles.collectionTab}
                     onClick={() => setActiveColl(c.id)}
                     onDoubleClick={() => {
                       setEditingCollId(c.id);
                       setTimeout(() => renameInputRef.current?.focus(), 0);
                     }}
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        setActiveColl(c.id);
+                      }
+                    }}
                   >
-                    {/* {c.name} */}
                     {getCollectionDisplayName(c)}
-                  </span>
+                  </button>
                 )}
 
                 {c.id === activeColl && editingCollId !== c.id && (
