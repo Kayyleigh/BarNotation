@@ -10,7 +10,6 @@ import { nodeToLatex } from "../../models/nodeToLatex";
 import React from "react";
 import { useToast } from "../../hooks/toast/useToast";
 import { useI18n } from "../../i18n/useI18n";
-import { PREMADE_COLLECTIONS_RAW } from "../../constants/premadeMathCollections";
 
 interface CollectionTabsProps {
   collections: LibraryCollection[];
@@ -36,7 +35,7 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
   onDropEntryToCollection,
 }) => {
   const { t } = useI18n(); // use language hook
-  
+
   const { showToast } = useToast();
 
   const buttonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
@@ -256,18 +255,15 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
     [draggingNode, onDropEntryToCollection, setDraggingNode, setDropTarget]
   );
 
-  const premadeCollectionsMap = Object.fromEntries(
-    PREMADE_COLLECTIONS_RAW.map(({ id, name }) => [id, name])
-  );
-
   const getCollectionDisplayName = (collection: LibraryCollection): string => {
-    if (premadeCollectionsMap[collection.id]) {
+    if (collection.isPremade) {
+      console.log("Premade", collection.id, ":", collection.isPremade)
       const key = "premadeCollections." + collection.id
       return t(key);
     }
     return collection.name; // fallback to saved name for user collections
   };
-  
+
   return (
     <div className={styles.tabRow}>
       <div className={styles.tabHeaderLeft}>
@@ -320,17 +316,34 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
                     />
                   </div>
                 ) : (
-                  <span
+                  // <span
+                  //   className={styles.collectionTab}
+                  //   onClick={() => setActiveColl(c.id)}
+                  //   onDoubleClick={() => {
+                  //     setEditingCollId(c.id);
+                  //     setTimeout(() => renameInputRef.current?.focus(), 0);
+                  //   }}
+                  // >
+                  //   {/* {c.name} */}
+                  //   {getCollectionDisplayName(c)}
+                  // </span>
+                  <button
                     className={styles.collectionTab}
                     onClick={() => setActiveColl(c.id)}
                     onDoubleClick={() => {
                       setEditingCollId(c.id);
                       setTimeout(() => renameInputRef.current?.focus(), 0);
                     }}
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        setActiveColl(c.id);
+                      }
+                    }}
                   >
-                    {/* {c.name} */}
                     {getCollectionDisplayName(c)}
-                  </span>
+                  </button>
                 )}
 
                 {c.id === activeColl && editingCollId !== c.id && (
@@ -383,7 +396,7 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
             onClick={() => {
               const id = crypto.randomUUID();
               const name = t("mathLibrary.tabs.defaultName");
-              setCollections((c) => [...c, { id, name, entries: [], createdAt: Date.now() }]);
+              setCollections((c) => [...c, { id, name, entries: [], createdAt: Date.now(), isPremade: false }]);
               setActiveColl(id);
               setEditingCollId(id);
               setTimeout(() => {

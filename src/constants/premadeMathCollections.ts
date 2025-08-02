@@ -18,6 +18,7 @@ export const PREMADE_COLLECTIONS_RAW = [
       id: "premade-structures",
       name: "🏗️ Structures",
       archived: false,
+      isPremade: true,
       entries: [
         { id: "struc-1", latex: `\\iiiint _{}^{}` },
         { id: "struc-2", latex: `\\iiint _{}^{}` },
@@ -43,6 +44,7 @@ export const PREMADE_COLLECTIONS_RAW = [
       id: "premade-calculus",
       name: "Calculus",
       archived: false,
+      isPremade: true,
       entries: [
         { id: "calc-1", latex: `\\int_a^b f(x) \\, dx` },
         { id: "calc-2", latex: `\\frac{d}{dx} f(x)` },
@@ -65,6 +67,7 @@ export const PREMADE_COLLECTIONS_RAW = [
       id: "premade-logic",
       name: "Logic",
       archived: false,
+      isPremade: true,
       entries: [
         { id: "logic-1", latex: `\\forall x \\in X, P(x)` },
         { id: "logic-2", latex: `\\exists x \\in X, P(x)` },
@@ -84,6 +87,7 @@ export const PREMADE_COLLECTIONS_RAW = [
       id: "premade-probability",
       name: "Probability & Statistics",
       archived: false,
+      isPremade: true,
       entries: [
         { id: "prob-1", latex: `P(A)` },
         { id: "prob-2", latex: `P(A \\mid B)` },
@@ -102,6 +106,7 @@ export const PREMADE_COLLECTIONS_RAW = [
       id: "greek-letters",
       name: "Greek Letters",
       archived: false,
+      isPremade: true,
       entries: [
         { id: "greek-alpha", latex: `\\alpha` },
         { id: "greek-beta", latex: `\\beta` },
@@ -145,6 +150,7 @@ export const PREMADE_COLLECTIONS_RAW = [
       id: "premade-actuarial",
       name: "Actuarial Science",
       archived: false,
+      isPremade: true,
       entries: [
         { id: "act-1", latex: `{\\mathrm{M}}_{X}(t)` },
         { id: "act-2", latex: `\\actsymb[t][]{L}{e}[\\underline{2}]` },

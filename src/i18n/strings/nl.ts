@@ -7,6 +7,10 @@ const nl = {
     clear: "Zoekopdracht wissen",
   },
 
+  sortDropdown: {
+    sortedBy: "Gesorteerd op",
+  },
+
   cellRow: {
     math: "Wiskunde",
     text: "Tekst",

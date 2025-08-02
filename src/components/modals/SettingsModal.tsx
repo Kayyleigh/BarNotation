@@ -8,8 +8,8 @@ import { AVAILABLE_LANGUAGES } from "../../i18n/languages"; // language list
 
 interface SettingsModalProps {
   onClose: () => void;
-  isDarkMode: boolean;
-  toggleDarkMode: () => void;
+  theme: string;
+  setTheme: (theme: string) => void;
   showColorInPreview: boolean;
   toggleShowColorInPreview: () => void;
   authorName: string;
@@ -20,8 +20,8 @@ interface SettingsModalProps {
 
 const SettingsModal: React.FC<SettingsModalProps> = ({
   onClose,
-  isDarkMode,
-  toggleDarkMode,
+  theme,
+  setTheme,
   showColorInPreview,
   toggleShowColorInPreview,
   authorName,
@@ -39,13 +39,21 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
   return (
     <Modal onClose={onClose}>
       <h2>{t("modals.settings.title")}</h2>
-
-      <label className={styles.label}>{t("modals.settings.theme")}</label>
-      <Tooltip text={t("modals.settings.themeTooltip")}>
-        <button onClick={toggleDarkMode} className={styles.button}>
-          {isDarkMode ? "☀️ " + t("modals.settings.light") : "🌙 " + t("modals.settings.dark")}
-        </button>
-      </Tooltip>
+      <div className={styles.settingsRow}>
+        <label htmlFor="theme" className={styles.label}>
+          {t("modals.settings.theme")}
+        </label>
+        <select
+          id="theme"
+          className={`${styles.settingsInput} ${styles.inline}`}
+          value={theme}
+          onChange={(e) => setTheme(e.target.value)}
+        >
+          <option value="light">☀️ {t("modals.settings.light")}</option>
+          <option value="dark">🌙 {t("modals.settings.dark")}</option>
+          {/* Add more as needed */}
+        </select>
+      </div>
 
       <label className={`${styles.toggleRow} ${styles.label}`}>
         <span>{t("modals.settings.showColor")}</span>
@@ -55,6 +63,20 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
               type="checkbox"
               checked={showColorInPreview}
               onChange={toggleShowColorInPreview}
+            />
+            <span className={styles.slider} />
+          </label>
+        </Tooltip>
+      </label>
+
+      <label className={`${styles.toggleRow} ${styles.label}`}>
+        <span>{t("modals.settings.nerdMode")}</span>
+        <Tooltip text={t("modals.settings.nerdTooltip")}>
+          <label className={styles.switch}>
+            <input
+              type="checkbox"
+              checked={nerdMode}
+              onChange={toggleNerdMode}
             />
             <span className={styles.slider} />
           </label>
@@ -74,20 +96,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
           onChange={(e) => setAuthorName(e.target.value)}
         />
       </div>
-
-      <label className={`${styles.toggleRow} ${styles.label}`}>
-        <span>{t("modals.settings.nerdMode")}</span>
-        <Tooltip text={t("modals.settings.nerdTooltip")}>
-          <label className={styles.switch}>
-            <input
-              type="checkbox"
-              checked={nerdMode}
-              onChange={toggleNerdMode}
-            />
-            <span className={styles.slider} />
-          </label>
-        </Tooltip>
-      </label>
 
       {/* Language Selector */}
       <div className={styles.settingsRow}>

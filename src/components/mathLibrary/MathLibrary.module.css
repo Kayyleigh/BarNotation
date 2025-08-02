@@ -5,17 +5,13 @@
 .tabRow {
   display: flex;
   overflow-x: auto;
-  align-items: center;
-  justify-content: space-between;
   white-space: nowrap;
+  justify-content: space-between;
   border-bottom: 1px solid var(--border-color);
   background-color: var(--library-tabs-inactive-bg);
-  scrollbar-width: none; /* Firefox */
-  overflow-x: scroll; /* needed to not cut off the dropdowns */
-}
-
-.tabRow::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Edge */
+  scroll-behavior: smooth;
+  position: relative;
+  scrollbar-width: none;
 }
 
 .tab {
@@ -39,7 +35,8 @@
   top: 0;
   bottom: 0;
   width: 3px;
-  background-color: #ffffff; /* bright blue accent color */
+  background-color: #ffffff;
+  /* bright blue accent color */
   z-index: 10;
   opacity: 1;
   border-radius: 0px;
@@ -75,6 +72,12 @@
   padding: 0.4em 0.8em;
   opacity: 0.6;
   color: var(--main-text-color);
+
+  /* RESET BUTTON DEFAULTS */
+  background: none;
+  border: none;
+  font: inherit;
+  cursor: pointer;
 }
 
 .tab.active .collectionTab {
@@ -154,7 +157,8 @@
 
 .libraryDropZone {
   flex: 1;
-  height: calc(83.71%); /* Quick and dirty; TODO actually calculate what's left after headers */
+  height: calc(83.71%);
+  /* Quick and dirty; TODO actually calculate what's left after headers */
   align-content: flex-start;
   overflow-y: auto;
   padding: 8px;
@@ -173,8 +177,9 @@
   border-radius: 8px;
   cursor: grab;
 }
+
 .libraryEntry:hover {
-  box-shadow: 0 0 4px rgba(0,0,0,0.2);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
 }
 
 .tabActions {
@@ -206,10 +211,12 @@
 
 .dropdownMenu {
   position: absolute;
-  top: 100%; /* 👈 just below the button */
-  right: 0;  /* 👈 align to the right edge of the menu button */
+  top: 100%;
+  /* 👈 just below the button */
+  right: 0;
+  /* 👈 align to the right edge of the menu button */
   background: white;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   z-index: 100;
   border-radius: 4px;
   padding: 4px 0;
@@ -286,11 +293,23 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(5px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

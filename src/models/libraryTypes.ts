@@ -16,4 +16,5 @@ export type LibraryCollection = {
   createdAt?: number;   // Timestamp (ms since epoch) when the collection was created
   archived?: boolean;
   archivedAt?: number;  // Timestamp when the collection was archived
+  isPremade: boolean;
 };

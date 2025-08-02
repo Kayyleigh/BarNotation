@@ -42,7 +42,7 @@ type MainLayoutProps = {
   onOpenHotkeys: () => void;
   authorName: string;
   setAuthorName: (value: string) => void;
-  isDarkMode: boolean;
+  theme: string;
   showColorInPreview: boolean;
   nerdMode: boolean;
   // onOpenNotesArchive: () => void;
@@ -53,7 +53,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   onOpenHotkeys,
   authorName,
   // setAuthorName,
-  isDarkMode,
+  theme,
   showColorInPreview,
   nerdMode,
 }) => {
@@ -91,22 +91,22 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   }, []);
 
   const initialSnapshot = useMemo(() => {
-    return selectedNoteId
+    const noteExists = notes.some(note => note.id === selectedNoteId);
+    return noteExists && selectedNoteId
       ? loadEditorSnapshotForNote(selectedNoteId)
       : createEmptySnapshot();
-  }, [selectedNoteId]);
+  }, [selectedNoteId, notes]);
 
   // Save theme preference
   useEffect(() => {
     const root = document.documentElement;
-    if (isDarkMode) {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
+    root.className = ""; // clear all theme classes
+    if (theme !== "light") {
+      root.classList.add(theme);
     }
-
-    localStorage.setItem("mathEditorTheme", isDarkMode ? "dark" : "light");
-  }, [isDarkMode]);
+  
+    localStorage.setItem("mathEditorTheme", theme);
+  }, [theme]);
 
   // Save preview coloring preference
   useEffect(() => {
@@ -327,8 +327,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({
       localStorage.setItem(`note-editor-state-${newId}`, originalEditorState);
     }
 
-    setNotes(prevNotes => [duplicatedNote, ...prevNotes]);
-    setSelectedNoteId(newId);
+    setNotes(prevNotes => {
+      const newNoteList = [duplicatedNote, ...prevNotes];
+      setTimeout(() => setSelectedNoteId(newId), 0); // next tick
+      return newNoteList;
+    });
   }, [notes, setSelectedNoteId]);
 
   const exportLatex = useCallback((id: string) => {

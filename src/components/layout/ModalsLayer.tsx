@@ -10,8 +10,8 @@ export type ModalsLayerProps = {
   showSettings: boolean;
   onCloseSettings: () => void;
   settingsProps: {
-    isDarkMode: boolean;
-    toggleDarkMode: () => void;
+    theme: string;
+    setTheme: (theme: string) => void;
     showColorInPreview: boolean;
     toggleShowColorInPreview: () => void;
     authorName: string;

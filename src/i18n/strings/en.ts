@@ -1,10 +1,14 @@
 // English
 
 const en = {
-  searchbar: {
+  searchbar: { // Generic search bar 
     placeholder: "Search...",
     tooltip: "Search",
     clear: "Clear search",
+  },
+
+  sortDropdown: { // Generic sort dropdown 
+    sortedBy: "Sorted by",
   },
 
   cellRow: {
@@ -13,8 +17,9 @@ const en = {
     hideLatex: "Hide LaTeX output",
     showLatex: "Show LaTeX output",
     latex: "LaTeX",
-    loading: "Loading cell...",
-    // text types (match keys from TEXT_CELL_TYPES)
+    loading: "Loading cell...", // text shown while cell content is loading
+
+    // text types (keys matching TEXT_CELL_TYPES), used to indicate type of text cell
     section: "Section",
     subsection: "Subsection",
     subsubsection: "Subsubsection",
@@ -299,7 +304,7 @@ const en = {
         delete: "Are you sure you want to delete this collection?",
       },
     },
-    tabMenu: {
+    tabMenu: { // Dropdown actions (and corresponding tooltip texts) for library tabs
       rename: "Rename",
       renameTooltip: "Rename collection",
       duplicate: "Duplicate",
@@ -310,7 +315,7 @@ const en = {
       deleteTooltip: "Delete permanently",
     },
   },
-  date: {
+  date: { // Formatting creation/edit times, used in notes menu and in the archives
     created: "Created",
     edited: "Edited",
     archived: "Archived",
@@ -322,7 +327,7 @@ const en = {
     yesterday: "yesterday",
   },
 
-  premadeCollections: {
+  premadeCollections: { // Names of premade library collections, used in the collection tabs in the Math Library
     "premade-structures": "🏗️ Structures",
     "premade-calculus": "Calculus",
     "premade-logic": "Logic",

@@ -1,4 +1,5 @@
-import React, { useState, useCallback, useMemo } from "react";
+// App.tsx
+import React, { useState, useCallback, useMemo, useEffect } from "react";
 import './styles/themes.css';
 import MainLayout from "./components/layout/MainLayout";
 import { ToastProvider } from "./hooks/toast/ToastProvider";
@@ -11,8 +12,8 @@ const App: React.FC = () => {
   const [authorName, setAuthorName] = useState(() =>
     localStorage.getItem("defaultAuthor") || ""
   );
-  const [isDarkMode, setIsDarkMode] = useState(() =>
-    localStorage.getItem("mathEditorTheme") !== "light"
+  const [theme, setTheme] = useState(() =>
+    localStorage.getItem("mathEditorTheme") || "dark"
   );
   const [showColorInPreview, setShowColorInPreview] = useState(() =>
     localStorage.getItem("showColorInPreview") !== "false"
@@ -22,7 +23,6 @@ const App: React.FC = () => {
   );
 
   // Toggle functions
-  const toggleDarkMode = useCallback(() => setIsDarkMode((prev) => !prev), []);
   const toggleShowColorInPreview = useCallback(() => setShowColorInPreview((prev) => !prev), []);
   const toggleNerdMode = useCallback(() => setNerdMode((prev) => !prev), []);
 
@@ -33,17 +33,31 @@ const App: React.FC = () => {
   // const handleOpenNotesArchive = useCallback(() => setShowNotesArchive(true), []);
   // const handleCloseNotesArchive = useCallback(() => setShowNotesArchive(false), []);
 
+  const setThemeWithStorage = useCallback((newTheme: string) => {
+    setTheme(prev => {
+      if (prev === newTheme) return prev;
+      localStorage.setItem("mathEditorTheme", newTheme);
+      return newTheme;
+    });
+  }, []);
+
   const settingsProps = useMemo(() => ({
-    isDarkMode,
-    toggleDarkMode,
+    theme,
+    setTheme: setThemeWithStorage,
     showColorInPreview,
     toggleShowColorInPreview,
     authorName,
     setAuthorName,
     nerdMode,
     toggleNerdMode,
-  }), [isDarkMode, toggleDarkMode, showColorInPreview, toggleShowColorInPreview, authorName, nerdMode, toggleNerdMode]);
-  
+  }), [theme, setThemeWithStorage, showColorInPreview, toggleShowColorInPreview, authorName, nerdMode, toggleNerdMode]);
+
+  useEffect(() => {
+    document.documentElement.className = ""; // clear previous
+    if (theme !== "light") {
+      document.documentElement.classList.add(theme);
+    }
+  }, [theme]);
 
   return (
     <ToastProvider>
@@ -53,16 +67,17 @@ const App: React.FC = () => {
         authorName={authorName}
         setAuthorName={setAuthorName}
         nerdMode={nerdMode}
-        isDarkMode={isDarkMode}
+        theme={theme}
         showColorInPreview={showColorInPreview}
-        // onOpenNotesArchive={handleOpenNotesArchive}
+      // onOpenNotesArchive={handleOpenNotesArchive}
       />
       <ModalsLayer
         showHotkeys={showHotkeys}
         onCloseHotkeys={handleCloseHotkeys}
         showSettings={showSettings}
         onCloseSettings={handleCloseSettings}
-        settingsProps={settingsProps}
+        settingsProps={settingsProps} //Property 'setTheme' is missing in type '{ theme: string; handleThemeChange: (newTheme: string) => void; showColorInPreview: boolean; toggleShowColorInPreview: () => void; authorName: string; setAuthorName: React.Dispatch<React.SetStateAction<string>>; nerdMode: boolean; toggleNerdMode: () => void; }' but required in type '{ theme: string; setTheme: (theme: string) => void; showColorInPreview: boolean; toggleShowColorInPreview: () => void; authorName: string; setAuthorName: (name: string) => void; nerdMode: boolean; toggleNerdMode: () => void; }'.ts(2741)
+
       />
     </ToastProvider>
   );
