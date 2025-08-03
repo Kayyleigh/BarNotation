@@ -124,10 +124,13 @@ export const handleBackspace = (state: EditorState): EditorState => {
         }
         break;
       }
+      // case "decorated": {
+      //   break;
+      // }
       case "overunderset": {
         const baseChild = parent.base;
 
-        if (key === "accent.content" && baseChild.type === "inline-container") {
+        if (key === "content" && baseChild.type === "inline-container") {
           replacementChildren = baseChild.children;
         } 
         break;
