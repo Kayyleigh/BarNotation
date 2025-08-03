@@ -1,4 +1,4 @@
-import type { MathNode } from "./types";
+import type { MathNode } from "./mathNodeTypes";
 import { createTextNode, createInlineContainer } from "./nodeFactories";
 
 export type CommandDefinition = {

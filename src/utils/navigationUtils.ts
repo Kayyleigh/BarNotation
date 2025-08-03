@@ -1,5 +1,5 @@
 import type { CursorPosition } from "../logic/cursor";
-import type { MathNode } from "../models/types";
+import type { MathNode } from "../models/mathNodeTypes";
 
 // Arrow navigable structure of compound nodes
 export const directionalChildOrder: Record<

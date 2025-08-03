@@ -1,6 +1,6 @@
 // hooks/DragContext.ts
 import { createContext } from "react";
-import type { MathNode } from "../../models/types";
+import type { MathNode } from "../../models/mathNodeTypes";
 
 export type DragSource = {
   sourceType: "cell" | "library";

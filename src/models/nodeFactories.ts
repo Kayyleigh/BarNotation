@@ -21,7 +21,7 @@ import type {
   MultiDigitNode,
   CommandInputNode,
   StyledNode,
-} from "./types"; // Adjust imports to your setup
+} from "./mathNodeTypes"; // Adjust imports to your setup
 import type { BracketStyle } from "../utils/bracketUtils";
 
 export const generateId = () => uuidv4();

@@ -6,7 +6,7 @@ import type {
   StructureNode, 
   ChildedNode, 
   AccentedNode
-} from './types';
+} from './mathNodeTypes';
 import { generateId, createInlineContainer } from './nodeFactories';
 
 export const transformToFractionNode = (node: StructureNode): FractionNode => ({

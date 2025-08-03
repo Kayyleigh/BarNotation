@@ -1,4 +1,4 @@
-import type { InlineContainerNode, MathNode } from "../models/types";
+import type { InlineContainerNode, MathNode } from "../models/mathNodeTypes";
 
 export interface CursorPosition {
   containerId: string;

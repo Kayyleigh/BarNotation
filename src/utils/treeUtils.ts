@@ -1,5 +1,5 @@
 // utils/treeUtils.ts
-import { type CommandInputNode, type InlineContainerNode, type MathNode, type MultiDigitNode, type RootWrapperNode, type StructureNode, type TextNode } from "../models/types";
+import { type CommandInputNode, type InlineContainerNode, type MathNode, type MultiDigitNode, type RootWrapperNode, type StructureNode, type TextNode } from "../models/mathNodeTypes";
 import { directionalChildOrder } from "./navigationUtils";
 
 export type TreePath = {

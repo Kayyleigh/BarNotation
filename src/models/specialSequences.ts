@@ -1,5 +1,5 @@
 import { createAccentedNode, createBigOperator, createFraction, createInlineContainer, createNthRoot, createStyledNode, createTextNode } from '../models/nodeFactories';
-import type { InlineContainerNode, StructureNode, TextStyle } from '../models/types';
+import type { InlineContainerNode, StructureNode, TextStyle } from '../models/mathNodeTypes';
 import { decorationToLatexCommand, type NodeDecoration, type DecorationInfo } from '../utils/accentUtils';
 
 export interface SpecialSequence {
@@ -281,6 +281,8 @@ export const otherSymbols: SpecialSequence[] = [
   { sequence: "\\infty ", createNode: () => createTextNode("∞", "\\infty ") },
   { sequence: "\\partial ", createNode: () => createTextNode("∂", "\\partial ") },
   { sequence: "\\nabla ", createNode: () => createTextNode("∇", "\\nabla ") },   
+  { sequence: "\\cdots	", createNode: () => createTextNode("⋯", "\\cdots	") }, 
+  { sequence: "\\dotsm	", createNode: () => createTextNode("⋯", "\\dostm	") }, // TODO require amsmath package
 ];
 
 export const standardFunctionNames: SpecialSequence[] = [

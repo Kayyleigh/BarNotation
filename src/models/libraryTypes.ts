@@ -1,5 +1,5 @@
 // models/libraryTypes.ts
-import type { MathNode } from "./types";
+import type { MathNode } from "./mathNodeTypes";
 
 export interface LibraryEntry {
   id: string;

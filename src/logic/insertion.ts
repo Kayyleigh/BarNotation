@@ -2,7 +2,7 @@ import type { EditorState } from "./editor-state";
 import { createCommandInputNode, createMultiDigitNode, createTextNode } from "../models/nodeFactories";
 import { findNodeById, findParentContainerAndIndex, updateNodeById } from "../utils/treeUtils";
 import { specialSequences } from "../models/specialSequences";
-import { type InlineContainerNode, type MathNode, type TextNode } from "../models/types";
+import { type InlineContainerNode, type MathNode, type TextNode } from "../models/mathNodeTypes";
 import { getCloseSymbol, getOpenSymbol, getStyleFromSymbol, isClosingBracket, isOpeningBracket, type BracketStyle } from "../utils/bracketUtils";
 import { transformToGroupNode } from "./transformations";
 import { deleteNodeById, insertNodeAtIndex } from "./node-manipulation";

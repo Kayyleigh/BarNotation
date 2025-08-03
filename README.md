@@ -427,7 +427,7 @@ The app is built in **React** with **TypeScript** and uses **Vite** as the build
     - [`specialSequences.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/models/specialSequences.ts) — Escape → MathNode mappings
     - [`textTypes.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/models/textTypes.ts) — Text types for text hierarchy
     - [`transformations.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/models/transformations.ts) — Helper transforms (WIP/boilerplate)
-    - [`types.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/models/types.ts) — Full MathNode type definition
+    - [`types.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/models/mathNodeTypes.ts) — Full MathNode type definition
   - [`styles/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/styles/) — Global CSS styles
     - [`accents.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/styles/accents.css) — CSS for accented math nodes
     - [`cells.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/styles/cells.css) — Styles for cells and insert zones

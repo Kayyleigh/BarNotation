@@ -1,7 +1,7 @@
 // textContainerUtils.ts
 
 import { createMultiDigitNode, createCommandInputNode } from "../models/nodeFactories";
-import type { TextNode, TextContainerNode } from "../models/types";
+import type { TextNode, TextContainerNode } from "../models/mathNodeTypes";
 
 /**
  * Splits a TextContainerNode (MultiDigitNode or CommandInputNode)

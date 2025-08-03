@@ -2,7 +2,7 @@ import { decorationToLatexCommand } from "../utils/accentUtils";
 import { getOpenSymbol, getCloseSymbol } from "../utils/bracketUtils";
 import { isEmptyNode } from "../utils/treeUtils";
 import { bigOperatorToLatex } from "./specialSequences";
-import type { MathNode } from "./types";
+import type { MathNode } from "./mathNodeTypes";
 
 export const nodeToLatex = (node: MathNode, highlighted = false): string => {
     // Wrappers for highlighted vs raw output

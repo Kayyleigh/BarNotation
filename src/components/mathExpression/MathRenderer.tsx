@@ -1,7 +1,7 @@
 // components/mathExpression/MathRenderer.tsx
 import React, { useMemo } from "react";
 import clsx from "clsx";
-import type { MathNode, TextStyle } from "../../models/types";
+import type { MathNode, TextStyle } from "../../models/mathNodeTypes";
 import { useDragContext } from "../../hooks/mathDrag/useDragContext";
 import {
   renderTextNode,

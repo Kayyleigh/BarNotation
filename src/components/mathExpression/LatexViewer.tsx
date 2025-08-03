@@ -1,7 +1,7 @@
 // components/mathExpression/LatexViewer.tsx
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { nodeToLatex } from "../../models/nodeToLatex";
-import type { MathNode } from "../../models/types";
+import type { MathNode } from "../../models/mathNodeTypes";
 import styles from "./LatexViewer.module.css";
 import "../../styles/latexOutputColoring.css";
 import { useLatexRefreshSignal } from "../../hooks/latexViewRefresh/useLatexRefresh";

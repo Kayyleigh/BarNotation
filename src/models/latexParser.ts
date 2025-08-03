@@ -3,7 +3,7 @@ import { bracketSymbols, getStyleFromSymbol, isOpeningBracket } from "../utils/b
 import { nodeToLatex } from "./nodeToLatex";
 import { createAccentedNode, createChildedNode, createFraction, createGroupNode, createInlineContainer, createNthRoot, createStyledNode, createTextNode } from "./nodeFactories";
 import { getBigOpNodeFromAlias, getStyledNodeFromAlias, getSymbolNodeFromAlias, symbolToLatex } from "./specialSequences";
-import type { GroupNode, InlineContainerNode, MathNode, StructureNode } from "./types";
+import type { GroupNode, InlineContainerNode, MathNode, StructureNode } from "./mathNodeTypes";
 import { ensureInContainerNode } from "./transformations";
 
 type Token =

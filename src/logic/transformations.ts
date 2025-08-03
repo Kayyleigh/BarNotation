@@ -3,7 +3,7 @@ import { findNodeById, updateNodeById } from "../utils/treeUtils";
 import { transformToCustomAccentNode, transformToFractionNode } from "../models/transformations";
 import { type BracketStyle } from "../utils/bracketUtils";
 import { createChildedNode, createGroupNode, createInlineContainer } from "../models/nodeFactories";
-import type { InlineContainerNode } from "../models/types";
+import type { InlineContainerNode } from "../models/mathNodeTypes";
 import type { CornerPosition } from "../utils/subsupUtils";
 import { nodeToLatex } from "../models/nodeToLatex";
 

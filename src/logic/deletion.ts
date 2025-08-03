@@ -3,7 +3,7 @@ import { findNodeById, findParentContainerAndIndex, findParentOfInlineContainer,
 import {
   type InlineContainerNode,
   type MathNode,
-} from "../models/types";
+} from "../models/mathNodeTypes";
 import { handleArrowLeft } from "./navigation";
 
 //BUG: when deleting subsup that has nonempty other corners, it still deletes whole thing

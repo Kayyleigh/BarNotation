@@ -17,7 +17,7 @@
 //   BigOperatorNode,
 //   RootWrapperNode,
 //   NthRootNode,
-// } from '../../models/types';
+// } from '../../models/mathNodeTypes';
 // import clsx from 'clsx';
 // import type { CursorPosition } from '../../logic/cursor';
 // import '../../styles/math-node.css';
@@ -571,7 +571,7 @@ import type {
   RootWrapperNode,
   MathNode,
   TextStyle,
-} from "../../models/types";
+} from "../../models/mathNodeTypes";
 import '../../styles/math-node.css';
 import '../../styles/accents.css';
 import { MathRenderer, type BaseRenderProps, type MathRendererProps } from "./MathRenderer";
@@ -580,8 +580,7 @@ import { getIsHovered, handleMouseEnter, handleMouseLeave } from "../../utils/ma
 import DummyStartNodeRenderer from "./DummyStartNodeRenderer";
 import { CommandInputNodeComponent } from "./CommandInputNodeComponent";
 import { specialSequences } from "../../models/specialSequences";
-import { deleteNodeById, insertNodeAtIndex } from "../../logic/node-manipulation";
-import { handleCharacterInsert, replaceCommandWithNode } from "../../logic/insertion";
+import { replaceCommandWithNode } from "../../logic/insertion";
 
 // Helper to get CSS classes for font styles
 function getStyleClass(style: TextStyle) {
