@@ -57,7 +57,7 @@ function saveNoteState(noteId: string, state: {
   }
 }
 
-function shallowEqual(a: any, b: any): boolean {
+function shallowEqual<T extends object>(a: T, b: T): boolean {
   return JSON.stringify(a) === JSON.stringify(b);
 }
 

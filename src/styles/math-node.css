@@ -322,13 +322,33 @@
     position: relative;
   }
   
-  .accent-content {
+  .accent-content { /* TODO remove? */
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
     font-size: 0.7em;
     white-space: nowrap;
     color: var(--math-accent-color);
+    pointer-events: auto;
+  }
+
+  .overunderset {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.7em;
+    white-space: nowrap;
+    color: var(--math-accent-color);
+    pointer-events: auto;
+  }
+
+  .nthtopbottom {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1em;
+    white-space: nowrap;
+    color: var(--math-color-actuarial-text);
     pointer-events: auto;
   }
   

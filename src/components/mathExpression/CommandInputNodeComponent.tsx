@@ -9,7 +9,7 @@ import clsx from "clsx";
 import ReactDOM from "react-dom";
 import styles from "./CommandInputNodeComponent.module.css";
 import { specialSequences } from "../../models/specialSequences";
-import { type TextNode, type CommandInputNode, type MathNode } from "../../models/types";
+import { type TextNode, type CommandInputNode, type MathNode } from "../../models/mathNodeTypes";
 import MathView from "./MathView";
 import { renderContainerChildren } from "./MathRenderers";
 import type { BaseRenderProps, MathRendererProps } from "./MathRenderer";

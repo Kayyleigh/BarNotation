@@ -3,7 +3,7 @@ import { findNodeById, findParentContainerAndIndex, findParentOfInlineContainer,
 import {
   type InlineContainerNode,
   type MathNode,
-} from "../models/types";
+} from "../models/mathNodeTypes";
 import { handleArrowLeft } from "./navigation";
 
 //BUG: when deleting subsup that has nonempty other corners, it still deletes whole thing
@@ -114,7 +114,7 @@ export const handleBackspace = (state: EditorState): EditorState => {
     let replacementChildren: MathNode[] = [];
 
     switch (parent.type) {
-      case "accented": {
+      case "accented": { //TODO remove
         const baseChild = parent.base;
 
         if (parent.accent.type === 'custom') {
@@ -122,6 +122,17 @@ export const handleBackspace = (state: EditorState): EditorState => {
             replacementChildren = baseChild.children;
           } 
         }
+        break;
+      }
+      // case "decorated": {
+      //   break;
+      // }
+      case "overunderset": {
+        const baseChild = parent.base;
+
+        if (key === "content" && baseChild.type === "inline-container") {
+          replacementChildren = baseChild.children;
+        } 
         break;
       }
       case "fraction": {

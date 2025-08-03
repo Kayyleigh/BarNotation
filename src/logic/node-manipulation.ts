@@ -1,5 +1,5 @@
 import type { EditorState } from "./editor-state";
-import type { MathNode } from "../models/types";
+import type { MathNode } from "../models/mathNodeTypes";
 import { findNodeById, findParentContainerAndIndex, updateNodeById } from "../utils/treeUtils";
 import { nodeToLatex } from "../models/nodeToLatex";
 

@@ -17,7 +17,7 @@
 //   BigOperatorNode,
 //   RootWrapperNode,
 //   NthRootNode,
-// } from '../../models/types';
+// } from '../../models/mathNodeTypes';
 // import clsx from 'clsx';
 // import type { CursorPosition } from '../../logic/cursor';
 // import '../../styles/math-node.css';
@@ -571,7 +571,9 @@ import type {
   RootWrapperNode,
   MathNode,
   TextStyle,
-} from "../../models/types";
+  DecoratedNode,
+  OverUndersetNode,
+} from "../../models/mathNodeTypes";
 import '../../styles/math-node.css';
 import '../../styles/accents.css';
 import { MathRenderer, type BaseRenderProps, type MathRendererProps } from "./MathRenderer";
@@ -580,8 +582,7 @@ import { getIsHovered, handleMouseEnter, handleMouseLeave } from "../../utils/ma
 import DummyStartNodeRenderer from "./DummyStartNodeRenderer";
 import { CommandInputNodeComponent } from "./CommandInputNodeComponent";
 import { specialSequences } from "../../models/specialSequences";
-import { deleteNodeById, insertNodeAtIndex } from "../../logic/node-manipulation";
-import { handleCharacterInsert, replaceCommandWithNode } from "../../logic/insertion";
+import { replaceCommandWithNode } from "../../logic/insertion";
 
 // Helper to get CSS classes for font styles
 function getStyleClass(style: TextStyle) {
@@ -1075,7 +1076,7 @@ export function renderChildedNode(
 }
 
 
-// 10. Accented Node (has base)
+// 10. Accented Node (has base) //TODO remove
 export function renderAccentedNode(
   node: AccentedNode,
   baseProps: BaseRenderProps & MathRendererProps
@@ -1156,6 +1157,145 @@ export function renderAccentedNode(
           />
         </div>
       )}
+    </span>
+  );
+}
+
+// 10. OverUnderset Node (has base)
+export function renderOverUndersetNode(
+  node: OverUndersetNode,
+  baseProps: BaseRenderProps & MathRendererProps
+): React.ReactNode {
+  const styleClass = getStyleClass(baseProps.inheritedStyle);
+
+  const commonProps = {
+    cellId: baseProps.cellId,
+    isActive: baseProps.isActive,
+    cursor: baseProps.cursor,
+    hoverPath: baseProps.hoverPath,
+    onCursorChange: baseProps.onCursorChange,
+    setHoverPath: baseProps.setHoverPath,
+    inheritedStyle: baseProps.inheritedStyle,
+    onDropNode: baseProps.onDropNode,
+    showPlaceholder: baseProps.showPlaceholder,
+    editorState: baseProps.editorState,
+    updateEditorState: baseProps.updateEditorState
+  };
+
+  const updatedAncestors = [node.id, ...(baseProps.ancestorIds ?? [])];
+
+  return (
+    <span
+      data-nodeid={node.id}
+      className={clsx(
+        "math-node",
+        "type-accented",
+        styleClass,
+        { hovered: getIsHovered(node, baseProps.hoverPath) }
+      )}
+      style={getInlineStyle(baseProps.inheritedStyle)}
+      onClick={(e) => {
+        e.stopPropagation();
+        if (node.base.children.length === 0) {
+          baseProps.onCursorChange({ containerId: node.base.id, index: 0 });
+        }
+      }}
+      onMouseEnter={() => handleMouseEnter([...baseProps.ancestorIds], baseProps.setHoverPath)}
+      onMouseLeave={(e) =>
+        handleMouseLeave(e, updatedAncestors, baseProps.setHoverPath)
+      }
+    >
+      {node.position === "above" && (
+        <div className={clsx(node.variant, "accent-above") }>
+          <MathRenderer
+            node={node.content}
+            {...commonProps}
+            ancestorIds={updatedAncestors}
+            containerId={node.content.id}
+            index={0}
+          />
+        </div>
+      )}
+
+      <span className="accent-base">
+        <MathRenderer
+          node={node.base}
+          {...commonProps}
+          ancestorIds={updatedAncestors}
+          containerId={node.base.id}
+          index={0}
+        />
+      </span>
+
+      {node.position === "below" && (
+        <div className={clsx(node.variant, "accent-below") }>
+          <MathRenderer
+            node={node.content}
+            {...commonProps}
+            ancestorIds={updatedAncestors}
+            containerId={node.content.id}
+            index={0}
+          />
+        </div>
+      )}
+    </span>
+  );
+}
+
+// 10. Decorated Node (has base)
+export function renderDecoratedNode(
+  node: DecoratedNode,
+  baseProps: BaseRenderProps & MathRendererProps
+): React.ReactNode {
+  const styleClass = getStyleClass(baseProps.inheritedStyle);
+
+  const commonProps = {
+    cellId: baseProps.cellId,
+    isActive: baseProps.isActive,
+    cursor: baseProps.cursor,
+    hoverPath: baseProps.hoverPath,
+    onCursorChange: baseProps.onCursorChange,
+    setHoverPath: baseProps.setHoverPath,
+    inheritedStyle: baseProps.inheritedStyle,
+    onDropNode: baseProps.onDropNode,
+    showPlaceholder: baseProps.showPlaceholder,
+    editorState: baseProps.editorState,
+    updateEditorState: baseProps.updateEditorState
+  };
+
+  const updatedAncestors = [node.id, ...(baseProps.ancestorIds ?? [])];
+
+  return (
+    <span
+      data-nodeid={node.id}
+      className={clsx(
+        "math-node",
+        "type-accented",
+        `decoration-${node.decoration}`,
+        styleClass,
+        { hovered: getIsHovered(node, baseProps.hoverPath) }
+      )}
+      style={getInlineStyle(baseProps.inheritedStyle)}
+      onClick={(e) => {
+        e.stopPropagation();
+        if (node.base.children.length === 0) {
+          baseProps.onCursorChange({ containerId: node.base.id, index: 0 });
+        }
+      }}
+      onMouseEnter={() => handleMouseEnter([...baseProps.ancestorIds], baseProps.setHoverPath)}
+      onMouseLeave={(e) =>
+        handleMouseLeave(e, updatedAncestors, baseProps.setHoverPath)
+      }
+    >
+      <span className="accent-base">
+        <MathRenderer
+          node={node.base}
+          {...commonProps}
+          ancestorIds={updatedAncestors}
+          containerId={node.base.id}
+          index={0}
+        />
+      </span>
     </span>
   );
 }

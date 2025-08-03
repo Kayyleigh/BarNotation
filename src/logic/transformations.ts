@@ -1,9 +1,9 @@
 import { type EditorState } from "./editor-state";
 import { findNodeById, updateNodeById } from "../utils/treeUtils";
-import { transformToCustomAccentNode, transformToFractionNode } from "../models/transformations";
+import { transformToCustomAccentNode, transformToFractionNode, transformtoOverUndersetNode } from "../models/transformations";
 import { type BracketStyle } from "../utils/bracketUtils";
 import { createChildedNode, createGroupNode, createInlineContainer } from "../models/nodeFactories";
-import type { InlineContainerNode } from "../models/types";
+import type { InlineContainerNode, OverUndersetVariant } from "../models/mathNodeTypes";
 import type { CornerPosition } from "../utils/subsupUtils";
 import { nodeToLatex } from "../models/nodeToLatex";
 
@@ -37,7 +37,7 @@ export function transformToFraction(state: EditorState): EditorState {
   };
 }
 
-export function transformToCustomAccent(
+export function transformToCustomAccent( //TODO remove
   state: EditorState,
   position: "above" | "below"
 ): EditorState {
@@ -70,6 +70,40 @@ export function transformToCustomAccent(
     rootNode: updatedRoot,
     cursor: {
       containerId: accentedNode.accent.content.id,
+      index: 0,
+    },
+  };
+}
+
+export function transformToOverUnderset(
+  state: EditorState,
+  variant: OverUndersetVariant,
+  position: "above" | "below"
+): EditorState {
+  const container = findNodeById(state.rootNode, state.cursor.containerId);
+  if (!container || container.type !== "inline-container") return state;
+  const idx = state.cursor.index;
+  if (idx === 0) return state;
+
+  const base = container.children[idx - 1]; 
+
+  const overUndersetNode = transformtoOverUndersetNode(base, variant, position);
+  
+  const newChildren = [
+    ...container.children.slice(0, idx - 1),
+    overUndersetNode,
+    ...container.children.slice(idx),
+  ];
+
+  const updatedRoot = updateNodeById(state.rootNode, container.id, {
+    ...container,
+    children: newChildren,
+  });
+
+  return {
+    rootNode: updatedRoot,
+    cursor: {
+      containerId: overUndersetNode.content.id,
       index: 0,
     },
   };

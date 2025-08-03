@@ -1,6 +1,6 @@
 // utils/latexDependencies.ts
 import type { Note } from "../../models/noteTypes";
-import type { MathNode } from "../../models/types";
+import type { MathNode } from "../../models/mathNodeTypes";
 
 function containsActuarialSymbol(node: MathNode): boolean {
   if (!node) return false;

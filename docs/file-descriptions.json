@@ -123,7 +123,7 @@
     "src/models/noteTypes.ts": "Types for CellData, NoteMetadata, Note",
     "src/models/specialSequences.ts": "Escape → MathNode mappings",
     "src/models/transformations.ts": "Helper transforms (WIP/boilerplate)",
-    "src/models/types.ts": "Full MathNode type definition",
+    "src/models/mathNodeTypes.ts": "Full MathNode type definition",
     "src/models/textTypes.ts": "Text types for text hierarchy",
 
     "src/styles/": "Global CSS styles",

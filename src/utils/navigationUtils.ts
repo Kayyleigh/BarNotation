@@ -1,5 +1,5 @@
 import type { CursorPosition } from "../logic/cursor";
-import type { MathNode } from "../models/types";
+import type { MathNode } from "../models/mathNodeTypes";
 
 // Arrow navigable structure of compound nodes
 export const directionalChildOrder: Record<
@@ -11,7 +11,9 @@ export const directionalChildOrder: Record<
   "childed": ["base", "supLeft", "subLeft", "subRight", "supRight"],
   "big-operator": ["lower", "upper"],
   "group": ["child"],
-  "accented": ["base", "accent"],
+  "accented": ["base", "accent"], //TODO remove
+  "decorated": ["base"],
+  "overunderset": ["base", "content"],
   "styled": ["child"],
   "root-wrapper": ["child"],
   // inline-container is already sequential

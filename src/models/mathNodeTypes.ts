@@ -9,8 +9,8 @@ export type MathNode =
   | InlineContainerNode
   | StructureNode;
 
-export type TextContainerNode = 
-  | MultiDigitNode 
+export type TextContainerNode =
+  | MultiDigitNode
   | CommandInputNode;
 
 export type StructureNode =
@@ -18,7 +18,9 @@ export type StructureNode =
   | NthRootNode
   | BigOperatorNode
   | ChildedNode
-  | AccentedNode
+  | AccentedNode //TODO remove
+  | DecoratedNode
+  | OverUndersetNode
   | ArrowNode
   | GroupNode
   | BinomCoefficientNode
@@ -43,7 +45,9 @@ export type NodeType =
   | "nth-root"
   | "big-operator"
   | "childed"
-  | "accented"
+  | "accented" // TODO remove
+  | "overunderset"
+  | "decorated"
   | "arrow"
   | "binom"
   | "matrix"
@@ -119,14 +123,32 @@ export interface ChildedNode extends BaseNode {
   supRight: InlineContainerNode;
 }
 
+// TODO REMOVE ONCE THE SPLIT ONES EXIST AND FUNCTION WELL
 export type AccentKind =
   | { type: "predefined"; decoration: NodeDecoration }  // e.g., "hat", "tilde", "overline"
   | { type: "custom"; content: InlineContainerNode; position: "above" | "below" };
 
+// TODO REMOVE
 export interface AccentedNode extends BaseNode {
   type: "accented";
   base: InlineContainerNode;
   accent: AccentKind;
+}
+
+export interface DecoratedNode extends BaseNode {
+  type: "decorated";
+  base: InlineContainerNode;
+  decoration: NodeDecoration;
+}
+
+export type OverUndersetVariant = "overunderset" | "nthtopbottom"; // for \underset{} and \overset{} vs. \iiitop, \ibottom, etc.
+
+export interface OverUndersetNode extends BaseNode {
+  type: "overunderset";
+  variant: OverUndersetVariant;
+  base: InlineContainerNode;
+  content: InlineContainerNode;
+  position: "above" | "below";
 }
 
 export interface ArrowNode extends BaseNode {
@@ -194,7 +216,7 @@ export interface CommandInputNode extends BaseNode {
 
 // Helper function for stringifying MathNode
 export const nodeToMathText = (node: MathNode): string => {
-  switch(node.type) {
+  switch (node.type) {
     case "text":
       return `${node.content}`;
     case "multi-digit":

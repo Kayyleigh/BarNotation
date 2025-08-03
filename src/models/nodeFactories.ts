@@ -21,8 +21,12 @@ import type {
   MultiDigitNode,
   CommandInputNode,
   StyledNode,
-} from "./types"; // Adjust imports to your setup
+  DecoratedNode,
+  OverUndersetVariant,
+  OverUndersetNode,
+} from "./mathNodeTypes"; // Adjust imports to your setup
 import type { BracketStyle } from "../utils/bracketUtils";
+import type { NodeDecoration } from "../utils/accentUtils";
 
 export const generateId = () => uuidv4();
 
@@ -106,6 +110,30 @@ export const createAccentedNode = (
   type: "accented",
   base,
   accent,
+});
+
+export const createDecoratedNode = (
+  base: InlineContainerNode = createInlineContainer(),
+  decoration: NodeDecoration,
+): DecoratedNode => ({
+  id: uuidv4(),
+  type: "decorated",
+  base,
+  decoration,
+});
+
+export const createOverUndersetNode = (
+  base: InlineContainerNode = createInlineContainer(),
+  content: InlineContainerNode = createInlineContainer(),
+  variant: OverUndersetVariant = "overunderset",
+  position: "above" | "below",
+): OverUndersetNode => ({
+  id: uuidv4(),
+  type: "overunderset",
+  base,
+  content,
+  variant,
+  position
 });
 
 export const createArrowNode = (

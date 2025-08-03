@@ -2,7 +2,7 @@ import type { EditorState } from "./editor-state";
 import { createCommandInputNode, createMultiDigitNode, createTextNode } from "../models/nodeFactories";
 import { findNodeById, findParentContainerAndIndex, updateNodeById } from "../utils/treeUtils";
 import { specialSequences } from "../models/specialSequences";
-import { type InlineContainerNode, type MathNode, type TextNode } from "../models/types";
+import { type InlineContainerNode, type MathNode, type TextNode } from "../models/mathNodeTypes";
 import { getCloseSymbol, getOpenSymbol, getStyleFromSymbol, isClosingBracket, isOpeningBracket, type BracketStyle } from "../utils/bracketUtils";
 import { transformToGroupNode } from "./transformations";
 import { deleteNodeById, insertNodeAtIndex } from "./node-manipulation";
@@ -146,7 +146,12 @@ export const handleCharacterInsert = (state: EditorState, char: string): EditorS
         targetIndex = 0
       }
 
-      if (transformedNode.type === 'accented') {
+      if (transformedNode.type === 'accented') { //TODO remove
+        targetContainer = transformedNode.base
+        targetIndex = 0
+      }
+
+      if (transformedNode.type === 'decorated' || transformedNode.type === "overunderset") {
         targetContainer = transformedNode.base
         targetIndex = 0
       }
@@ -469,7 +474,18 @@ export function replaceCommandWithNode(
     targetIndex = 0;
   }
 
-  if (replacementNode.type === "accented") {
+  if (replacementNode.type === "accented") { //TODO remove
+    targetContainerId = replacementNode.base.id;
+    targetIndex = 0;
+  }
+
+  // Ensure that cursor is placed into the "base" node position to comfortably continue typing
+  if (replacementNode.type === "decorated") {
+    targetContainerId = replacementNode.base.id;
+    targetIndex = 0;
+  }
+
+  if (replacementNode.type === "overunderset") {
     targetContainerId = replacementNode.base.id;
     targetIndex = 0;
   }
