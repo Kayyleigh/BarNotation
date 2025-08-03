@@ -11,7 +11,7 @@ export const decoratedEntries: SpecialSequence[] = Object.entries(decorationToLa
   ([decoration, decorationInfo]) => {
     // Assert or cast decorationInfo if necessary
     const info = decorationInfo as DecorationInfo;
-    return {
+    return { //TODO SWITCH TO DECORATION NODE TYPE
       sequence: info.command,  // Explicit key-value pair
       createNode: () => createAccentedNode(createInlineContainer(), { type: 'predefined', decoration: decoration as NodeDecoration }),
     };

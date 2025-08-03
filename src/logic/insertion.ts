@@ -146,7 +146,12 @@ export const handleCharacterInsert = (state: EditorState, char: string): EditorS
         targetIndex = 0
       }
 
-      if (transformedNode.type === 'accented') {
+      if (transformedNode.type === 'accented') { //TODO remove
+        targetContainer = transformedNode.base
+        targetIndex = 0
+      }
+
+      if (transformedNode.type === 'decorated' || transformedNode.type === "overunderset") {
         targetContainer = transformedNode.base
         targetIndex = 0
       }

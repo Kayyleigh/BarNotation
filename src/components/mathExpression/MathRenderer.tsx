@@ -16,6 +16,8 @@ import {
   renderBigOperatorNode,
   renderRootWrapperNode,
   renderNthRootNode,
+  renderDecoratedNode,
+  renderOverUndersetNode,
 } from "./MathRenderers";
 import type { CursorPosition } from "../../logic/cursor";
 import type { DropTarget } from "../layout/EditorWorkspace";
@@ -27,7 +29,7 @@ export type MathRendererProps = {
   cellId: string;
   isActive: boolean;
   cursor: CursorPosition;
-  hoverPath: string[]; 
+  hoverPath: string[];
   containerId: string;
   index: number;
   inheritedStyle: TextStyle;
@@ -49,7 +51,7 @@ export type BaseRenderProps = {
   containerId: string;
   index: number;
   cursor: CursorPosition;
-  hoverPath: string[]; 
+  hoverPath: string[];
   onCursorChange: (pos: CursorPosition) => void;
   setHoverPath: (path: string[]) => void;
   cellId: string;
@@ -187,6 +189,12 @@ const InnerMathRenderer: React.FC<MathRendererProps> = ({
       break;
     case "accented":
       content = renderAccentedNode(node, props);
+      break;
+    case "decorated":
+      content = renderDecoratedNode(node, props);
+      break;
+    case "overunderset":
+      content = renderOverUndersetNode(node, props);
       break;
     case "styled":
       content = renderStyledNode(node, props);

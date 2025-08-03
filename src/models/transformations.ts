@@ -5,7 +5,9 @@ import type {
   NthRootNode, 
   StructureNode, 
   ChildedNode, 
-  AccentedNode
+  AccentedNode,
+  OverUndersetNode,
+  OverUndersetVariant
 } from './mathNodeTypes';
 import { generateId, createInlineContainer } from './nodeFactories';
 
@@ -25,6 +27,15 @@ export const transformToCustomAccentNode = (node: StructureNode, position: "abov
     content: createInlineContainer(),
     position
   }
+});
+
+export const transformtoOverUndersetNode = (node: StructureNode, variant: OverUndersetVariant = "overunderset", position: "above" | "below"): OverUndersetNode => ({
+  id: generateId(),
+  type: 'overunderset',
+  base: ensureInContainerNode(node),
+  content: createInlineContainer(),
+  variant,
+  position
 });
 
 export const transformToChildedNode = (node: StructureNode, variant: "subsup" | "actsymb" = "subsup"): ChildedNode => ({

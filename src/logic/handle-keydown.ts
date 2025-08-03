@@ -2,7 +2,7 @@ import type { EditorState } from "./editor-state";
 import { handleArrowLeft, handleArrowRight } from "./navigation";
 import { handleBracketInsert, handleCharacterInsert } from "./insertion";
 import { handleBackspace } from "./deletion";
-import { transformToActsymbNode, transformToFraction, transformToSubSupNode, transformToCustomAccent } from "./transformations";
+import { transformToActsymbNode, transformToFraction, transformToSubSupNode, transformToOverUnderset, transformToCustomAccent } from "./transformations";
 import { getStyleFromSymbol, isClosingBracket, isOpeningBracket } from "../utils/bracketUtils";
 
 export function handleKeyDown(
@@ -24,6 +24,7 @@ export function handleKeyDown(
 
   // === Double-key events ===
 
+  // Actuarial symbol
   if (e.altKey && e.code === 'Digit6') {
     e.preventDefault();
     return transformToActsymbNode(state, "supRight");
@@ -34,19 +35,40 @@ export function handleKeyDown(
     return transformToActsymbNode(state, "subRight");
   }
 
-  // === Double-key events ===
-
-  if (e.shiftKey && e.key === "ArrowUp") {
+  // TODO remove these 2; just for testing
+  if (e.ctrlKey && e.key === "ArrowUp") {
     e.preventDefault();
     return transformToCustomAccent(state, "above");
   }
 
-  if (e.shiftKey && e.key === "ArrowDown") {
+  if (e.ctrlKey && e.key === "ArrowDown") {
     e.preventDefault();
     return transformToCustomAccent(state, "below");
   }
 
+  // Over/Underset
+  if (e.shiftKey && e.key === "ArrowUp") {
+    e.preventDefault();
+    return transformToOverUnderset(state, "overunderset", "above");
+  }
 
+  if (e.shiftKey && e.key === "ArrowDown") {
+    e.preventDefault();
+    return transformToOverUnderset(state, "overunderset", "below");
+  }
+
+  // nth top/bottom
+  if (e.altKey && e.key === "ArrowUp") {
+    e.preventDefault();
+    return transformToOverUnderset(state, "nthtopbottom", "above");
+  }
+
+  if (e.altKey && e.key === "ArrowDown") {
+    e.preventDefault();
+    return transformToOverUnderset(state, "nthtopbottom", "below");
+  }
+
+  // Regular childed 
   if (e.shiftKey && e.code === 'Digit6') {
     e.preventDefault();    
     return transformToSubSupNode(state, "supRight");

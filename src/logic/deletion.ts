@@ -114,7 +114,7 @@ export const handleBackspace = (state: EditorState): EditorState => {
     let replacementChildren: MathNode[] = [];
 
     switch (parent.type) {
-      case "accented": {
+      case "accented": { //TODO remove
         const baseChild = parent.base;
 
         if (parent.accent.type === 'custom') {
@@ -122,6 +122,14 @@ export const handleBackspace = (state: EditorState): EditorState => {
             replacementChildren = baseChild.children;
           } 
         }
+        break;
+      }
+      case "overunderset": {
+        const baseChild = parent.base;
+
+        if (key === "accent.content" && baseChild.type === "inline-container") {
+          replacementChildren = baseChild.children;
+        } 
         break;
       }
       case "fraction": {

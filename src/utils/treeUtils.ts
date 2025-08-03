@@ -33,12 +33,13 @@ export function cloneTreeWithNewIds(node: MathNode): MathNode {
   const childKeys = directionalChildOrder[node.type] || [];
 
   for (const key of childKeys) {
-    if (node.type === "accented" && key === "accent" && node.accent.type === "custom") {
+    if (node.type === "accented" && key === "accent" && node.accent.type === "custom") { //TODO remove?
       clone.accent = {
         ...node.accent,
         content: cloneTreeWithNewIds(node.accent.content),
       };
-    } else {
+    } 
+    else {
       const child = (node as any)[key];
       if (child) {
         clone[key] = cloneTreeWithNewIds(child);
@@ -87,10 +88,14 @@ export const findNodeById = (node: MathNode, targetId: string): MathNode | null 
         return [node.child];
       case "styled":
         return [node.child];
-      case "accented":
+      case "accented": //TODO remove
         return node.accent.type === "custom"
         ? [node.base, node.accent.content]
-        : [node.base];      
+        : [node.base]; 
+      case "overunderset":
+        return [node.base, node.content];
+      case "decorated":
+        return [node.base];
       case "fraction":
         return [node.numerator, node.denominator];
       case "nth-root":
@@ -219,7 +224,7 @@ export const findNodeById = (node: MathNode, targetId: string): MathNode | null 
       }
     }
 
-    if (node.type === 'accented' && node.accent.type === 'predefined') {
+    if (node.type === 'accented' && node.accent.type === 'predefined') { //TODO remove
       const newChild = updateInlineContainerNodeById(node.base, targetId, replacement)
       return {
         ...node,
@@ -227,6 +232,16 @@ export const findNodeById = (node: MathNode, targetId: string): MathNode | null 
         accent: node.accent,
       }
     }
+    
+    if (node.type === 'decorated') {
+      const newChild = updateInlineContainerNodeById(node.base, targetId, replacement)
+      return {
+        ...node,
+        base: newChild,
+        decoration: node.decoration,
+      }
+    }
+
     if (Array.isArray(children) && children.length > 0) {
       const newChildren = children.map(child =>
         updateInlineContainerNodeById(child as InlineContainerNode, targetId, replacement)
@@ -263,7 +278,7 @@ export const findNodeById = (node: MathNode, targetId: string): MathNode | null 
           supRight: newChildren[4],
         }
       }
-      if (node.type === 'accented' && node.accent.type === 'custom') {
+      if (node.type === 'accented' && node.accent.type === 'custom') { //TODO remove
         return {
           ...node,
           base: newChildren[0],
@@ -272,6 +287,13 @@ export const findNodeById = (node: MathNode, targetId: string): MathNode | null 
             content: newChildren[1],
             position: node.accent.position
           }
+        }
+      }
+      if (node.type === 'overunderset') {
+        return {
+          ...node,
+          base: newChildren[0],
+          content: newChildren[1]
         }
       }
       updateNodeById(node, targetId, replacement)
@@ -365,7 +387,7 @@ export const findNodeById = (node: MathNode, targetId: string): MathNode | null 
     else if (root.type === 'styled') {
       if (root.child.id === inlineContainerId) return { parent: root, key: "child" };
     }
-    else if (root.type === 'accented') {
+    else if (root.type === 'accented') { //TODO remove
       if (root.base.id === inlineContainerId) return { parent: root, key: "child" };
 
       if (root.accent.type === 'custom') {
@@ -374,6 +396,13 @@ export const findNodeById = (node: MathNode, targetId: string): MathNode | null 
           return { parent: root, key: "accent.content" };
         }
       }
+    }
+    else if (root.type === 'decorated') {
+      if (root.base.id === inlineContainerId) return { parent: root, key: "base" };
+    }
+    else if (root.type === 'overunderset') {
+      if (root.base.id === inlineContainerId) return { parent: root, key: "base" };
+      if (root.content.id === inlineContainerId) return { parent: root, key: "content" };
     }
     else if (root.type !== 'inline-container') {
       console.warn(`${root.type} but no child matches the id`)
@@ -427,7 +456,16 @@ export const findNodeById = (node: MathNode, targetId: string): MathNode | null 
       case "styled":
         containers.push(...[node.child] as InlineContainerNode[]);
         break;
-      case "accented":
+      case "accented": //TODO remove
+        containers.push(...[node.base] as InlineContainerNode[]);
+        break;
+      case "overunderset":
+        containers.push(
+          ...(node.base.type === "inline-container" ? [node.base] : []),
+          ...(node.content.type === "inline-container" ? [node.content] : []),
+        );
+        break;
+      case "decorated":
         containers.push(...[node.base] as InlineContainerNode[]);
         break;
       case "childed":
