@@ -474,7 +474,18 @@ export function replaceCommandWithNode(
     targetIndex = 0;
   }
 
-  if (replacementNode.type === "accented") {
+  if (replacementNode.type === "accented") { //TODO remove
+    targetContainerId = replacementNode.base.id;
+    targetIndex = 0;
+  }
+
+  // Ensure that cursor is placed into the "base" node position to comfortably continue typing
+  if (replacementNode.type === "decorated") {
+    targetContainerId = replacementNode.base.id;
+    targetIndex = 0;
+  }
+
+  if (replacementNode.type === "overunderset") {
     targetContainerId = replacementNode.base.id;
     targetIndex = 0;
   }

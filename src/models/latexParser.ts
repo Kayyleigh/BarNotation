@@ -1,7 +1,7 @@
 import { decorationToLatexCommandInverse, type NodeDecoration } from "../utils/accentUtils";
 import { bracketSymbols, getStyleFromSymbol, isOpeningBracket } from "../utils/bracketUtils";
 import { nodeToLatex } from "./nodeToLatex";
-import { createAccentedNode, createChildedNode, createFraction, createGroupNode, createInlineContainer, createNthRoot, createOverUndersetNode, createStyledNode, createTextNode } from "./nodeFactories";
+import { createChildedNode, createDecoratedNode, createFraction, createGroupNode, createInlineContainer, createNthRoot, createOverUndersetNode, createStyledNode, createTextNode } from "./nodeFactories";
 import { getBigOpNodeFromAlias, getStyledNodeFromAlias, getSymbolNodeFromAlias, symbolToLatex } from "./specialSequences";
 import type { GroupNode, InlineContainerNode, MathNode, StructureNode } from "./mathNodeTypes";
 import { ensureInContainerNode } from "./transformations";
@@ -443,10 +443,10 @@ export function parseLatex(input: string): MathNode {
 
         else if (name in decorationToLatexCommandInverse) {
           const child = parseGroup();
-          base = createAccentedNode(child, {
-            type: 'predefined',
-            decoration: decorationToLatexCommandInverse[name] as NodeDecoration,
-          });
+          base = createDecoratedNode(
+            child,
+            decorationToLatexCommandInverse[name] as NodeDecoration,
+          );
         }
 
         else if (getStyledNodeFromAlias(name)) {
