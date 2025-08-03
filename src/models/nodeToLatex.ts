@@ -204,7 +204,16 @@ export const nodeToLatex = (node: MathNode, highlighted = false): string => {
     }
 
     case "overunderset": {
-      const latexCommand = node.position === 'above' ? (highlighted ? wrapCmd("\\overset") : "\\overset") : (highlighted ? wrapCmd("\\underset") : "\\underset");
+      const isOverUnderset = node.variant === 'overunderset'
+
+      const latexCommand = node.position === 'above' 
+        ? (isOverUnderset)
+          ? (highlighted ? wrapCmd("\\overset") : "\\overset") 
+          : (highlighted ? wrapCmd("\\nthtop") : "\\nthtop") 
+        : (isOverUnderset)
+          ? (highlighted ? wrapCmd("\\underset") : "\\underset")
+          : (highlighted ? wrapCmd("\\nthbottom") : "\\nthbottom");
+
       return latexCommand
         + (highlighted ? wrapBracket("{") : "{")
         + nodeToLatex(node.content, highlighted)
