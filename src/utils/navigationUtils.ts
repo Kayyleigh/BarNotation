@@ -13,7 +13,7 @@ export const directionalChildOrder: Record<
   "group": ["child"],
   "accented": ["base", "accent"], //TODO remove
   "decorated": ["base"],
-  "nthtopbottom": ["base", "content"],
+  "overunderset": ["base", "content"],
   "styled": ["child"],
   "root-wrapper": ["child"],
   // inline-container is already sequential
@@ -58,7 +58,7 @@ export function flattenCursorPositions(node: MathNode): CursorPosition[] {
           }
           continue;
         }
-        
+
         const child = (n as any)[key];
         if (child && typeof child === "object") {
           visit(child);
