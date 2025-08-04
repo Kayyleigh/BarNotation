@@ -5,7 +5,7 @@ import cs from "./strings/cs";
 // import el from "./strings/el";
 import en from "./strings/en";
 // import es from "./strings/es";
-// import fr from "./strings/fr";
+import fr from "./strings/fr";
 import nl from "./strings/nl";
 // import ro from "./strings/ro";
 // import sk from "./strings/sk";
@@ -22,7 +22,7 @@ const translations: Record<LanguageKey, TranslationDict> = {
   // el,
   en,
   // es,
-  // fr,
+  fr,
   nl,
   // ro,
   // sk,
