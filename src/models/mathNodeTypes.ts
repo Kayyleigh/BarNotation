@@ -23,7 +23,6 @@ export type StructureNode =
   | OverUndersetNode
   | ArrowNode
   | GroupNode
-  | BinomCoefficientNode
   | VectorNode
   | MatrixNode
   | CasesNode
@@ -49,7 +48,6 @@ export type NodeType =
   | "overunderset"
   | "decorated"
   | "arrow"
-  | "binom"
   | "matrix"
   | "vector"
   | "cases";
@@ -167,13 +165,6 @@ export interface GroupNode extends BaseNode {
   bracketStyle: BracketStyle;
 }
 
-export interface BinomCoefficientNode extends BaseNode {
-  type: "binom";
-  top: InlineContainerNode;
-  bottom: InlineContainerNode;
-  // bracket style is rounded
-}
-
 export interface VectorNode extends BaseNode {
   type: "vector";
   elements: InlineContainerNode[];
@@ -249,9 +240,6 @@ export const nodeToMathText = (node: MathNode): string => {
     case "arrow":
       //TODO
       return `Arrow(TODO)`;
-    case "binom":
-      //TODO
-      return `Binom(${nodeToMathText(node.top)}, ${nodeToMathText(node.bottom)})`;
     case "matrix":
       //TODO
       return `Matrix(TODO)`;
