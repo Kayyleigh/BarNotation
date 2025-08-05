@@ -1,11 +1,15 @@
 // Français (French)
-// By: <MANA //TODO proper credit>
+// Translations provided by Mana
 
 const fr = {
   searchbar: {
     placeholder: "Rechercher...",
     tooltip: "Rechercher",
     clear: "Effacer la recherche",
+  },
+
+  sortDropdown: {
+    sortedBy: "Trié par",
   },
 
   cellRow: {
@@ -329,6 +333,7 @@ const fr = {
     "premade-logic": "Logique",
     "premade-probability": "Probabilités & Statistiques",
     "greek-letters": "Letters Grecques",
+    "premade-actuarial": "Sciences Actuarielles",
   }
 };
 
