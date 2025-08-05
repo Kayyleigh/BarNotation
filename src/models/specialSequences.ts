@@ -50,6 +50,15 @@ export const nodeTransformationSequences: SpecialSequence[] = [ //TODO: rename t
     createNode: () => createFraction(
       createInlineContainer(),
       createInlineContainer(),
+      "frac"
+    ),
+  },
+  {
+    sequence: "\\binom ",
+    createNode: () => createFraction(
+      createInlineContainer(),
+      createInlineContainer(),
+      "binom"
     ),
   },
 ]

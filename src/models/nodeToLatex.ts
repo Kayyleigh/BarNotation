@@ -84,12 +84,14 @@ export const nodeToLatex = (node: MathNode, highlighted = false): string => {
     }
 
     case "fraction": {
+      const commandString = "\\" + node.variant; // variant = "frac" | "binom"
+
       if (highlighted) {
-        return wrapCmd("\\frac") + wrapBracket("{") +
+        return wrapCmd(commandString) + wrapBracket("{") +
           nodeToLatex(node.numerator, highlighted) + wrapBracket("}") +
           wrapBracket("{") + nodeToLatex(node.denominator, highlighted) + wrapBracket("}");
       }
-      return `\\frac{${nodeToLatex(node.numerator, highlighted)}}{${nodeToLatex(node.denominator, highlighted)}}`;
+      return `${commandString}{${nodeToLatex(node.numerator, highlighted)}}{${nodeToLatex(node.denominator, highlighted)}}`;
     }
 
     case "nth-root": {

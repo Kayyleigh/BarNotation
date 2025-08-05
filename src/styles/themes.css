@@ -59,6 +59,8 @@
     --math-color-single-bracket: #d70000;      /* Keep red for clarity */
     --math-color-pair-brackets: #444444;
   
+    --math-color-binom-brackets: #d70087;
+
     --math-color-actuarial-text: #005f87;
     --math-color-actuarial-bg: #005f8714;
   
@@ -198,6 +200,8 @@
     --math-color-single-bracket: #d21618;
     --math-color-pair-brackets: #1b9fff;
   
+    --math-color-binom-brackets: #ffd700;
+
     --math-color-actuarial-text: #4ec9b0;
     --math-color-actuarial-bg: rgb(78, 201, 176, 0.1);
   

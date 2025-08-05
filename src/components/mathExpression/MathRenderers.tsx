@@ -926,21 +926,38 @@ export function renderFractionNode(
     index,
   });
 
+  const content = (
+    <span className="fraction">
+      <span className="numerator">
+        <MathRenderer {...getChildProps(node.numerator, 0)} />
+      </span>
+      {node.variant === "frac" && <div className="line" />}
+      <span className="denominator">
+        <MathRenderer {...getChildProps(node.denominator, 1)} />
+      </span>
+    </span>
+  );
+
   return (
     <span
       data-nodeid={node.id}
-      className={clsx("math-node", "type-fraction", styleClass, { hovered: isHovered })}
+      className={clsx("math-node", "type-fraction", styleClass, {
+        hovered: isHovered,
+        "is-binom": node.variant === "binom",
+      })}
       style={getInlineStyle(inheritedStyle)}
       onMouseEnter={handleEnter}
       onMouseLeave={handleLeave}
     >
-      <span className="numerator">
-        <MathRenderer {...getChildProps(node.numerator, 0)} />
-      </span>
-      <div className="line"></div>
-      <span className="denominator">
-        <MathRenderer {...getChildProps(node.denominator, 1)} />
-      </span>
+      {node.variant === "binom" ? (
+        <>
+          <span className="binom-bracket left">(</span>
+          {content}
+          <span className="binom-bracket right">)</span>
+        </>
+      ) : (
+        content
+      )}
     </span>
   );
 }
@@ -1206,7 +1223,7 @@ export function renderOverUndersetNode(
       }
     >
       {node.position === "above" && (
-        <div className={clsx(node.variant, "accent-above") }>
+        <div className={clsx(node.variant, "accent-above")}>
           <MathRenderer
             node={node.content}
             {...commonProps}
@@ -1228,7 +1245,7 @@ export function renderOverUndersetNode(
       </span>
 
       {node.position === "below" && (
-        <div className={clsx(node.variant, "accent-below") }>
+        <div className={clsx(node.variant, "accent-below")}>
           <MathRenderer
             node={node.content}
             {...commonProps}

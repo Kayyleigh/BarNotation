@@ -14,6 +14,7 @@ import { generateId, createInlineContainer } from './nodeFactories';
 export const transformToFractionNode = (node: StructureNode): FractionNode => ({
   id: generateId(),
   type: 'fraction',
+  variant: 'frac',
   numerator: ensureInContainerNode(node),
   denominator: createInlineContainer(),
 });

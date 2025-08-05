@@ -92,8 +92,11 @@ export interface InlineContainerNode extends BaseNode {
   children: StructureNode[];
 }
 
+export type FractionVariant = "frac" | "binom";
+
 export interface FractionNode extends BaseNode {
   type: "fraction";
+  variant: FractionVariant;
   numerator: InlineContainerNode;
   denominator: InlineContainerNode;
 }

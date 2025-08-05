@@ -427,7 +427,13 @@ export function parseLatex(input: string): MathNode {
         else if (name === "frac") {
           const numerator = parseGroup();
           const denominator = parseGroup();
-          base = createFraction(numerator, denominator);
+          base = createFraction(numerator, denominator, "frac");
+        }
+
+        else if (name === "binom") {
+          const numerator = parseGroup();
+          const denominator = parseGroup();
+          base = createFraction(numerator, denominator, "binom");
         }
 
         else if (name === "sqrt") {

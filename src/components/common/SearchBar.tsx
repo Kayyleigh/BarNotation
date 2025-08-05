@@ -33,7 +33,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
           <button
             className={styles.clearButton}
             onClick={() => onChange("")}
-            title={t("search.clear")}
+            title={t("searchbar.clear")}
           >
             ×
           </button>
