@@ -1336,6 +1336,15 @@ export function renderMatrixNode(
     inheritedStyle,
   });
 
+  const scaleY = node.rows.length * 1.35;
+
+  // 1 row: around -0%
+  // 2 rows: around -25% 
+  // 3 rows: around -33%
+
+  // approximately nice-looking:
+  const shiftY = -50 * (1 - 1 / scaleY);
+
   return (
     <span
       data-nodeid={node.id}
@@ -1347,8 +1356,17 @@ export function renderMatrixNode(
       onMouseEnter={handleEnter}
       onMouseLeave={handleLeave}
     >
-      {leftBracket && <span className="matrix-bracket left">{leftBracket}</span>}
-
+      {leftBracket && (
+        <span
+          className="matrix-bracket left"
+          style={{
+            transform: `scale(1, ${scaleY}) translateY(${shiftY}%)`,
+            transformOrigin: "top left"
+          }}
+        >
+          {leftBracket}
+        </span>
+      )}
       <span className="matrix-content">
         {node.rows.map((row, rowIdx) => (
           <span key={`matrix-row-${rowIdx}`} className="matrix-row">
@@ -1361,7 +1379,16 @@ export function renderMatrixNode(
         ))}
       </span>
 
-      {rightBracket && <span className="matrix-bracket right">{rightBracket}</span>}
+      {rightBracket && (
+        <span
+          className="matrix-bracket right"
+          style={{ 
+            transform: `scale(1, ${scaleY}) translateY(${shiftY}%)`, 
+            transformOrigin: "top left" }}
+        >
+          {rightBracket}
+        </span>
+      )}
     </span>
   );
 }
