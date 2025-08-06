@@ -286,8 +286,13 @@ export function parseLatex(input: string): MathNode {
               rows.push(currentRow);
               currentRow = [];
             } else {
-              const cell = parseExpression();
-              if (cell) currentRow.push(cell as InlineContainerNode);
+              const cellContent = parseExpression();
+
+              const cell = (cellContent?.type === "inline-container")
+              ? cellContent
+              : createInlineContainer([cellContent]); //TODO failsafe
+
+              if (cell) currentRow.push(cell);
             }
           }
 

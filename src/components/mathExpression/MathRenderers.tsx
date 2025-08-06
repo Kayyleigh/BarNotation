@@ -1338,12 +1338,8 @@ export function renderMatrixNode(
 
   const scaleY = node.rows.length * 1.35;
 
-  // 1 row: around -0%
-  // 2 rows: around -25% 
-  // 3 rows: around -33%
-
   // approximately nice-looking:
-  const shiftY = -50 * (1 - 1 / scaleY);
+  const shiftY = -47.5 * (1 - 1 / scaleY);
 
   return (
     <span
