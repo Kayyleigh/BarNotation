@@ -496,3 +496,37 @@
   padding-top: 0.07em;
   padding-right: 0.1em;
 }
+
+/* ============================================= */
+/* =============== MATRIX ====================== */
+/* ============================================= */
+
+.type-matrix {
+  display: inline-flex;
+  align-items: center;
+}
+
+.matrix-bracket {
+  color: var(--math-color-matrix-brackets);
+  font-size: 1.2em;
+  padding: 0 0.2em;
+}
+
+.matrix-content {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.1em;
+}
+
+.matrix-row {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5em;
+  justify-content: center;
+}
+
+.matrix-cell {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}

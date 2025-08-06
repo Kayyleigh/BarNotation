@@ -232,7 +232,7 @@ export const nodeToLatex = (node: MathNode, highlighted = false): string => {
       return start + rows + end;
     }
 
-    case "vector": {
+    case "vector": { //TODO remove?
       const joined = node.elements.map(e => nodeToLatex(e, highlighted)).join(node.orientation === "horizontal" ? " & " : " \\\\ ");
       const env = "bmatrix";
       if (highlighted) {

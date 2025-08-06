@@ -573,6 +573,7 @@ import type {
   TextStyle,
   DecoratedNode,
   OverUndersetNode,
+  MatrixNode,
 } from "../../models/mathNodeTypes";
 import '../../styles/math-node.css';
 import '../../styles/accents.css';
@@ -746,64 +747,6 @@ export function renderMultiDigitNode(
     </span>
   );
 }
-
-// // 3. Command Input Node
-// export function renderCommandInputNode(
-//   node: CommandInputNode,
-//   baseProps: BaseRenderProps & MathRendererProps
-// ): React.ReactNode {
-//   const styleClass = getStyleClass(baseProps.inheritedStyle);
-//   return (
-//     <span
-//       data-nodeid={node.id}
-//       className={clsx("math-node", "type-command-input", styleClass, { hovered: getIsHovered(node, baseProps.hoverPath) })}
-//       style={getInlineStyle(baseProps.inheritedStyle)}
-//       onMouseEnter={() => handleMouseEnter([...baseProps.ancestorIds], baseProps.setHoverPath)}
-//       onMouseLeave={(e) =>
-//         handleMouseLeave(e, baseProps.ancestorIds, baseProps.setHoverPath)
-//       }
-//     >
-//       {renderContainerChildren(node.children, {
-//         ...baseProps,
-//         containerId: node.id,
-//         inheritedStyle: { 
-//           fontStyling: { 
-//             fontStyle: 'command', 
-//             fontStyleAlias: "" 
-//           } 
-//         }
-//       })}
-//     </span>
-//   );
-// }
-
-// ALSO WORKS; MAY BE MORE EFFICIENT
-// export function renderCommandInputNode(
-//   node: CommandInputNode,
-//   baseProps: BaseRenderProps & MathRendererProps
-// ): React.ReactNode {
-//   const isSelected = baseProps.cursor?.containerId === node.id;
-
-//   return (
-//     <CommandInputNodeComponent
-//       node={node}
-//       isSelected={isSelected}
-//       onSelectSuggestion={(sequence) => {
-//         const match = specialSequences.find(seq => seq.sequence === sequence);
-//         if (!match) return;
-
-//         const transformedNode = match.createNode();
-//         const stateWithoutCmd = deleteNodeById(baseProps.editorState, node.id);
-//         const stateWithTargetNode = insertNodeAtIndex(stateWithoutCmd, baseProps.containerId, baseProps.index, transformedNode);
-
-//         baseProps.updateEditorState(stateWithTargetNode);
-//         console.log(stateWithTargetNode.cursor, stateWithTargetNode.rootNode)
-//       }}
-//       baseProps={baseProps}
-//     />
-//   );
-// }
-
 
 export function renderCommandInputNode(
   node: CommandInputNode,
@@ -1357,6 +1300,68 @@ export function renderStyledNode(
       onMouseLeave={handleLeave}
     >
       <MathRenderer {...getChildProps(node.child, 0)} />
+    </span>
+  );
+}
+
+export function renderMatrixNode(
+  node: MatrixNode,
+  baseProps: BaseRenderProps & MathRendererProps
+): React.ReactNode {
+  const { inheritedStyle, ancestorIds, setHoverPath, hoverPath } = baseProps;
+  const styleClass = getStyleClass(inheritedStyle);
+  const isHovered = getIsHovered(node, hoverPath);
+  const bracketMap: Record<MatrixNode["bracketStyle"], [string, string]> = {
+    none: ["", ""],
+    parenthesis: ["(", ")"],
+    square: ["[", "]"],
+    curly: ["{", "}"],
+    vertical: ["|", "|"],
+    double_vertical: ["‖", "‖"],
+  };
+
+  const [leftBracket, rightBracket] = bracketMap[node.bracketStyle] ?? ["", ""];
+
+  const handleEnter = () => handleMouseEnter([...ancestorIds], setHoverPath);
+  const handleLeave = (e: React.MouseEvent) =>
+    handleMouseLeave(e, ancestorIds, setHoverPath);
+
+  const getCellProps = (
+    childNode: MathNode
+  ): MathRendererProps & BaseRenderProps => ({
+    ...baseProps,
+    node: childNode,
+    containerId: childNode.id,
+    index: 0,
+    inheritedStyle,
+  });
+
+  return (
+    <span
+      data-nodeid={node.id}
+      className={clsx("math-node", "type-matrix", styleClass, {
+        hovered: isHovered,
+        [`bracket-${node.bracketStyle}`]: node.bracketStyle !== "none",
+      })}
+      style={getInlineStyle(inheritedStyle)}
+      onMouseEnter={handleEnter}
+      onMouseLeave={handleLeave}
+    >
+      {leftBracket && <span className="matrix-bracket left">{leftBracket}</span>}
+
+      <span className="matrix-content">
+        {node.rows.map((row, rowIdx) => (
+          <span key={`matrix-row-${rowIdx}`} className="matrix-row">
+            {row.map((cell, colIdx) => (
+              <span key={`matrix-cell-${rowIdx}-${colIdx}`} className="matrix-cell">
+                <MathRenderer {...getCellProps(cell)} />
+              </span>
+            ))}
+          </span>
+        ))}
+      </span>
+
+      {rightBracket && <span className="matrix-bracket right">{rightBracket}</span>}
     </span>
   );
 }

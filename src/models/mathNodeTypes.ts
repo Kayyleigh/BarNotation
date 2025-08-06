@@ -165,7 +165,7 @@ export interface GroupNode extends BaseNode {
   bracketStyle: BracketStyle;
 }
 
-export interface VectorNode extends BaseNode {
+export interface VectorNode extends BaseNode { //TODO maybe don't use -- Matrix can be vector if 1xn or mx1
   type: "vector";
   elements: InlineContainerNode[];
   bracketStyle: BracketStyle;
@@ -173,10 +173,13 @@ export interface VectorNode extends BaseNode {
   // Maybe enable diff style for L vs R
 }
 
+// types: matrix, pmatrix, bmatrix, Bmatrix, vmatrix, Vmatrix
+export type MatrixBracketStyle = "none" | "parenthesis" | "square" | "curly" | "vertical" | "double_vertical";
+
 export interface MatrixNode extends BaseNode {
   type: "matrix";
   rows: InlineContainerNode[][];
-  bracketStyle: BracketStyle;
+  bracketStyle: MatrixBracketStyle;
   // Maybe enable diff style for L vs R
 }
 
