@@ -292,6 +292,7 @@ export const otherSymbols: SpecialSequence[] = [
   { sequence: "\\nabla ", createNode: () => createTextNode("∇", "\\nabla ") },
   { sequence: "\\cdots	", createNode: () => createTextNode("⋯", "\\cdots	") },
   { sequence: "\\dotsm	", createNode: () => createTextNode("⋯", "\\dostm	") }, // TODO require amsmath package
+  { sequence: "\\quad ", createNode: () => createTextNode("\t", "\\quad ") },
 ];
 
 export const standardFunctionNames: SpecialSequence[] = [
