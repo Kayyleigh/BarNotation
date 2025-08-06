@@ -7,4 +7,10 @@ export const matrixEnvToBracketStyle: Record<string, MatrixBracketStyle> = {
     Bmatrix: "curly",
     vmatrix: "vertical",
     Vmatrix: "double_vertical",
-  };
+};
+
+export function getMatrixEnvKeyByBracketStyle(value: MatrixBracketStyle): string | undefined {
+    return Object.keys(matrixEnvToBracketStyle).find(
+        key => matrixEnvToBracketStyle[key] === value
+    );
+}

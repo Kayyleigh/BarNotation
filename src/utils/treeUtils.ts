@@ -8,6 +8,39 @@ export type TreePath = {
   path: MathNode[];
 };
 
+export function findNodePath(
+  root: MathNode,
+  targetId: string,
+  path: MathNode[] = []
+): MathNode[] | null {
+  if (root.id === targetId) {
+    return [...path, root];
+  }
+
+  const children = getLogicalChildren(root);
+  for (const child of children) {
+    const result = findNodePath(child, targetId, [...path, root]);
+    if (result) {
+      return result;
+    }
+  }
+
+  // Handle special cases with array children (like matrix rows)
+  if (root.type === "matrix") {
+    for (const row of root.rows) {
+      for (const cell of row) {
+        const result = findNodePath(cell, targetId, [...path, root]);
+        if (result) {
+          return result;
+        }
+      }
+    }
+  }
+  
+  // If not found in any child
+  return null;
+}
+
 /**
  * Determines whether the target container is a descendant of the given parent container.
  * Returns true if they are identical or if the target is a nested child within the parent.

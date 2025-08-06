@@ -15,6 +15,7 @@ export const directionalChildOrder: Record<
   "decorated": ["base"],
   "overunderset": ["base", "content"],
   "styled": ["child"],
+  "matrix": [], // 2D traversal handled in `flattenCursorPositions`
   "root-wrapper": ["child"],
   // inline-container is already sequential
 };
@@ -33,7 +34,7 @@ export function flattenCursorPositions(node: MathNode): CursorPosition[] {
         // Cursor between child i and i+1
         positions.push({ containerId: n.id, index: i + 1 });
       });
-    } 
+    }
     else if (n.type === "multi-digit" || n.type === "command-input") {
       positions.push({ containerId: n.id, index: 0, });
 
@@ -44,7 +45,17 @@ export function flattenCursorPositions(node: MathNode): CursorPosition[] {
           positions.push({ containerId: n.id, index: i + 1 });
         }
       });
-    } 
+    }
+    else if (n.type === "matrix") {
+      let cellIndex = 0;
+      for (const row of n.rows) {
+        for (const cell of row) {
+          visit(cell);
+          positions.push({ containerId: n.id, index: cellIndex + 1 });
+          cellIndex++;
+        }
+      }
+    }
     else {
       // For compound nodes like fraction, root, etc.
       const order = directionalChildOrder[n.type];
@@ -72,10 +83,10 @@ export function flattenCursorPositions(node: MathNode): CursorPosition[] {
 }
 
 export function findCursorIndex(
-    flatList: CursorPosition[],
-    cursor: CursorPosition
-  ): number {
-    return flatList.findIndex(
-      (p) => p.containerId === cursor.containerId && p.index === cursor.index
-    );
-  }
+  flatList: CursorPosition[],
+  cursor: CursorPosition
+): number {
+  return flatList.findIndex(
+    (p) => p.containerId === cursor.containerId && p.index === cursor.index
+  );
+}

@@ -3,6 +3,7 @@ import { getOpenSymbol, getCloseSymbol } from "../utils/bracketUtils";
 import { isEmptyNode } from "../utils/treeUtils";
 import { bigOperatorToLatex } from "./specialSequences";
 import type { MathNode } from "./mathNodeTypes";
+import { getMatrixEnvKeyByBracketStyle } from "../utils/matrixUtils";
 
 export const nodeToLatex = (node: MathNode, highlighted = false): string => {
   // Wrappers for highlighted vs raw output
@@ -226,19 +227,11 @@ export const nodeToLatex = (node: MathNode, highlighted = false): string => {
     }
 
     case "matrix": {
-      const start = highlighted ? wrapCmd("\\begin{bmatrix}") : "\\begin{bmatrix}";
-      const end = highlighted ? wrapCmd("\\end{bmatrix}") : "\\end{bmatrix}";
+      const env = getMatrixEnvKeyByBracketStyle(node.bracketStyle)
+      const start = highlighted ? wrapCmd(`\\begin{${env}}`) : `\\begin{${env}}`;
+      const end = highlighted ? wrapCmd(`\\end{${env}}`) : `\\end{${env}}`;
       const rows = node.rows.map(row => row.map(r => nodeToLatex(r, highlighted)).join(" & ")).join(" \\\\ ");
       return start + rows + end;
-    }
-
-    case "vector": { //TODO remove?
-      const joined = node.elements.map(e => nodeToLatex(e, highlighted)).join(node.orientation === "horizontal" ? " & " : " \\\\ ");
-      const env = "bmatrix";
-      if (highlighted) {
-        return wrapCmd("\\begin{" + env + "}") + joined + wrapCmd("\\end{" + env + "}");
-      }
-      return `\\begin{${env}}${joined}\\end{${env}}`;
     }
 
     default: {
