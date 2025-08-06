@@ -46,13 +46,10 @@ export function flattenCursorPositions(node: MathNode): CursorPosition[] {
         }
       });
     }
-    else if (n.type === "matrix") {
-      let cellIndex = 0;
+    else if (n.type === "matrix") {    
       for (const row of n.rows) {
         for (const cell of row) {
           visit(cell);
-          positions.push({ containerId: n.id, index: cellIndex + 1 });
-          cellIndex++;
         }
       }
     }
@@ -63,7 +60,7 @@ export function flattenCursorPositions(node: MathNode): CursorPosition[] {
 
       for (const key of order) {
         // Special handling for accented nodes
-        if (n.type === "accented" && key === "accent") {
+        if (n.type === "accented" && key === "accent") { //TODO remove
           if (n.accent.type === "custom") {
             visit(n.accent.content);
           }
