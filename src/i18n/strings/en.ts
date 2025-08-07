@@ -128,14 +128,14 @@ const en = {
       overset: "Make overset",
 
       // Actuarial precedence
-      nthbottom: "Add precedence below (Actuarial)",
-      nthtop: "Add precedence above (Actuarial)",
+      nthbottom: "Add precedence below (Actuarial)", //TODO NEW; ADD TO OTHER LANGUAGES 
+      nthtop: "Add precedence above (Actuarial)", //TODO NEW; ADD TO OTHER LANGUAGES 
 
       // Matrix
-      insertMatrixRowBelow: "(Inside matrix) Insert row below",
-      insertMatrixRowAbove: "(Inside matrix) Insert row above",
-      insertMatrixColumnLeft: "(Inside matrix) Insert column left",
-      insertMatrixColumnRight: "(Inside matrix) Insert column right",
+      insertMatrixRowBelow: "(Inside matrix) Insert row below", //TODO NEW; ADD TO OTHER LANGUAGES 
+      insertMatrixRowAbove: "(Inside matrix) Insert row above", //TODO NEW; ADD TO OTHER LANGUAGES 
+      insertMatrixColumnLeft: "(Inside matrix) Insert column left", //TODO NEW; ADD TO OTHER LANGUAGES 
+      insertMatrixColumnRight: "(Inside matrix) Insert column right", //TODO NEW; ADD TO OTHER LANGUAGES 
       
       fraction: "Turn node into numerator of new fraction",
       structuralShortcuts: "Structural Shortcuts",
@@ -349,6 +349,7 @@ const en = {
     "premade-probability": "Probability & Statistics",
     "greek-letters": "Greek Letters",
     "premade-actuarial": "Actuarial Science",
+    "premade-linalg": "Linear Algebra", //TODO NEW; ADD TO OTHER LANGUAGES 
   }
 };
 

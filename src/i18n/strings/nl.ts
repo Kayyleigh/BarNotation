@@ -119,8 +119,20 @@ const nl = {
       actuarialTL: "Maak actuariële notatie (boven-links focus)",
       actuarialBR: "Maak actuariële notatie (onder-rechts focus)",
       actuarialTR: "Maak actuariële notatie (boven-rechts focus)",
+
       underset: "Maak onderschrift",
       overset: "Maak bovenschrift",
+
+      // Actuarial precedence
+      nthbottom: "Voeg prioriteit toe onder (actuarieel)",
+      nthtop: "Voeg prioriteit toe boven (actuarieel)",
+
+      // Matrix
+      insertMatrixRowBelow: "(In matrix) Rij onder invoegen",
+      insertMatrixRowAbove: "(In matrix) Rij boven invoegen",
+      insertMatrixColumnLeft: "(In matrix) Kolom links invoegen",
+      insertMatrixColumnRight: "(In matrix) Kolom rechts invoegen",
+
       fraction: "Zet node in teller van nieuwe breuk",
       structuralShortcuts: "Structurele Sneltoetsen",
       rearrangeNodes: "Versleep nodes",
@@ -244,7 +256,7 @@ const nl = {
       delete: "Verwijderen",
     }
   },
-  
+
   mathLibrary: {
     entries: {
       deleteEntry: "Verwijder item",
@@ -325,14 +337,15 @@ const nl = {
     hourAgo_plural: "{{count}} uur geleden",
     yesterday: "gisteren",
   },
-  
+
   premadeCollections: {
     "premade-structures": "🏗️ Structuren",
-    "premade-calculus": "Calculus", 
+    "premade-calculus": "Calculus",
     "premade-logic": "Logica",
     "premade-probability": "Kansrekening & Statistiek",
     "greek-letters": "Griekse Letters",
     "premade-actuarial": "Actuariële Wetenschappen",
+    "premade-linalg": "Lineaire Algebra",
   }
 };
 
