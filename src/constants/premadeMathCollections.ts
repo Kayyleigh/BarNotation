@@ -30,6 +30,7 @@ export const PREMADE_COLLECTIONS_RAW = [
       { id: "struc-8", latex: `\\text{}` },
       { id: "struc-9", latex: `\\underset{}{}` },
       { id: "struc-10", latex: `\\frac{}{}` },
+      { id: "struc-10", latex: `\\binom{}{}` },
       { id: "struc-11", latex: `\\actsymb[][]{}{}[]` },
       { id: "struc-12", latex: `_{}^{}{}_{}^{}` },
       { id: "struc-13", latex: `⌈{}⌉` },
