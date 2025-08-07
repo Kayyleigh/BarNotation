@@ -257,7 +257,6 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
 
   const getCollectionDisplayName = (collection: LibraryCollection): string => {
     if (collection.isPremade) {
-      console.log("Premade", collection.id, ":", collection.isPremade)
       const key = "premadeCollections." + collection.id
       return t(key);
     }

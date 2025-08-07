@@ -23,7 +23,6 @@ export type StructureNode =
   | OverUndersetNode
   | ArrowNode
   | GroupNode
-  | BinomCoefficientNode
   | VectorNode
   | MatrixNode
   | CasesNode
@@ -49,7 +48,6 @@ export type NodeType =
   | "overunderset"
   | "decorated"
   | "arrow"
-  | "binom"
   | "matrix"
   | "vector"
   | "cases";
@@ -92,8 +90,11 @@ export interface InlineContainerNode extends BaseNode {
   children: StructureNode[];
 }
 
+export type FractionVariant = "frac" | "binom";
+
 export interface FractionNode extends BaseNode {
   type: "fraction";
+  variant: FractionVariant;
   numerator: InlineContainerNode;
   denominator: InlineContainerNode;
 }
@@ -164,14 +165,7 @@ export interface GroupNode extends BaseNode {
   bracketStyle: BracketStyle;
 }
 
-export interface BinomCoefficientNode extends BaseNode {
-  type: "binom";
-  top: InlineContainerNode;
-  bottom: InlineContainerNode;
-  // bracket style is rounded
-}
-
-export interface VectorNode extends BaseNode {
+export interface VectorNode extends BaseNode { //TODO maybe don't use -- Matrix can be vector if 1xn or mx1
   type: "vector";
   elements: InlineContainerNode[];
   bracketStyle: BracketStyle;
@@ -179,10 +173,13 @@ export interface VectorNode extends BaseNode {
   // Maybe enable diff style for L vs R
 }
 
+// types: matrix, pmatrix, bmatrix, Bmatrix, vmatrix, Vmatrix
+export type MatrixBracketStyle = "none" | "parenthesis" | "square" | "curly" | "vertical" | "double_vertical";
+
 export interface MatrixNode extends BaseNode {
   type: "matrix";
   rows: InlineContainerNode[][];
-  bracketStyle: BracketStyle;
+  bracketStyle: MatrixBracketStyle;
   // Maybe enable diff style for L vs R
 }
 
@@ -246,9 +243,6 @@ export const nodeToMathText = (node: MathNode): string => {
     case "arrow":
       //TODO
       return `Arrow(TODO)`;
-    case "binom":
-      //TODO
-      return `Binom(${nodeToMathText(node.top)}, ${nodeToMathText(node.bottom)})`;
     case "matrix":
       //TODO
       return `Matrix(TODO)`;

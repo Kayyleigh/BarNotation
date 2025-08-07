@@ -1,7 +1,7 @@
 // accentUtils.ts
 
 // Extract keys as a union type of accents/decorations:
-export type NodeDecoration = "tilde" | "hat" | "widehat" | "bar" | "ddot" | "mathring" | "angl" | "underline" | "joint" | "overline" | "underbrace";
+export type NodeDecoration = "tilde" | "hat" | "widehat" | "bar" | "ddot" | "mathring" | "angl" | "underline" | "joint" | "overline" | "underbrace" | "vec";
 
 export interface DecorationInfo {
   command: string;        // The LaTeX command string
@@ -20,6 +20,7 @@ export const decorationToLatexCommand: Record<NodeDecoration, DecorationInfo> = 
   joint: { command: "\\joint" }, 
   overline: { command: "\\overline" }, 
   underbrace: { command: "\\underbrace" }, 
+  vec: {command: "\\vec"},
 };
 
 export const decorationToLatexCommandInverse = Object.fromEntries(

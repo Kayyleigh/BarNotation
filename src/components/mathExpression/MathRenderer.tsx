@@ -18,6 +18,7 @@ import {
   renderNthRootNode,
   renderDecoratedNode,
   renderOverUndersetNode,
+  renderMatrixNode,
 } from "./MathRenderers";
 import type { CursorPosition } from "../../logic/cursor";
 import type { DropTarget } from "../layout/EditorWorkspace";
@@ -198,6 +199,9 @@ const InnerMathRenderer: React.FC<MathRendererProps> = ({
       break;
     case "styled":
       content = renderStyledNode(node, props);
+      break;
+    case "matrix":
+      content = renderMatrixNode(node, props);
       break;
     case "root-wrapper":
       content = renderRootWrapperNode(node, props);

@@ -40,3 +40,8 @@
 .commandLabel {
   flex-shrink: 0;
 }
+
+.highlightedText {
+  font-weight: bold;
+  color: var(--highlight-color, #007acc); /* customizable */
+}

@@ -1,4 +1,4 @@
-import { createBigOperator, createDecoratedNode, createFraction, createInlineContainer, createNthRoot, createOverUndersetNode, createStyledNode, createTextNode } from '../models/nodeFactories';
+import { createBigOperator, createDecoratedNode, createFraction, createInlineContainer, createMatrixNode, createNthRoot, createOverUndersetNode, createStyledNode, createTextNode } from '../models/nodeFactories';
 import type { InlineContainerNode, StructureNode, TextStyle } from '../models/mathNodeTypes';
 import { decorationToLatexCommand, type NodeDecoration, type DecorationInfo } from '../utils/accentUtils';
 
@@ -37,6 +37,15 @@ export const stylingOptions: SpecialSequence[] = [
   //TODO add the rest of the existing \\math<...>
 ];
 
+export const matrices: SpecialSequence[] = [
+  { sequence: "\\matrix ", createNode: () => createMatrixNode([[createInlineContainer(), createInlineContainer()], [createInlineContainer(), createInlineContainer()]], "none") },
+  { sequence: "\\pmatrix ", createNode: () => createMatrixNode([[createInlineContainer(), createInlineContainer()], [createInlineContainer(), createInlineContainer()]], "parenthesis") },
+  { sequence: "\\bmatrix ", createNode: () => createMatrixNode([[createInlineContainer(), createInlineContainer()], [createInlineContainer(), createInlineContainer()]], "square") },
+  { sequence: "\\Bmatrix ", createNode: () => createMatrixNode([[createInlineContainer(), createInlineContainer()], [createInlineContainer(), createInlineContainer()]], "curly") },
+  { sequence: "\\vmatrix ", createNode: () => createMatrixNode([[createInlineContainer(), createInlineContainer()], [createInlineContainer(), createInlineContainer()]], "vertical") },
+  { sequence: "\\Vmatrix ", createNode: () => createMatrixNode([[createInlineContainer(), createInlineContainer()], [createInlineContainer(), createInlineContainer()]], "double_vertical") },
+];
+
 export const nodeTransformationSequences: SpecialSequence[] = [ //TODO: rename to relevant
   {
     sequence: "\\sqrt ",
@@ -50,6 +59,15 @@ export const nodeTransformationSequences: SpecialSequence[] = [ //TODO: rename t
     createNode: () => createFraction(
       createInlineContainer(),
       createInlineContainer(),
+      "frac"
+    ),
+  },
+  {
+    sequence: "\\binom ",
+    createNode: () => createFraction(
+      createInlineContainer(),
+      createInlineContainer(),
+      "binom"
     ),
   },
 ]
@@ -281,8 +299,13 @@ export const otherSymbols: SpecialSequence[] = [
   { sequence: "\\infty ", createNode: () => createTextNode("∞", "\\infty ") },
   { sequence: "\\partial ", createNode: () => createTextNode("∂", "\\partial ") },
   { sequence: "\\nabla ", createNode: () => createTextNode("∇", "\\nabla ") },
-  { sequence: "\\cdots	", createNode: () => createTextNode("⋯", "\\cdots	") },
-  { sequence: "\\dotsm	", createNode: () => createTextNode("⋯", "\\dostm	") }, // TODO require amsmath package
+  { sequence: "\\cdots	", createNode: () => createTextNode("⋯", "\\cdots ") },
+  { sequence: "\\dotsm	", createNode: () => createTextNode("⋯", "\\dotsm ") }, // TODO require amsmath package
+  { sequence: "\\quad ", createNode: () => createTextNode("\t", "\\quad ") },
+  { sequence: "\\ldots	", createNode: () => createTextNode("…", "\\ldots ") }, 
+  { sequence: "\\ddots	", createNode: () => createTextNode("⋱", "\\ddots ") }, 
+  { sequence: "\\dots	", createNode: () => createTextNode("…", "\\dots ") }, 
+  { sequence: "\\vdots	", createNode: () => createTextNode("⋮", "\\vdots ") }, 
 ];
 
 export const standardFunctionNames: SpecialSequence[] = [
@@ -621,6 +644,7 @@ export const specialSequences: SpecialSequence[] = [
   ...stylingOptions,
   ...bigOperatorSequences,
   ...nodeTransformationSequences,
+  ...matrices,
 ];
 
 // --- Normalization Utility ---

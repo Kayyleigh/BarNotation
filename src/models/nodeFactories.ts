@@ -13,7 +13,6 @@ import type {
   MatrixNode,
   CasesNode,
   VectorNode,
-  BinomCoefficientNode,
   GroupNode,
   AccentKind,
   TextStyle,
@@ -24,6 +23,8 @@ import type {
   DecoratedNode,
   OverUndersetVariant,
   OverUndersetNode,
+  FractionVariant,
+  MatrixBracketStyle,
 } from "./mathNodeTypes"; // Adjust imports to your setup
 import type { BracketStyle } from "../utils/bracketUtils";
 import type { NodeDecoration } from "../utils/accentUtils";
@@ -54,10 +55,12 @@ export const createMultilineEquation = (children: RootWrapperNode[] = [createRoo
 
 export const createFraction = (
   numerator: InlineContainerNode = createInlineContainer(),
-  denominator: InlineContainerNode = createInlineContainer()
+  denominator: InlineContainerNode = createInlineContainer(),
+  variant: FractionVariant = "frac"
 ): FractionNode => ({
   id: uuidv4(),
   type: "fraction",
+  variant,
   numerator,
   denominator,
 });
@@ -160,17 +163,7 @@ export const createGroupNode = (
 
 // ========== Composite Layout Structures ==========
 
-export const createBinomCoefficientNode = (
-  top: InlineContainerNode = createInlineContainer(),
-  bottom: InlineContainerNode = createInlineContainer()
-): BinomCoefficientNode => ({
-  id: uuidv4(),
-  type: "binom",
-  top,
-  bottom,
-});
-
-export const createVectorNode = (
+export const createVectorNode = ( //TODO remove
   elements: InlineContainerNode[] = [createInlineContainer()],
   bracketStyle: BracketStyle = "parentheses",
   orientation: "horizontal" | "vertical" = "vertical"
@@ -184,7 +177,7 @@ export const createVectorNode = (
 
 export const createMatrixNode = (
   rows: InlineContainerNode[][] = [[createInlineContainer()]],
-  bracketStyle: BracketStyle = "parentheses"
+  bracketStyle: MatrixBracketStyle
 ): MatrixNode => ({
   id: uuidv4(),
   type: "matrix",
