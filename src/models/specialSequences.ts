@@ -1,4 +1,4 @@
-import { createBigOperator, createDecoratedNode, createFraction, createInlineContainer, createNthRoot, createOverUndersetNode, createStyledNode, createTextNode } from '../models/nodeFactories';
+import { createBigOperator, createDecoratedNode, createFraction, createInlineContainer, createMatrixNode, createNthRoot, createOverUndersetNode, createStyledNode, createTextNode } from '../models/nodeFactories';
 import type { InlineContainerNode, StructureNode, TextStyle } from '../models/mathNodeTypes';
 import { decorationToLatexCommand, type NodeDecoration, type DecorationInfo } from '../utils/accentUtils';
 
@@ -35,6 +35,15 @@ export const stylingOptions: SpecialSequence[] = [
   makeStyledSequence("\\boldsymbol ", { fontStyling: { fontStyle: "bold", fontStyleAlias: "\\boldsymbol" } }),
   makeStyledSequence("\\mathcal ", { fontStyling: { fontStyle: "calligraphic", fontStyleAlias: "\\mathcal" } }),
   //TODO add the rest of the existing \\math<...>
+];
+
+export const matrices: SpecialSequence[] = [
+  { sequence: "\\matrix ", createNode: () => createMatrixNode([[createInlineContainer(), createInlineContainer()], [createInlineContainer(), createInlineContainer()]], "none") },
+  { sequence: "\\pmatrix ", createNode: () => createMatrixNode([[createInlineContainer(), createInlineContainer()], [createInlineContainer(), createInlineContainer()]], "parenthesis") },
+  { sequence: "\\bmatrix ", createNode: () => createMatrixNode([[createInlineContainer(), createInlineContainer()], [createInlineContainer(), createInlineContainer()]], "square") },
+  { sequence: "\\Bmatrix ", createNode: () => createMatrixNode([[createInlineContainer(), createInlineContainer()], [createInlineContainer(), createInlineContainer()]], "curly") },
+  { sequence: "\\vmatrix ", createNode: () => createMatrixNode([[createInlineContainer(), createInlineContainer()], [createInlineContainer(), createInlineContainer()]], "vertical") },
+  { sequence: "\\Vmatrix ", createNode: () => createMatrixNode([[createInlineContainer(), createInlineContainer()], [createInlineContainer(), createInlineContainer()]], "double_vertical") },
 ];
 
 export const nodeTransformationSequences: SpecialSequence[] = [ //TODO: rename to relevant
@@ -635,6 +644,7 @@ export const specialSequences: SpecialSequence[] = [
   ...stylingOptions,
   ...bigOperatorSequences,
   ...nodeTransformationSequences,
+  ...matrices,
 ];
 
 // --- Normalization Utility ---
