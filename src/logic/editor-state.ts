@@ -1,5 +1,5 @@
 import { type CursorPosition, createInitialCursor } from "./cursor";
-import { type RootWrapperNode } from "../models/types";
+import { type RootWrapperNode } from "../models/mathNodeTypes";
 
 export interface EditorState {
   rootNode: RootWrapperNode;

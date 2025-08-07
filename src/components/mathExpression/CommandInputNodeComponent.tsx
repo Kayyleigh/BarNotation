@@ -3,16 +3,42 @@ import React, {
   useState,
   useRef,
   useLayoutEffect,
-  useMemo
+  useMemo,
+  type JSX
 } from "react";
 import clsx from "clsx";
 import ReactDOM from "react-dom";
 import styles from "./CommandInputNodeComponent.module.css";
 import { specialSequences } from "../../models/specialSequences";
-import { type TextNode, type CommandInputNode, type MathNode } from "../../models/types";
+import { type TextNode, type CommandInputNode, type MathNode } from "../../models/mathNodeTypes";
 import MathView from "./MathView";
 import { renderContainerChildren } from "./MathRenderers";
 import type { BaseRenderProps, MathRendererProps } from "./MathRenderer";
+
+function getHighlightedSequence(seq: string, input: string): JSX.Element {
+  const seqBody = seq.startsWith("\\") ? seq.slice(1) : seq;
+  const inputBody = input.startsWith("\\") ? input.slice(1) : input;
+
+  const lowerSeq = seqBody.toLowerCase();
+  const lowerInput = inputBody.toLowerCase();
+
+  const matchIndex = lowerSeq.indexOf(lowerInput);
+
+  if (matchIndex === -1 || inputBody === "") {
+    return <>{seq}</>; // No match, return as-is
+  }
+
+  return (
+    <>
+      {"\\"}
+      {seqBody.slice(0, matchIndex)}
+      <span className={styles.highlightedText}>
+        {seqBody.slice(matchIndex, matchIndex + inputBody.length)}
+      </span>
+      {seqBody.slice(matchIndex + inputBody.length)}
+    </>
+  );
+}
 
 interface Props {
   node: CommandInputNode;
@@ -67,12 +93,16 @@ export function CommandInputNodeComponent({
       setShowDropdown(false);
       return;
     }
-
-    const lowerInput = inputString.toLowerCase();
+  
+    // Get the part after the backslash, or the full input
+    const inputCommand = inputString.replace("\\", "").toLowerCase();
+  
     const matches = specialSequences
       .map(seq => seq.sequence)
-      .filter(seq => seq.toLowerCase().startsWith(lowerInput));
-
+      .filter(seq =>
+        seq.replace("\\", "").toLowerCase().includes(inputCommand)
+      );
+  
     setMatching(matches);
     setHighlight(0);
     setShowDropdown(matches.length > 0);
@@ -105,7 +135,7 @@ export function CommandInputNodeComponent({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-  
+
   useEffect(() => {
     if ((isSelected || isCursorJustAfter) && anchorRef.current) {
       anchorRef.current.focus();
@@ -177,7 +207,9 @@ export function CommandInputNodeComponent({
                 }}
               >
                 <div className={styles.autocompleteRow}>
-                  <span className={styles.commandLabel}>{seq}</span>
+                  <span className={styles.commandLabel}>
+                    {getHighlightedSequence(seq, inputString)}
+                  </span>
                   <div className={styles.mathPreview}>
                     {previews[seq] && (
                       <MathView node={previews[seq]} showPlaceHolder={true} />

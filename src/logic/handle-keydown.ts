@@ -2,8 +2,9 @@ import type { EditorState } from "./editor-state";
 import { handleArrowLeft, handleArrowRight } from "./navigation";
 import { handleBracketInsert, handleCharacterInsert } from "./insertion";
 import { handleBackspace } from "./deletion";
-import { transformToActsymbNode, transformToFraction, transformToSubSupNode, transformToCustomAccent } from "./transformations";
+import { transformToActsymbNode, transformToFraction, transformToSubSupNode, transformToOverUnderset } from "./transformations";
 import { getStyleFromSymbol, isClosingBracket, isOpeningBracket } from "../utils/bracketUtils";
+import { handleCtrlArrow } from "./matrix-manipulation";
 
 export function handleKeyDown(
   e: React.KeyboardEvent,
@@ -24,6 +25,7 @@ export function handleKeyDown(
 
   // === Double-key events ===
 
+  // Actuarial symbol
   if (e.altKey && e.code === 'Digit6') {
     e.preventDefault();
     return transformToActsymbNode(state, "supRight");
@@ -34,19 +36,49 @@ export function handleKeyDown(
     return transformToActsymbNode(state, "subRight");
   }
 
-  // === Double-key events ===
+  // Matrix: Ctrl + Arrow to insert row/column
+  if (e.ctrlKey && !e.shiftKey) {
+    if (e.key === "ArrowUp") {
+      e.preventDefault();
+      return handleCtrlArrow(state, "up");
+    }
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      return handleCtrlArrow(state, "down");
+    }
+    if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      return handleCtrlArrow(state, "left");
+    }
+    if (e.key === "ArrowRight") {
+      e.preventDefault();
+      return handleCtrlArrow(state, "right");
+    }
+  }
 
+  // Over/Underset
   if (e.shiftKey && e.key === "ArrowUp") {
     e.preventDefault();
-    return transformToCustomAccent(state, "above");
+    return transformToOverUnderset(state, "overunderset", "above");
   }
 
   if (e.shiftKey && e.key === "ArrowDown") {
     e.preventDefault();
-    return transformToCustomAccent(state, "below");
+    return transformToOverUnderset(state, "overunderset", "below");
   }
 
+  // nth top/bottom
+  if (e.altKey && e.key === "ArrowUp") {
+    e.preventDefault();
+    return transformToOverUnderset(state, "nthtopbottom", "above");
+  }
 
+  if (e.altKey && e.key === "ArrowDown") {
+    e.preventDefault();
+    return transformToOverUnderset(state, "nthtopbottom", "below");
+  }
+
+  // Regular childed 
   if (e.shiftKey && e.code === 'Digit6') {
     e.preventDefault();    
     return transformToSubSupNode(state, "supRight");

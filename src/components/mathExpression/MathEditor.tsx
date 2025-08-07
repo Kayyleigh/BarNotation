@@ -18,7 +18,7 @@ import type { CursorPosition } from "../../logic/cursor";
 import type { DropTarget } from "../layout/EditorWorkspace";
 import type { DragSource } from "../../hooks/mathDrag/DragContext";
 import { useDragContext } from "../../hooks/mathDrag/useDragContext";
-import type { TextStyle } from "../../models/types";
+import type { TextStyle } from "../../models/mathNodeTypes";
 import { useHover } from "../../hooks/mathHover/useHover";
 
 interface MathEditorProps {

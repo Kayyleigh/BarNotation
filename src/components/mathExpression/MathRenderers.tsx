@@ -17,7 +17,7 @@
 //   BigOperatorNode,
 //   RootWrapperNode,
 //   NthRootNode,
-// } from '../../models/types';
+// } from '../../models/mathNodeTypes';
 // import clsx from 'clsx';
 // import type { CursorPosition } from '../../logic/cursor';
 // import '../../styles/math-node.css';
@@ -571,7 +571,10 @@ import type {
   RootWrapperNode,
   MathNode,
   TextStyle,
-} from "../../models/types";
+  DecoratedNode,
+  OverUndersetNode,
+  MatrixNode,
+} from "../../models/mathNodeTypes";
 import '../../styles/math-node.css';
 import '../../styles/accents.css';
 import { MathRenderer, type BaseRenderProps, type MathRendererProps } from "./MathRenderer";
@@ -580,8 +583,7 @@ import { getIsHovered, handleMouseEnter, handleMouseLeave } from "../../utils/ma
 import DummyStartNodeRenderer from "./DummyStartNodeRenderer";
 import { CommandInputNodeComponent } from "./CommandInputNodeComponent";
 import { specialSequences } from "../../models/specialSequences";
-import { deleteNodeById, insertNodeAtIndex } from "../../logic/node-manipulation";
-import { handleCharacterInsert, replaceCommandWithNode } from "../../logic/insertion";
+import { replaceCommandWithNode } from "../../logic/insertion";
 
 // Helper to get CSS classes for font styles
 function getStyleClass(style: TextStyle) {
@@ -746,64 +748,6 @@ export function renderMultiDigitNode(
   );
 }
 
-// // 3. Command Input Node
-// export function renderCommandInputNode(
-//   node: CommandInputNode,
-//   baseProps: BaseRenderProps & MathRendererProps
-// ): React.ReactNode {
-//   const styleClass = getStyleClass(baseProps.inheritedStyle);
-//   return (
-//     <span
-//       data-nodeid={node.id}
-//       className={clsx("math-node", "type-command-input", styleClass, { hovered: getIsHovered(node, baseProps.hoverPath) })}
-//       style={getInlineStyle(baseProps.inheritedStyle)}
-//       onMouseEnter={() => handleMouseEnter([...baseProps.ancestorIds], baseProps.setHoverPath)}
-//       onMouseLeave={(e) =>
-//         handleMouseLeave(e, baseProps.ancestorIds, baseProps.setHoverPath)
-//       }
-//     >
-//       {renderContainerChildren(node.children, {
-//         ...baseProps,
-//         containerId: node.id,
-//         inheritedStyle: { 
-//           fontStyling: { 
-//             fontStyle: 'command', 
-//             fontStyleAlias: "" 
-//           } 
-//         }
-//       })}
-//     </span>
-//   );
-// }
-
-// ALSO WORKS; MAY BE MORE EFFICIENT
-// export function renderCommandInputNode(
-//   node: CommandInputNode,
-//   baseProps: BaseRenderProps & MathRendererProps
-// ): React.ReactNode {
-//   const isSelected = baseProps.cursor?.containerId === node.id;
-
-//   return (
-//     <CommandInputNodeComponent
-//       node={node}
-//       isSelected={isSelected}
-//       onSelectSuggestion={(sequence) => {
-//         const match = specialSequences.find(seq => seq.sequence === sequence);
-//         if (!match) return;
-
-//         const transformedNode = match.createNode();
-//         const stateWithoutCmd = deleteNodeById(baseProps.editorState, node.id);
-//         const stateWithTargetNode = insertNodeAtIndex(stateWithoutCmd, baseProps.containerId, baseProps.index, transformedNode);
-
-//         baseProps.updateEditorState(stateWithTargetNode);
-//         console.log(stateWithTargetNode.cursor, stateWithTargetNode.rootNode)
-//       }}
-//       baseProps={baseProps}
-//     />
-//   );
-// }
-
-
 export function renderCommandInputNode(
   node: CommandInputNode,
   baseProps: BaseRenderProps & MathRendererProps
@@ -925,21 +869,38 @@ export function renderFractionNode(
     index,
   });
 
+  const content = (
+    <span className="fraction">
+      <span className="numerator">
+        <MathRenderer {...getChildProps(node.numerator, 0)} />
+      </span>
+      {node.variant === "frac" && <div className="line" />}
+      <span className="denominator">
+        <MathRenderer {...getChildProps(node.denominator, 1)} />
+      </span>
+    </span>
+  );
+
   return (
     <span
       data-nodeid={node.id}
-      className={clsx("math-node", "type-fraction", styleClass, { hovered: isHovered })}
+      className={clsx("math-node", "type-fraction", styleClass, {
+        hovered: isHovered,
+        "is-binom": node.variant === "binom",
+      })}
       style={getInlineStyle(inheritedStyle)}
       onMouseEnter={handleEnter}
       onMouseLeave={handleLeave}
     >
-      <span className="numerator">
-        <MathRenderer {...getChildProps(node.numerator, 0)} />
-      </span>
-      <div className="line"></div>
-      <span className="denominator">
-        <MathRenderer {...getChildProps(node.denominator, 1)} />
-      </span>
+      {node.variant === "binom" ? (
+        <>
+          <span className="binom-bracket left">(</span>
+          {content}
+          <span className="binom-bracket right">)</span>
+        </>
+      ) : (
+        content
+      )}
     </span>
   );
 }
@@ -1075,7 +1036,7 @@ export function renderChildedNode(
 }
 
 
-// 10. Accented Node (has base)
+// 10. Accented Node (has base) //TODO remove
 export function renderAccentedNode(
   node: AccentedNode,
   baseProps: BaseRenderProps & MathRendererProps
@@ -1160,6 +1121,145 @@ export function renderAccentedNode(
   );
 }
 
+// 10. OverUnderset Node (has base)
+export function renderOverUndersetNode(
+  node: OverUndersetNode,
+  baseProps: BaseRenderProps & MathRendererProps
+): React.ReactNode {
+  const styleClass = getStyleClass(baseProps.inheritedStyle);
+
+  const commonProps = {
+    cellId: baseProps.cellId,
+    isActive: baseProps.isActive,
+    cursor: baseProps.cursor,
+    hoverPath: baseProps.hoverPath,
+    onCursorChange: baseProps.onCursorChange,
+    setHoverPath: baseProps.setHoverPath,
+    inheritedStyle: baseProps.inheritedStyle,
+    onDropNode: baseProps.onDropNode,
+    showPlaceholder: baseProps.showPlaceholder,
+    editorState: baseProps.editorState,
+    updateEditorState: baseProps.updateEditorState
+  };
+
+  const updatedAncestors = [node.id, ...(baseProps.ancestorIds ?? [])];
+
+  return (
+    <span
+      data-nodeid={node.id}
+      className={clsx(
+        "math-node",
+        "type-accented",
+        styleClass,
+        { hovered: getIsHovered(node, baseProps.hoverPath) }
+      )}
+      style={getInlineStyle(baseProps.inheritedStyle)}
+      onClick={(e) => {
+        e.stopPropagation();
+        if (node.base.children.length === 0) {
+          baseProps.onCursorChange({ containerId: node.base.id, index: 0 });
+        }
+      }}
+      onMouseEnter={() => handleMouseEnter([...baseProps.ancestorIds], baseProps.setHoverPath)}
+      onMouseLeave={(e) =>
+        handleMouseLeave(e, updatedAncestors, baseProps.setHoverPath)
+      }
+    >
+      {node.position === "above" && (
+        <div className={clsx(node.variant, "accent-above")}>
+          <MathRenderer
+            node={node.content}
+            {...commonProps}
+            ancestorIds={updatedAncestors}
+            containerId={node.content.id}
+            index={0}
+          />
+        </div>
+      )}
+
+      <span className="accent-base">
+        <MathRenderer
+          node={node.base}
+          {...commonProps}
+          ancestorIds={updatedAncestors}
+          containerId={node.base.id}
+          index={0}
+        />
+      </span>
+
+      {node.position === "below" && (
+        <div className={clsx(node.variant, "accent-below")}>
+          <MathRenderer
+            node={node.content}
+            {...commonProps}
+            ancestorIds={updatedAncestors}
+            containerId={node.content.id}
+            index={0}
+          />
+        </div>
+      )}
+    </span>
+  );
+}
+
+// 10. Decorated Node (has base)
+export function renderDecoratedNode(
+  node: DecoratedNode,
+  baseProps: BaseRenderProps & MathRendererProps
+): React.ReactNode {
+  const styleClass = getStyleClass(baseProps.inheritedStyle);
+
+  const commonProps = {
+    cellId: baseProps.cellId,
+    isActive: baseProps.isActive,
+    cursor: baseProps.cursor,
+    hoverPath: baseProps.hoverPath,
+    onCursorChange: baseProps.onCursorChange,
+    setHoverPath: baseProps.setHoverPath,
+    inheritedStyle: baseProps.inheritedStyle,
+    onDropNode: baseProps.onDropNode,
+    showPlaceholder: baseProps.showPlaceholder,
+    editorState: baseProps.editorState,
+    updateEditorState: baseProps.updateEditorState
+  };
+
+  const updatedAncestors = [node.id, ...(baseProps.ancestorIds ?? [])];
+
+  return (
+    <span
+      data-nodeid={node.id}
+      className={clsx(
+        "math-node",
+        "type-accented",
+        `decoration-${node.decoration}`,
+        styleClass,
+        { hovered: getIsHovered(node, baseProps.hoverPath) }
+      )}
+      style={getInlineStyle(baseProps.inheritedStyle)}
+      onClick={(e) => {
+        e.stopPropagation();
+        if (node.base.children.length === 0) {
+          baseProps.onCursorChange({ containerId: node.base.id, index: 0 });
+        }
+      }}
+      onMouseEnter={() => handleMouseEnter([...baseProps.ancestorIds], baseProps.setHoverPath)}
+      onMouseLeave={(e) =>
+        handleMouseLeave(e, updatedAncestors, baseProps.setHoverPath)
+      }
+    >
+      <span className="accent-base">
+        <MathRenderer
+          node={node.base}
+          {...commonProps}
+          ancestorIds={updatedAncestors}
+          containerId={node.base.id}
+          index={0}
+        />
+      </span>
+    </span>
+  );
+}
+
 // 11. Styled Node (has child)
 export function renderStyledNode(
   node: StyledNode,
@@ -1200,6 +1300,95 @@ export function renderStyledNode(
       onMouseLeave={handleLeave}
     >
       <MathRenderer {...getChildProps(node.child, 0)} />
+    </span>
+  );
+}
+
+export function renderMatrixNode(
+  node: MatrixNode,
+  baseProps: BaseRenderProps & MathRendererProps
+): React.ReactNode {
+  const { inheritedStyle, ancestorIds, setHoverPath, hoverPath } = baseProps;
+  const styleClass = getStyleClass(inheritedStyle);
+  const isHovered = getIsHovered(node, hoverPath);
+  const bracketMap: Record<MatrixNode["bracketStyle"], [string, string]> = {
+    none: ["", ""],
+    parenthesis: ["(", ")"],
+    square: ["[", "]"],
+    curly: ["{", "}"],
+    vertical: ["|", "|"],
+    double_vertical: ["‖", "‖"],
+  };
+
+  const [leftBracket, rightBracket] = bracketMap[node.bracketStyle] ?? ["", ""];
+
+  const handleEnter = () => handleMouseEnter([...ancestorIds], setHoverPath);
+  const handleLeave = (e: React.MouseEvent) =>
+    handleMouseLeave(e, ancestorIds, setHoverPath);
+
+  const getCellProps = (
+    childNode: MathNode
+  ): MathRendererProps & BaseRenderProps => ({
+    ...baseProps,
+    node: childNode,
+    containerId: childNode.id,
+    index: 0,
+    inheritedStyle,
+  });
+
+  const scaleY = node.rows.length * 1.35;
+
+  // approximately nice-looking:
+  const shiftY = -47.5 * (1 - 1 / scaleY);
+
+  return (
+    <span
+      data-nodeid={node.id}
+      className={clsx("math-node", "type-matrix", styleClass, {
+        hovered: isHovered,
+        [`bracket-${node.bracketStyle}`]: node.bracketStyle !== "none",
+      })}
+      style={getInlineStyle(inheritedStyle)}
+      onMouseEnter={handleEnter}
+      onMouseLeave={handleLeave}
+    >
+      {leftBracket && (
+        <span
+          className="matrix-bracket left"
+          style={{
+            transform: `scale(1, ${scaleY}) translateY(${shiftY}%)`,
+            transformOrigin: "top left"
+          }}
+        >
+          {leftBracket}
+        </span>
+      )}
+      <span
+        className="matrix-content"
+        style={{
+          gridTemplateColumns: `repeat(${node.rows[0]?.length ?? 1}, auto)`,
+        }}
+      >
+        {node.rows.flatMap((row, rowIdx) =>
+          row.map((cell, colIdx) => (
+            <span key={`matrix-cell-${rowIdx}-${colIdx}`} className="matrix-cell">
+              <MathRenderer {...getCellProps(cell)} />
+            </span>
+          ))
+        )}
+      </span>
+
+      {rightBracket && (
+        <span
+          className="matrix-bracket right"
+          style={{
+            transform: `scale(1, ${scaleY}) translateY(${shiftY}%)`,
+            transformOrigin: "top left"
+          }}
+        >
+          {rightBracket}
+        </span>
+      )}
     </span>
   );
 }

@@ -212,7 +212,7 @@
 
 .mathScrollContainer {
   overflow-x: auto;
-  overflow-y: hidden;
+  overflow-y: auto;
   white-space: nowrap;
   width: 100%;
   display: block;

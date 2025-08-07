@@ -114,14 +114,29 @@ const en = {
     hotkeysModal: {
       title: "Keyboard Shortcuts",
       inputShortcuts: "Input Shortcuts",
+
+      // Childed/Actuarial
       subscript: "Make subscript",
       superscript: "Make superscript (exponent)",
       actuarialBL: "Make actuarial (bottom-left focus)",
       actuarialTL: "Make actuarial (top-left focus)",
       actuarialBR: "Make actuarial (bottom-right focus)",
       actuarialTR: "Make actuarial (top-right focus)",
+
+      // Overset/Underset
       underset: "Make underset",
       overset: "Make overset",
+
+      // Actuarial precedence
+      nthbottom: "Add precedence below (Actuarial)", //TODO NEW; ADD TO OTHER LANGUAGES 
+      nthtop: "Add precedence above (Actuarial)", //TODO NEW; ADD TO OTHER LANGUAGES 
+
+      // Matrix
+      insertMatrixRowBelow: "(Inside matrix) Insert row below", //TODO NEW; ADD TO OTHER LANGUAGES 
+      insertMatrixRowAbove: "(Inside matrix) Insert row above", //TODO NEW; ADD TO OTHER LANGUAGES 
+      insertMatrixColumnLeft: "(Inside matrix) Insert column left", //TODO NEW; ADD TO OTHER LANGUAGES 
+      insertMatrixColumnRight: "(Inside matrix) Insert column right", //TODO NEW; ADD TO OTHER LANGUAGES 
+      
       fraction: "Turn node into numerator of new fraction",
       structuralShortcuts: "Structural Shortcuts",
       rearrangeNodes: "Rearrange nodes",
@@ -334,6 +349,7 @@ const en = {
     "premade-probability": "Probability & Statistics",
     "greek-letters": "Greek Letters",
     "premade-actuarial": "Actuarial Science",
+    "premade-linalg": "Linear Algebra", //TODO NEW; ADD TO OTHER LANGUAGES 
   }
 };
 

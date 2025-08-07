@@ -9,8 +9,8 @@ export type MathNode =
   | InlineContainerNode
   | StructureNode;
 
-export type TextContainerNode = 
-  | MultiDigitNode 
+export type TextContainerNode =
+  | MultiDigitNode
   | CommandInputNode;
 
 export type StructureNode =
@@ -18,10 +18,11 @@ export type StructureNode =
   | NthRootNode
   | BigOperatorNode
   | ChildedNode
-  | AccentedNode
+  | AccentedNode //TODO remove
+  | DecoratedNode
+  | OverUndersetNode
   | ArrowNode
   | GroupNode
-  | BinomCoefficientNode
   | VectorNode
   | MatrixNode
   | CasesNode
@@ -43,9 +44,10 @@ export type NodeType =
   | "nth-root"
   | "big-operator"
   | "childed"
-  | "accented"
+  | "accented" // TODO remove
+  | "overunderset"
+  | "decorated"
   | "arrow"
-  | "binom"
   | "matrix"
   | "vector"
   | "cases";
@@ -88,8 +90,11 @@ export interface InlineContainerNode extends BaseNode {
   children: StructureNode[];
 }
 
+export type FractionVariant = "frac" | "binom";
+
 export interface FractionNode extends BaseNode {
   type: "fraction";
+  variant: FractionVariant;
   numerator: InlineContainerNode;
   denominator: InlineContainerNode;
 }
@@ -119,14 +124,32 @@ export interface ChildedNode extends BaseNode {
   supRight: InlineContainerNode;
 }
 
+// TODO REMOVE ONCE THE SPLIT ONES EXIST AND FUNCTION WELL
 export type AccentKind =
   | { type: "predefined"; decoration: NodeDecoration }  // e.g., "hat", "tilde", "overline"
   | { type: "custom"; content: InlineContainerNode; position: "above" | "below" };
 
+// TODO REMOVE
 export interface AccentedNode extends BaseNode {
   type: "accented";
   base: InlineContainerNode;
   accent: AccentKind;
+}
+
+export interface DecoratedNode extends BaseNode {
+  type: "decorated";
+  base: InlineContainerNode;
+  decoration: NodeDecoration;
+}
+
+export type OverUndersetVariant = "overunderset" | "nthtopbottom"; // for \underset{} and \overset{} vs. \iiitop, \ibottom, etc.
+
+export interface OverUndersetNode extends BaseNode {
+  type: "overunderset";
+  variant: OverUndersetVariant;
+  base: InlineContainerNode;
+  content: InlineContainerNode;
+  position: "above" | "below";
 }
 
 export interface ArrowNode extends BaseNode {
@@ -142,14 +165,7 @@ export interface GroupNode extends BaseNode {
   bracketStyle: BracketStyle;
 }
 
-export interface BinomCoefficientNode extends BaseNode {
-  type: "binom";
-  top: InlineContainerNode;
-  bottom: InlineContainerNode;
-  // bracket style is rounded
-}
-
-export interface VectorNode extends BaseNode {
+export interface VectorNode extends BaseNode { //TODO maybe don't use -- Matrix can be vector if 1xn or mx1
   type: "vector";
   elements: InlineContainerNode[];
   bracketStyle: BracketStyle;
@@ -157,10 +173,13 @@ export interface VectorNode extends BaseNode {
   // Maybe enable diff style for L vs R
 }
 
+// types: matrix, pmatrix, bmatrix, Bmatrix, vmatrix, Vmatrix
+export type MatrixBracketStyle = "none" | "parenthesis" | "square" | "curly" | "vertical" | "double_vertical";
+
 export interface MatrixNode extends BaseNode {
   type: "matrix";
   rows: InlineContainerNode[][];
-  bracketStyle: BracketStyle;
+  bracketStyle: MatrixBracketStyle;
   // Maybe enable diff style for L vs R
 }
 
@@ -194,7 +213,7 @@ export interface CommandInputNode extends BaseNode {
 
 // Helper function for stringifying MathNode
 export const nodeToMathText = (node: MathNode): string => {
-  switch(node.type) {
+  switch (node.type) {
     case "text":
       return `${node.content}`;
     case "multi-digit":
@@ -224,9 +243,6 @@ export const nodeToMathText = (node: MathNode): string => {
     case "arrow":
       //TODO
       return `Arrow(TODO)`;
-    case "binom":
-      //TODO
-      return `Binom(${nodeToMathText(node.top)}, ${nodeToMathText(node.bottom)})`;
     case "matrix":
       //TODO
       return `Matrix(TODO)`;

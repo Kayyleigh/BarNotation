@@ -5,13 +5,16 @@ import type {
   NthRootNode, 
   StructureNode, 
   ChildedNode, 
-  AccentedNode
-} from './types';
+  AccentedNode,
+  OverUndersetNode,
+  OverUndersetVariant
+} from './mathNodeTypes';
 import { generateId, createInlineContainer } from './nodeFactories';
 
 export const transformToFractionNode = (node: StructureNode): FractionNode => ({
   id: generateId(),
   type: 'fraction',
+  variant: 'frac',
   numerator: ensureInContainerNode(node),
   denominator: createInlineContainer(),
 });
@@ -25,6 +28,15 @@ export const transformToCustomAccentNode = (node: StructureNode, position: "abov
     content: createInlineContainer(),
     position
   }
+});
+
+export const transformtoOverUndersetNode = (node: StructureNode, variant: OverUndersetVariant = "overunderset", position: "above" | "below"): OverUndersetNode => ({
+  id: generateId(),
+  type: 'overunderset',
+  base: ensureInContainerNode(node),
+  content: createInlineContainer(),
+  variant,
+  position
 });
 
 export const transformToChildedNode = (node: StructureNode, variant: "subsup" | "actsymb" = "subsup"): ChildedNode => ({

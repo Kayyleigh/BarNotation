@@ -1,9 +1,9 @@
 import { type EditorState } from "./editor-state";
 import { findNodeById, updateNodeById } from "../utils/treeUtils";
-import { transformToCustomAccentNode, transformToFractionNode } from "../models/transformations";
+import { transformToCustomAccentNode, transformToFractionNode, transformtoOverUndersetNode } from "../models/transformations";
 import { type BracketStyle } from "../utils/bracketUtils";
-import { createChildedNode, createGroupNode, createInlineContainer } from "../models/nodeFactories";
-import type { InlineContainerNode } from "../models/types";
+import { createChildedNode, createGroupNode, createInlineContainer, generateId } from "../models/nodeFactories";
+import type { InlineContainerNode, MatrixNode, OverUndersetVariant } from "../models/mathNodeTypes";
 import type { CornerPosition } from "../utils/subsupUtils";
 import { nodeToLatex } from "../models/nodeToLatex";
 
@@ -37,7 +37,7 @@ export function transformToFraction(state: EditorState): EditorState {
   };
 }
 
-export function transformToCustomAccent(
+export function transformToCustomAccent( //TODO remove
   state: EditorState,
   position: "above" | "below"
 ): EditorState {
@@ -70,6 +70,40 @@ export function transformToCustomAccent(
     rootNode: updatedRoot,
     cursor: {
       containerId: accentedNode.accent.content.id,
+      index: 0,
+    },
+  };
+}
+
+export function transformToOverUnderset(
+  state: EditorState,
+  variant: OverUndersetVariant,
+  position: "above" | "below"
+): EditorState {
+  const container = findNodeById(state.rootNode, state.cursor.containerId);
+  if (!container || container.type !== "inline-container") return state;
+  const idx = state.cursor.index;
+  if (idx === 0) return state;
+
+  const base = container.children[idx - 1]; 
+
+  const overUndersetNode = transformtoOverUndersetNode(base, variant, position);
+  
+  const newChildren = [
+    ...container.children.slice(0, idx - 1),
+    overUndersetNode,
+    ...container.children.slice(idx),
+  ];
+
+  const updatedRoot = updateNodeById(state.rootNode, container.id, {
+    ...container,
+    children: newChildren,
+  });
+
+  return {
+    rootNode: updatedRoot,
+    cursor: {
+      containerId: overUndersetNode.content.id,
       index: 0,
     },
   };
@@ -166,5 +200,51 @@ export function transformToGroupNode(
       containerId: (side === 'open') ? groupNode.child.id : container.id, // inline container inside the GroupNode
       index: (side === 'open') ? 0 : startIndex + 1, //TODO: ideally know if should jump to end for after close is made
     },
+  };
+}
+
+function createEmptyMatrixCell(): InlineContainerNode {
+  return {
+    id: generateId(),
+    type: "inline-container",
+    children: [],
+  };
+}
+
+export function insertMatrixRow(matrix: MatrixNode, rowIndex: number): MatrixNode {
+  if (matrix.type !== "matrix") return matrix;
+
+  const numCols = matrix.rows[0]?.length ?? 0;
+  const newRow: InlineContainerNode[] = Array.from({ length: numCols }, () =>
+    createEmptyMatrixCell()
+  );
+
+  const newRows = [
+    ...matrix.rows.slice(0, rowIndex),
+    newRow,
+    ...matrix.rows.slice(rowIndex),
+  ];
+
+  return {
+    ...matrix,
+    rows: newRows,
+  };
+}
+
+export function insertMatrixColumn(matrix: MatrixNode, colIndex: number): MatrixNode {
+  if (matrix.type !== "matrix") return matrix;
+
+  const newRows = matrix.rows.map((row) => {
+    const newCell = createEmptyMatrixCell();
+    return [
+      ...row.slice(0, colIndex),
+      newCell,
+      ...row.slice(colIndex),
+    ];
+  });
+
+  return {
+    ...matrix,
+    rows: newRows,
   };
 }

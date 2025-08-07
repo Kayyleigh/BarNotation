@@ -1,7 +1,7 @@
 // components/mathExpression/MathRenderer.tsx
 import React, { useMemo } from "react";
 import clsx from "clsx";
-import type { MathNode, TextStyle } from "../../models/types";
+import type { MathNode, TextStyle } from "../../models/mathNodeTypes";
 import { useDragContext } from "../../hooks/mathDrag/useDragContext";
 import {
   renderTextNode,
@@ -16,6 +16,9 @@ import {
   renderBigOperatorNode,
   renderRootWrapperNode,
   renderNthRootNode,
+  renderDecoratedNode,
+  renderOverUndersetNode,
+  renderMatrixNode,
 } from "./MathRenderers";
 import type { CursorPosition } from "../../logic/cursor";
 import type { DropTarget } from "../layout/EditorWorkspace";
@@ -27,7 +30,7 @@ export type MathRendererProps = {
   cellId: string;
   isActive: boolean;
   cursor: CursorPosition;
-  hoverPath: string[]; 
+  hoverPath: string[];
   containerId: string;
   index: number;
   inheritedStyle: TextStyle;
@@ -49,7 +52,7 @@ export type BaseRenderProps = {
   containerId: string;
   index: number;
   cursor: CursorPosition;
-  hoverPath: string[]; 
+  hoverPath: string[];
   onCursorChange: (pos: CursorPosition) => void;
   setHoverPath: (path: string[]) => void;
   cellId: string;
@@ -188,8 +191,17 @@ const InnerMathRenderer: React.FC<MathRendererProps> = ({
     case "accented":
       content = renderAccentedNode(node, props);
       break;
+    case "decorated":
+      content = renderDecoratedNode(node, props);
+      break;
+    case "overunderset":
+      content = renderOverUndersetNode(node, props);
+      break;
     case "styled":
       content = renderStyledNode(node, props);
+      break;
+    case "matrix":
+      content = renderMatrixNode(node, props);
       break;
     case "root-wrapper":
       content = renderRootWrapperNode(node, props);

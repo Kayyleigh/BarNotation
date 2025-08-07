@@ -8,7 +8,7 @@ import { useEditorHistory } from "../../hooks/editorHistory/EditorHistoryContext
 import { nodeToLatex } from "../../models/nodeToLatex";
 import type { CellData, NoteMetadata } from "../../models/noteTypes";
 import styles from "./EditorWorkspace.module.css";
-import type { MathNode } from "../../models/types";
+import type { MathNode } from "../../models/mathNodeTypes";
 import ResizableSidebar from "./ResizableSidebar";
 import { useI18n } from "../../i18n/useI18n";
 
