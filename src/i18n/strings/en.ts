@@ -114,14 +114,29 @@ const en = {
     hotkeysModal: {
       title: "Keyboard Shortcuts",
       inputShortcuts: "Input Shortcuts",
+
+      // Childed/Actuarial
       subscript: "Make subscript",
       superscript: "Make superscript (exponent)",
       actuarialBL: "Make actuarial (bottom-left focus)",
       actuarialTL: "Make actuarial (top-left focus)",
       actuarialBR: "Make actuarial (bottom-right focus)",
       actuarialTR: "Make actuarial (top-right focus)",
+
+      // Overset/Underset
       underset: "Make underset",
       overset: "Make overset",
+
+      // Actuarial precedence
+      nthbottom: "Add precedence below (Actuarial)",
+      nthtop: "Add precedence above (Actuarial)",
+
+      // Matrix
+      insertMatrixRowBelow: "(Inside matrix) Insert row below",
+      insertMatrixRowAbove: "(Inside matrix) Insert row above",
+      insertMatrixColumnLeft: "(Inside matrix) Insert column left",
+      insertMatrixColumnRight: "(Inside matrix) Insert column right",
+      
       fraction: "Turn node into numerator of new fraction",
       structuralShortcuts: "Structural Shortcuts",
       rearrangeNodes: "Rearrange nodes",
