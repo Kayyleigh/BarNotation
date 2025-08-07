@@ -23,21 +23,21 @@ export const handleBackspace = (state: EditorState): EditorState => {
       // We're at the start → remove the whole node
       const parentContainer = findParentContainerAndIndex(state.rootNode, container.id);
       if (!parentContainer || parentContainer.container.type !== "inline-container") return state;
-  
+
       const parent = parentContainer.container;
       const indexInParent = parent.children.findIndex(c => c.id === container.id);
       if (indexInParent === -1) return state;
-  
+
       const newChildren = [
         ...parent.children.slice(0, indexInParent),
         ...parent.children.slice(indexInParent + 1),
       ];
-  
+
       const updatedRoot = updateNodeById(state.rootNode, parent.id, {
         ...parent,
         children: newChildren,
       });
-  
+
       return {
         rootNode: updatedRoot,
         cursor: {
@@ -47,7 +47,7 @@ export const handleBackspace = (state: EditorState): EditorState => {
       };
     }
 
-    if (cursor.index > 0) {  
+    if (cursor.index > 0) {
       // Delete last character in the custom container
       const childNodes = container.children;
       const updatedChildren = [...childNodes.slice(0, cursor.index - 1), ...childNodes.slice(cursor.index)];
@@ -55,20 +55,20 @@ export const handleBackspace = (state: EditorState): EditorState => {
         ...container,
         children: updatedChildren,
       };
-    
+
       const updatedRoot = updateNodeById(state.rootNode, container.id, updatedContainer);
-    
+
       // console.log(`You are at ${cursor.index} in ${container.type} with ${nodeToMathText(container)}`)
 
       // If new index is last of text container, move to parent
       if (cursor.index === container.children.length) {
         const parentContainer = findParentContainerAndIndex(state.rootNode, container.id);
-        
+
         if (!parentContainer) {
           console.warn(`${container.type} with ID ${container.id} has no parent container.`)
           return state;
         }
-        
+
         return {
           rootNode: updatedRoot,
           cursor: {
@@ -88,7 +88,7 @@ export const handleBackspace = (state: EditorState): EditorState => {
   }
 
   if (container.type !== "inline-container") return state;
-  
+
   const prevNode = container.children[cursor.index - 1];
 
   if (prevNode && (prevNode.type === "command-input" || prevNode.type === "multi-digit")) {
@@ -120,7 +120,7 @@ export const handleBackspace = (state: EditorState): EditorState => {
         if (parent.accent.type === 'custom') {
           if (key === "accent.content" && baseChild.type === "inline-container") {
             replacementChildren = baseChild.children;
-          } 
+          }
         }
         break;
       }
@@ -132,7 +132,7 @@ export const handleBackspace = (state: EditorState): EditorState => {
 
         if (key === "content" && baseChild.type === "inline-container") {
           replacementChildren = baseChild.children;
-        } 
+        }
         break;
       }
       case "fraction": {
@@ -141,7 +141,7 @@ export const handleBackspace = (state: EditorState): EditorState => {
 
         if (key === "numerator" && denominator.type === "inline-container") {
           replacementChildren = denominator.children;
-        } 
+        }
         else if (key === "denominator" && numerator.type === "inline-container") {
           replacementChildren = numerator.children;
         }
@@ -168,10 +168,27 @@ export const handleBackspace = (state: EditorState): EditorState => {
           replacementChildren = (parent.base as InlineContainerNode).children
         }
         else if (key != 'supLeft' && isEmptyNode(child)) {
-          console.log(`MAKE IT FEEL LIKE DELETE BUT ACTUALLY BACKSPACE`)
           return handleArrowLeft(state)
           //return state
         }
+        break;
+      }
+      case "matrix": {
+        const matrix = parent;
+
+        // Check if all cells are empty
+        const allCellsEmpty = matrix.rows.every((row) =>
+          row.every((cell) => isEmptyNode(cell))
+        );
+
+        // Only allow deletion if all cells are empty
+
+        if (allCellsEmpty) {
+          replacementChildren = [];
+        } else {
+          return handleArrowLeft(state);
+        }
+
         break;
       }
     }
@@ -180,30 +197,30 @@ export const handleBackspace = (state: EditorState): EditorState => {
       // Find grandparent inline-container to insert children into
       const grandParent = findParentContainerAndIndex(state.rootNode, parentInfo.parent.id);
       if (!grandParent || grandParent.container.type !== "inline-container") return state;
-    
+
       const grandParentContainer = grandParent.container as InlineContainerNode;
       const indexInGrandParent = grandParentContainer.children.findIndex((c) => c.id === parent.id);
       if (indexInGrandParent === -1) return state;
-    
+
       const newChildren = [
         ...grandParentContainer.children.slice(0, indexInGrandParent),
         ...replacementChildren,
         ...grandParentContainer.children.slice(indexInGrandParent + 1),
       ];
-    
+
       const insertedCount = replacementChildren.length;
-    
+
       // Decide cursor index: start or end of inserted
       const cursorIndex =
         key === "numerator"
           ? indexInGrandParent + 1 // end of numerator //TODO +0 if there is no empty Textnode at start of IC
           : indexInGrandParent + insertedCount; // start of denominator
-    
+
       const updatedRoot = updateNodeById(state.rootNode, grandParentContainer.id, {
         ...grandParentContainer,
         children: newChildren,
       });
-    
+
       return {
         rootNode: updatedRoot,
         cursor: {
@@ -232,20 +249,20 @@ export const handleBackspace = (state: EditorState): EditorState => {
   //const childToDelete = currentToDelete[order[order.length - 1]]
 
   //console.log(`${childToDelete}`)
-  if (currentToDelete.type !== "text" 
-    && currentToDelete.type !== "styled" 
+  if (currentToDelete.type !== "text"
+    && currentToDelete.type !== "styled"
     && (currentToDelete.type !== "big-operator" || !isEmptyNode(currentToDelete.lower) || !isEmptyNode(currentToDelete.upper))) {
     const simulatePrevState = handleArrowLeft(state)
 
     const children = getLogicalChildren(currentToDelete)
     const lastChild = children[children.length - 1]
 
-    console.log(lastChild?.type)    
-    
+    console.log(lastChild?.type)
+
     //TODO: handle brackets (revert)
 
     return handleBackspace(simulatePrevState)
-  } 
+  }
 
   // Standard deletion
   const updatedChildren = [
@@ -267,7 +284,7 @@ export const handleBackspace = (state: EditorState): EditorState => {
         containerId: container.id,
         index: cursor.index - 1,
       },
-    };    
+    };
   }
 
   return {

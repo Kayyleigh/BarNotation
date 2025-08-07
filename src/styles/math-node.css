@@ -508,13 +508,13 @@
 
 .matrix-bracket {
   color: var(--math-color-matrix-brackets);
-  font-size: 1.2em;
-  padding: 0 0.2em;
+  font-size: 1.3em;
+  padding: 0;
 }
 
 .matrix-content {
   display: grid;
-  gap: 0.2em; /* Space between cells */
+  gap: 0.05em 0.5em; /* Space between cells */
 }
 
 .matrix-row {
@@ -528,5 +528,5 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 0.1em 0.3em;
+  padding: 0.1em 0em;
 }
