@@ -1363,24 +1363,28 @@ export function renderMatrixNode(
           {leftBracket}
         </span>
       )}
-      <span className="matrix-content">
-        {node.rows.map((row, rowIdx) => (
-          <span key={`matrix-row-${rowIdx}`} className="matrix-row">
-            {row.map((cell, colIdx) => (
-              <span key={`matrix-cell-${rowIdx}-${colIdx}`} className="matrix-cell">
-                <MathRenderer {...getCellProps(cell)} />
-              </span>
-            ))}
-          </span>
-        ))}
+      <span
+        className="matrix-content"
+        style={{
+          gridTemplateColumns: `repeat(${node.rows[0]?.length ?? 1}, auto)`,
+        }}
+      >
+        {node.rows.flatMap((row, rowIdx) =>
+          row.map((cell, colIdx) => (
+            <span key={`matrix-cell-${rowIdx}-${colIdx}`} className="matrix-cell">
+              <MathRenderer {...getCellProps(cell)} />
+            </span>
+          ))
+        )}
       </span>
 
       {rightBracket && (
         <span
           className="matrix-bracket right"
-          style={{ 
-            transform: `scale(1, ${scaleY}) translateY(${shiftY}%)`, 
-            transformOrigin: "top left" }}
+          style={{
+            transform: `scale(1, ${scaleY}) translateY(${shiftY}%)`,
+            transformOrigin: "top left"
+          }}
         >
           {rightBracket}
         </span>
