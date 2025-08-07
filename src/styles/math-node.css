@@ -509,7 +509,7 @@
 .matrix-bracket {
   color: var(--math-color-matrix-brackets);
   font-size: 1.3em;
-  padding: 0;
+  padding: 0 0.2em;
 }
 
 .matrix-content {

@@ -175,21 +175,87 @@ export const handleBackspace = (state: EditorState): EditorState => {
       }
       case "matrix": {
         const matrix = parent;
-
-        // Check if all cells are empty
-        const allCellsEmpty = matrix.rows.every((row) =>
-          row.every((cell) => isEmptyNode(cell))
-        );
-
-        // Only allow deletion if all cells are empty
-
-        if (allCellsEmpty) {
-          replacementChildren = [];
-        } else {
-          return handleArrowLeft(state);
+      
+        // Try to extract row and column indices from the key
+        const match = key.match(/^rows\[(\d+)\]\[(\d+)\]$/);
+        if (!match) {
+          console.warn("Could not parse matrix cell key:", key);
+          return state;
         }
-
-        break;
+      
+        const rowIndex = parseInt(match[1], 10);
+        const colIndex = parseInt(match[2], 10);
+        const cell = matrix.rows?.[rowIndex]?.[colIndex];
+      
+        if (!cell) {
+          console.warn("Matrix cell not found at position:", key);
+          return state;
+        }
+      
+        const allCellsEmpty = matrix.rows.every(row =>
+          row.every(isEmptyNode)
+        );
+      
+        if (allCellsEmpty) {
+          // Remove the matrix entirely
+          replacementChildren = [];
+          break;
+        }
+      
+        const rowIsEmpty = matrix.rows[rowIndex].every(isEmptyNode);
+        if (rowIsEmpty && matrix.rows.length > 1) {
+          const newRows = [
+            ...matrix.rows.slice(0, rowIndex),
+            ...matrix.rows.slice(rowIndex + 1),
+          ];
+      
+          const updatedMatrix = {
+            ...matrix,
+            rows: newRows,
+          };
+      
+          const newRow = newRows[Math.max(0, rowIndex - 1)];
+          const fallbackCol = Math.min(colIndex, newRow.length - 1);
+          const fallbackCell = newRow[fallbackCol];
+      
+          const updatedRoot = updateNodeById(state.rootNode, matrix.id, updatedMatrix);
+      
+          return {
+            rootNode: updatedRoot,
+            cursor: {
+              containerId: fallbackCell.id,
+              index: 0,
+            },
+          };
+        }
+      
+        const columnIsEmpty = matrix.rows.every(row => isEmptyNode(row[colIndex]));
+        if (columnIsEmpty && matrix.rows[0].length > 1) {
+          const newRows = matrix.rows.map(row =>
+            [...row.slice(0, colIndex), ...row.slice(colIndex + 1)]
+          );
+      
+          const updatedMatrix = {
+            ...matrix,
+            rows: newRows,
+          };
+      
+          const fallbackRow = newRows[rowIndex] ?? newRows[newRows.length - 1];
+          const fallbackCol = Math.max(0, colIndex - 1);
+          const fallbackCell = fallbackRow[fallbackCol];
+      
+          const updatedRoot = updateNodeById(state.rootNode, matrix.id, updatedMatrix);
+      
+          return {
+            rootNode: updatedRoot,
+            cursor: {
+              containerId: fallbackCell.id,
+              index: 0,
+            },
+          };
+        }
+      
+        return handleArrowLeft(state);
       }
     }
 
