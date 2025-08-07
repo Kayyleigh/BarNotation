@@ -64,7 +64,7 @@ BarNotation enables users to build their notes as a sequence of "cells", either 
   - Drag math snippets directly into external LaTeX editors like [Overleaf](https://www.overleaf.com/)
   - Drag raw LaTeX directly into the math library to obtain the corresponding structured math
 - **Multilingual support**:
-  - Set the app to English, Dutch, or Czech! More languages will be added later!
+  - Set the app to English, Dutch, French, or Czech! More languages will be added later!
 
 ---
 
@@ -208,7 +208,7 @@ Toggle math coloring, author defaults, and library reuse visibility. Light mode 
   <img src="docs/readme-images/tutorial-26072025/settings-modal.gif" alt="Settings panel showing various customization options" width="700"/>
 </p>
 
-As of 27/07/2025 there is also a dropdown to switch between languages! Currently, only English, Dutch and Czech are supported, but I plan to add more soon.
+As of 27/07/2025 there is also a dropdown to switch between languages! Currently, only English, Dutch, French and Czech are supported, but I plan to add more soon.
 
 > [!Note]
 > The app is completely offline and local. Thus, the "Default author name" is not an account name, nor will it ever be visible to anyone else than yourself. It is purely there to auto-fill the "author" metadata field of notebooks you create after changing the name.   
@@ -405,7 +405,7 @@ The app is built in **React** with **TypeScript** and uses **Vite** as the build
       - [`el.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/i18n/strings/el.ts) — Greek (NOT YET IMPLEMENTED)
       - [`en.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/i18n/strings/en.ts) — English
       - [`es.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/i18n/strings/es.ts) — Spanish (NOT YET IMPLEMENTED)
-      - [`fr.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/i18n/strings/fr.ts) — French (NOT YET IMPLEMENTED)
+      - [`fr.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/i18n/strings/fr.ts) — French
       - [`nl.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/i18n/strings/nl.ts) — Dutch
       - [`ro.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/i18n/strings/ro.ts) — Romanian (NOT YET IMPLEMENTED)
       - [`sk.ts`](https://github.com/Kayyleigh/BarNotation/blob/main/src/i18n/strings/sk.ts) — Slovak (NOT YET IMPLEMENTED)
@@ -548,6 +548,7 @@ Find the instructions to contribute [here](CONTRIBUTING.md).
 A special thanks to my friends who have contributed to BarNotation ❤️
 
 - Czech translations: [Daniel M.](https://github.com/BlekDok)
+- French translations: [Mana](https://github.com/mnmred)
 
 ---
 
