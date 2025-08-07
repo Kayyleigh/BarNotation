@@ -2,8 +2,9 @@ import type { EditorState } from "./editor-state";
 import { handleArrowLeft, handleArrowRight } from "./navigation";
 import { handleBracketInsert, handleCharacterInsert } from "./insertion";
 import { handleBackspace } from "./deletion";
-import { transformToActsymbNode, transformToFraction, transformToSubSupNode, transformToOverUnderset, transformToCustomAccent } from "./transformations";
+import { transformToActsymbNode, transformToFraction, transformToSubSupNode, transformToOverUnderset } from "./transformations";
 import { getStyleFromSymbol, isClosingBracket, isOpeningBracket } from "../utils/bracketUtils";
+import { handleCtrlArrow } from "./matrix-manipulation";
 
 export function handleKeyDown(
   e: React.KeyboardEvent,
@@ -35,15 +36,24 @@ export function handleKeyDown(
     return transformToActsymbNode(state, "subRight");
   }
 
-  // TODO remove these 2; just for testing
-  if (e.ctrlKey && e.key === "ArrowUp") {
-    e.preventDefault();
-    return transformToCustomAccent(state, "above");
-  }
-
-  if (e.ctrlKey && e.key === "ArrowDown") {
-    e.preventDefault();
-    return transformToCustomAccent(state, "below");
+  // Matrix: Ctrl + Arrow to insert row/column
+  if (e.ctrlKey && !e.shiftKey) {
+    if (e.key === "ArrowUp") {
+      e.preventDefault();
+      return handleCtrlArrow(state, "up");
+    }
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      return handleCtrlArrow(state, "down");
+    }
+    if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      return handleCtrlArrow(state, "left");
+    }
+    if (e.key === "ArrowRight") {
+      e.preventDefault();
+      return handleCtrlArrow(state, "right");
+    }
   }
 
   // Over/Underset

@@ -2,8 +2,8 @@ import { type EditorState } from "./editor-state";
 import { findNodeById, updateNodeById } from "../utils/treeUtils";
 import { transformToCustomAccentNode, transformToFractionNode, transformtoOverUndersetNode } from "../models/transformations";
 import { type BracketStyle } from "../utils/bracketUtils";
-import { createChildedNode, createGroupNode, createInlineContainer } from "../models/nodeFactories";
-import type { InlineContainerNode, OverUndersetVariant } from "../models/mathNodeTypes";
+import { createChildedNode, createGroupNode, createInlineContainer, generateId } from "../models/nodeFactories";
+import type { InlineContainerNode, MatrixNode, OverUndersetVariant } from "../models/mathNodeTypes";
 import type { CornerPosition } from "../utils/subsupUtils";
 import { nodeToLatex } from "../models/nodeToLatex";
 
@@ -200,5 +200,51 @@ export function transformToGroupNode(
       containerId: (side === 'open') ? groupNode.child.id : container.id, // inline container inside the GroupNode
       index: (side === 'open') ? 0 : startIndex + 1, //TODO: ideally know if should jump to end for after close is made
     },
+  };
+}
+
+function createEmptyMatrixCell(): InlineContainerNode {
+  return {
+    id: generateId(),
+    type: "inline-container",
+    children: [],
+  };
+}
+
+export function insertMatrixRow(matrix: MatrixNode, rowIndex: number): MatrixNode {
+  if (matrix.type !== "matrix") return matrix;
+
+  const numCols = matrix.rows[0]?.length ?? 0;
+  const newRow: InlineContainerNode[] = Array.from({ length: numCols }, () =>
+    createEmptyMatrixCell()
+  );
+
+  const newRows = [
+    ...matrix.rows.slice(0, rowIndex),
+    newRow,
+    ...matrix.rows.slice(rowIndex),
+  ];
+
+  return {
+    ...matrix,
+    rows: newRows,
+  };
+}
+
+export function insertMatrixColumn(matrix: MatrixNode, colIndex: number): MatrixNode {
+  if (matrix.type !== "matrix") return matrix;
+
+  const newRows = matrix.rows.map((row) => {
+    const newCell = createEmptyMatrixCell();
+    return [
+      ...row.slice(0, colIndex),
+      newCell,
+      ...row.slice(colIndex),
+    ];
+  });
+
+  return {
+    ...matrix,
+    rows: newRows,
   };
 }

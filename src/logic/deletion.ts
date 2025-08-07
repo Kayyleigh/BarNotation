@@ -224,7 +224,7 @@ export const handleBackspace = (state: EditorState): EditorState => {
             rootNode: updatedRoot,
             cursor: {
               containerId: fallbackCell.id,
-              index: 0,
+              index: fallbackCell.children.length, 
             },
           };
         }
@@ -250,7 +250,7 @@ export const handleBackspace = (state: EditorState): EditorState => {
             rootNode: updatedRoot,
             cursor: {
               containerId: fallbackCell.id,
-              index: 0,
+              index: fallbackCell.children.length,
             },
           };
         }
