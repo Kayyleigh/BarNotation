@@ -5,13 +5,12 @@ import { specialSequences } from "../models/specialSequences";
 import { type InlineContainerNode, type MathNode, type TextNode } from "../models/mathNodeTypes";
 import { getCloseSymbol, getOpenSymbol, getStyleFromSymbol, isClosingBracket, isOpeningBracket, type BracketStyle } from "../utils/bracketUtils";
 import { transformToGroupNode } from "./transformations";
-import { deleteNodeById, insertNodeAtIndex } from "./node-manipulation";
 
 export const handleCharacterInsertInTextContainer = (state: EditorState, char: string): EditorState => {
   const container = findNodeById(state.rootNode, state.cursor.containerId);
 
   if (!container) return state;
-  
+
   if (container.type === "multi-digit" || container.type === "command-input") {
     //TODO if command-input still check for sequence match, and transform if match found
     console.log(`trying to insert ${char} inside ${container.type}`)
@@ -65,18 +64,18 @@ export const handleCharacterInsert = (state: EditorState, char: string): EditorS
       ...prevNode,
       children: [...prevNode.children, newTextNode],
     };
-  
+
     const updatedChildren = [
       ...children.slice(0, index - 1),
       updatedPrev,
       ...children.slice(index),
     ];
-  
+
     const updatedRoot = updateNodeById(state.rootNode, container.id, {
       ...container,
       children: updatedChildren,
     });
-  
+
     return {
       rootNode: updatedRoot,
       cursor: {
@@ -85,7 +84,7 @@ export const handleCharacterInsert = (state: EditorState, char: string): EditorS
       },
     };
   }
-  
+
   // ========== CASE 4-B: Append to CommandInputNode ==========
 
   if (prevNode?.type === "command-input") {
@@ -95,76 +94,82 @@ export const handleCharacterInsert = (state: EditorState, char: string): EditorS
 
     // Prepare sequence for pattern matching
     const newSequence = oldSequence + char;
-    
+
     // auto completion logic is in ComandInputComponent and the renderer function in MathRenderes.tsx 
 
     const match = specialSequences.find(seq => seq.sequence === newSequence);
 
     if (match) {
       const transformedNode = match.createNode();
-
-      // special sequence bracket handling (e.g. `\lceil` and `\rceil`)
-      if (transformedNode.type === "text" && 
-        (isOpeningBracket(transformedNode.content) || isClosingBracket(transformedNode.content))) {
+    
+      let replacementChildren: MathNode[] = [];
+    
+      if (transformedNode.type === "inline-container") {
+        // Flatten its children instead of inserting a nested inline-container
+        replacementChildren = transformedNode.children;
+      } else {
+        replacementChildren = [transformedNode];
+      }
+    
+      // Handle special bracket cases (e.g., \lceil or \rceil)
+      if (
+        transformedNode.type === "text" &&
+        (isOpeningBracket(transformedNode.content) || isClosingBracket(transformedNode.content))
+      ) {
         const style = getStyleFromSymbol(transformedNode.content);
         const side = isOpeningBracket(transformedNode.content) ? "open" : "close";
-        console.log(`NEW BRACKET: ${style} (${side})`)
-
-        // If no valid style, use round brackets
         const safeStyle = style || "parentheses";
-
-        // Exclude new node from children because bracket handler will do it
+    
         const updatedChildren = [
-          ...children.slice(0, index - 1),
+          ...children.slice(0, index - 1), // remove the CommandInputNode
           ...children.slice(index),
         ];
-
+    
         const updatedRoot = updateNodeById(state.rootNode, container.id, {
           ...container,
           children: updatedChildren,
         });
-
-        return handleBracketInsert({...state, rootNode: updatedRoot}, safeStyle, side)
-      } 
-
+    
+        return handleBracketInsert({ ...state, rootNode: updatedRoot }, safeStyle, side);
+      }
+    
       const updatedChildren = [
-        ...children.slice(0, index - 1),
-        transformedNode,
+        ...children.slice(0, index - 1), // Remove the command input node
+        ...replacementChildren,         // Insert flattened node(s)
         ...children.slice(index),
       ];
-
+    
       const updatedRoot = updateNodeById(state.rootNode, container.id, {
         ...container,
         children: updatedChildren,
       });
-
-      let targetContainer = container
-      let targetIndex = index
-
-      if (transformedNode.type === 'nth-root') {
-        targetContainer = transformedNode.base
-        targetIndex = 0
+    
+      let targetContainer = container;
+      let targetIndex = index;
+    
+      // Adjust cursor for specific complex node types
+      if (transformedNode.type === "nth-root") {
+        targetContainer = transformedNode.base;
+        targetIndex = 0;
       }
-
-      if (transformedNode.type === 'accented') { //TODO remove
-        targetContainer = transformedNode.base
-        targetIndex = 0
+    
+      if (transformedNode.type === "accented") {
+        targetContainer = transformedNode.base;
+        targetIndex = 0;
       }
-
-      if (transformedNode.type === 'decorated' || transformedNode.type === "overunderset") {
-        targetContainer = transformedNode.base
-        targetIndex = 0
+    
+      if (transformedNode.type === "decorated" || transformedNode.type === "overunderset") {
+        targetContainer = transformedNode.base;
+        targetIndex = 0;
       }
-
-      if (transformedNode.type === 'styled') {
-        console.log(transformedNode.child.type)
-
-        if (transformedNode.child.type === 'inline-container') {
-          targetContainer = transformedNode.child
-          targetIndex = 0
+    
+      if (transformedNode.type === "styled") {
+        if (transformedNode.child.type === "inline-container") {
+          targetContainer = transformedNode.child;
+          targetIndex = 0;
         }
-      } 
-
+      }
+    
       return {
         rootNode: updatedRoot,
         cursor: {
@@ -172,7 +177,7 @@ export const handleCharacterInsert = (state: EditorState, char: string): EditorS
           index: targetIndex,
         },
       };
-    } 
+    }
     else if (oldSequence.endsWith(' ')) {
       // if last command ends with a space, force next node 
 
@@ -205,18 +210,18 @@ export const handleCharacterInsert = (state: EditorState, char: string): EditorS
         ...prevNode,
         children: [...prevNode.children, newTextNode],
       };
-  
+
       const updatedChildren = [
         ...children.slice(0, index - 1),
         updatedPrev,
         ...children.slice(index),
       ];
-  
+
       const updatedRoot = updateNodeById(state.rootNode, container.id, {
         ...container,
         children: updatedChildren,
       });
-  
+
       return {
         rootNode: updatedRoot,
         cursor: {
@@ -454,9 +459,14 @@ export function replaceCommandWithNode(
   }
 
   // Step 3: Replace the command node inline with the new node
+  const replacementChildren =
+    replacementNode.type === "inline-container"
+      ? replacementNode.children
+      : [replacementNode];
+
   const updatedChildren = [
     ...container.children.slice(0, index),
-    replacementNode,
+    ...replacementChildren,
     ...container.children.slice(index + 1),
   ];
 
