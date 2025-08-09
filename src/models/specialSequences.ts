@@ -801,6 +801,50 @@ export const actuarialSymbols: SpecialSequence[] = [
       createGroupNode(createInlineContainer([]), "parentheses")
     ]),
   },
+  {
+    sequence: "\\reserve ",
+    createNode: () => createInlineContainer([
+      createChildedNode(
+        createInlineContainer([createTextNode("V")]),
+        "actsymb"
+      ),
+      createGroupNode(createInlineContainer([]), "parentheses")
+    ]),
+  },
+  {
+    sequence: "\\reserve* ",
+    createNode: () => createInlineContainer([
+      createChildedNode(
+        createInlineContainer([
+          createDecoratedNode(createInlineContainer([createTextNode("V")]), "bar"),
+        ]),
+        "actsymb"
+      ),
+      createGroupNode(createInlineContainer([]), "parentheses")
+    ]),
+  },
+  {
+    sequence: "\\paidup ",
+    createNode: () => createInlineContainer([
+      createChildedNode(
+        createInlineContainer([createTextNode("W")]),
+        "actsymb"
+      ),
+      createGroupNode(createInlineContainer([]), "parentheses")
+    ]),
+  },
+  {
+    sequence: "\\paidup* ",
+    createNode: () => createInlineContainer([
+      createChildedNode(
+        createInlineContainer([
+          createDecoratedNode(createInlineContainer([createTextNode("W")]), "bar"),
+        ]),
+        "actsymb"
+      ),
+      createGroupNode(createInlineContainer([]), "parentheses")
+    ]),
+  },
 
   // TABLE 3 of the actuarialsymbol user guide
   {
