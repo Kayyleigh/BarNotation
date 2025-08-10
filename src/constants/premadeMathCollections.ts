@@ -30,15 +30,15 @@ export const PREMADE_COLLECTIONS_RAW = [
       { id: "struc-8", latex: `\\text{}` },
       { id: "struc-9", latex: `\\underset{}{}` },
       { id: "struc-10", latex: `\\frac{}{}` },
-      { id: "struc-10", latex: `\\binom{}{}` },
-      { id: "struc-11", latex: `\\actsymb[][]{}{}[]` },
-      { id: "struc-12", latex: `_{}^{}{}_{}^{}` },
-      { id: "struc-13", latex: `⌈{}⌉` },
-      { id: "struc-14", latex: `|{}|` },
-      { id: "struc-15", latex: `⌊{}⌋` },
-      { id: "struc-16", latex: `[{}]` },
-      { id: "struc-17", latex: `\\{\\}` },
-      { id: "struc-18", latex: `({})` },
+      { id: "struc-11", latex: `\\binom{}{}` },
+      { id: "struc-12", latex: `\\actsymb[][]{}{}[]` },
+      { id: "struc-13", latex: `_{}^{}{}_{}^{}` },
+      { id: "struc-14", latex: `⌈{}⌉` },
+      { id: "struc-15", latex: `|{}|` },
+      { id: "struc-16", latex: `⌊{}⌋` },
+      { id: "struc-17", latex: `[{}]` },
+      { id: "struc-18", latex: `\\{\\}` },
+      { id: "struc-19", latex: `({})` },
     ],
   },
   {
@@ -436,7 +436,7 @@ export const PREMADE_COLLECTIONS_RAW = [
       { id: "actsymb-212", latex: `\\actsymb[][]{P}{}[](\\actsymb[][]{\\bar{A}}{\\joint{xy\\nthtop{2}{z}}}[])` },
       { id: "actsymb-213", latex: `\\actsymb[][]{P}{}[](\\actsymb[][]{\\bar{A}}{\\joint{x\\nthtop{2}{y}z}}[])` },
       { id: "actsymb-214", latex: `\\actsymb[][]{\\tilde{P}}{\\nthtop{1}{x}:\\angl{n}}[]` }, //TODO `\\:`
-      { id: "actsymb-215", latex: `\\actsymb[][]{q}{[x]+r}[]` },       // Page 22 of the actuarialsymbol user guide
+      { id: "actsymb-215", latex: `\\actsymb[][]{q}{[x]+r}[]` }, // Page 22 of the actuarialsymbol user guide
       { id: "actsymb-216", latex: `\\actsymb[][]{q}{x}[(d)]` },
       { id: "actsymb-217", latex: `\\actsymb[][]{q}{x}[(i)]` },
       { id: "actsymb-218", latex: `\\actsymb[][]{q}{x}[(r)]` },
@@ -445,7 +445,7 @@ export const PREMADE_COLLECTIONS_RAW = [
       { id: "actsymb-221", latex: `\\actsymb[][]{q}{xy}[]` },
       { id: "actsymb-222", latex: `\\actsymb[k|][]{q}{x}[]` },
       { id: "actsymb-223", latex: `\\actsymb[t][]{q}{x}[]` },
-      { id: "actsymb-224", latex: `\\actsymb[t][]{q}{x}['(j)]` }, //TODO tilde
+      { id: "actsymb-224", latex: `\\actsymb[t][]{q}{x}['(j)]` }, //TODO prime
       { id: "actsymb-225", latex: `\\actsymb[t|u][]{q}{x}[]` },
       { id: "actsymb-226", latex: `\\actsymb[n][]{q}{\\nthtop{1}{x}y}[]` },
       { id: "actsymb-227", latex: `\\actsymb[n][]{q}{x\\nthtop{2}{y}}[]` },
@@ -483,7 +483,7 @@ export const PREMADE_COLLECTIONS_RAW = [
       { id: "actsymb-259", latex: `\\actsymb[k][]{V}{\\nthtop{1}{x}:\\angl{n}}[]` }, //TODO \\:
       { id: "actsymb-260", latex: `\\actsymb[k][]{V}{x:\\nthtop{1}{\\angl{n}}}[]` },
       { id: "actsymb-261", latex: `\\actsymb[k][]{V}{x}[\\text{FPT}]` },
-      { id: "actsymb-262", latex: `(MISSING ENTRY)` }, //TODO missing: \\group{xy} FILL IN THE MISSING ONE` },
+      { id: "actsymb-262", latex: `\\actsymb[t][]{V}{\\nthtop{1}{\\group{xy}}:\\angl{n}}[]` }, //TODO missing: \\group{xy} FILL IN THE MISSING ONE` },
       { id: "actsymb-263", latex: `\\actsymb[k][h]{V}{x}[]` },
       { id: "actsymb-264", latex: `\\actsymb[k][h]{V}{x:\\angl{n}}[]` },
       { id: "actsymb-265", latex: `\\actsymb[k][h]{V}{x:\\angl{n}}[(m)]` },
