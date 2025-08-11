@@ -1,10 +1,10 @@
-import { createBigOperator, createDecoratedNode, createFraction, createInlineContainer, createMatrixNode, createNthRoot, createOverUndersetNode, createStyledNode, createTextNode } from '../models/nodeFactories';
-import type { InlineContainerNode, StructureNode, TextStyle } from '../models/mathNodeTypes';
+import { createBigOperator, createChildedNode, createDecoratedNode, createFraction, createGroupNode, createInlineContainer, createMatrixNode, createNthRoot, createOverUndersetNode, createStyledNode, createTextNode } from '../models/nodeFactories';
+import type { InlineContainerNode, MathNode, TextStyle } from '../models/mathNodeTypes';
 import { decorationToLatexCommand, type NodeDecoration, type DecorationInfo } from '../utils/accentUtils';
 
 export interface SpecialSequence {
   sequence: string;
-  createNode: () => StructureNode;
+  createNode: () => MathNode;
 }
 
 export const decoratedEntries: SpecialSequence[] = Object.entries(decorationToLatexCommand).map(
@@ -302,10 +302,10 @@ export const otherSymbols: SpecialSequence[] = [
   { sequence: "\\cdots	", createNode: () => createTextNode("⋯", "\\cdots ") },
   { sequence: "\\dotsm	", createNode: () => createTextNode("⋯", "\\dotsm ") }, // TODO require amsmath package
   { sequence: "\\quad ", createNode: () => createTextNode("\t", "\\quad ") },
-  { sequence: "\\ldots	", createNode: () => createTextNode("…", "\\ldots ") }, 
-  { sequence: "\\ddots	", createNode: () => createTextNode("⋱", "\\ddots ") }, 
-  { sequence: "\\dots	", createNode: () => createTextNode("…", "\\dots ") }, 
-  { sequence: "\\vdots	", createNode: () => createTextNode("⋮", "\\vdots ") }, 
+  { sequence: "\\ldots	", createNode: () => createTextNode("…", "\\ldots ") },
+  { sequence: "\\ddots	", createNode: () => createTextNode("⋱", "\\ddots ") },
+  { sequence: "\\dots	", createNode: () => createTextNode("…", "\\dots ") },
+  { sequence: "\\vdots	", createNode: () => createTextNode("⋮", "\\vdots ") },
 ];
 
 export const standardFunctionNames: SpecialSequence[] = [
@@ -627,6 +627,406 @@ export const standardFunctionNames: SpecialSequence[] = [
   },
 ]
 
+export const actuarialSymbols: SpecialSequence[] = [
+  // TABLE 1 of the actuarialsymbol user guide
+  {
+    sequence: "\\ax ",
+    createNode: () => createChildedNode(
+      createInlineContainer([createTextNode("a")]),
+      "actsymb"
+    ),
+  },
+  {
+    sequence: "\\ax* ",
+    createNode: () => createChildedNode(
+      createInlineContainer([createDecoratedNode(createInlineContainer([createTextNode("a")]), "bar")]),
+      "actsymb"
+    ),
+  },
+  {
+    sequence: "\\ax** ",
+    createNode: () => createChildedNode(
+      createInlineContainer([createDecoratedNode(createInlineContainer([createTextNode("a")]), "ddot")]),
+      "actsymb"
+    ),
+  },
+  {
+    sequence: "\\sx ",
+    createNode: () => createChildedNode(
+      createInlineContainer([createTextNode("s")]),
+      "actsymb"
+    ),
+  },
+  {
+    sequence: "\\sx* ",
+    createNode: () => createChildedNode(
+      createInlineContainer([createDecoratedNode(createInlineContainer([createTextNode("s")]), "bar")]),
+      "actsymb"
+    ),
+  },
+  {
+    sequence: "\\sx** ",
+    createNode: () => createChildedNode(
+      createInlineContainer([createDecoratedNode(createInlineContainer([createTextNode("s")]), "ddot")]),
+      "actsymb"
+    ),
+  },
+  {
+    sequence: "\\aringx ",
+    createNode: () => createChildedNode(
+      createInlineContainer([createDecoratedNode(createInlineContainer([createTextNode("a")]), "mathring")]),
+      "actsymb"
+    ),
+  },
+  {
+    sequence: "\\eringx ",
+    createNode: () => createChildedNode(
+      createInlineContainer([createDecoratedNode(createInlineContainer([createTextNode("e")]), "mathring")]),
+      "actsymb"
+    ),
+  },
+  {
+    sequence: "\\Ax ",
+    createNode: () => createChildedNode(
+      createInlineContainer([createTextNode("A")]),
+      "actsymb"
+    ),
+  },
+  {
+    sequence: "\\Ex ",
+    createNode: () => createChildedNode(
+      createInlineContainer([createTextNode("E")]),
+      "actsymb"
+    ),
+  },
+  {
+    sequence: "\\Ax* ",
+    createNode: () => createChildedNode(
+      createInlineContainer([createDecoratedNode(createInlineContainer([createTextNode("A")]), "bar")]),
+      "actsymb"
+    ),
+  },
+  {
+    sequence: "\\dx ",
+    createNode: () => createChildedNode(
+      createInlineContainer([createTextNode("d")]),
+      "actsymb"
+    ),
+  },
+  {
+    sequence: "\\Dx ",
+    createNode: () => createChildedNode(
+      createInlineContainer([
+        createStyledNode(
+          createInlineContainer([createTextNode("D")]),
+          { fontStyling: { fontStyle: "calligraphic", fontStyleAlias: "\\mathcal" } }
+        )]),
+      "actsymb"
+    ),
+  },
+  {
+    sequence: "\\lx ", //TODO might also require styling?
+    createNode: () => createChildedNode(
+      createInlineContainer([createTextNode("l")]),
+      "actsymb"
+    ),
+  },
+  {
+    sequence: "\\Lx ",
+    createNode: () => createChildedNode(
+      createInlineContainer([
+        createStyledNode(
+          createInlineContainer([createTextNode("L")]),
+          { fontStyling: { fontStyle: "calligraphic", fontStyleAlias: "\\mathcal" } }
+        )]),
+      "actsymb"
+    ),
+  },
+  {
+    sequence: "\\px ",
+    createNode: () => createChildedNode(
+      createInlineContainer([createTextNode("p")]),
+      "actsymb"
+    ),
+  },
+  {
+    sequence: "\\qx ",
+    createNode: () => createChildedNode(
+      createInlineContainer([createTextNode("q")]),
+      "actsymb"
+    ),
+  },
+
+  // TABLE 2 of the actuarialsymbol user guide
+  {
+    sequence: "\\Px ",
+    createNode: () => createChildedNode(
+      createInlineContainer([createTextNode("P")]),
+      "actsymb"
+    ),
+  },
+  {
+    sequence: "\\Vx ",
+    createNode: () => createChildedNode(
+      createInlineContainer([createTextNode("V")]),
+      "actsymb"
+    ),
+  },
+  {
+    sequence: "\\Wx ",
+    createNode: () => createChildedNode(
+      createInlineContainer([createTextNode("W")]),
+      "actsymb"
+    ),
+  },
+  {
+    sequence: "\\premium ",
+    createNode: () => createInlineContainer([
+      createChildedNode(
+        createInlineContainer([createTextNode("P")]),
+        "actsymb"
+      ),
+      createGroupNode(createInlineContainer([]), "parentheses")
+    ]),
+  },
+  {
+    sequence: "\\premium* ",
+    createNode: () => createInlineContainer([
+      createChildedNode(
+        createInlineContainer([
+          createDecoratedNode(createInlineContainer([createTextNode("P")]), "bar"),
+        ]),
+        "actsymb"
+      ),
+      createGroupNode(createInlineContainer([]), "parentheses")
+    ]),
+  },
+  {
+    sequence: "\\reserve ",
+    createNode: () => createInlineContainer([
+      createChildedNode(
+        createInlineContainer([createTextNode("V")]),
+        "actsymb"
+      ),
+      createGroupNode(createInlineContainer([]), "parentheses")
+    ]),
+  },
+  {
+    sequence: "\\reserve* ",
+    createNode: () => createInlineContainer([
+      createChildedNode(
+        createInlineContainer([
+          createDecoratedNode(createInlineContainer([createTextNode("V")]), "bar"),
+        ]),
+        "actsymb"
+      ),
+      createGroupNode(createInlineContainer([]), "parentheses")
+    ]),
+  },
+  {
+    sequence: "\\paidup ",
+    createNode: () => createInlineContainer([
+      createChildedNode(
+        createInlineContainer([createTextNode("W")]),
+        "actsymb"
+      ),
+      createGroupNode(createInlineContainer([]), "parentheses")
+    ]),
+  },
+  {
+    sequence: "\\paidup* ",
+    createNode: () => createInlineContainer([
+      createChildedNode(
+        createInlineContainer([
+          createDecoratedNode(createInlineContainer([createTextNode("W")]), "bar"),
+        ]),
+        "actsymb"
+      ),
+      createGroupNode(createInlineContainer([]), "parentheses")
+    ]),
+  },
+
+  // TABLE 3 of the actuarialsymbol user guide
+  {
+    sequence: "\\term ",
+    createNode: () => createInlineContainer([
+      createOverUndersetNode(
+        createInlineContainer([]),
+        createInlineContainer([createTextNode("1")]),
+        "nthtopbottom",
+        "above"
+      ),
+      createTextNode(":"),
+      createDecoratedNode(createInlineContainer([]), "angl")
+    ],
+    ),
+  },
+  {
+    sequence: "\\termxn ",
+    createNode: () => createInlineContainer([
+      createOverUndersetNode(
+        createInlineContainer([createTextNode("x")]),
+        createInlineContainer([createTextNode("1")]),
+        "nthtopbottom",
+        "above"
+      ),
+      createTextNode(":"),
+      createDecoratedNode(createInlineContainer([createTextNode("n")]), "angl")
+    ],
+    ),
+  },
+  {
+    sequence: "\\endow ",
+    createNode: () => createInlineContainer([
+      createTextNode(":"),
+      createDecoratedNode(createInlineContainer([]), "angl")
+    ],
+    ),
+  },
+  {
+    sequence: "\\endowxn ",
+    createNode: () => createInlineContainer([
+      createTextNode("x"),
+      createTextNode(":"),
+      createDecoratedNode(createInlineContainer([createTextNode("n")]), "angl")
+    ],
+    ),
+  },
+  {
+    sequence: "\\pureendowxn ",
+    createNode: () => createInlineContainer([
+      createTextNode("x"),
+      createTextNode(":"),
+      createOverUndersetNode(
+        createInlineContainer([createDecoratedNode(createInlineContainer([createTextNode("n")]), "angl")]),
+        createInlineContainer([createTextNode("1")]),
+        "nthtopbottom",
+        "above"
+      ),
+    ],
+    ),
+  },
+
+  // TABLE 4 of the actuarialsymbol user guide
+  { sequence: "\\IA ", createNode: () => createGroupNode(createInlineContainer([createTextNode("I"), createTextNode("A")]), "parentheses") },
+  { sequence: "\\DA ", createNode: () => createGroupNode(createInlineContainer([createTextNode("D"), createTextNode("A")]), "parentheses") },
+  { sequence: "\\Ia ", createNode: () => createGroupNode(createInlineContainer([createTextNode("I"), createTextNode("a")]), "parentheses") },
+  { sequence: "\\Da ", createNode: () => createGroupNode(createInlineContainer([createTextNode("D"), createTextNode("a")]), "parentheses") },
+  { sequence: "\\Is ", createNode: () => createGroupNode(createInlineContainer([createTextNode("I"), createTextNode("s")]), "parentheses") },
+  { sequence: "\\Ds ", createNode: () => createGroupNode(createInlineContainer([createTextNode("D"), createTextNode("s")]), "parentheses") },
+
+  {
+    sequence: "\\IA* ", createNode: () => createGroupNode(createInlineContainer([createTextNode("I"),
+    createDecoratedNode(createInlineContainer([createTextNode("A")]), "bar")]), "parentheses")
+  },
+  {
+    sequence: "\\DA* ", createNode: () => createGroupNode(createInlineContainer([createTextNode("D"),
+    createDecoratedNode(createInlineContainer([createTextNode("A")]), "bar")]), "parentheses")
+  },
+  {
+    sequence: "\\Ia* ", createNode: () => createGroupNode(createInlineContainer([createTextNode("I"),
+    createDecoratedNode(createInlineContainer([createTextNode("a")]), "bar")]), "parentheses")
+  },
+  {
+    sequence: "\\Da* ", createNode: () => createGroupNode(createInlineContainer([createTextNode("D"),
+    createDecoratedNode(createInlineContainer([createTextNode("a")]), "bar")]), "parentheses")
+  },
+  {
+    sequence: "\\Is* ", createNode: () => createGroupNode(createInlineContainer([createTextNode("I"),
+    createDecoratedNode(createInlineContainer([createTextNode("s")]), "bar")]), "parentheses")
+  },
+  {
+    sequence: "\\Ds* ", createNode: () => createGroupNode(createInlineContainer([createTextNode("D"),
+    createDecoratedNode(createInlineContainer([createTextNode("s")]), "bar")]), "parentheses")
+  },
+
+  {
+    sequence: "\\Ia** ", createNode: () => createGroupNode(createInlineContainer([createTextNode("I"),
+    createDecoratedNode(createInlineContainer([createTextNode("a")]), "ddot")]), "parentheses")
+  }, {
+    sequence: "\\Da** ", createNode: () => createGroupNode(createInlineContainer([createTextNode("D"),
+    createDecoratedNode(createInlineContainer([createTextNode("a")]), "ddot")]), "parentheses")
+  }, {
+    sequence: "\\Is** ", createNode: () => createGroupNode(createInlineContainer([createTextNode("I"),
+    createDecoratedNode(createInlineContainer([createTextNode("s")]), "ddot")]), "parentheses")
+  }, {
+    sequence: "\\Ds** ", createNode: () => createGroupNode(createInlineContainer([createTextNode("D"),
+    createDecoratedNode(createInlineContainer([createTextNode("s")]), "ddot")]), "parentheses")
+  },
+
+  {
+    sequence: "\\IbA ", createNode: () => createGroupNode(createInlineContainer([
+      createDecoratedNode(createInlineContainer([createTextNode("I")]), "bar"),
+      createTextNode("A")
+    ]), "parentheses")
+  }, {
+    sequence: "\\IbA* ", createNode: () => createGroupNode(createInlineContainer([
+      createDecoratedNode(createInlineContainer([createTextNode("I")]), "bar"),
+      createDecoratedNode(createInlineContainer([createTextNode("A")]), "bar")
+    ]), "parentheses")
+  }, {
+    sequence: "\\DbA ", createNode: () => createGroupNode(createInlineContainer([
+      createDecoratedNode(createInlineContainer([createTextNode("D")]), "bar"),
+      createTextNode("A")
+    ]), "parentheses")
+  }, {
+    sequence: "\\DbA* ", createNode: () => createGroupNode(createInlineContainer([
+      createDecoratedNode(createInlineContainer([createTextNode("D")]), "bar"),
+      createDecoratedNode(createInlineContainer([createTextNode("A")]), "bar")
+    ]), "parentheses")
+  },
+  {
+    sequence: "\\ImA ", createNode: () => createGroupNode(createInlineContainer([
+      createChildedNode(
+        createInlineContainer([createTextNode("I")]),
+        "actsymb",
+        createInlineContainer(),
+        createInlineContainer(),
+        createInlineContainer(),
+        createInlineContainer([createGroupNode(createInlineContainer([createTextNode("m")]), "parentheses")]),
+      ),
+      createTextNode("A")
+    ]), "parentheses")
+  }, {
+    sequence: "\\ImA* ", createNode: () => createGroupNode(createInlineContainer([
+      createChildedNode(
+        createInlineContainer([createTextNode("I")]),
+        "actsymb",
+        createInlineContainer(),
+        createInlineContainer(),
+        createInlineContainer(),
+        createInlineContainer([createGroupNode(createInlineContainer([createTextNode("m")]), "parentheses")]),
+      ),
+      createDecoratedNode(createInlineContainer([createTextNode("A")]), "bar")
+    ]), "parentheses")
+  },
+  {
+    sequence: "\\DmA ", createNode: () => createGroupNode(createInlineContainer([
+      createChildedNode(
+        createInlineContainer([createTextNode("D")]),
+        "actsymb",
+        createInlineContainer(),
+        createInlineContainer(),
+        createInlineContainer(),
+        createInlineContainer([createGroupNode(createInlineContainer([createTextNode("m")]), "parentheses")]),
+      ),
+      createTextNode("A")
+    ]), "parentheses")
+  }, {
+    sequence: "\\DmA* ", createNode: () => createGroupNode(createInlineContainer([
+      createChildedNode(
+        createInlineContainer([createTextNode("D")]),
+        "actsymb",
+        createInlineContainer(),
+        createInlineContainer(),
+        createInlineContainer(),
+        createInlineContainer([createGroupNode(createInlineContainer([createTextNode("m")]), "parentheses")]),
+      ),
+      createDecoratedNode(createInlineContainer([createTextNode("A")]), "bar")
+    ]), "parentheses")
+  },
+]
+
 export const specialSymbols: SpecialSequence[] = [
   ...greekLetters,
   ...hebrewLetters,
@@ -645,6 +1045,7 @@ export const specialSequences: SpecialSequence[] = [
   ...bigOperatorSequences,
   ...nodeTransformationSequences,
   ...matrices,
+  ...actuarialSymbols,
 ];
 
 // --- Normalization Utility ---
@@ -688,21 +1089,21 @@ export const bigOperatorToLatex: Record<string, string> = Object.fromEntries(
 
 // --- Factory Maps ---
 
-export const inputAliasToSymbolNodeFactory: Record<string, () => StructureNode> = Object.fromEntries(
+export const inputAliasToSymbolNodeFactory: Record<string, () => MathNode> = Object.fromEntries(
   specialSymbols.map(({ sequence, createNode }) => [normalizeCommand(sequence), createNode])
 );
 
-export const inputAliasToBigOpNodeFactory: Record<string, (lower?: InlineContainerNode, upper?: InlineContainerNode) => StructureNode> = Object.fromEntries(
+export const inputAliasToBigOpNodeFactory: Record<string, (lower?: InlineContainerNode, upper?: InlineContainerNode) => MathNode> = Object.fromEntries(
   bigOperatorSequences.map(({ sequence, createNode }) => [normalizeCommand(sequence), createNode])
 );
 
-export const inputAliasToStyledNodeFactory: Record<string, (child?: InlineContainerNode) => StructureNode> = Object.fromEntries(
+export const inputAliasToStyledNodeFactory: Record<string, (child?: InlineContainerNode) => MathNode> = Object.fromEntries(
   stylingOptions.map(({ sequence, createNode }) => [normalizeCommand(sequence), createNode])
 );
 
 // --- Lookup Helpers ---
 
-export function getSymbolNodeFromAlias(command: string): StructureNode | undefined {
+export function getSymbolNodeFromAlias(command: string): MathNode | undefined {
   return inputAliasToSymbolNodeFactory[normalizeCommand(command)]?.();
 }
 
@@ -710,13 +1111,13 @@ export function getBigOpNodeFromAlias(
   command: string,
   lower?: InlineContainerNode,
   upper?: InlineContainerNode
-): StructureNode | undefined {
+): MathNode | undefined {
   return inputAliasToBigOpNodeFactory[normalizeCommand(command)]?.(lower, upper);
 }
 
 export function getStyledNodeFromAlias(
   command: string,
   child?: InlineContainerNode
-): StructureNode | undefined {
+): MathNode | undefined {
   return inputAliasToStyledNodeFactory[normalizeCommand(command)]?.(child);
 }

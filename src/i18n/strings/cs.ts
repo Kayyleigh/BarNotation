@@ -122,6 +122,15 @@ const cs = {
             actuarialTR: "Aktuariálního režim (zaměření vpravo nahoře)",
             underset: "Umístit pod výraz",
             overset: "Umístit nad výraz",
+
+            nthbottom: "Přidat prioritu pod (pojistněmatematická)", 
+            nthtop: "Přidej prioritu nad (pojistněmatematická)", 
+            
+            insertMatrixRowBelow: "(V matici) Přidat řádek pod", 
+            insertMatrixRowAbove: "(V matici) Přidat řádek nad", 
+            insertMatrixColumnLeft: "(V matici) Přidat řádek doleva", 
+            insertMatrixColumnRight: "(V matici) Přidat řádek doprava", 
+
             fraction: "Udělat z obsahu čitatel nové zlomku",
             structuralShortcuts: "Strukturální zkratky",
             rearrangeNodes: "Uspořádat obsah",
@@ -337,6 +346,7 @@ const cs = {
         "premade-probability": "Pravděpodobnost a statistika",
         "greek-letters": "Řecká písmena",
         "premade-actuarial": "Pojistně-matematický",
+        "premade-linalg": "Lineární Algebra", 
     }
 };
 
