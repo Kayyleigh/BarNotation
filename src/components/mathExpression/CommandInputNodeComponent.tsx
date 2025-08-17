@@ -67,6 +67,8 @@ export function CommandInputNodeComponent({
     left: 0
   });
 
+  const [dropdownMaxHeight, setDropdownMaxHeight] = useState(300);
+
   const { cursor, containerId, index } = baseProps;
 
   // Check if cursor is directly after this node
@@ -93,31 +95,54 @@ export function CommandInputNodeComponent({
       setShowDropdown(false);
       return;
     }
-  
+
     // Get the part after the backslash, or the full input
     const inputCommand = inputString.replace("\\", "").toLowerCase();
-  
+
     const matches = specialSequences
       .map(seq => seq.sequence)
       .filter(seq =>
         seq.replace("\\", "").toLowerCase().includes(inputCommand)
       );
-  
+
     setMatching(matches);
     setHighlight(0);
     setShowDropdown(matches.length > 0);
   }, [inputString, shouldTriggerDropdown]);
 
   useLayoutEffect(() => {
-    if (matching.length === 0 || !anchorRef.current) return;
-
+    if (!matching.length || !anchorRef.current) return;
+  
     const rect = anchorRef.current.getBoundingClientRect();
+    const viewportHeight = window.innerHeight;
+  
+    const spaceBelow = viewportHeight - rect.bottom;
+    const spaceAbove = rect.top;
+  
+    let top = rect.bottom + window.scrollY + 4;
+    let availableSpace = spaceBelow;
+  
+    // If not enough space below but more space above, place it above
+    if (spaceBelow < 150 && spaceAbove > spaceBelow) {
+      top = rect.top + window.scrollY - 4; // we'll subtract height later
+      availableSpace = spaceAbove;
+    }
+  
+    const dropdownHeight = Math.min(400, Math.max(availableSpace - 8, 100));
+  
+    // If placed above, shift up by its height
+    if (availableSpace === spaceAbove) {
+      top -= dropdownHeight;
+    }
+  
     setDropdownPos({
-      top: rect.bottom + window.scrollY + 4,
+      top,
       left: rect.left + window.scrollX
     });
+    setDropdownMaxHeight(dropdownHeight);
+    
   }, [matching.length, inputString]);
-
+  
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -188,6 +213,7 @@ export function CommandInputNodeComponent({
               top: dropdownPos.top,
               left: dropdownPos.left,
               zIndex: 1000,
+              maxHeight: dropdownMaxHeight,
             }}
           >
             {matching.map((seq, i) => (
