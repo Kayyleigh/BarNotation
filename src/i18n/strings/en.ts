@@ -174,7 +174,7 @@ const en = {
         hide: "Hide preview",
         view: "View collection entries",
       },
-      sort: {
+      sort: { 
         archived_desc: "Recently Archived",
         archived_asc: "Longest Archived",
         created_desc: "Newest Collection",
@@ -204,6 +204,8 @@ const en = {
         longestArchived: "Longest Archived",
         newestCreated: "Newest Created",
         oldestCreated: "Oldest Created",
+        recentlyModified: "Recently Modified", //NEW; ADD IN OTHERS
+        leastRecentlyModified: "Least Recently Modified", //NEW; ADD IN OTHERS
         mostCells: "Most Cells",
         leastCells: "Least Cells",
         titleAZ: "Title A → Z",

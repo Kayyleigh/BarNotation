@@ -8,14 +8,9 @@ import NoteListItem from "./NoteListItem";
 import NotebookArchiveModal from "../modals/NotebookArchiveModal";
 import { useI18n } from "../../i18n/useI18n";
 
-type SortBy = "created" | "modified" | "title" | "cellCount";
-
-const sortFunctions: Record<SortBy, (a: NoteSummary, b: NoteSummary) => number> = {
-  created: (a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0),
-  modified: (a, b) => (b.updatedAt ?? 0) - (a.updatedAt ?? 0),
-  title: (a, b) => a.title.localeCompare(b.title),
-  cellCount: (a, b) => b.cellCount - a.cellCount,
-};
+type SortKey = "modified" | "created" | "title" | "cellCount";
+type SortDir = "asc" | "desc";
+type SortValue = `${SortKey}_${SortDir}`;
 
 type NotesMenuProps = {
   selectedNoteId: string | null;
@@ -45,20 +40,47 @@ const NotesMenu: React.FC<NotesMenuProps> = ({
   const { t } = useI18n();
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState<SortBy>("modified");
+  const [sortValue, setSortValue] = useState<SortValue>("modified_desc");
   const [menuOpenForId, setMenuOpenForId] = useState<string | null>(null);
   const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false);
   const dotRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
+  const sortOptions = [
+    { label: t("modals.notebookArchive.sort.recentlyModified"), value: "modified_desc" },
+    { label: t("modals.notebookArchive.sort.leastRecentlyModified"), value: "modified_asc" },
+    { label: t("modals.notebookArchive.sort.newestCreated"), value: "created_desc" },
+    { label: t("modals.notebookArchive.sort.oldestCreated"), value: "created_asc" },
+    { label: t("modals.notebookArchive.sort.titleAZ"), value: "title_desc" },
+    { label: t("modals.notebookArchive.sort.titleZA"), value: "title_asc" },
+    { label: t("modals.notebookArchive.sort.mostCells"), value: "cellCount_desc" },
+    { label: t("modals.notebookArchive.sort.leastCells"), value: "cellCount_asc" },
+  ];
+
   const filteredNotes = useMemo(() => {
     const lower = searchTerm.toLowerCase();
-    return noteSummaries
+    const [key, dir] = sortValue.split("_") as [SortKey, SortDir];
+
+    const sortFn = (a: NoteSummary, b: NoteSummary) => {
+      switch (key) {
+        case "modified":
+          return (b.updatedAt ?? 0) - (a.updatedAt ?? 0);
+        case "created":
+          return (b.createdAt ?? 0) - (a.createdAt ?? 0);
+        case "title":
+          return a.title.localeCompare(b.title);
+        case "cellCount":
+          return (b.cellCount ?? 0) - (a.cellCount ?? 0);
+      }
+    };
+
+    return [...noteSummaries]
       .filter(
         (note) => !note.archived && note.title.toLowerCase().includes(lower)
       )
-      .sort(sortFunctions[sortBy]);
-  }, [noteSummaries, searchTerm, sortBy]);
+      .sort((a, b) => (dir === "asc" ? -sortFn(a, b) : sortFn(a, b)));
+  }, [noteSummaries, searchTerm, sortValue]);
 
+  // Callback caches (same as before)
   const selectNoteCallbacks = useRef<Record<string, () => void>>({});
   const deleteNoteCallbacks = useRef<Record<string, () => void>>({});
   const archiveNoteCallbacks = useRef<Record<string, () => void>>({});
@@ -145,14 +167,15 @@ const NotesMenu: React.FC<NotesMenuProps> = ({
         <div className={styles.notesSectionHeader}>
           <div className={styles.notesSectionLabel}>{t("notesMenu.notesSection")}</div>
           <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value as SortBy)}
+            value={sortValue}
+            onChange={(e) => setSortValue(e.target.value as SortValue)}
             className={styles.sortDropdown}
           >
-            <option value="modified">{t("notesMenu.sort.modified")}</option>
-            <option value="created">{t("notesMenu.sort.created")}</option>
-            <option value="title">{t("notesMenu.sort.title")}</option>
-            <option value="cellCount">{t("notesMenu.sort.cellCount")}</option>
+            {sortOptions.map(opt => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
           </select>
         </div>
         <ul className={styles.notesList}>
