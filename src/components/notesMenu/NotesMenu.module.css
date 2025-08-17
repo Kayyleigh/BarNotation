@@ -81,6 +81,11 @@
     border-left: 5px solid transparent;
     opacity: 50%;
   }
+
+  .noteItem.menuOpen {
+    opacity: 1;
+    background-color: var(--button-bg); /* lighter dark grey */
+  }
   
   .noteItem:hover:not(.selected) {
     opacity: 1;

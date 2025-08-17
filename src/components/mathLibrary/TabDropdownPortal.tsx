@@ -39,17 +39,43 @@ const TabDropdownPortal: React.FC<Props> = ({
   useLayoutEffect(() => {
     const anchor = anchorRef.current;
     const dropdown = menuRef.current;
-
+  
     if (anchor && dropdown) {
       const rect = anchor.getBoundingClientRect();
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+  
+      const spaceBelow = viewportHeight - rect.bottom;
+      const spaceAbove = rect.top;
+  
+      let top = rect.bottom + window.scrollY + 4;
+      let maxHeight = spaceBelow - 8;
+  
+      // Vertical flip if not enough space below
+      if (spaceBelow < dropdown.offsetHeight && spaceAbove > spaceBelow) {
+        top = rect.top + window.scrollY - dropdown.offsetHeight - 4;
+        maxHeight = spaceAbove - 8;
+      }
+  
+      // Horizontal clamp to prevent overflow
+      let left = rect.left + window.scrollX;
+      if (left + dropdown.offsetWidth > viewportWidth - 8) {
+        left = viewportWidth - dropdown.offsetWidth - 8;
+      }
+      if (left < 8) {
+        left = 8; // small margin from left edge
+      }
+  
       setStyle({
         position: "absolute",
-        top: rect.bottom + window.scrollY + 4,
-        left: rect.left + window.scrollX,
+        top,
+        left,
         zIndex: 1000,
         visibility: "visible",
         opacity: 1,
         pointerEvents: "auto",
+        maxHeight: Math.min(300, maxHeight),
+        overflowY: "auto",
       });
     }
   }, [anchorRef]);
