@@ -23,8 +23,8 @@
     --background-color: #f3f3f4;
     --app-background: var(--background-color);
 
-    --main-header-bg: #0a302a;
-    --main-header-text-color: #ffffff;
+    --main-header-bg: #ffffff;
+    --main-header-text-color: #000000;
 
     --editor-header-bg: var(--app-background);
   
@@ -54,30 +54,30 @@
   
     /* ===== Theming (Custom Palette) ===== */
   
-    --math-accent-color: #5f8700;
+    --math-accent-color: #880e4f;
   
-    --math-color-single-bracket: #d70000;      /* Keep red for clarity */
-    --math-color-pair-brackets: #444444;
+    --math-color-single-bracket: #b71c1c;      /* Keep red for clarity */
+    --math-color-pair-brackets: #1565c0;
   
-    --math-color-binom-brackets: #d70087;
+    --math-color-binom-brackets: #e65100;
     --math-color-matrix-brackets: #da70d6;
 
-    --math-color-actuarial-text: #005f87;
-    --math-color-actuarial-bg: #005f8714;
+    --math-color-actuarial-text: #00796b;
+    --math-color-actuarial-bg: #00796b14;
   
-    --math-color-big-operator-symbol: #d70087;
+    --math-color-big-operator-symbol: #e65100;
     --math-color-big-operator-limits: var(--math-text-color);
   
-    --math-color-nth-root-symbol: #d70087;
-    --math-color-nth-root-index: #d70087;
+    --math-color-nth-root-symbol: #e65100;
+    --math-color-nth-root-index: #e65100;
   
-    --math-color-upright-text: #8700af;
-    --math-color-upright-bg: #8700af14;
+    --math-color-upright-text: #6a1b9a;
+    --math-color-upright-bg: #6a1b9a14;
   
     /* --math-color-command-input-text: #929270; */
-    --math-color-command-input-text: #5f8700;
+    --math-color-command-input-text: #2e7d32;
   
-    --math-color-multi-digit-text: #547046;
+    --math-color-multi-digit-text: #880e4f;
 
     /* ===== Editor Container ===== */
     --math-editor-bg: white;
@@ -123,7 +123,7 @@
 
 
     /* Sidebar panels */
-    --sidebar-resizer-bg: #377569;
+    --sidebar-resizer-bg: var(--logo-color-1);
 
     --sidebar-toggle: white;
     --sidebar-toggle-bg: var(--logo-color-2);
@@ -135,7 +135,7 @@
     --sidebar-text: black;
 
     /* Math Library */
-    --library-tabs-inactive-bg: #377569;
+    --library-tabs-inactive-bg: var(--logo-color-1);
     --library-tabs-hover-bg: var(--logo-color-1);
     --delete-button-hover-bg: #ff8e97;
 
