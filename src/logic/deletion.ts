@@ -5,6 +5,8 @@ import {
   type MathNode,
 } from "../models/mathNodeTypes";
 import { handleArrowLeft } from "./navigation";
+import { getCloseSymbol, getOpenSymbol } from "../utils/bracketUtils";
+import { createTextNode } from "../models/nodeFactories";
 
 //BUG: when deleting subsup that has nonempty other corners, it still deletes whole thing
 
@@ -91,6 +93,36 @@ export const handleBackspace = (state: EditorState): EditorState => {
 
   const prevNode = container.children[cursor.index - 1];
 
+  if (prevNode && (prevNode.type === "group")) {
+    // revert group to flattened left bracket with the child
+    const replacementChildren = [
+      createTextNode(getOpenSymbol(prevNode.bracketStyle)),
+      ...prevNode.child.children
+    ];
+
+    const indexInParent = container.children.findIndex(c => c.id === prevNode.id);
+    if (indexInParent === -1) return state;
+
+    const newChildren = [
+      ...container.children.slice(0, indexInParent),
+      ...replacementChildren,
+      ...container.children.slice(indexInParent + 1),
+    ];
+
+    const updatedRoot = updateNodeById(state.rootNode, container.id, {
+      ...container,
+      children: newChildren,
+    });
+
+    return {
+      rootNode: updatedRoot,
+      cursor: {
+        containerId: container.id,
+        index: indexInParent + replacementChildren.length,
+      },
+    };
+  }
+
   if (prevNode && (prevNode.type === "command-input" || prevNode.type === "multi-digit")) {
     console.log(`Delling ${prevNode.children.map(child => child.content).join("")}`)
     return handleBackspace({
@@ -175,77 +207,51 @@ export const handleBackspace = (state: EditorState): EditorState => {
       }
       case "matrix": {
         const matrix = parent;
-      
+
         // Try to extract row and column indices from the key
         const match = key.match(/^rows\[(\d+)\]\[(\d+)\]$/);
         if (!match) {
           console.warn("Could not parse matrix cell key:", key);
           return state;
         }
-      
+
         const rowIndex = parseInt(match[1], 10);
         const colIndex = parseInt(match[2], 10);
         const cell = matrix.rows?.[rowIndex]?.[colIndex];
-      
+
         if (!cell) {
           console.warn("Matrix cell not found at position:", key);
           return state;
         }
-      
+
         const allCellsEmpty = matrix.rows.every(row =>
           row.every(isEmptyNode)
         );
-      
+
         if (allCellsEmpty) {
           // Remove the matrix entirely
           replacementChildren = [];
           break;
         }
-      
+
         const rowIsEmpty = matrix.rows[rowIndex].every(isEmptyNode);
         if (rowIsEmpty && matrix.rows.length > 1) {
           const newRows = [
             ...matrix.rows.slice(0, rowIndex),
             ...matrix.rows.slice(rowIndex + 1),
           ];
-      
+
           const updatedMatrix = {
             ...matrix,
             rows: newRows,
           };
-      
+
           const newRow = newRows[Math.max(0, rowIndex - 1)];
           const fallbackCol = Math.min(colIndex, newRow.length - 1);
           const fallbackCell = newRow[fallbackCol];
-      
+
           const updatedRoot = updateNodeById(state.rootNode, matrix.id, updatedMatrix);
-      
-          return {
-            rootNode: updatedRoot,
-            cursor: {
-              containerId: fallbackCell.id,
-              index: fallbackCell.children.length, 
-            },
-          };
-        }
-      
-        const columnIsEmpty = matrix.rows.every(row => isEmptyNode(row[colIndex]));
-        if (columnIsEmpty && matrix.rows[0].length > 1) {
-          const newRows = matrix.rows.map(row =>
-            [...row.slice(0, colIndex), ...row.slice(colIndex + 1)]
-          );
-      
-          const updatedMatrix = {
-            ...matrix,
-            rows: newRows,
-          };
-      
-          const fallbackRow = newRows[rowIndex] ?? newRows[newRows.length - 1];
-          const fallbackCol = Math.max(0, colIndex - 1);
-          const fallbackCell = fallbackRow[fallbackCol];
-      
-          const updatedRoot = updateNodeById(state.rootNode, matrix.id, updatedMatrix);
-      
+
           return {
             rootNode: updatedRoot,
             cursor: {
@@ -254,7 +260,33 @@ export const handleBackspace = (state: EditorState): EditorState => {
             },
           };
         }
-      
+
+        const columnIsEmpty = matrix.rows.every(row => isEmptyNode(row[colIndex]));
+        if (columnIsEmpty && matrix.rows[0].length > 1) {
+          const newRows = matrix.rows.map(row =>
+            [...row.slice(0, colIndex), ...row.slice(colIndex + 1)]
+          );
+
+          const updatedMatrix = {
+            ...matrix,
+            rows: newRows,
+          };
+
+          const fallbackRow = newRows[rowIndex] ?? newRows[newRows.length - 1];
+          const fallbackCol = Math.max(0, colIndex - 1);
+          const fallbackCell = fallbackRow[fallbackCol];
+
+          const updatedRoot = updateNodeById(state.rootNode, matrix.id, updatedMatrix);
+
+          return {
+            rootNode: updatedRoot,
+            cursor: {
+              containerId: fallbackCell.id,
+              index: fallbackCell.children.length,
+            },
+          };
+        }
+
         return handleArrowLeft(state);
       }
     }
@@ -301,6 +333,49 @@ export const handleBackspace = (state: EditorState): EditorState => {
 
   if (cursor.index === 0 && container.children.length > 0) {
     console.log(`Trying to backspace at start of non-empty ${container.type}. I have not decided yet how to handle that`)
+
+    const parentInfo = findParentOfInlineContainer(state.rootNode, container.id);
+    if (!parentInfo) {
+      console.log(`you do not have IC parent`)
+      return state;
+    }
+
+    const { parent, key } = parentInfo;
+
+    if (parent.type === "group") {
+      // revert group to flattened child and right bracket
+
+      const replacementChildren = [
+        ...parent.child.children,
+        createTextNode(getCloseSymbol(parent.bracketStyle))
+      ];
+
+      const parentContainerInfo = findParentContainerAndIndex(state.rootNode, parent.id);
+      
+      if (!parentContainerInfo) return state;
+
+      const { container: parentContainer, indexInParent: indexInParentContainer } = parentContainerInfo
+
+      const newChildren = [
+        ...parentContainer.children.slice(0, indexInParentContainer),
+        ...replacementChildren,
+        ...parentContainer.children.slice(indexInParentContainer + 1),
+      ];
+
+      const updatedRoot = updateNodeById(state.rootNode, parentContainer.id, {
+        ...parentContainer,
+        children: newChildren,
+      });
+
+      return {
+        rootNode: updatedRoot,
+        cursor: {
+          containerId: parentContainer.id,
+          index: indexInParentContainer,
+        },
+      };
+    }
+
     return state
   }
 
