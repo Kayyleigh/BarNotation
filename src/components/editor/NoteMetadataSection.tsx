@@ -36,7 +36,7 @@ const NoteMetaDataSection: React.FC<Props> = ({ metadata, setMetadata }) => {
     return (
       <div className={clsx(styles.metadataBar, styles.preview, styles.locked)}>
         <div className={styles.previewTitle}>
-          {(metadata.courseCode ? metadata.courseCode + " " : "") + metadata.title}
+          {metadata.title}
         </div>
         {metadata.author && <div className={styles.previewAuthor}>{metadata.author}</div>}
         {metadata.dateOrPeriod && <div className={styles.previewDate}>{metadata.dateOrPeriod}</div>}
@@ -100,15 +100,6 @@ const NoteMetaDataSection: React.FC<Props> = ({ metadata, setMetadata }) => {
       </div>
 
       <div className={styles.metaRow}>
-        <div className={styles.metaBox}>
-          <input
-            type="text"
-            placeholder={t("editor.metadata.course")}
-            value={metadata.courseCode ?? ""}
-            onChange={(e) => setMetadata({ courseCode: e.target.value })}
-            className={styles.metaInput}
-          />
-        </div>
         <div className={styles.metaBox}>
           <input
             type="text"

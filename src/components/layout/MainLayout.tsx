@@ -262,7 +262,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({
       id: newId,
       metadata: {
         title: t("layout.notesMenu.newNoteTitle"), // "My New Note"
-        courseCode: "",
         author: authorName,
         dateOrPeriod: "",
         archived: false,
