@@ -431,26 +431,26 @@ import { useToast } from "../../hooks/toast/useToast";
 import { useDragContext } from "../../hooks/mathDrag/useDragContext";
 import TabDropdownPortal from "./TabDropdownPortal";
 import styles from "./MathLibrary.module.css";
-import type { LibraryCollection, LibraryEntry, MathNodeLibrary } from "../../models/libraryTypes";
+import type { LibraryCollection, MathNodeLibrary } from "../../models/libraryTypes";
 import {
   duplicateCollection,
   archiveCollection,
   softDeleteCollection,
   renameCollection,
   copyEntryToCollection,
+  reorderCollections,
 } from "../../utils/mathLibraryUtils";
 
 interface CollectionTabsProps {
   library: MathNodeLibrary;
   setLibrary: React.Dispatch<React.SetStateAction<MathNodeLibrary>>;
   collections: LibraryCollection[];
-  activeColl: string;
+  activeColl: string | null;
   setActiveColl: (newId: string) => void;
   editingCollId: string | null;
   setEditingCollId: React.Dispatch<React.SetStateAction<string | null>>;
   menuOpenFor: string | null;
   setMenuOpenFor: React.Dispatch<React.SetStateAction<string | null>>;
-  onDropEntryToCollection: (entry: LibraryEntry, targetCollectionId: string) => void;
 }
 
 const CollectionTabs: React.FC<CollectionTabsProps> = ({
@@ -494,7 +494,7 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
     dragOverTabIdx.current = idx;
   };
 
-  const onTabDrop = (e: React.DragEvent, visibleIdx: number) => { // THIS ALSO HANDLES RE-ORDERING SETTING SO MUST MOVE THAT OUT TO RE-USE FOR DUPLICATION
+  const onTabDrop = (e: React.DragEvent, visibleIdx: number) => {
     e.preventDefault();
     if (draggingTabIdx === null) return;
 
@@ -513,12 +513,7 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
     const toIndex = collections.findIndex(c => c.id === toId);
     if (fromIndex === -1 || toIndex === -1) return;
 
-    setLibrary(lib => {
-      const newCollections = [...collections];
-      const [moved] = newCollections.splice(fromIndex, 1);
-      newCollections.splice(toIndex, 0, moved);
-      return { ...lib, collections: Object.fromEntries(newCollections.map(c => [c.id, c])) };
-    });
+    setLibrary(lib => reorderCollections(lib, fromIndex, toIndex));
 
     resetDragState();
   };
@@ -543,19 +538,25 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
   };
 
   const duplicateCollectionHandler = useCallback((id: string) => {
-    try {
-      setLibrary(lib => {
-        const newLib = duplicateCollection(lib, id, t);
-        const newColl = Object.values(newLib.collections).find(c => !lib.collections[c.id]);
-        if (newColl) setEditingCollId(newColl.id);
-        return newLib;
-      });
-      showToast({ type: "success", message: t("mathLibrary.tabs.toast.duplicated") });
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : t("mathLibrary.tabs.toast.failed");
-      showToast({ type: "error", message });
-    }
-  }, [setEditingCollId, setLibrary, showToast, t]);
+    setLibrary(lib => {
+      const collectionsArray = Object.values(lib.collections);
+      const originalIndex = collectionsArray.findIndex(c => c.id === id);
+      if (originalIndex === -1) return lib;
+
+      // Duplicate and place new collection right after original
+      const newLib = duplicateCollection(lib, id, t, undefined, originalIndex + 1);
+
+      // Find the new collection
+      const newColl = Object.values(newLib.collections).find(c => !lib.collections[c.id]);
+      if (newColl) {
+        setActiveColl(newColl.id); // select the duplicated collection //BUG
+      }
+
+      return newLib;
+    });
+
+    showToast({ type: "success", message: t("mathLibrary.tabs.toast.duplicated") });
+  }, [setLibrary, showToast, t, setActiveColl]);
 
   const deleteCollectionHandler = useCallback((id: string) => {
     try {
@@ -606,9 +607,13 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
       if (!draggingSource) return;
 
       if (draggingSource.type === "library") {
+        let success = false;
+
         setLibrary(prevLib => {
           try {
-            return copyEntryToCollection(prevLib, draggingSource.entryId, collectionId);
+            const updated = copyEntryToCollection(prevLib, draggingSource.entryId, collectionId);
+            success = true;
+            return updated;
           } catch (err: unknown) {
             let message: string;
             if (err instanceof Error) message = err.message;
@@ -619,7 +624,11 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
             return prevLib; // important: return previous state to prevent crash
           }
         });
-        showToast({ type: "success", message: t("mathLibrary.tabs.toast.duplicated") });
+
+        if (success) {
+          showToast({ type: "success", message: t("mathLibrary.tabs.toast.duplicated") });
+        }
+
       } else {
         console.log("Want to drop a thing directly from editor", draggingSource);
         showToast({

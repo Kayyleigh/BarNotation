@@ -697,7 +697,7 @@ const MathLibrary: React.FC<MathLibraryProps> = ({ library, setLibrary, updateEn
         return updated;
       } catch (err: unknown) {
         const message = err instanceof Error ? err.message : t("mathLibrary.entries.toast.failed");
-        showToast({ type: "error", message });
+        showToast({ type: "error", message }); //BUG? of duplication toast
         return lib; // keep unchanged
       }
     });
@@ -761,11 +761,10 @@ const MathLibrary: React.FC<MathLibraryProps> = ({ library, setLibrary, updateEn
         library={library}
         setLibrary={setLibrary}
         collections={collections}
-        activeColl={activeCollId} //Type 'string | null' is not assignable to type 'string'.
+        activeColl={activeCollId}
         setActiveColl={changeActiveCollection}
         editingCollId={editingCollId}
         setEditingCollId={setEditingCollId}
-        setCollections={setLibrary}
         menuOpenFor={menuOpenFor}
         setMenuOpenFor={setMenuOpenFor}
       />
@@ -787,7 +786,7 @@ const MathLibrary: React.FC<MathLibraryProps> = ({ library, setLibrary, updateEn
         />
       </div>
 
-      {activeColl ? (
+      {activeCollId ? (
         loadingCollection ? (
           <div className={styles.loadingContainer}>
             <div className={styles.spinner} />
@@ -797,7 +796,7 @@ const MathLibrary: React.FC<MathLibraryProps> = ({ library, setLibrary, updateEn
           <LibraryEntries
             library={library}
             setLibrary={setLibrary}
-            activeCollId={activeCollId} //Type 'string | null' is not assignable to type 'string'.
+            activeCollId={activeCollId}
             sortOption={sortOption} //Type 'string' is not assignable to type 'LibraryEntriesSortOption'.ts(2322)
             searchTerm={searchTerm}
             onDrop={handleDropOnLibrary}

@@ -554,21 +554,20 @@ export function purgeExpiredDeletes(lib: MathNodeLibrary): MathNodeLibrary {
  * Duplicate any collection (premade or custom) into a new custom collection.
  * - New collection gets `name = "<orig> (copy)"` (caller can decide final name).
  * - All memberships are recreated with dragCount=0 and addedAt=now.
+ * - New collection is optionally inserted at a specific index (default: end)
  */
 export function duplicateCollection(
     lib: MathNodeLibrary,
     sourceCollectionId: string,
     t: (key: string) => string,
-    newName?: string
+    newName?: string,
+    targetIndex?: number
 ): MathNodeLibrary {
     const source = lib.collections[sourceCollectionId];
     if (!source) throw new Error("Source collection not found");
 
-    // Determine the original collection's display name
     const originalName =
         source.type === "custom" ? source.name : t(`premadeCollections.${source.id}`);
-
-    // Use provided newName, or default to "<original name> (Copy)"
     const finalName = newName?.trim() || `${originalName} (Copy)`;
 
     const newId = crypto.randomUUID();
@@ -576,7 +575,7 @@ export function duplicateCollection(
         id: newId,
         type: "custom",
         name: finalName,
-        createdAt: now(),
+        createdAt: Date.now(),
     };
 
     const next = cloneLib(lib);
@@ -588,11 +587,18 @@ export function duplicateCollection(
     const newMemberships: LibraryMembership[] = srcMemberships.map((m) => ({
         entryId: m.entryId,
         collectionId: newId,
-        addedAt: now(),
+        addedAt: Date.now(),
         dragCount: 0,
     }));
-
     next.memberships.push(...newMemberships);
+
+    // Reorder if targetIndex is provided
+    if (typeof targetIndex === "number") {
+        const collectionsArray = Object.values(next.collections);
+        const newCollIndex = collectionsArray.findIndex((c) => c.id === newId);
+        return reorderCollections(next, newCollIndex, targetIndex);
+    }
+
     return next;
 }
 
@@ -640,6 +646,29 @@ export function getSortedEntriesForCollection(
         default:
             return rows;
     }
+}
+
+/**
+ * Reorders collections in a library.
+ * @param lib Current library object
+ * @param fromIndex Original index of the item
+ * @param toIndex Target index
+ * @returns New library object with collections reordered
+ */
+export function reorderCollections(
+    lib: MathNodeLibrary,
+    fromIndex: number,
+    toIndex: number
+): MathNodeLibrary {
+    const collectionsArray = Object.values(lib.collections);
+    const [moved] = collectionsArray.splice(fromIndex, 1);
+    collectionsArray.splice(toIndex, 0, moved);
+
+    const newCollectionsMap = Object.fromEntries(
+        collectionsArray.map((c) => [c.id, c])
+    );
+
+    return { ...lib, collections: newCollectionsMap };
 }
 
 /* ------------------------------- Old → New -------------------------------- */
