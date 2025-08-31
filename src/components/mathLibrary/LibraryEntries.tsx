@@ -303,7 +303,7 @@ const LibraryEntryItem: React.FC<LibraryEntryItemProps> = React.memo(
         role="listitem"
         tabIndex={0}
       >
-        <Tooltip text={entry.latex}>
+        <Tooltip text={entry.commandSequence ?? entry.latex}>
           <MathView node={entry.node} showPlaceHolder={true} />
         </Tooltip>
         <div className={styles.meta}>

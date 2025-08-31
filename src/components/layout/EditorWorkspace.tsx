@@ -13,6 +13,7 @@ import { useI18n } from "../../i18n/useI18n";
 import type { MathNodeLibrary } from "../../models/libraryTypes";
 import { createDefaultLibrary, loadLibrary } from "../../utils/mathLibraryUtils";
 import type { DragSource, DropTarget } from "../../models/dragTypes";
+import { CustomCommandProvider } from "../../hooks/customCommands/CustomCommandProvider";
 
 interface EditorWorkspaceProps {
   noteId: string | null;
@@ -204,7 +205,7 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({
   const { undo, redo } = useEditorHistory();
 
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
+    const handleKeyDown = (e: KeyboardEvent) => { // BUG this is the shit place where I do not have the custom commands available
       if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key === "z") {
         e.preventDefault();
         undo();
@@ -220,36 +221,37 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({
   const editorPaneStyle = React.useMemo(() => ({ width: "100%", height: "100%" }), []);
 
   return (
-    <div className="editor-workspace" style={{ display: "flex", height: "100%", width: "100%" }}>
-      {noteId && noteMetadata ? (
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <EditorPane
-            style={editorPaneStyle}
-            noteId={noteId}
-            onDropNode={onDropNode}
-            noteMetadata={noteMetadata}
-            setNoteMetadata={setNoteMetadata}
+    <CustomCommandProvider library={library}>
+      <div className="editor-workspace" style={{ display: "flex", height: "100%", width: "100%" }}>
+        {noteId && noteMetadata ? (
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <EditorPane
+              style={editorPaneStyle}
+              noteId={noteId}
+              onDropNode={onDropNode}
+              noteMetadata={noteMetadata}
+              setNoteMetadata={setNoteMetadata}
+            />
+          </div>
+
+        ) : (
+          <div className={styles.emptyMessage} style={{ flex: 1, minWidth: 0 }}>
+            Select a note or create a new one.
+          </div>
+        )}
+        <ResizableSidebar
+          side="right"
+          title={t("layout.mathLibraryPanel")}
+        // storageKey="math-library"
+        >
+          <MathLibrary
+            library={library}
+            setLibrary={setLibrary}
+            updateEntryRef={updateLibraryEntryRef}
           />
-        </div>
-
-      ) : (
-        <div className={styles.emptyMessage} style={{ flex: 1, minWidth: 0 }}>
-          Select a note or create a new one.
-        </div>
-      )}
-      <ResizableSidebar
-        side="right"
-        title={t("layout.mathLibraryPanel")}
-      // storageKey="math-library"
-      >
-        <MathLibrary
-          library={library}
-          setLibrary={setLibrary}
-          updateEntryRef={updateLibraryEntryRef}
-        />
-      </ResizableSidebar>
-
-    </div>
+        </ResizableSidebar>
+      </div>
+    </CustomCommandProvider>
   );
 };
 

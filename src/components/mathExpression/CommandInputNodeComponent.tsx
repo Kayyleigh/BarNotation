@@ -14,6 +14,7 @@ import { type TextNode, type CommandInputNode, type MathNode } from "../../model
 import MathView from "./MathView";
 import { renderContainerChildren } from "./MathRenderers";
 import type { BaseRenderProps, MathRendererProps } from "./MathRenderer";
+import { useCustomCommands } from "../../hooks/customCommands/useCustomCommands";
 
 function getHighlightedSequence(seq: string, input: string): JSX.Element {
   const seqBody = seq.startsWith("\\") ? seq.slice(1) : seq;
@@ -55,6 +56,8 @@ export function CommandInputNodeComponent({
 }: Props) {
   const inputString = node.children.map((n: TextNode) => n.content).join("");
 
+  const { commandMap } = useCustomCommands();
+
   const [matching, setMatching] = useState<string[]>([]);
   const [highlight, setHighlight] = useState(0);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -68,6 +71,13 @@ export function CommandInputNodeComponent({
   });
 
   const [dropdownMaxHeight, setDropdownMaxHeight] = useState(300);
+
+  // All sequences: special + custom
+  const allSequences = useMemo(() => {
+    const customSeqs = Object.keys(commandMap);
+    const specialSeqs = specialSequences.map(s => s.sequence);
+    return [...specialSeqs, ...customSeqs];
+  }, [commandMap]);
 
   const { cursor, containerId, index } = baseProps;
 
@@ -83,11 +93,13 @@ export function CommandInputNodeComponent({
   const previews = useMemo(() => {
     const result: Record<string, MathNode> = {};
     for (const seq of matching) {
-      const node = specialSequences.find(s => s.sequence === seq)?.createNode();
-      if (node) result[seq] = node;
+      const nodeFromSpecial = specialSequences.find(s => s.sequence === seq)?.createNode();
+      const nodeFromCustom = commandMap[seq]?.node;
+      if (nodeFromSpecial) result[seq] = nodeFromSpecial;
+      else if (nodeFromCustom) result[seq] = nodeFromCustom;
     }
     return result;
-  }, [matching]);
+  }, [matching, commandMap]);
 
   useEffect(() => {
     if (!shouldTriggerDropdown) {
@@ -96,53 +108,50 @@ export function CommandInputNodeComponent({
       return;
     }
 
-    // Get the part after the backslash, or the full input
     const inputCommand = inputString.replace("\\", "").toLowerCase();
 
-    const matches = specialSequences
-      .map(seq => seq.sequence)
-      .filter(seq =>
-        seq.replace("\\", "").toLowerCase().includes(inputCommand)
-      );
+    const matches = allSequences.filter(seq =>
+      seq.replace("\\", "").toLowerCase().includes(inputCommand)
+    );
 
     setMatching(matches);
     setHighlight(0);
     setShowDropdown(matches.length > 0);
-  }, [inputString, shouldTriggerDropdown]);
+  }, [inputString, shouldTriggerDropdown, allSequences]);
 
   useLayoutEffect(() => {
     if (!matching.length || !anchorRef.current) return;
-  
+
     const rect = anchorRef.current.getBoundingClientRect();
     const viewportHeight = window.innerHeight;
-  
+
     const spaceBelow = viewportHeight - rect.bottom;
     const spaceAbove = rect.top;
-  
+
     let top = rect.bottom + window.scrollY + 4;
     let availableSpace = spaceBelow;
-  
+
     // If not enough space below but more space above, place it above
     if (spaceBelow < 150 && spaceAbove > spaceBelow) {
       top = rect.top + window.scrollY - 4; // we'll subtract height later
       availableSpace = spaceAbove;
     }
-  
+
     const dropdownHeight = Math.min(400, Math.max(availableSpace - 8, 100));
-  
+
     // If placed above, shift up by its height
     if (availableSpace === spaceAbove) {
       top -= dropdownHeight;
     }
-  
+
     setDropdownPos({
       top,
       left: rect.left + window.scrollX
     });
     setDropdownMaxHeight(dropdownHeight);
-    
+
   }, [matching.length, inputString]);
-  
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -216,34 +225,37 @@ export function CommandInputNodeComponent({
               maxHeight: dropdownMaxHeight,
             }}
           >
-            {matching.map((seq, i) => (
-              <li
-                key={seq}
-                ref={el => {
-                  if (i === highlight && el) {
-                    el.scrollIntoView({ block: "nearest" });
-                  }
-                }}
-                className={clsx(styles.autocompleteItem, {
-                  [styles.highlighted]: i === highlight,
-                })}
-                onMouseDown={(e) => {
-                  e.preventDefault(); // prevents blur before click fires
-                  onSelectSuggestion(seq);
-                }}
-              >
-                <div className={styles.autocompleteRow}>
-                  <span className={styles.commandLabel}>
-                    {getHighlightedSequence(seq, inputString)}
-                  </span>
-                  <div className={styles.mathPreview}>
-                    {previews[seq] && (
-                      <MathView node={previews[seq]} showPlaceHolder={true} />
-                    )}
+            {matching.map((seq, i) => {
+              const isCustom = !!commandMap[seq]; // true if custom command
+              return (
+                <li
+                  key={seq}
+                  ref={el => {
+                    if (i === highlight && el) {
+                      el.scrollIntoView({ block: "nearest" });
+                    }
+                  }}
+                  className={clsx(
+                    styles.autocompleteItem,
+                    { [styles.highlighted]: i === highlight },
+                    { [styles.customCommand]: isCustom }
+                  )}
+                  onMouseDown={(e) => {
+                    e.preventDefault(); // prevents blur before click fires
+                    onSelectSuggestion(seq);
+                  }}
+                >
+                  <div className={styles.autocompleteRow}>
+                    <span className={styles.commandLabel}>
+                      {getHighlightedSequence(seq, inputString)}
+                    </span>
+                    <div className={styles.mathPreview}>
+                      {previews[seq] && <MathView node={previews[seq]} showPlaceHolder={true} />}
+                    </div>
                   </div>
-                </div>
-              </li>
-            ))}
+                </li>
+              );
+            })}
           </ul>,
           document.body
         )}

@@ -45,3 +45,9 @@
   font-weight: bold;
   color: var(--highlight-color, #007acc); /* customizable */
 }
+
+/* Highlight custom command sequences */
+.customCommand {
+  background-color: hotpink;
+  color: white; /* optional: better contrast */
+}

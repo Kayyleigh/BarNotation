@@ -11,7 +11,7 @@ import {
   renderChildedNode,
   renderAccentedNode,
   renderStyledNode,
-  renderCommandInputNode,
+  // renderCommandInputNode,
   renderMultiDigitNode,
   renderBigOperatorNode,
   renderRootWrapperNode,
@@ -23,6 +23,7 @@ import {
 import type { CursorPosition } from "../../logic/cursor";
 import type { EditorState } from "../../logic/editor-state";
 import type { DragSource, DropTarget } from "../../models/dragTypes";
+import { CommandInputRenderer } from "./CommandInputRenderer";
 
 export type MathRendererProps = {
   node: MathNode;
@@ -178,7 +179,8 @@ const InnerMathRenderer: React.FC<MathRendererProps> = ({
       content = renderMultiDigitNode(node, props);
       break;
     case "command-input":
-      content = renderCommandInputNode(node, props);
+      // content = renderCommandInputNode(node, props);
+      content = <CommandInputRenderer node={node} baseProps={props} />;
       break;
     case "inline-container":
       content = renderInlineContainerNode(node, props);
