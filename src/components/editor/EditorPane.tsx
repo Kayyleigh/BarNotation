@@ -13,15 +13,10 @@ import { useEditorHistory } from "../../hooks/editorHistory/EditorHistoryContext
 import { createRootWrapper } from "../../models/nodeFactories";
 import { createEditorState, type EditorState } from "../../logic/editor-state";
 import { EditorModeProvider } from "../../hooks/editorMode/EditorModeProvider";
-import type { DragSource } from "../../hooks/mathDrag/DragContext";
 import { MAX_ZOOM, MIN_ZOOM } from "../../constants/editorConstants";
 import { LatexRefreshProvider } from "../../hooks/latexViewRefresh/LatexRefreshProvider";
+import type { DragSource, DropTarget } from "../../models/dragTypes";
 
-type DropTarget = {
-  cellId: string;
-  containerId: string;
-  index: number;
-};
 
 interface EditorPaneProps {
   noteId: string | null;

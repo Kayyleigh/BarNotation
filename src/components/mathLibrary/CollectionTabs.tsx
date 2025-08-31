@@ -45,7 +45,7 @@
 //   const renameInputRef = useRef<HTMLInputElement | null>(null);
 
 //   // Drag context from your hook
-//   const { draggingNode, setDraggingNode, dropTarget, setDropTarget } = useDragContext();
+//   const { draggingSource, setDraggingSource, dropTarget, setDropTarget } = useDragContext();
 
 //   const resetDragState = () => {
 //     setDraggingTabIdx(null);
@@ -209,10 +209,10 @@
 
 //   // ---- Drag/drop for dropping entries into tabs (including inactive tabs) ----
 
-//   // Called when dragging over a tab — if draggingNode exists and is a library entry, allow drop on the tab
+//   // Called when dragging over a tab — if draggingSource exists and is a library entry, allow drop on the tab
 //   const onTabDragOverEntry = useCallback(
 //     (e: React.DragEvent, collectionId: string) => {
-//       if (!draggingNode) return;
+//       if (!draggingSource) return;
 //       e.preventDefault();
 //       e.stopPropagation();
 
@@ -225,7 +225,7 @@
 
 //       e.dataTransfer.dropEffect = "move";
 //     },
-//     [draggingNode, setDropTarget]
+//     [draggingSource, setDropTarget]
 //   );
 
 //   // Called when dropping a dragged entry onto a tab
@@ -234,25 +234,25 @@
 //       e.preventDefault();
 //       e.stopPropagation();
 
-//       if (!draggingNode) return;
+//       if (!draggingSource) return;
 
-//       // Use draggingNode info to add the entry to target collection
-//       // Assume draggingNode.node is the entry node (adapt if needed)
+//       // Use draggingSource info to add the entry to target collection
+//       // Assume draggingSource.node is the entry node (adapt if needed)
 //       const entryToAdd: LibraryEntry = {
 //         id: crypto.randomUUID(),
-//         node: draggingNode.node,
+//         node: draggingSource.node,
 //         draggedCount: 0,
-//         latex: nodeToLatex(draggingNode.node) || "",
+//         latex: nodeToLatex(draggingSource.node) || "",
 //         addedAt: Date.now(),
 //       };
 
 //       onDropEntryToCollection(entryToAdd, collectionId);
 
 //       // Clear drag state
-//       setDraggingNode(null);
+//       setDraggingSource(null);
 //       setDropTarget(null);
 //     },
-//     [draggingNode, onDropEntryToCollection, setDraggingNode, setDropTarget]
+//     [draggingSource, onDropEntryToCollection, setDraggingSource, setDropTarget]
 //   );
 
 //   const getCollectionDisplayName = (collection: LibraryCollection): string => {
@@ -437,6 +437,7 @@ import {
   archiveCollection,
   softDeleteCollection,
   renameCollection,
+  copyEntryToCollection,
 } from "../../utils/mathLibraryUtils";
 
 interface CollectionTabsProps {
@@ -462,11 +463,10 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
   setEditingCollId,
   menuOpenFor,
   setMenuOpenFor,
-  onDropEntryToCollection,
 }) => {
   const { t } = useI18n();
   const { showToast } = useToast();
-  const { draggingNode, setDraggingNode, dropTarget, setDropTarget } = useDragContext();
+  const { draggingSource, setDraggingSource, dropTarget, setDropTarget } = useDragContext();
 
   const buttonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const [draggingTabIdx, setDraggingTabIdx] = useState<number | null>(null);
@@ -589,23 +589,50 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
       showToast({ type: "error", message });
     }
   }, [activeColl, collections, setActiveColl, setLibrary, showToast, t]);
+
   // --- Drop entry on tab ---
   const onTabDragOverEntry = useCallback((e: React.DragEvent, collectionId: string) => {
-    if (!draggingNode) return;
+    if (!draggingSource) return;
     e.preventDefault();
     e.stopPropagation();
-    setDropTarget({ cellId: "library", containerId: collectionId, index: 0 });
+    setDropTarget({ type: "libraryCollection", collectionId: collectionId });
     e.dataTransfer.dropEffect = "move";
-  }, [draggingNode, setDropTarget]);
+  }, [draggingSource, setDropTarget]);
 
-  const onTabDropEntry = useCallback((e: React.DragEvent, collectionId: string) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (!draggingNode) return;
-    onDropEntryToCollection(draggingNode, collectionId); //TODO this is the big problem
-    setDraggingNode(null);
-    setDropTarget(null);
-  }, [draggingNode, onDropEntryToCollection, setDraggingNode, setDropTarget]);
+  const onTabDropEntry = useCallback(
+    (e: React.DragEvent, collectionId: string) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!draggingSource) return;
+
+      if (draggingSource.type === "library") {
+        setLibrary(prevLib => {
+          try {
+            return copyEntryToCollection(prevLib, draggingSource.entryId, collectionId);
+          } catch (err: unknown) {
+            let message: string;
+            if (err instanceof Error) message = err.message;
+            else if (typeof err === "string") message = err;
+            else message = t("mathLibrary.tabs.toast.failed");
+
+            showToast({ type: "error", message });
+            return prevLib; // important: return previous state to prevent crash
+          }
+        });
+        showToast({ type: "success", message: t("mathLibrary.tabs.toast.duplicated") });
+      } else {
+        console.log("Want to drop a thing directly from editor", draggingSource);
+        showToast({
+          type: "info",
+          message: t("mathLibrary.tabs.toast.unsupportedDrop"),
+        });
+      }
+
+      setDraggingSource(null);
+      setDropTarget(null);
+    },
+    [draggingSource, setDraggingSource, setDropTarget, setLibrary, showToast, t]
+  );
 
   const getCollectionDisplayName = (c: LibraryCollection) =>
     c.type === "premade" ? t(`premadeCollections.${c.id}`) : c.name || t("mathLibrary.tabs.default.collection");
@@ -617,7 +644,7 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
         {collections.filter(c => !c.archivedAt).map((c, idx) => {
           const isDragOver = dragOverTabIdx.current === idx;
           const isDropTarget =
-            dropTarget?.cellId === "library" && dropTarget.containerId === c.id;
+            dropTarget?.type === "libraryCollection" && dropTarget.collectionId === c.id;
 
           return (
             <div

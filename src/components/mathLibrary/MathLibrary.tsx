@@ -176,7 +176,7 @@
 //   });
 
 //   // Drag context from provider
-//   const { draggingNode, setDraggingNode, setDropTarget } =
+//   const { draggingSource, setDraggingSource, setDropTarget } =
 //     useDragContext();
 
 //   // Save collections on changes
@@ -249,7 +249,7 @@
 //   const handleLibraryDrop = useCallback(
 //     (e: React.DragEvent, dropCollectionId: string, dropIndex: number | null) => {
 //       // Same logic as your original function
-//       if (!draggingNode) {
+//       if (!draggingSource) {
 //         const plainText = e.dataTransfer.getData("text/plain")?.trim();
 
 //         if (!plainText) return;
@@ -290,29 +290,29 @@
 //       }
 
 //       if (
-//         draggingNode.sourceType === "library" &&
-//         draggingNode.cellId === dropCollectionId
+//         draggingSource.sourceType === "library" &&
+//         draggingSource.cellId === dropCollectionId
 //       ) {
 //         return;
 //       }
 
 //       const targetCollection = findCollection(dropCollectionId);
 //       if (!targetCollection) {
-//         setDraggingNode(null);
+//         setDraggingSource(null);
 //         setDropTarget(null);
 //         return;
 //       }
 
-//       if (draggingNode.sourceType === "library") {
-//         const sourceCollection = findCollection(draggingNode.cellId || "");
+//       if (draggingSource.sourceType === "library") {
+//         const sourceCollection = findCollection(draggingSource.cellId || "");
 //         if (!sourceCollection) {
-//           setDraggingNode(null);
+//           setDraggingSource(null);
 //           setDropTarget(null);
 //           return;
 //         }
 
 //         const sourceEntries = [...sourceCollection.entries];
-//         const [movedEntry] = sourceEntries.splice(draggingNode.index, 1);
+//         const [movedEntry] = sourceEntries.splice(draggingSource.index, 1);
 
 //         const targetEntries =
 //           dropIndex !== null
@@ -337,8 +337,8 @@
 //         );
 
 //         showToast({ type: "success", message: t("mathLibrary.success.entryMoved") }); //TODO maybe take arg to let user know which one? 
-//       } else if (draggingNode.sourceType === "cell") {
-//         const latex = draggingNode.node ? nodeToLatex(draggingNode.node) ?? "" : "";
+//       } else if (draggingSource.sourceType === "cell") {
+//         const latex = draggingSource.node ? nodeToLatex(draggingSource.node) ?? "" : "";
 //         const exists = targetCollection.entries.some(
 //           (e) => e.latex === latex
 //         );
@@ -347,7 +347,7 @@
 //         } else {
 //           const newEntry: LibraryEntry = {
 //             id: crypto.randomUUID(),
-//             node: draggingNode.node,
+//             node: draggingSource.node,
 //             latex,
 //             addedAt: Date.now(),
 //             draggedCount: 0,
@@ -367,10 +367,10 @@
 //         }
 //       }
 
-//       setDraggingNode(null);
+//       setDraggingSource(null);
 //       setDropTarget(null);
 //     },
-//     [draggingNode, findCollection, setDraggingNode, setDropTarget, showToast, t, updateCollectionEntries]
+//     [draggingSource, findCollection, setDraggingSource, setDropTarget, showToast, t, updateCollectionEntries]
 //   );
 
 //   const activeCollection = collections.find(c => c.id === activeColl);
@@ -600,7 +600,7 @@ const MathLibrary: React.FC<MathLibraryProps> = ({ library, setLibrary, updateEn
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOption, setSortOption] = useState("date"); // default sort mode
   const [archiveModalOpen, setArchiveModalOpen] = useState(false);
-  const { draggingNode, setDraggingNode } = useDragContext(); // TODO!! This is possibly going to cause lots of rerenders
+  const { draggingSource, setDraggingSource } = useDragContext();
 
   // --- Update entry dragged count for a specific membership ---
   const updateEntryDraggedCount = useCallback(
@@ -631,7 +631,7 @@ const MathLibrary: React.FC<MathLibraryProps> = ({ library, setLibrary, updateEn
         };
       });
     },
-    []
+    [setLibrary] //TODO?? Can prevent?
   );
 
   useEffect(() => {
@@ -679,23 +679,10 @@ const MathLibrary: React.FC<MathLibraryProps> = ({ library, setLibrary, updateEn
 
   const handleSortChange = useCallback((opt: string) => setSortOption(opt), []);
 
-  // const handleDropEntryToCollection = useCallback(
-  //   (entryId: string, targetCollectionId: string) => {
-  //     try {
-  //       setLibrary((lib) => copyEntryToCollection(lib, entryId, targetCollectionId));
-  //       showToast({ type: "success", message: t("mathLibrary.entries.toast.added") });
-  //     } catch (err: unknown) {
-  //       const message = err instanceof Error ? err.message : t("mathLibrary.entries.toast.failed");
-  //       showToast({ type: "error", message });
-  //     }
-  //   },
-  //   [setLibrary, showToast, t]
-  // );
-
   const handleDropOnLibrary = useCallback(() => {
-    if (!activeColl || !draggingNode) return;
+    if (!activeColl || !draggingSource) return;
 
-    const latex = nodeToLatex(draggingNode.node, false);
+    const latex = nodeToLatex(draggingSource.node, false);
     if (!latex) {
       showToast({ type: "error", message: t("mathLibrary.entries.toast.invalidLatex") });
       return;
@@ -705,7 +692,7 @@ const MathLibrary: React.FC<MathLibraryProps> = ({ library, setLibrary, updateEn
 
     setLibrary((lib) => {
       try {
-        const updated = addEntryToCollection(lib, activeColl.id, latex, draggingNode.node);
+        const updated = addEntryToCollection(lib, activeColl.id, latex, draggingSource.node);
         success = true;
         return updated;
       } catch (err: unknown) {
@@ -715,12 +702,12 @@ const MathLibrary: React.FC<MathLibraryProps> = ({ library, setLibrary, updateEn
       }
     });
 
-    setDraggingNode(null);
+    setDraggingSource(null);
 
     if (success) {
       showToast({ type: "success", message: t("mathLibrary.entries.toast.added") });
     }
-  }, [activeColl, draggingNode, setLibrary, setDraggingNode, showToast, t]);
+  }, [activeColl, draggingSource, setLibrary, setDraggingSource, showToast, t]);
 
   const handleUnarchive = useCallback((collectionId: string) => {
     try {
@@ -753,13 +740,7 @@ const MathLibrary: React.FC<MathLibraryProps> = ({ library, setLibrary, updateEn
   }, [setLibrary, showToast, t]);
 
   const handleCloseArchiveModal = useCallback(() => setArchiveModalOpen(false), []);
-
-  // === OPTIONS ===
-  // const sortOptions = [
-  //   { value: "recent", label: t("mathLibrary.sort.recent") },
-  //   { value: "oldest", label: t("mathLibrary.sort.oldest") },
-  //   { value: "mostUsed", label: t("mathLibrary.sort.mostUsed") },
-  // ];
+  
   const sortOptions = [
     { label: t("mathLibrary.sort.newest"), value: "date" },
     { label: t("mathLibrary.sort.oldest"), value: "date-asc" },
@@ -780,14 +761,13 @@ const MathLibrary: React.FC<MathLibraryProps> = ({ library, setLibrary, updateEn
         library={library}
         setLibrary={setLibrary}
         collections={collections}
-        activeColl={activeCollId}
+        activeColl={activeCollId} //Type 'string | null' is not assignable to type 'string'.
         setActiveColl={changeActiveCollection}
         editingCollId={editingCollId}
         setEditingCollId={setEditingCollId}
         setCollections={setLibrary}
         menuOpenFor={menuOpenFor}
         setMenuOpenFor={setMenuOpenFor}
-        onDropEntryToCollection={addEntryToCollection}
       />
 
       <div className={styles.controls}>
@@ -817,8 +797,8 @@ const MathLibrary: React.FC<MathLibraryProps> = ({ library, setLibrary, updateEn
           <LibraryEntries
             library={library}
             setLibrary={setLibrary}
-            activeCollId={activeCollId}
-            sortOption={sortOption}
+            activeCollId={activeCollId} //Type 'string | null' is not assignable to type 'string'.
+            sortOption={sortOption} //Type 'string' is not assignable to type 'LibraryEntriesSortOption'.ts(2322)
             searchTerm={searchTerm}
             onDrop={handleDropOnLibrary}
             onRendered={() => setLoadingCollection(false)}

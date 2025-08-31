@@ -1,5 +1,13 @@
-// hooks/useDragContext.ts
+// // hooks/useDragContext.ts
+// import { useContext } from "react";
+// import { DragContext } from "./DragContext";
+
+// export const useDragContext = () => useContext(DragContext);
+
+// useDragContext.ts
 import { useContext } from "react";
 import { DragContext } from "./DragContext";
 
-export const useDragContext = () => useContext(DragContext);
+export const useDragContext = () => {
+  return useContext(DragContext);
+};

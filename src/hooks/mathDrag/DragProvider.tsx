@@ -1,17 +1,38 @@
-// hooks/DragProvider.tsx
+// // hooks/DragProvider.tsx
+// import React, { useState, useMemo } from "react";
+// import { DragContext, type DragSource, type DropTarget } from "./DragContext";
+
+// export const DragProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+//   const [draggingNode, setDraggingNode] = useState<DragSource>(null);
+//   const [dropTarget, setDropTarget] = useState<DropTarget>(null);
+
+//   const contextValue = useMemo(() => ({
+//     draggingNode,
+//     setDraggingNode,
+//     dropTarget,
+//     setDropTarget,
+//   }), [draggingNode, dropTarget]);
+
+//   return (
+//     <DragContext.Provider value={contextValue}>
+//       {children}
+//     </DragContext.Provider>
+//   );
+// };
+
+// DragProvider.tsx
 import React, { useState, useMemo } from "react";
-import { DragContext, type DragSource, type DropTarget } from "./DragContext";
+import { DragContext } from "./DragContext";
+import type { DragSource, DropTarget } from "../../models/dragTypes";
 
 export const DragProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [draggingNode, setDraggingNode] = useState<DragSource>(null);
+  const [draggingSource, setDraggingSource] = useState<DragSource | null>(null);
   const [dropTarget, setDropTarget] = useState<DropTarget>(null);
 
-  const contextValue = useMemo(() => ({
-    draggingNode,
-    setDraggingNode,
-    dropTarget,
-    setDropTarget,
-  }), [draggingNode, dropTarget]);
+  const contextValue = useMemo(
+    () => ({ draggingSource, setDraggingSource, dropTarget, setDropTarget }),
+    [draggingSource, dropTarget]
+  );
 
   return (
     <DragContext.Provider value={contextValue}>

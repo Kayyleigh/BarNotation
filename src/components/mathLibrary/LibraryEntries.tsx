@@ -262,7 +262,6 @@ import {
   getMembership,
   type LibraryEntriesSortOption,
 } from "../../utils/mathLibraryUtils";
-import { useToast } from "../../hooks/toast/useToast";
 
 interface LibraryEntriesProps {
   library: MathNodeLibrary;
@@ -277,24 +276,21 @@ interface LibraryEntriesProps {
 interface LibraryEntryItemProps {
   entry: LibraryEntry;
   localDragCount: number;
-  isDropTarget: boolean;
   onDragStart: (e: React.DragEvent) => void;
-  onDragOver: (e: React.DragEvent) => void;
   onDragLeave: () => void;
   onDelete: () => void;
   showDeleteButton: boolean;
 }
 
 const LibraryEntryItem: React.FC<LibraryEntryItemProps> = React.memo(
-  ({ entry, localDragCount, isDropTarget, onDragStart, onDragOver, onDragLeave, onDelete, showDeleteButton }) => {
+  ({ entry, localDragCount, onDragStart, onDragLeave, onDelete, showDeleteButton }) => {
     const { t } = useI18n();
 
     return (
       <div
-        className={`${styles.libraryEntry} ${isDropTarget ? styles.dropTarget : ""}`}
+        className={`${styles.libraryEntry}`}
         draggable
         onDragStart={onDragStart}
-        onDragOver={onDragOver}
         onDragLeave={onDragLeave}
         role="listitem"
         tabIndex={0}
@@ -329,9 +325,9 @@ const LibraryEntries: React.FC<LibraryEntriesProps> = ({
   onRendered,
 }) => {
   const { t } = useI18n();
-  const { showToast } = useToast();
 
-  const { draggingNode, setDraggingNode, dropTarget, setDropTarget } = useDragContext();
+  // const { draggingNode, setDraggingNode, dropTarget, setDropTarget } = useDragContext();
+  const { draggingSource, setDraggingSource, dropTarget, setDropTarget } = useDragContext();
 
   const entries = useMemo(
     () => getEntriesForCollection(library, activeCollId),
@@ -408,95 +404,172 @@ const LibraryEntries: React.FC<LibraryEntriesProps> = ({
     return filtered;
   }, [activeCollId, entries, library, searchTerm, sortOption]);
 
+  //   // --- Drag & Drop handlers ---
+  //   const handleDragStart = useCallback(
+  //     (entry: LibraryEntry) => (e: React.DragEvent) => {
+  //       e.stopPropagation();
+  //       setDraggingNode({
+  //         sourceType: "library",
+  //         cellId: activeCollId,
+  //         containerId: entry.id,
+  //         node: entry.node,
+  //         index: 0 // may be fucked
+  //       });
+  //       setDropTarget(null);
+  //       e.dataTransfer.effectAllowed = "move";
+  //       e.dataTransfer.setData("text/plain", entry.latex);
+  //     },
+  //     [activeCollId, setDraggingNode, setDropTarget]
+  //   );
+
+  //   const handleDragLeave = useCallback(() => {
+  //     if (dropTarget?.cellId === "library") setDropTarget(null);
+  //   }, [dropTarget, setDropTarget]);
+
+  //   const handleDropAtEnd = useCallback(
+  //     (e: React.DragEvent) => {
+  //       e.preventDefault();
+  //       e.stopPropagation();
+  //       if (!draggingNode) return;
+  //       setDropTarget({ //THIS IS DOING A LOT OF STUFF: Maximum update depth exceeded. This can happen when a component calls setState inside useEffect, but useEffect either doesn't have a dependency array, or one of the dependencies changes on every render.
+  //         cellId: "library",
+  //         containerId: activeCollId,
+  //         index: filteredSortedEntries.length,
+  //       });
+  //       e.dataTransfer.dropEffect = "move";
+  //     },
+  //     [draggingNode, activeCollId, filteredSortedEntries.length, setDropTarget]
+  //   );
+
+  //   const handleDrop = useCallback(() => {
+  //     if (!draggingNode || !dropTarget) return;
+
+  //     if (dropTarget.containerId !== activeCollId) {
+  //       setDraggingNode(null);
+  //       setDropTarget(null);
+  //       return;
+  //     }
+
+  //     try {
+  //       onDrop(dropTarget.containerId); 
+  //     } finally {
+  //       setDraggingNode(null);
+  //       setDropTarget(null);
+  //     }
+  //   }, [draggingNode, dropTarget, activeCollId, setDraggingNode, setDropTarget, onDrop]);
+
+  //   useEffect(() => {
+  //     onRendered?.();
+  //   }, [filteredSortedEntries, onRendered]);
+
+  //   const activeCollection = library.collections[activeCollId];
+  //   const isPremade = activeCollection?.type === "premade";
+
+  //   return (
+  //     <div
+  //       className={styles.libraryDropZone}
+  //       onDragOver={handleDropAtEnd}
+  //       onDrop={handleDrop}
+  //       role="list"
+  //       aria-label={t("mathLibrary.entries.ariaLabel", { name: activeCollId })}
+  //     >
+  //       {filteredSortedEntries.map((entry) => {
+  //         const membership = getMembership(library, entry.id, activeCollId);
+
+  //         return (
+  //           <LibraryEntryItem
+  //             key={entry.id}
+  //             entry={entry}
+  //             localDragCount={membership?.dragCount ?? 0}
+  //             onDragStart={handleDragStart(entry)}
+  //             onDragLeave={handleDragLeave}
+  //             onDelete={() =>
+  //               setLibrary((lib) => removeEntryFromCollection(lib, entry.id, activeCollId))
+  //             }
+  //             showDeleteButton={!isPremade}
+  //           />
+  //         );
+  //       })}
+
+  //       {filteredSortedEntries.length === 0 && (
+  //         <p className={styles.empty}>
+  //           {entries.length === 0 ? t("mathLibrary.entries.empty") : t("mathLibrary.entries.noMatches")}
+  //         </p>
+  //       )}
+
+  //       {dropTarget?.cellId === "library" && dropTarget.containerId === activeCollId && dropTarget.index === null && (
+  //         <div className={styles.dropTargetEnd} />
+  //       )}
+  //     </div>
+  //   );
+  // };
+
+  // export default React.memo(LibraryEntries);
+
   // --- Drag & Drop handlers ---
   const handleDragStart = useCallback(
     (entry: LibraryEntry) => (e: React.DragEvent) => {
       e.stopPropagation();
-      setDraggingNode({
-        sourceType: "library",
-        cellId: activeCollId,
-        containerId: entry.id,
+
+      setDraggingSource({
+        type: "library",
+        collectionId: activeCollId,
+        entryId: entry.id,
         node: entry.node,
-        index: 0 // may be fucked
       });
+
       setDropTarget(null);
+
       e.dataTransfer.effectAllowed = "move";
       e.dataTransfer.setData("text/plain", entry.latex);
     },
-    [activeCollId, setDraggingNode, setDropTarget]
-  );
-
-  const handleDragOverEntry = useCallback(
-    (idx: number) => (e: React.DragEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      if (!draggingNode) return;
-      setDropTarget({
-        cellId: "library",
-        containerId: activeCollId,
-        index: idx,
-      });
-      e.dataTransfer.dropEffect = "move";
-    },
-    [draggingNode, activeCollId, setDropTarget]
+    [activeCollId, setDraggingSource, setDropTarget]
   );
 
   const handleDragLeave = useCallback(() => {
-    if (dropTarget?.cellId === "library") setDropTarget(null);
+    if (dropTarget?.type === "libraryCollection") {
+      setDropTarget(null);
+    }
   }, [dropTarget, setDropTarget]);
 
   const handleDropAtEnd = useCallback(
     (e: React.DragEvent) => {
       e.preventDefault();
       e.stopPropagation();
-      if (!draggingNode) return;
-      setDropTarget({ //THIS IS DOING A LOT OF STUFF: Maximum update depth exceeded. This can happen when a component calls setState inside useEffect, but useEffect either doesn't have a dependency array, or one of the dependencies changes on every render.
-        cellId: "library",
-        containerId: activeCollId,
-        index: filteredSortedEntries.length,
+
+      if (!draggingSource) return;
+
+      setDropTarget({
+        type: "libraryCollection",
+        collectionId: activeCollId,
       });
+
       e.dataTransfer.dropEffect = "move";
     },
-    [draggingNode, activeCollId, filteredSortedEntries.length, setDropTarget]
+    [draggingSource, activeCollId, setDropTarget]
   );
 
   const handleDrop = useCallback(() => {
-    if (!draggingNode || !dropTarget) return;
+    if (!draggingSource || !dropTarget) return;
 
-    if (dropTarget.containerId !== activeCollId) {
-      setDraggingNode(null);
+    if (
+      dropTarget.type !== "libraryCollection" ||
+      (draggingSource.type === "library" &&
+        draggingSource.collectionId === dropTarget.collectionId)
+    ) {
+      // No-op if dropping library entry into the same collection
+      setDraggingSource(null);
       setDropTarget(null);
       return;
     }
 
-    try { //TODO find out when this even fails
-      onDrop(dropTarget.containerId);
-      showToast({ type: "success", message: t("mathLibrary.entries.toast.added") });
-    } catch (err: unknown) {
-      let message: string;
-
-      if (err instanceof Error) {
-        message = err.message;
-      } else if (typeof err === "string") {
-        message = err;
-      } else if (
-        typeof err === "object" &&
-        err !== null &&
-        "message" in err &&
-        typeof (err as Record<string, unknown>).message === "string"
-      ) {
-        // Fully safe extraction without using `any`
-        message = (err as Record<string, string>).message;
-      } else {
-        message = t("mathLibrary.entries.toast.failed");
-      }
-
-      showToast({ type: "error", message });
+    try {
+      onDrop(dropTarget.collectionId);
     } finally {
-      setDraggingNode(null);
+      setDraggingSource(null);
       setDropTarget(null);
     }
-  }, [draggingNode, dropTarget, activeCollId, setDraggingNode, setDropTarget, onDrop, showToast, t]);
+  }, [draggingSource, dropTarget, onDrop, setDraggingSource, setDropTarget]);
 
   useEffect(() => {
     onRendered?.();
@@ -513,7 +586,7 @@ const LibraryEntries: React.FC<LibraryEntriesProps> = ({
       role="list"
       aria-label={t("mathLibrary.entries.ariaLabel", { name: activeCollId })}
     >
-      {filteredSortedEntries.map((entry, idx) => {
+      {filteredSortedEntries.map((entry) => {
         const membership = getMembership(library, entry.id, activeCollId);
 
         return (
@@ -521,13 +594,7 @@ const LibraryEntries: React.FC<LibraryEntriesProps> = ({
             key={entry.id}
             entry={entry}
             localDragCount={membership?.dragCount ?? 0}
-            isDropTarget={
-              dropTarget?.cellId === "library" &&
-              dropTarget.containerId === activeCollId &&
-              dropTarget.index === idx
-            }
             onDragStart={handleDragStart(entry)}
-            onDragOver={handleDragOverEntry(idx)}
             onDragLeave={handleDragLeave}
             onDelete={() =>
               setLibrary((lib) => removeEntryFromCollection(lib, entry.id, activeCollId))
@@ -541,10 +608,6 @@ const LibraryEntries: React.FC<LibraryEntriesProps> = ({
         <p className={styles.empty}>
           {entries.length === 0 ? t("mathLibrary.entries.empty") : t("mathLibrary.entries.noMatches")}
         </p>
-      )}
-
-      {dropTarget?.cellId === "library" && dropTarget.containerId === activeCollId && dropTarget.index === null && (
-        <div className={styles.dropTargetEnd} />
       )}
     </div>
   );
