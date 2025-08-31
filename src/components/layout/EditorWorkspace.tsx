@@ -11,6 +11,8 @@ import styles from "./EditorWorkspace.module.css";
 import type { MathNode } from "../../models/mathNodeTypes";
 import ResizableSidebar from "./ResizableSidebar";
 import { useI18n } from "../../i18n/useI18n";
+import type { MathNodeLibrary } from "../../models/libraryTypes";
+import { createDefaultLibrary, loadLibrary } from "../../utils/mathLibraryUtils";
 
 interface EditorWorkspaceProps {
   noteId: string | null;
@@ -47,6 +49,20 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({
   const { states: editorStates, order, textContents } = history.present;
 
   const updateLibraryEntryRef = useRef<(id: string) => void>(() => { });
+
+  const [library, setLibrary] = React.useState<MathNodeLibrary>(() => {
+    const stored = loadLibrary(); // your util: tries localStorage first
+    return stored ?? createDefaultLibrary();
+  });
+  
+  // persist to localStorage whenever library changes
+  useEffect(() => {
+    try {
+      localStorage.setItem("mathLibrary", JSON.stringify(library));
+    } catch (err) {
+      console.error("Failed to persist library", err);
+    }
+  }, [library]);
 
   // TODO: I AM NOT USING CELLS AT ALL ANYMORE I THINK. MUST FIND OUT HOW OR WHETHER TO LINK OR MERGE THAT LOGIC
   // RIGHT NOW WHEN I ADD CELLS, THEY WILL NOT UPDATE IN THE CELL COUNTS IN THE MENU BECAUSE NO CELL WAS ADDED, ONLY EDITORSTATE
@@ -145,6 +161,7 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({
     const updatedEditorStates = { ...editorStates };
 
     if (from.sourceType === "cell" && from.cellId === to.cellId) {
+      // within cell
       if (isDescendantOrSelf(from.node, to.containerId)) return;
       const node = cloneTreeWithNewIds(from.node);
       let updated = deleteNodeById(destState, from.node.id);
@@ -157,11 +174,13 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({
       updatedEditorStates[to.cellId] = updated;
     }
     else if (from.sourceType === "cell" && from.cellId !== to.cellId && sourceState) {
+      // between cells
       const node = cloneTreeWithNewIds(from.node);
       const updatedDest = insertNodeAtIndex(destState, to.containerId, to.index + 1, node);
       updatedEditorStates[to.cellId] = updatedDest;
     }
     else if (from.sourceType === "library") {
+      // from library to cell
       console.log(`Cloning from library ${nodeToLatex(from.node)} to ${to.cellId} ${to.containerId} ${to.index}`);
 
       const cloned = cloneTreeWithNewIds(from.node);
@@ -227,7 +246,8 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({
       // storageKey="math-library"
       >
         <MathLibrary
-          onDropNode={onDropNode}
+          library={library}
+          setLibrary={setLibrary}
           updateEntryRef={updateLibraryEntryRef}
         />
       </ResizableSidebar>
