@@ -313,3 +313,8 @@
     transform: translateY(0);
   }
 }
+
+.greenBorder {
+  border: green;
+  background-color: hotpink;
+}

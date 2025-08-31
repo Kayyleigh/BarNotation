@@ -249,7 +249,7 @@
 // export default React.memo(LibraryEntries);
 
 // components/mathLibrary/LibraryEntries.tsx
-import React, { useMemo, useCallback, useEffect } from "react";
+import React, { useMemo, useCallback, useEffect, useState } from "react";
 import { useDragContext } from "../../hooks/mathDrag/useDragContext";
 import type { MathNodeLibrary, LibraryEntry } from "../../models/libraryTypes";
 import styles from "./MathLibrary.module.css";
@@ -261,7 +261,11 @@ import {
   getEntriesForCollection,
   getMembership,
   type LibraryEntriesSortOption,
+  setEntryCommandSequence,
 } from "../../utils/mathLibraryUtils";
+import EditCustomCommandOnEntryModal from "../modals/EditCustomCommandOnEntryModal";
+import clsx from "clsx";
+import { useToast } from "../../hooks/toast/useToast";
 
 interface LibraryEntriesProps {
   library: MathNodeLibrary;
@@ -280,18 +284,22 @@ interface LibraryEntryItemProps {
   onDragLeave: () => void;
   onDelete: () => void;
   showDeleteButton: boolean;
+  onDoubleClick?: () => void; //TODO remove later when replaced w other way to set edit mode
+  highlight?: boolean; // optional green border support //TODO change to prettier later
 }
 
 const LibraryEntryItem: React.FC<LibraryEntryItemProps> = React.memo(
-  ({ entry, localDragCount, onDragStart, onDragLeave, onDelete, showDeleteButton }) => {
+  ({ entry, localDragCount, onDragStart, onDragLeave, onDelete, showDeleteButton, onDoubleClick, highlight, }) => {
     const { t } = useI18n();
 
     return (
       <div
-        className={`${styles.libraryEntry}`}
+        // className={`${styles.libraryEntry}`}
+        className={clsx(styles.libraryEntry, highlight && styles.greenBorder)}
         draggable
         onDragStart={onDragStart}
         onDragLeave={onDragLeave}
+        onDoubleClick={onDoubleClick} //TODO change later
         role="listitem"
         tabIndex={0}
       >
@@ -325,73 +333,62 @@ const LibraryEntries: React.FC<LibraryEntriesProps> = ({
   onRendered,
 }) => {
   const { t } = useI18n();
+  const { showToast } = useToast();
 
-  // const { draggingNode, setDraggingNode, dropTarget, setDropTarget } = useDragContext();
   const { draggingSource, setDraggingSource, dropTarget, setDropTarget } = useDragContext();
+
+  const [editingEntry, setEditingEntry] = useState<LibraryEntry | null>(null);
 
   const entries = useMemo(
     () => getEntriesForCollection(library, activeCollId),
     [library, activeCollId]
   );
 
+  // --- Filtering & sorting (unchanged) ---
   const filteredSortedEntries = useMemo(() => {
     let filtered = entries;
-
     if (searchTerm.trim()) {
       const lower = searchTerm.toLowerCase();
       filtered = filtered.filter((e) => e.latex.toLowerCase().includes(lower));
     }
-
     switch (sortOption) {
-      case "date":
-        filtered = filtered
-          .slice()
-          .sort((a, b) => {
-            const aMembership = getMembership(library, a.id, activeCollId);
-            const bMembership = getMembership(library, b.id, activeCollId);
-            return (bMembership?.addedAt || 0) - (aMembership?.addedAt || 0);
-          });
+      case "date": {
+        filtered = filtered.slice().sort((a, b) => {
+          const aMembership = getMembership(library, a.id, activeCollId);
+          const bMembership = getMembership(library, b.id, activeCollId);
+          return (bMembership?.addedAt || 0) - (aMembership?.addedAt || 0);
+        });
         break;
-      case "date-asc":
-        filtered = filtered
-          .slice()
-          .sort((a, b) => {
-            const aMembership = getMembership(library, a.id, activeCollId);
-            const bMembership = getMembership(library, b.id, activeCollId);
-            return (aMembership?.addedAt || 0) - (bMembership?.addedAt || 0);
-          });
+      }
+      case "date-asc": {
+        filtered = filtered.slice().sort((a, b) => {
+          const aMembership = getMembership(library, a.id, activeCollId);
+          const bMembership = getMembership(library, b.id, activeCollId);
+          return (aMembership?.addedAt || 0) - (bMembership?.addedAt || 0);
+        });
         break;
-      case "usage-local":
-        filtered = filtered
-          .slice()
-          .sort((a, b) => {
-            const aMembership = getMembership(library, a.id, activeCollId);
-            const bMembership = getMembership(library, b.id, activeCollId);
-            return (bMembership?.dragCount || 0) - (aMembership?.dragCount || 0);
-          });
+      }
+      case "usage-local": {
+        filtered = filtered.slice().sort((a, b) => {
+          const aMembership = getMembership(library, a.id, activeCollId);
+          const bMembership = getMembership(library, b.id, activeCollId);
+          return (bMembership?.dragCount || 0) - (aMembership?.dragCount || 0);
+        });
         break;
-      case "usage-local-asc":
-        filtered = filtered
-          .slice()
-          .sort((a, b) => {
-            const aMembership = getMembership(library, a.id, activeCollId);
-            const bMembership = getMembership(library, b.id, activeCollId);
-            return (aMembership?.dragCount || 0) - (bMembership?.dragCount || 0);
-          });
+      }
+      case "usage-local-asc": {
+        filtered = filtered.slice().sort((a, b) => {
+          const aMembership = getMembership(library, a.id, activeCollId);
+          const bMembership = getMembership(library, b.id, activeCollId);
+          return (aMembership?.dragCount || 0) - (bMembership?.dragCount || 0);
+        });
         break;
+      }
       case "usage-global":
-        filtered = filtered
-          .slice()
-          .sort((a, b) => {
-            return (b.globalDragCount || 0) - (a.globalDragCount || 0);
-          });
+        filtered = filtered.slice().sort((a, b) => (b.globalDragCount || 0) - (a.globalDragCount || 0));
         break;
       case "usage-global-asc":
-        filtered = filtered
-          .slice()
-          .sort((a, b) => {
-            return (a.globalDragCount || 0) - (b.globalDragCount || 0);
-          });
+        filtered = filtered.slice().sort((a, b) => (a.globalDragCount || 0) - (b.globalDragCount || 0));
         break;
       case "latex":
         filtered = filtered.slice().sort((a, b) => a.latex.localeCompare(b.latex));
@@ -400,126 +397,20 @@ const LibraryEntries: React.FC<LibraryEntriesProps> = ({
         filtered = filtered.slice().sort((a, b) => b.latex.localeCompare(a.latex));
         break;
     }
-
     return filtered;
   }, [activeCollId, entries, library, searchTerm, sortOption]);
 
-  //   // --- Drag & Drop handlers ---
-  //   const handleDragStart = useCallback(
-  //     (entry: LibraryEntry) => (e: React.DragEvent) => {
-  //       e.stopPropagation();
-  //       setDraggingNode({
-  //         sourceType: "library",
-  //         cellId: activeCollId,
-  //         containerId: entry.id,
-  //         node: entry.node,
-  //         index: 0 // may be fucked
-  //       });
-  //       setDropTarget(null);
-  //       e.dataTransfer.effectAllowed = "move";
-  //       e.dataTransfer.setData("text/plain", entry.latex);
-  //     },
-  //     [activeCollId, setDraggingNode, setDropTarget]
-  //   );
-
-  //   const handleDragLeave = useCallback(() => {
-  //     if (dropTarget?.cellId === "library") setDropTarget(null);
-  //   }, [dropTarget, setDropTarget]);
-
-  //   const handleDropAtEnd = useCallback(
-  //     (e: React.DragEvent) => {
-  //       e.preventDefault();
-  //       e.stopPropagation();
-  //       if (!draggingNode) return;
-  //       setDropTarget({ //THIS IS DOING A LOT OF STUFF: Maximum update depth exceeded. This can happen when a component calls setState inside useEffect, but useEffect either doesn't have a dependency array, or one of the dependencies changes on every render.
-  //         cellId: "library",
-  //         containerId: activeCollId,
-  //         index: filteredSortedEntries.length,
-  //       });
-  //       e.dataTransfer.dropEffect = "move";
-  //     },
-  //     [draggingNode, activeCollId, filteredSortedEntries.length, setDropTarget]
-  //   );
-
-  //   const handleDrop = useCallback(() => {
-  //     if (!draggingNode || !dropTarget) return;
-
-  //     if (dropTarget.containerId !== activeCollId) {
-  //       setDraggingNode(null);
-  //       setDropTarget(null);
-  //       return;
-  //     }
-
-  //     try {
-  //       onDrop(dropTarget.containerId); 
-  //     } finally {
-  //       setDraggingNode(null);
-  //       setDropTarget(null);
-  //     }
-  //   }, [draggingNode, dropTarget, activeCollId, setDraggingNode, setDropTarget, onDrop]);
-
-  //   useEffect(() => {
-  //     onRendered?.();
-  //   }, [filteredSortedEntries, onRendered]);
-
-  //   const activeCollection = library.collections[activeCollId];
-  //   const isPremade = activeCollection?.type === "premade";
-
-  //   return (
-  //     <div
-  //       className={styles.libraryDropZone}
-  //       onDragOver={handleDropAtEnd}
-  //       onDrop={handleDrop}
-  //       role="list"
-  //       aria-label={t("mathLibrary.entries.ariaLabel", { name: activeCollId })}
-  //     >
-  //       {filteredSortedEntries.map((entry) => {
-  //         const membership = getMembership(library, entry.id, activeCollId);
-
-  //         return (
-  //           <LibraryEntryItem
-  //             key={entry.id}
-  //             entry={entry}
-  //             localDragCount={membership?.dragCount ?? 0}
-  //             onDragStart={handleDragStart(entry)}
-  //             onDragLeave={handleDragLeave}
-  //             onDelete={() =>
-  //               setLibrary((lib) => removeEntryFromCollection(lib, entry.id, activeCollId))
-  //             }
-  //             showDeleteButton={!isPremade}
-  //           />
-  //         );
-  //       })}
-
-  //       {filteredSortedEntries.length === 0 && (
-  //         <p className={styles.empty}>
-  //           {entries.length === 0 ? t("mathLibrary.entries.empty") : t("mathLibrary.entries.noMatches")}
-  //         </p>
-  //       )}
-
-  //       {dropTarget?.cellId === "library" && dropTarget.containerId === activeCollId && dropTarget.index === null && (
-  //         <div className={styles.dropTargetEnd} />
-  //       )}
-  //     </div>
-  //   );
-  // };
-
-  // export default React.memo(LibraryEntries);
-
-  // --- Drag & Drop handlers ---
+  // --- Drag & Drop handlers (unchanged) ---
   const handleDragStart = useCallback(
     (entry: LibraryEntry) => (e: React.DragEvent) => {
       e.stopPropagation();
-
       setDraggingSource({
         type: "library",
         collectionId: activeCollId,
         entryId: entry.id,
         node: entry.node,
       });
-
       setDropTarget(null);
-
       e.dataTransfer.effectAllowed = "move";
       e.dataTransfer.setData("text/plain", entry.latex);
     },
@@ -536,14 +427,8 @@ const LibraryEntries: React.FC<LibraryEntriesProps> = ({
     (e: React.DragEvent) => {
       e.preventDefault();
       e.stopPropagation();
-
       if (!draggingSource) return;
-
-      setDropTarget({
-        type: "libraryCollection",
-        collectionId: activeCollId,
-      });
-
+      setDropTarget({ type: "libraryCollection", collectionId: activeCollId });
       e.dataTransfer.dropEffect = "move";
     },
     [draggingSource, activeCollId, setDropTarget]
@@ -551,18 +436,14 @@ const LibraryEntries: React.FC<LibraryEntriesProps> = ({
 
   const handleDrop = useCallback(() => {
     if (!draggingSource || !dropTarget) return;
-
     if (
       dropTarget.type !== "libraryCollection" ||
-      (draggingSource.type === "library" &&
-        draggingSource.collectionId === dropTarget.collectionId)
+      (draggingSource.type === "library" && draggingSource.collectionId === dropTarget.collectionId)
     ) {
-      // No-op if dropping library entry into the same collection
       setDraggingSource(null);
       setDropTarget(null);
       return;
     }
-
     try {
       onDrop(dropTarget.collectionId);
     } finally {
@@ -578,6 +459,27 @@ const LibraryEntries: React.FC<LibraryEntriesProps> = ({
   const activeCollection = library.collections[activeCollId];
   const isPremade = activeCollection?.type === "premade";
 
+  // --- Handle save of command sequence ---
+  const handleSaveCommand = (entryId: string, cmd: string | undefined) => {
+    const normalized = cmd?.trim();
+    try {
+      setLibrary((prevLib) =>
+        setEntryCommandSequence(prevLib, entryId, normalized || undefined) //BUG: this crashes instead of toast
+      );
+      setEditingEntry(null);
+      showToast({
+        type: "success",
+        message: normalized
+          ? t("mathLibrary.entries.toast.commandSaved")
+          : t("mathLibrary.entries.toast.commandCleared"),
+      });
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : t("mathLibrary.entries.toast.failed");
+      showToast({ type: "error", message });
+    }
+  };
+
   return (
     <div
       className={styles.libraryDropZone}
@@ -588,7 +490,6 @@ const LibraryEntries: React.FC<LibraryEntriesProps> = ({
     >
       {filteredSortedEntries.map((entry) => {
         const membership = getMembership(library, entry.id, activeCollId);
-
         return (
           <LibraryEntryItem
             key={entry.id}
@@ -599,6 +500,8 @@ const LibraryEntries: React.FC<LibraryEntriesProps> = ({
             onDelete={() =>
               setLibrary((lib) => removeEntryFromCollection(lib, entry.id, activeCollId))
             }
+            onDoubleClick={() => setEditingEntry(entry)}
+            highlight={!!entry.commandSequence}
             showDeleteButton={!isPremade}
           />
         );
@@ -606,8 +509,18 @@ const LibraryEntries: React.FC<LibraryEntriesProps> = ({
 
       {filteredSortedEntries.length === 0 && (
         <p className={styles.empty}>
-          {entries.length === 0 ? t("mathLibrary.entries.empty") : t("mathLibrary.entries.noMatches")}
+          {entries.length === 0
+            ? t("mathLibrary.entries.empty")
+            : t("mathLibrary.entries.noMatches")}
         </p>
+      )}
+
+      {editingEntry && (
+        <EditCustomCommandOnEntryModal
+          entry={editingEntry}
+          onSave={(cmd) => handleSaveCommand(editingEntry.id, cmd)}
+          onClose={() => setEditingEntry(null)}
+        />
       )}
     </div>
   );
