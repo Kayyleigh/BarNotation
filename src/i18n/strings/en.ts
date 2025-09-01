@@ -138,7 +138,7 @@ const en = {
       insertMatrixRowAbove: "(Inside matrix) Insert row above", //TODO NEW; ADD TO OTHER LANGUAGES 
       insertMatrixColumnLeft: "(Inside matrix) Insert column left", //TODO NEW; ADD TO OTHER LANGUAGES 
       insertMatrixColumnRight: "(Inside matrix) Insert column right", //TODO NEW; ADD TO OTHER LANGUAGES 
-      
+
       fraction: "Turn node into numerator of new fraction",
       structuralShortcuts: "Structural Shortcuts",
       rearrangeNodes: "Rearrange nodes",
@@ -176,7 +176,7 @@ const en = {
         hide: "Hide preview",
         view: "View collection entries",
       },
-      sort: { 
+      sort: {
         archived_desc: "Recently Archived",
         archived_asc: "Longest Archived",
         created_desc: "Newest Collection",
@@ -239,10 +239,21 @@ const en = {
       download: "Download",
       downloadTooltip: "Download .tex file",
     },
-    editCommand: { //NEW
-      title: "Add custom command", //NEW
-      placeholder: "Type command here...", //NEW
-    }
+    editCommand: { //ALL NEW
+      title: "Edit Custom Command",
+      label: "Command",
+      placeholder: "Type command (no backslash)",
+      statusLabel: {
+        valid: "Valid command sequence.",
+        invalid: "Invalid",
+        willClear: "Will remove command.",
+        alreadyExists: "Sequence already in use.",
+        tooLong: "Sequence too long.",
+        unchanged: "No changes.",
+        empty: "Nothing to save."
+      },
+      charLimitTooltip: "Max length for display reasons.",
+    },
   },
 
   notesMenu: {

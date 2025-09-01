@@ -295,7 +295,7 @@ const LibraryEntryItem: React.FC<LibraryEntryItemProps> = React.memo(
     return (
       <div
         // className={`${styles.libraryEntry}`}
-        className={clsx(styles.libraryEntry, highlight && styles.greenBorder)}
+        className={clsx(styles.libraryEntry, highlight && styles.customCommand)} //TODO no green border
         draggable
         onDragStart={onDragStart}
         onDragLeave={onDragLeave}
@@ -309,6 +309,11 @@ const LibraryEntryItem: React.FC<LibraryEntryItemProps> = React.memo(
         <div className={styles.meta}>
           <span>{localDragCount}/{entry.globalDragCount}</span>
         </div>
+        {entry.commandSequence &&
+          <div className={styles.isCustomCommand}>
+            <span>👤</span>
+          </div>
+        }
         {showDeleteButton && (
           <button
             className={styles.entryDeleteButton}

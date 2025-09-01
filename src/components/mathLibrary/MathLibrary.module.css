@@ -245,22 +245,32 @@
   cursor: pointer;
 }
 
-.meta {
-  position: absolute;
-  bottom: 4px;
-  right: 8px;
-  font-size: 0.8rem;
-  color: var(--math-text-color);
-}
-
 .empty {
   padding: 1rem;
   color: var(--math-text-color);
   font-style: italic;
 }
 
+
 .meta {
-  visibility: var(--lib-entry-meta-visibility);
+  position: absolute;
+  bottom: 4px;
+  right: 8px;
+  /* font-size: 0.8rem; */
+  color: var(--math-text-color);
+  /* visibility: var(--lib-entry-meta-visibility); */
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
+}
+
+.isCustomCommand {
+  position: absolute;
+  top: 4px;
+  left: 8px;
+  /* font-size: 0.8rem; */
+  color: var(--math-text-color);
+  /* visibility: var(--lib-entry-meta-visibility); */
   font-size: 12px;
   color: #666;
   margin-top: 4px;
@@ -314,7 +324,6 @@
   }
 }
 
-.greenBorder {
-  border: green;
-  background-color: hotpink;
+.customCommand {
+  border: 1px solid var(--logo-color-2);
 }

@@ -16,9 +16,17 @@
   cursor: pointer;
 }
 
+/* Highlight custom command sequences */
+.customCommand {
+  background: linear-gradient(to right,
+      var(--command-autocomplete-custom-bg-left),
+      var(--command-autocomplete-custom-bg-mid),
+      var(--command-autocomplete-dropdown-bg));
+}
+
 .autocompleteItem.highlighted,
 .autocompleteItem:hover {
-  background-color: var(--command-autocomplete-highlight-bg);
+  background: var(--command-autocomplete-highlight-bg);
 }
 
 /* New row layout */
@@ -43,11 +51,5 @@
 
 .highlightedText {
   font-weight: bold;
-  color: var(--highlight-color, #007acc); /* customizable */
-}
-
-/* Highlight custom command sequences */
-.customCommand {
-  background-color: hotpink;
-  color: white; /* optional: better contrast */
+  color: var(--command-autocomplete-matching-sequence, #007acc);
 }

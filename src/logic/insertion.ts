@@ -97,6 +97,7 @@ export const handleCharacterInsert = (state: EditorState, char: string): EditorS
 
     // auto completion logic is in ComandInputComponent and the renderer function in MathRenderes.tsx 
 
+    //TODO ALSO CHECK FOR CUSTOM ONES
     const match = specialSequences.find(seq => seq.sequence === newSequence);
 
     if (match) {

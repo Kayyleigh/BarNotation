@@ -237,8 +237,8 @@ export function CommandInputNodeComponent({
                   }}
                   className={clsx(
                     styles.autocompleteItem,
+                    { [styles.customCommand]: isCustom },
                     { [styles.highlighted]: i === highlight },
-                    { [styles.customCommand]: isCustom }
                   )}
                   onMouseDown={(e) => {
                     e.preventDefault(); // prevents blur before click fires
@@ -247,6 +247,7 @@ export function CommandInputNodeComponent({
                 >
                   <div className={styles.autocompleteRow}>
                     <span className={styles.commandLabel}>
+                      {isCustom && "👤 "}
                       {getHighlightedSequence(seq, inputString)}
                     </span>
                     <div className={styles.mathPreview}>
