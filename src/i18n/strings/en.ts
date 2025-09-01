@@ -107,6 +107,8 @@ const en = {
 
   modals: {
     close: "Close",
+    save: "save", //NEW
+    cancel: "cancel", //NEW
     archiveModal: {
       noItemsFound: "No items found.",
       searchPlaceholder: "Search..."
@@ -237,6 +239,10 @@ const en = {
       download: "Download",
       downloadTooltip: "Download .tex file",
     },
+    editCommand: { //NEW
+      title: "Add custom command", //NEW
+      placeholder: "Type command here...", //NEW
+    }
   },
 
   notesMenu: {
@@ -294,8 +300,12 @@ const en = {
     sort: {
       newest: "Newest",
       oldest: "Oldest",
-      mostUsed: "Most Used",
-      leastUsed: "Least Used",
+      mostUsed: "Most Used", //OUTDATED
+      leastUsed: "Least Used", //OUTDATED
+      mostUsedLocal: "Most Used Here", //NEW
+      leastUsedLocal: "Least Used Here", //NEW
+      mostUsedGlobal: "Most Used App-Wide", //NEW
+      leastUsedGlobal: "Least Used App-Wide", //NEW
       aZ: "A → Z",
       zA: "Z → A",
       ariaLabel: "Sort library entries",
