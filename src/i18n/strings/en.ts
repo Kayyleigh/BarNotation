@@ -306,7 +306,7 @@ const en = {
     search: {
       placeholder: "Search Collection...",
       placeholderWith: "Search {{name}}...",
-      tooltip: "Search on LaTeX substring",
+      tooltip: "Search on LaTeX or custom command substring", //CHANGED 
     },
     sort: {
       newest: "Newest",

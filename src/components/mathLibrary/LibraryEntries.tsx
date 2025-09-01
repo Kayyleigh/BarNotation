@@ -354,7 +354,7 @@ const LibraryEntries: React.FC<LibraryEntriesProps> = ({
     let filtered = entries;
     if (searchTerm.trim()) {
       const lower = searchTerm.toLowerCase();
-      filtered = filtered.filter((e) => e.latex.toLowerCase().includes(lower));
+      filtered = filtered.filter((e) => e.latex.toLowerCase().includes(lower) || e.commandSequence?.toLowerCase().includes(lower));
     }
     switch (sortOption) {
       case "date": {
