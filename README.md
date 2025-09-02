@@ -14,7 +14,7 @@ BarNotation is a real-time math note-taking app designed especially for students
 BarNotation enables users to build their notes as a sequence of "cells", either *Text* or *Math*, with intuitive keyboard entry, structural transformations, and drag-and-drop support for editing, reordering, and organizing notes and math expressions.
 
 <p align="center">
-  <img src="docs/readme-images/random-use-26072025.png" alt="Random usage screenshot of the editor" width="540"/>
+  <img src="docs/readme-images/random-use-02092025.png" alt="Random usage screenshot of the editor" width="540"/>
 </p>
 <p align="center">
   <em>See the <a href="#-screenshots">📷 Screenshots</a> section for a visual walkthrough!</em>
@@ -54,6 +54,8 @@ BarNotation enables users to build their notes as a sequence of "cells", either 
   - Duplicate existing collections 
   - Archive collections you don't need right now
   - Search, preview, and restore archived collections 
+- **Custom Command Sequences**:
+  - Create custom command sequences on top of math snippets to make them available as commands in the editor!
 - **Editor Modes**:
   - Work in visible cells using Edit Mode
   - Switch to Preview mode to see roughly how LaTeX would render
@@ -491,6 +493,7 @@ The app should now be running at http://localhost:5173.
 - **Insert a new cell**: Use the "+" buttons between or after cells, or in the editor header bar
 - **Transform math**: Type a command like `\sqrt`, then hit space. Known commands are based on [LaTeX](https://www.cmor-faculty.rice.edu/~heinken/latex/symbols.pdf)!
 - **Command sequence autocompletion**: use autocomplete to speed up your process! Autocompletion is available as soon as you type `\`, and a matching sequence can be selected by navigating the dropdown using arrows or the mouse. Select one to get the target node, by clicking, tabbing, or pressing enter!   
+- **Custom command sequences**: Add a custom command to a library snippet by double-clicking the snippet and typing your preferred sequence. To remove an existing command, simply empty the input field.
 - **Move/Copy math**: Drag elements directly within or between cells
 - **Save reusable math**: Drag math to the Library panel on the right
 - **Copy LaTeX**: `Ctrl+C` copies the LaTeX of the node left of your cursor
@@ -503,34 +506,31 @@ The app should now be running at http://localhost:5173.
 
 Planned features and improvements include:
 
-- [ ] More languages! I will do my best to convince my friends to help me translate to German, French, Spanish, Slovak, Romanian and Greek.
+- [ ] More languages! I will do my best to convince my friends to help me translate to German, Spanish, Slovak, Romanian and Greek.
 - [ ] Enable custom library zoom level
 - [ ] Implement tagging feature for notes in the notes menu (potentially replacing the "course code" idea)
 - [ ] Make text cells support hyperlinks, italic, and bold 
 - [ ] Table cell type
 - [ ] Image cell type
-- [ ] Enable custom command sequences
 - [ ] Implement soft delete, i.e. all deleted notes, collections and entries move to a bin so they can be recovered for a little bit before perma delete. (Especially entries since those are easy to accidentally delete)
 - [ ] Proper persistent storage (I currently put everything in the browser localStorage)
-- [ ] Customizable hotkeys (?)
-- [ ] Custom command sequences (?—See the [Discussion on this](https://github.com/Kayyleigh/BarNotation/discussions/14))
 - [ ] Overview of existing command sequences
 - [ ] Proper user guide 
 - [ ] Bulk select of collection entries (for copying to another collection or bulk-delete)
 - [ ] Advanced search in collections and/or notes on inclusion/exclusion or depth of math node type(s)
-- [ ] Enable custom names on collection entries, and include it in search logic. Can be a button on hover, but single char is so small, I think either "edit mode" or a new modal for modifying entries (name, node, count). Latter may be overly complex for what it adds to the experience
 - [ ] Add `cases` math node type
 - [ ] Add `multiline-equation` math node type
 - [ ] Proper bracket handling (right now all brackets become parentheses, while LaTeX has fancy stuff to make the brackets as tall as the stuff inside)
 - [ ] Better error handling and onboarding experience
 - [ ] Very unsure about this one, but I want to look into allowing inline math in text cells too (probably much less interactive than the math cells) because you can see in the screenshots section that writing "... with parameters mu and sigma" is just kinda ugly and definitely going to be a common issue in real-world settings
 - [ ] Import from LaTeX feature to get an entire note at once. Very useful if export to latex feature exists, since then you can export all your notes and import them on another device. Or make recoverable backups.
+- [ ] Full export and import of library (to allow users to move their workspace to another device).
 
 > [!NOTE]
 > This is not an exhaustive list, nor is it chronologically ordered. Some of these may already exist on other branches. 
-> _Roadmap last updated: **July 30, 2025**._
+> _Roadmap last updated: **September 2, 2025**._
 
-Not sure how many of these will be done by the end of the summer of 2025, but my goal is to have a usable version of BarNotation available for real-world use **by September 1, 2025**, since that is the beginning of the school year! (Good for the target audience, which is students, but also for me because I am going to be busy with uni as well.) 
+Due to a complete lack of users, I currently do not have a deadline for these plans. While BarNotation is already kind of usable at the moment of writing this, I will likely aim for an improved working version by the start of next academic year (September 2026). This information is subject to change.
 
 ---
 

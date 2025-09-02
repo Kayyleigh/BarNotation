@@ -1,10 +1,11 @@
 import type { EditorState } from "./editor-state";
 import { createCommandInputNode, createMultiDigitNode, createTextNode } from "../models/nodeFactories";
-import { findNodeById, findParentContainerAndIndex, updateNodeById } from "../utils/treeUtils";
+import { cloneTreeWithNewIds, findNodeById, findParentContainerAndIndex, updateNodeById } from "../utils/treeUtils";
 import { specialSequences } from "../models/specialSequences";
 import { type InlineContainerNode, type MathNode, type TextNode } from "../models/mathNodeTypes";
 import { getCloseSymbol, getOpenSymbol, getStyleFromSymbol, isClosingBracket, isOpeningBracket, type BracketStyle } from "../utils/bracketUtils";
 import { transformToGroupNode } from "./transformations";
+import type { LibraryEntry } from "../models/libraryTypes";
 
 export const handleCharacterInsertInTextContainer = (state: EditorState, char: string): EditorState => {
   const container = findNodeById(state.rootNode, state.cursor.containerId);
@@ -40,7 +41,11 @@ export const handleCharacterInsertInTextContainer = (state: EditorState, char: s
   return state;
 }
 
-export const handleCharacterInsert = (state: EditorState, char: string): EditorState => {
+export const handleCharacterInsert = (
+  state: EditorState,
+  char: string,
+  commandMap?: Record<string, LibraryEntry>,
+): EditorState => {
   const container = findNodeById(state.rootNode, state.cursor.containerId);
 
   //TODO for text wrappers, make it not have a last position or sth. 
@@ -95,22 +100,37 @@ export const handleCharacterInsert = (state: EditorState, char: string): EditorS
     // Prepare sequence for pattern matching
     const newSequence = oldSequence + char;
 
-    // auto completion logic is in ComandInputComponent and the renderer function in MathRenderes.tsx 
+    // 1. First check built-in sequences
+    let match = specialSequences.find(seq => seq.sequence === newSequence);
 
-    const match = specialSequences.find(seq => seq.sequence === newSequence);
+    // 2. If no match, also check custom ones in commandMap
+    if (!match && commandMap) {
+      const customNode = commandMap[newSequence];
+      if (customNode) {
+        // Wrap in the same structure as a special sequence match
+        match = {
+          sequence: newSequence,
+          createNode: () => cloneTreeWithNewIds(customNode.node),
+        };
+      }
+    }
 
     if (match) {
       const transformedNode = match.createNode();
-    
+
       let replacementChildren: MathNode[] = [];
-    
+
+      let targetContainer = container;
+      let targetIndex = index;
+
       if (transformedNode.type === "inline-container") {
         // Flatten its children instead of inserting a nested inline-container
         replacementChildren = transformedNode.children;
+        targetIndex += transformedNode.children.length - 1;
       } else {
         replacementChildren = [transformedNode];
       }
-    
+
       // Handle special bracket cases (e.g., \lceil or \rceil)
       if (
         transformedNode.type === "text" &&
@@ -119,57 +139,54 @@ export const handleCharacterInsert = (state: EditorState, char: string): EditorS
         const style = getStyleFromSymbol(transformedNode.content);
         const side = isOpeningBracket(transformedNode.content) ? "open" : "close";
         const safeStyle = style || "parentheses";
-    
+
         const updatedChildren = [
           ...children.slice(0, index - 1), // remove the CommandInputNode
           ...children.slice(index),
         ];
-    
+
         const updatedRoot = updateNodeById(state.rootNode, container.id, {
           ...container,
           children: updatedChildren,
         });
-    
+
         return handleBracketInsert({ ...state, rootNode: updatedRoot }, safeStyle, side);
       }
-    
+
       const updatedChildren = [
         ...children.slice(0, index - 1), // Remove the command input node
         ...replacementChildren,         // Insert flattened node(s)
         ...children.slice(index),
       ];
-    
+
       const updatedRoot = updateNodeById(state.rootNode, container.id, {
         ...container,
         children: updatedChildren,
       });
-    
-      let targetContainer = container;
-      let targetIndex = index;
-    
+
       // Adjust cursor for specific complex node types
       if (transformedNode.type === "nth-root") {
         targetContainer = transformedNode.base;
         targetIndex = 0;
       }
-    
+
       if (transformedNode.type === "accented") {
         targetContainer = transformedNode.base;
         targetIndex = 0;
       }
-    
+
       if (transformedNode.type === "decorated" || transformedNode.type === "overunderset") {
         targetContainer = transformedNode.base;
         targetIndex = 0;
       }
-    
+
       if (transformedNode.type === "styled") {
         if (transformedNode.child.type === "inline-container") {
           targetContainer = transformedNode.child;
           targetIndex = 0;
         }
       }
-    
+
       return {
         rootNode: updatedRoot,
         cursor: {
@@ -478,6 +495,10 @@ export function replaceCommandWithNode(
   // Step 4: Decide cursor target
   let targetContainerId = container.id;
   let targetIndex = index + 1;
+
+  if (replacementNode.type === "inline-container") {
+    targetIndex += replacementNode.children.length - 1;
+  }
 
   if (replacementNode.type === "nth-root") {
     targetContainerId = replacementNode.base.id;

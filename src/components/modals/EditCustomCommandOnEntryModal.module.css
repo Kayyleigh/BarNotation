@@ -1,0 +1,193 @@
+/* components/modals/EditCustomCommandOnEntryModal.module.css */
+
+.settingsRow {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 1em;
+    gap: 0.75em;
+}
+
+.inputAreaRow {
+    display: flex;
+    align-items: center;
+    gap: 0.75em;
+    width: 100%;
+}
+
+.inputArea {
+    flex: 0 0 50%;
+    min-width: 0;
+}
+
+.inputLabel {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+}
+
+.commandInputWrapper {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--math-editor-border);
+    border-radius: 6px;
+    padding: 0.5em;
+    /* background: var(--math-editor-bg); */
+    background: var(--app-background);
+}
+
+.commandPrefix {
+    margin-right: 0.5em;
+    color: #666;
+    user-select: none;
+    font-family: monospace;
+}
+
+.commandInput {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 0.9rem;
+    background: transparent;
+    color: var(--math-text-color);
+}
+
+.validInput {
+    color: var(--success-color, #2e7d32);
+}
+
+.invalidInput {
+    color: var(--error-color, #c62828);
+}
+
+/* Border state variants */
+.borderValid {
+    border-color: var(--success-color, #2e7d32);
+}
+
+.borderInvalid {
+    border-color: var(--error-color, #c62828);
+}
+
+.borderWillClear {
+    border-color: var(--info-color, #1976d2);
+}
+
+.borderUnchanged {
+    border-color: var(--math-editor-border);
+}
+
+.commandStatusRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.4em;
+}
+
+.statusMessageGroup {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    font-size: 0.85rem;
+}
+
+.statusValid {
+    color: var(--success-color, #2e7d32);
+}
+
+.statusInvalid {
+    color: var(--error-color, #c62828);
+}
+
+.statusInfo {
+    color: var(--info-color, #1976d2);
+}
+
+.charInfo {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+}
+
+.tooltipIcon {
+    font-size: 0.85rem;
+    color: #666;
+    cursor: help;
+}
+
+.charCounter {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.arrowBox {
+    flex: 0 0 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.arrowInner {
+    width: 16px;
+    height: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 4px;
+}
+
+.mathPreview {
+    flex: 0 0 calc(50% - 3em - 16px);
+    min-width: 0;
+    /* min-height: 6em; */
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-x: auto;
+    padding: 0.5em;
+    border-radius: 6px;
+    /* border: 1px solid var(--math-editor-border); */
+    background: var(--app-background);
+}
+
+.mathPreviewBox {
+    min-width: 0;
+}
+
+.buttonRow {
+    display: flex;
+    gap: 0.5em;
+    margin-top: 1em;
+}
+
+.saveButton {
+    background-color: var(--logo-color-1-dark, #1976d2);
+    color: white;
+    border: none;
+    padding: 0.5em 0.8em;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.saveButton:hover {
+    background-color: var(--logo-color-1, #1669d9);
+}
+
+.saveButtonDisabled {
+    background: #999;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.cancelButton {
+    background: white;
+    border: 1px solid #ccc;
+    padding: 0.5em 0.8em;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.cancelButton:hover {
+    background: var(--button-color-hover, #f2f2f2);
+}

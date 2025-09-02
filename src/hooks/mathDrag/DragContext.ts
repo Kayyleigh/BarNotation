@@ -1,29 +1,15 @@
-// hooks/DragContext.ts
+// hooks/mathDrag/DragContext.ts
 import { createContext } from "react";
-import type { MathNode } from "../../models/mathNodeTypes";
-
-export type DragSource = {
-  sourceType: "cell" | "library";
-  cellId?: string;
-  containerId: string;
-  index: number;
-  node: MathNode;
-} | null;
-
-export type DropTarget = {
-  cellId: string;
-  containerId: string;
-  index: number;
-} | null;
+import type { DragSource, DropTarget } from "../../models/dragTypes";
 
 export const DragContext = createContext<{
-  draggingNode: DragSource;
-  setDraggingNode: React.Dispatch<React.SetStateAction<DragSource>>;
+  draggingSource: DragSource | null;
+  setDraggingSource: React.Dispatch<React.SetStateAction<DragSource | null>>;
   dropTarget: DropTarget;
   setDropTarget: React.Dispatch<React.SetStateAction<DropTarget>>;
 }>({
-  draggingNode: null,
-  setDraggingNode: () => {},
+  draggingSource: null,
+  setDraggingSource: () => {},
   dropTarget: null,
   setDropTarget: () => {},
 });

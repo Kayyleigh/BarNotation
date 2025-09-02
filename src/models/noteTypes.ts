@@ -3,7 +3,6 @@ import type { TextCellType } from "./textTypes";
 export interface NoteMetadata {
   title: string;        // The displayed title of the note
   author?: string;      // Optional author name
-  courseCode?: string;
   dateOrPeriod?: string;
   createdAt?: number;   // Timestamp (ms since epoch) when the note was created
   updatedAt?: number;   // Timestamp when the note was last updated

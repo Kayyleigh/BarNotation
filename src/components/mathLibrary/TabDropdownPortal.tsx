@@ -5,6 +5,13 @@ import styles from "./TabDropdownPortal.module.css";
 import Tooltip from "../tooltips/Tooltip";
 import { useI18n } from "../../i18n/useI18n";
 
+type DisabledOptions = {
+  rename?: boolean;
+  duplicate?: boolean;
+  delete?: boolean;
+  archive?: boolean;
+};
+
 type Props = {
   anchorRef: React.RefObject<HTMLButtonElement>;
   onRename: () => void;
@@ -12,6 +19,7 @@ type Props = {
   onDelete: () => void;
   onArchive: () => void;
   onClose: () => void;
+  disabledOptions?: DisabledOptions;
 };
 
 const TabDropdownPortal: React.FC<Props> = ({
@@ -21,9 +29,9 @@ const TabDropdownPortal: React.FC<Props> = ({
   onDelete,
   onArchive,
   onClose,
+  disabledOptions = {},
 }) => {
-  const { t } = useI18n(); // use language hook
-
+  const { t } = useI18n();
   const menuRef = useRef<HTMLDivElement>(null);
   const [style, setStyle] = useState<React.CSSProperties>({
     visibility: "hidden",
@@ -39,24 +47,24 @@ const TabDropdownPortal: React.FC<Props> = ({
   useLayoutEffect(() => {
     const anchor = anchorRef.current;
     const dropdown = menuRef.current;
-  
+
     if (anchor && dropdown) {
       const rect = anchor.getBoundingClientRect();
       const viewportWidth = window.innerWidth;
       const viewportHeight = window.innerHeight;
-  
+
       const spaceBelow = viewportHeight - rect.bottom;
       const spaceAbove = rect.top;
-  
+
       let top = rect.bottom + window.scrollY + 4;
       let maxHeight = spaceBelow - 8;
-  
+
       // Vertical flip if not enough space below
       if (spaceBelow < dropdown.offsetHeight && spaceAbove > spaceBelow) {
         top = rect.top + window.scrollY - dropdown.offsetHeight - 4;
         maxHeight = spaceAbove - 8;
       }
-  
+
       // Horizontal clamp to prevent overflow
       let left = rect.left + window.scrollX;
       if (left + dropdown.offsetWidth > viewportWidth - 8) {
@@ -65,7 +73,7 @@ const TabDropdownPortal: React.FC<Props> = ({
       if (left < 8) {
         left = 8; // small margin from left edge
       }
-  
+
       setStyle({
         position: "absolute",
         top,
@@ -92,20 +100,35 @@ const TabDropdownPortal: React.FC<Props> = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [onClose]);
 
-  return ReactDOM.createPortal(
-    <div ref={menuRef} className={styles.dropdownMenu} style={style}>
-      <Tooltip text={t("mathLibrary.tabMenu.renameTooltip")}>
+  // Only render buttons that are NOT disabled
+  const menuItems = [
+    !disabledOptions.rename && (
+      <Tooltip key="rename" text={t("mathLibrary.tabMenu.renameTooltip")}>
         <button onClick={onRename}>✏️ {t("mathLibrary.tabMenu.rename")}</button>
       </Tooltip>
-      <Tooltip text={t("mathLibrary.tabMenu.duplicateTooltip")}>
+    ),
+    !disabledOptions.duplicate && (
+      <Tooltip key="duplicate" text={t("mathLibrary.tabMenu.duplicateTooltip")}>
         <button onClick={onDuplicate}>📄 {t("mathLibrary.tabMenu.duplicate")}</button>
       </Tooltip>
-      <Tooltip text={t("mathLibrary.tabMenu.archiveTooltip")}>
+    ),
+    !disabledOptions.archive && (
+      <Tooltip key="archive" text={t("mathLibrary.tabMenu.archiveTooltip")}>
         <button onClick={onArchive}>📦 {t("mathLibrary.tabMenu.archive")}</button>
       </Tooltip>
-      <Tooltip text={t("mathLibrary.tabMenu.deleteTooltip")}>
-        <button className={styles.deleteButton} onClick={onDelete}>🗑️ {t("mathLibrary.tabMenu.delete")}</button>
+    ),
+    !disabledOptions.delete && (
+      <Tooltip key="delete" text={t("mathLibrary.tabMenu.deleteTooltip")}>
+        <button className={styles.deleteButton} onClick={onDelete}>
+          🗑️ {t("mathLibrary.tabMenu.delete")}
+        </button>
       </Tooltip>
+    ),
+  ].filter(Boolean) as React.ReactNode[]; // filter out falsy items
+
+  return ReactDOM.createPortal(
+    <div ref={menuRef} className={styles.dropdownMenu} style={style}>
+      {menuItems}
     </div>,
     document.body
   );

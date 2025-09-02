@@ -559,7 +559,7 @@ import clsx from "clsx";
 import type {
   TextNode,
   MultiDigitNode,
-  CommandInputNode,
+  // CommandInputNode,
   InlineContainerNode,
   GroupNode,
   FractionNode,
@@ -581,9 +581,10 @@ import { MathRenderer, type BaseRenderProps, type MathRendererProps } from "./Ma
 import { getCloseSymbol, getOpenSymbol, isClosingBracket, isOpeningBracket } from "../../utils/bracketUtils";
 import { getIsHovered, handleMouseEnter, handleMouseLeave } from "../../utils/mathHoverUtils";
 import DummyStartNodeRenderer from "./DummyStartNodeRenderer";
-import { CommandInputNodeComponent } from "./CommandInputNodeComponent";
-import { specialSequences } from "../../models/specialSequences";
-import { replaceCommandWithNode } from "../../logic/insertion";
+// import { CommandInputNodeComponent } from "./CommandInputNodeComponent";
+// import { specialSequences } from "../../models/specialSequences";
+// import { replaceCommandWithNode } from "../../logic/insertion";
+// import { useCustomCommands } from "../../hooks/customCommands/useCustomCommands";
 
 // Helper to get CSS classes for font styles
 function getStyleClass(style: TextStyle) {
@@ -748,33 +749,33 @@ export function renderMultiDigitNode(
   );
 }
 
-export function renderCommandInputNode(
-  node: CommandInputNode,
-  baseProps: BaseRenderProps & MathRendererProps
-): React.ReactNode {
-  const isSelected = baseProps.cursor?.containerId === node.id;
+// export function renderCommandInputNode(
+//   node: CommandInputNode,
+//   baseProps: BaseRenderProps & MathRendererProps
+// ): React.ReactNode {
+//   const isSelected = baseProps.cursor?.containerId === node.id;
 
-  return (
-    <CommandInputNodeComponent
-      node={node}
-      isSelected={isSelected}
-      onSelectSuggestion={(sequence) => {
-        const match = specialSequences.find(seq => seq.sequence === sequence);
-        if (!match) return;
+//   return (
+//     <CommandInputNodeComponent
+//       node={node}
+//       isSelected={isSelected}
+//       onSelectSuggestion={(sequence) => {
+//         const match = specialSequences.find(seq => seq.sequence === sequence);
+//         if (!match) return;
 
-        const transformedNode = match.createNode();
-        const updatedState = replaceCommandWithNode(baseProps.editorState, node.id, transformedNode);
+//         const transformedNode = match.createNode();
+//         const updatedState = replaceCommandWithNode(baseProps.editorState, node.id, transformedNode);
 
-        baseProps.updateEditorState(updatedState);
+//         baseProps.updateEditorState(updatedState);
 
-        setTimeout(() => {
-          baseProps.editorRef?.current?.focus();
-        }, 0);
-      }}
-      baseProps={baseProps}
-    />
-  );
-}
+//         setTimeout(() => {
+//           baseProps.editorRef?.current?.focus();
+//         }, 0);
+//       }}
+//       baseProps={baseProps}
+//     />
+//   );
+// }
 
 // 4. Inline Container Node (has children)
 export function renderInlineContainerNode(

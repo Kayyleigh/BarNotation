@@ -15,11 +15,11 @@ import { nodeToLatex } from "../../models/nodeToLatex";
 import { findNodeById } from "../../utils/treeUtils";
 import type { EditorState } from "../../logic/editor-state";
 import type { CursorPosition } from "../../logic/cursor";
-import type { DropTarget } from "../layout/EditorWorkspace";
-import type { DragSource } from "../../hooks/mathDrag/DragContext";
 import { useDragContext } from "../../hooks/mathDrag/useDragContext";
 import type { TextStyle } from "../../models/mathNodeTypes";
 import { useHover } from "../../hooks/mathHover/useHover";
+import type { DragSource, DropTarget } from "../../models/dragTypes";
+import { useCustomCommands } from "../../hooks/customCommands/useCustomCommands";
 
 interface MathEditorProps {
   resetZoomSignal: number;
@@ -46,6 +46,7 @@ const MathEditor: React.FC<MathEditorProps> = ({
   onHoverInfoChange,
 }) => {
   // console.log("Rendering MathEditor", cellId);
+  const { commandMap } = useCustomCommands();
 
   const { hoverPath, setHoverPath } = useHover();
 
@@ -54,7 +55,7 @@ const MathEditor: React.FC<MathEditorProps> = ({
 
   const [isActive, setIsActive] = useState(false);
 
-  const { draggingNode, dropTarget, setDropTarget } = useDragContext();
+  const { draggingSource, dropTarget, setDropTarget } = useDragContext();
 
   const hoveredNode = hoverPath[hoverPath.length - 1]
     ? findNodeById(editorState.rootNode, hoverPath[hoverPath.length - 1])
@@ -90,7 +91,7 @@ const MathEditor: React.FC<MathEditorProps> = ({
   const onKeyDown = (e: React.KeyboardEvent) => {
     const prevFocusedNodeContainerId = editorState.cursor?.containerId;
 
-    const updated = handleKeyDown(e, editorState);
+    const updated = handleKeyDown(e, editorState, commandMap);
 
     if (updated) {
       const prevFocusedNodeContainer = findNodeById(updated.rootNode, prevFocusedNodeContainerId);
@@ -166,11 +167,18 @@ const MathEditor: React.FC<MathEditorProps> = ({
       : "unknown-container";
 
   const handleDropNode = React.useCallback((from: DragSource, to: DropTarget) => {
-    // Redirect drop target if needed
-    if (to.containerId === editorState.rootNode.id) {
+    if (!to) return;
+
+    // Only redirect if the drop target is a cell
+    if (to.type === "cell" && to.containerId === editorState.rootNode.id) {
       const child = editorState.rootNode.child;
-      to = { ...to, containerId: child.id, index: 0 };
+      to = {
+        ...to,
+        containerId: child.id,
+        index: 0,
+      };
     }
+
     onDropNode(from, to);
   }, [editorState.rootNode, onDropNode]);
 
@@ -184,7 +192,7 @@ const MathEditor: React.FC<MathEditorProps> = ({
     <div>
       <div
         ref={editorRef}
-        className="math-editor" //need uneditable on lock but can still drag?
+        className="math-editor"
         tabIndex={0}
         onKeyDown={onKeyDown}
         onCopy={onCopy}
@@ -200,19 +208,23 @@ const MathEditor: React.FC<MathEditorProps> = ({
         onDragOver={(e) => {
           e.preventDefault();
           e.stopPropagation();
-          if (draggingNode && dropTarget?.cellId !== cellId) {
+          if (!draggingSource) return;
+
+          // Only update drop target if the current drop target is not this editor
+          if (dropTarget?.type !== "cell" || dropTarget.cellId !== cellId) {
             setDropTarget({
+              type: "cell",
               cellId,
               containerId: rootChildContainerId,
-              index: 0,
+              index: 0, // Dropping at start of root child container
             });
           }
         }}
         onDrop={(e) => {
           e.preventDefault();
           e.stopPropagation();
-          if (draggingNode && dropTarget) {
-            onDropNode(draggingNode, dropTarget);
+          if (draggingSource && dropTarget?.type === "cell") {
+            onDropNode(draggingSource, dropTarget);
           }
           setDropTarget(null);
         }}

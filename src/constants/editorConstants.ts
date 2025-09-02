@@ -9,3 +9,5 @@ export const DEFAULT_ZOOM = 1.0;
 
 // Layout 
 export const PANEL_EDGE_WIDTH = 8; //pixels
+
+export const MAX_CUSTOM_COMMAND_LENGTH = 30; // characters

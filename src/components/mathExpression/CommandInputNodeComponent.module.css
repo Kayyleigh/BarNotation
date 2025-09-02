@@ -16,9 +16,16 @@
   cursor: pointer;
 }
 
+/* Highlight custom command sequences */
+.customCommand {
+  background: linear-gradient(to right,
+      var(--command-color-trans),
+      var(--command-autocomplete-dropdown-bg));
+}
+
 .autocompleteItem.highlighted,
 .autocompleteItem:hover {
-  background-color: var(--command-autocomplete-highlight-bg);
+  background: var(--command-autocomplete-highlight-bg);
 }
 
 /* New row layout */
@@ -43,5 +50,5 @@
 
 .highlightedText {
   font-weight: bold;
-  color: var(--highlight-color, #007acc); /* customizable */
+  color: var(--command-autocomplete-matching-sequence, #007acc);
 }
