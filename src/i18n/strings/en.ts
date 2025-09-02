@@ -290,6 +290,9 @@ const en = {
       empty: "Drag math expression here",
       noMatches: "No matches found",
       ariaLabel: "Entries in collection {{name}}",
+      toast: {
+        added: "Added entry.",
+      }
     },
     error: {
       loadStorage: "Failed to load library collections from storage.",
@@ -343,6 +346,7 @@ const en = {
         archived: `Archived "{{name}}".`,
         renamed: `Renamed "{{oldName}}" to "{{newName}}".`, //NEW
         failed: `Unknown failure.`, //NEW
+        copiedToColl: `Copied {{entry}} to {{collection}}.`, //NEW
         cannotRenamePremade: `Cannot rename a pre-defined collection.`, //NEW
         cannotDeletePremade: `Cannot delete a pre-defined collection.`, //NEW
         unsupportedDrop: `Unsupported action.`, //NEW
