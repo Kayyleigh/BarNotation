@@ -338,9 +338,15 @@ const en = {
         moreOptions: "More options",
       },
       toast: {
-        duplicated: `Duplicated "{{name}}"`,
-        deleted: `Deleted "{{name}}"`,
-        archived: `Archived "{{name}}"`,
+        duplicated: `Duplicated "{{name}}".`,
+        deleted: `Deleted "{{name}}".`,
+        archived: `Archived "{{name}}".`,
+        renamed: `Renamed "{{oldName}}" to "{{newName}}".`, //NEW
+        failed: `Unknown failure.`, //NEW
+        cannotRenamePremade: `Cannot rename a pre-defined collection.`, //NEW
+        cannotDeletePremade: `Cannot delete a pre-defined collection.`, //NEW
+        unsupportedDrop: `Unsupported action.`, //NEW
+
       },
       confirm: {
         delete: "Are you sure you want to delete this collection?",

@@ -100,13 +100,19 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
   const renameCollectionHandler = (id: string, newName: string) => {
     try {
       const coll = library.collections[id];
+      const oldName = getCollectionDisplayName(coll);
+
       if (coll.type === "premade") {
         showToast({ type: "error", message: t("mathLibrary.tabs.toast.cannotRenamePremade") });
         return;
       }
       setLibrary(lib => renameCollection(lib, id, newName.trim()));
       setEditingCollId(null);
-      showToast({ type: "success", message: t("mathLibrary.tabs.toast.renamed") });
+      showToast({ type: "success", message: t("mathLibrary.tabs.toast.renamed", {
+        oldName: oldName,
+        newName: newName,
+      })
+     });
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : t("mathLibrary.tabs.toast.failed");
       showToast({ type: "error", message });
@@ -114,6 +120,8 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
   };
 
   const duplicateCollectionHandler = useCallback((id: string) => {
+    const coll = library.collections[id];
+
     setLibrary(lib => {
       const collectionsArray = Object.values(lib.collections);
       const originalIndex = collectionsArray.findIndex(c => c.id === id);
@@ -125,13 +133,16 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
       // Find the new collection
       const newColl = Object.values(newLib.collections).find(c => !lib.collections[c.id]);
       if (newColl) {
-        setActiveColl(newColl.id); // select the duplicated collection //BUG
+        setActiveColl(newColl.id); // select the duplicated collection //BUG: this does not work!
       }
 
       return newLib;
     });
 
-    showToast({ type: "success", message: t("mathLibrary.tabs.toast.duplicated") });
+    showToast({ type: "success", message: t("mathLibrary.tabs.toast.duplicated", {
+      name: coll ? getCollectionDisplayName(coll) : id,
+    })
+   });
   }, [setLibrary, showToast, t, setActiveColl]);
 
   const deleteCollectionHandler = useCallback((id: string) => {
@@ -146,7 +157,10 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
         const next = collections.find(c => c.id !== id && !c.archivedAt);
         setActiveColl(next?.id || "");
       }
-      showToast({ type: "success", message: t("mathLibrary.tabs.toast.deleted") });
+      showToast({ type: "success", message: t("mathLibrary.tabs.toast.deleted", {
+        name: coll ? getCollectionDisplayName(coll) : id,
+      })
+     });
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : t("mathLibrary.tabs.toast.failed");
       showToast({ type: "error", message });
@@ -155,17 +169,22 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
 
   const archiveCollectionHandler = useCallback((id: string) => {
     try {
+      const coll = library.collections[id];
+
       setLibrary(lib => archiveCollection(lib, id));
       if (activeColl === id) {
         const next = collections.find(c => c.id !== id && !c.archivedAt);
         setActiveColl(next?.id || "");
       }
-      showToast({ type: "success", message: t("mathLibrary.tabs.toast.archived") });
+      showToast({ type: "success", message: t("mathLibrary.tabs.toast.archived", {
+        name: coll ? getCollectionDisplayName(coll) : id,
+      }) 
+    });
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : t("mathLibrary.tabs.toast.failed");
       showToast({ type: "error", message });
     }
-  }, [activeColl, collections, setActiveColl, setLibrary, showToast, t]);
+  }, [activeColl, collections, setActiveColl, setLibrary, showToast, t]); //TODO fix this
 
   // --- Drop entry on tab ---
   const onTabDragOverEntry = useCallback((e: React.DragEvent, collectionId: string) => {
