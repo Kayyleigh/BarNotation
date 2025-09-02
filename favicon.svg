@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="19" height="25" viewBox="0 0 19 25">
+  <style>
+    .italic {
+      font-family: "STIX Two Math", "Latin Modern Math", serif;
+      text-transform: math-auto;
+      font-size: 32px;
+      fill: #4ec9b0;
+    }
+    .upright {
+      font-family: "STIX Two Text", "Georgia", serif;
+      font-style: normal;
+      font-size: 24px;
+      fill: #c586c0;
+    }
+    .sub {
+      font-size: 20px;
+      text-transform: math-auto;
+      fill: #4ec9b0;
+    }
+    .bar {
+      stroke: #4ec9b0;
+      stroke-width: 2px;
+    }
+  </style>
+  <!-- Overbar -->
+  <line x1="9" y1="1" x2="19" y2="1" class="bar"/>
+
+  <!-- Math italic capital A -->
+  <text x="0" y="25" class="italic">A</text>
+</svg>
