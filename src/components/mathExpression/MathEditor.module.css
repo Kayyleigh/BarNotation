@@ -1,8 +1,0 @@
-  .scrollContainer { 
-    overflow-x: auto;
-     overflow-y: hidden; 
-     white-space: nowrap; 
-     width: 100%; 
-     display: block; 
-     position: relative; 
-   }
