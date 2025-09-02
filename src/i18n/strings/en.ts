@@ -246,13 +246,15 @@ const en = {
       label: "Command",
       placeholder: "Type command (no backslash)",
       statusLabel: {
-        valid: "Valid command sequence.",
+        valid: "Valid sequence.",
         invalid: "Invalid",
         willClear: "Will remove command.",
         alreadyExists: "Sequence already in use.",
+        reserved: "Sequence reserved.",
         tooLong: "Sequence too long.",
         unchanged: "No changes.",
-        empty: "Nothing to save."
+        empty: "Nothing to save.",
+        containsSpaces: "No spaces allowed.",
       },
       charLimitTooltip: "Max length for display reasons.",
     },

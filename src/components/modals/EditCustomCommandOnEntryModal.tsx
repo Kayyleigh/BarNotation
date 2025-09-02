@@ -111,6 +111,7 @@ import { useCustomCommands } from "../../hooks/customCommands/useCustomCommands"
 import Tooltip from "../tooltips/Tooltip";
 import MathView from "../mathExpression/MathView";
 import clsx from "clsx";
+import { specialSequences } from "../../models/specialSequences";
 
 interface EditCommandModalProps {
   entry: LibraryEntry;
@@ -196,11 +197,25 @@ const EditCustomCommandOnEntryModal: React.FC<EditCommandModalProps> = ({
     const existing = Object.values(commandMap).find(
       (cmd) => cmd.commandSequence === trimmed && cmd.id !== entry.id
     );
+
     if (existing) {
       setStatusReason(
         t("modals.editCommand.statusLabel.alreadyExists", {
           existingLatex: existing.latex ?? "",
         }) || "This command is already assigned to another entry"
+      );
+      return CommandEditStatuses.Invalid;
+    }
+
+    // ALSO check premade / special sequences
+    const isReserved = specialSequences.some(
+      (seq) => seq.sequence.slice(1).trim() === trimmed
+    );
+
+    if (isReserved) {
+      setStatusReason(
+        t("modals.editCommand.statusLabel.reserved") ||
+        "This command is already reserved as a built-in sequence"
       );
       return CommandEditStatuses.Invalid;
     }
@@ -256,6 +271,10 @@ const EditCustomCommandOnEntryModal: React.FC<EditCommandModalProps> = ({
               <input
                 id="commandInput"
                 type="text"
+                autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="off"
+                spellCheck={false}
                 className={clsx(styles.commandInput, {
                   [styles.invalidInput]: status === CommandEditStatuses.Invalid,
                   [styles.validInput]: status === CommandEditStatuses.Valid,

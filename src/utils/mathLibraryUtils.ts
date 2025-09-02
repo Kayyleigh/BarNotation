@@ -378,6 +378,8 @@ export function incrementDragCount(
 
 /* ---------------------------- Command Sequences ---------------------------- */
 
+import { specialSequences } from "../models/specialSequences";
+
 /**
  * Assign or clear a command sequence on an entry.
  * - Enforces uniqueness across entries.
@@ -394,10 +396,23 @@ export function setEntryCommandSequence(
     if (!entry) throw new Error("Entry not found");
 
     const normalized = commandSequence?.trim();
+
     if (normalized) {
-        if (forbidden.has(normalized)) throw new Error("Command sequence is reserved");
+        // 1. Check forbidden/reserved
+        if (forbidden.has(normalized)) {
+            throw new Error("Command sequence is reserved");
+        }
+
+        // 2. Check against built-in special sequences
+        if (specialSequences.some(seq => seq.sequence === normalized)) {
+            throw new Error("Command sequence is already reserved as a built-in command");
+        }
+
+        // 3. Check against other custom entries
         const clashId = findEntryIdByCommandSequence(lib, normalized);
-        if (clashId && clashId !== entryId) throw new Error("Command sequence already in use");
+        if (clashId && clashId !== entryId) {
+            throw new Error("Command sequence already in use by another entry");
+        }
     }
 
     const next = cloneLib(lib);
