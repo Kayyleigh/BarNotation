@@ -124,7 +124,7 @@ export const handleBackspace = (state: EditorState): EditorState => {
   }
 
   if (prevNode && (prevNode.type === "command-input" || prevNode.type === "multi-digit")) {
-    console.log(`Delling ${prevNode.children.map(child => child.content).join("")}`)
+    // console.log(`Delling ${prevNode.children.map(child => child.content).join("")}`)
     return handleBackspace({
       rootNode: state.rootNode,
       cursor: {

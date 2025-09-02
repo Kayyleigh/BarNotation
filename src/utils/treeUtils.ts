@@ -374,6 +374,9 @@ export function findParentOfInlineContainer(
     return null;
     //TODO: hope this doesnt fuck shit up; no idea what i am doing atm. But it kept having type=text in console
   }
+  else if (root.type === 'root-wrapper') {
+    if (root.child.id === inlineContainerId) return { parent: root, key: "child" };
+  }
   else if (root.type === 'fraction') {
     if (root.numerator.id === inlineContainerId) return { parent: root, key: "numerator" };
     if (root.denominator.id === inlineContainerId) return { parent: root, key: "denominator" };
