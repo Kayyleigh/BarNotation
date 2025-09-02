@@ -11,6 +11,8 @@ const en = {
     sortedBy: "Sorted by",
   },
 
+  customCommandIconTooltip: "Has custom command", //NEW +//TODO maybe move this into some sub thing
+
   cellRow: {
     math: "Math",
     text: "Text",

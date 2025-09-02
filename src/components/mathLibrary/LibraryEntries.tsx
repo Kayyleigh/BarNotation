@@ -311,7 +311,9 @@ const LibraryEntryItem: React.FC<LibraryEntryItemProps> = React.memo(
         </div>
         {entry.commandSequence &&
           <div className={styles.isCustomCommand}>
-            <span>👤</span>
+            <Tooltip text={t("customCommandIconTooltip")}>
+              <span>👤</span> {/* TODO: maybe centralize all uses of this emoji for maintainability (to ever change it to own svg) */}
+            </Tooltip>
           </div>
         }
         {showDeleteButton && (

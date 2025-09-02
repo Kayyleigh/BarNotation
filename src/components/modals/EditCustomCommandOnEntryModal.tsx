@@ -312,10 +312,7 @@ const EditCustomCommandOnEntryModal: React.FC<EditCommandModalProps> = ({
                   )}
                 {status === CommandEditStatuses.Unchanged &&
                   !hadCommandInitially && (
-                    <span className={styles.statusInfo} aria-hidden>
-                      {t("modals.editCommand.statusLabel.empty") ??
-                        "Nothing to save"}
-                    </span>
+                    <span className={styles.statusInfo} aria-hidden />
                   )}
               </div>
 

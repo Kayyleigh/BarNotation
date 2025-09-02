@@ -19,8 +19,7 @@
 /* Highlight custom command sequences */
 .customCommand {
   background: linear-gradient(to right,
-      var(--command-autocomplete-custom-bg-left),
-      var(--command-autocomplete-custom-bg-mid),
+      var(--command-color-trans),
       var(--command-autocomplete-dropdown-bg));
 }
 
