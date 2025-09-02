@@ -11,6 +11,8 @@ const en = {
     sortedBy: "Sorted by",
   },
 
+  customCommandIconTooltip: "Has custom command", //NEW +//TODO maybe move this into some sub thing
+
   cellRow: {
     math: "Math",
     text: "Text",
@@ -107,6 +109,8 @@ const en = {
 
   modals: {
     close: "Close",
+    save: "save", //NEW
+    cancel: "cancel", //NEW
     archiveModal: {
       noItemsFound: "No items found.",
       searchPlaceholder: "Search..."
@@ -136,7 +140,7 @@ const en = {
       insertMatrixRowAbove: "(Inside matrix) Insert row above", //TODO NEW; ADD TO OTHER LANGUAGES 
       insertMatrixColumnLeft: "(Inside matrix) Insert column left", //TODO NEW; ADD TO OTHER LANGUAGES 
       insertMatrixColumnRight: "(Inside matrix) Insert column right", //TODO NEW; ADD TO OTHER LANGUAGES 
-      
+
       fraction: "Turn node into numerator of new fraction",
       structuralShortcuts: "Structural Shortcuts",
       rearrangeNodes: "Rearrange nodes",
@@ -204,6 +208,8 @@ const en = {
         longestArchived: "Longest Archived",
         newestCreated: "Newest Created",
         oldestCreated: "Oldest Created",
+        recentlyModified: "Recently Modified", //NEW; ADD IN OTHERS
+        leastRecentlyModified: "Least Recently Modified", //NEW; ADD IN OTHERS
         mostCells: "Most Cells",
         leastCells: "Least Cells",
         titleAZ: "Title A → Z",
@@ -234,6 +240,23 @@ const en = {
       wrapEquations: "Wrap math in equation environments",
       download: "Download",
       downloadTooltip: "Download .tex file",
+    },
+    editCommand: { //ALL NEW
+      title: "Edit Custom Command",
+      label: "Command",
+      placeholder: "Type command (no backslash)",
+      statusLabel: {
+        valid: "Valid sequence.",
+        invalid: "Invalid",
+        willClear: "Will remove command.",
+        alreadyExists: "Sequence already in use.",
+        reserved: "Sequence reserved.",
+        tooLong: "Sequence too long.",
+        unchanged: "No changes.",
+        empty: "Nothing to save.",
+        containsSpaces: "No spaces allowed.",
+      },
+      charLimitTooltip: "Max length for display reasons.",
     },
   },
 
@@ -267,6 +290,9 @@ const en = {
       empty: "Drag math expression here",
       noMatches: "No matches found",
       ariaLabel: "Entries in collection {{name}}",
+      toast: {
+        added: "Added entry.",
+      }
     },
     error: {
       loadStorage: "Failed to load library collections from storage.",
@@ -287,13 +313,17 @@ const en = {
     search: {
       placeholder: "Search Collection...",
       placeholderWith: "Search {{name}}...",
-      tooltip: "Search on LaTeX substring",
+      tooltip: "Search on LaTeX or custom command substring", //CHANGED 
     },
     sort: {
       newest: "Newest",
       oldest: "Oldest",
-      mostUsed: "Most Used",
-      leastUsed: "Least Used",
+      mostUsed: "Most Used", //OUTDATED
+      leastUsed: "Least Used", //OUTDATED
+      mostUsedLocal: "Most Used Here", //NEW
+      leastUsedLocal: "Least Used Here", //NEW
+      mostUsedGlobal: "Most Used App-Wide", //NEW
+      leastUsedGlobal: "Least Used App-Wide", //NEW
       aZ: "A → Z",
       zA: "Z → A",
       ariaLabel: "Sort library entries",
@@ -311,9 +341,16 @@ const en = {
         moreOptions: "More options",
       },
       toast: {
-        duplicated: `Duplicated "{{name}}"`,
-        deleted: `Deleted "{{name}}"`,
-        archived: `Archived "{{name}}"`,
+        duplicated: `Duplicated "{{name}}".`,
+        deleted: `Deleted "{{name}}".`,
+        archived: `Archived "{{name}}".`,
+        renamed: `Renamed "{{oldName}}" to "{{newName}}".`, //NEW
+        failed: `Unknown failure.`, //NEW
+        copiedToColl: `Copied {{entry}} to {{collection}}.`, //NEW
+        cannotRenamePremade: `Cannot rename a pre-defined collection.`, //NEW
+        cannotDeletePremade: `Cannot delete a pre-defined collection.`, //NEW
+        unsupportedDrop: `Unsupported action.`, //NEW
+
       },
       confirm: {
         delete: "Are you sure you want to delete this collection?",

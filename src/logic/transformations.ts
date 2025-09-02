@@ -3,62 +3,61 @@ import { findNodeById, updateNodeById } from "../utils/treeUtils";
 import { transformToCustomAccentNode, transformToFractionNode, transformtoOverUndersetNode } from "../models/transformations";
 import { type BracketStyle } from "../utils/bracketUtils";
 import { createChildedNode, createGroupNode, createInlineContainer, generateId } from "../models/nodeFactories";
-import type { InlineContainerNode, MatrixNode, OverUndersetVariant } from "../models/mathNodeTypes";
+import type { InlineContainerNode, MathNode, MatrixNode, OverUndersetVariant, TextNode } from "../models/mathNodeTypes";
 import type { CornerPosition } from "../utils/subsupUtils";
 import { nodeToLatex } from "../models/nodeToLatex";
 
-export function transformToFraction(state: EditorState): EditorState {
-  const container = findNodeById(state.rootNode, state.cursor.containerId);
-  if (!container || container.type !== "inline-container") return state;
-  const idx = state.cursor.index;
-  if (idx === 0) return state;
-
-  const numerator = container.children[idx - 1];
-
-  const fraction = transformToFractionNode(numerator);
-
-  const newChildren = [
-    ...container.children.slice(0, idx - 1),
-    fraction,
-    ...container.children.slice(idx),
-  ];
-
-  const updatedRoot = updateNodeById(state.rootNode, container.id, {
-    ...container,
-    children: newChildren,
-  });
-
-  return {
-    rootNode: updatedRoot,
-    cursor: {
-      containerId: fraction.denominator.id,
-      index: 0,
-    },
-  };
+function isOperatorNode(node: MathNode): boolean {
+  return node.type === "text" && typeof (node as TextNode).content === "string" &&
+    /^[+\-*/=<>^_]$/.test((node as TextNode).content.trim());
 }
 
-export function transformToCustomAccent( //TODO remove
+function findBaseRange(container: InlineContainerNode, idx: number): { start: number, end: number } {
+  // end is exclusive (so slice end)
+  const startIndex = idx - 1;
+  if (startIndex < 0) return { start: idx - 1, end: idx }; 
+
+  const lastNode = container.children[startIndex];
+  if (lastNode.type === "group") {
+    return { start: startIndex, end: idx };
+  }
+
+  // Otherwise walk backward until operator or beginning
+  let scanIndex = startIndex;
+  while (scanIndex > 0) {
+    const prevNode = container.children[scanIndex - 1];
+    if (isOperatorNode(prevNode)) break;
+    scanIndex--;
+  }
+
+  return { start: scanIndex, end: idx };
+}
+
+function transformPreviousNode<T extends { id: string }>(
   state: EditorState,
-  position: "above" | "below"
+  transformFn: (base: any) => T, //Unexpected any. Specify a different type.eslint@typescript-eslint/no-explicit-any
+  getCursor: (newNode: T) => { containerId: string; index: number }
 ): EditorState {
   const container = findNodeById(state.rootNode, state.cursor.containerId);
   if (!container || container.type !== "inline-container") return state;
+
   const idx = state.cursor.index;
   if (idx === 0) return state;
 
-  const base = container.children[idx - 1]; 
+  // Find the range for base nodes
+  const { start, end } = findBaseRange(container, idx);
+  const baseNodes = container.children.slice(start, end);
 
-  const accentedNode = transformToCustomAccentNode(base, position)
+  // Wrap them into an inline container if multiple
+  const base =
+    baseNodes.length === 1 ? baseNodes[0] : createInlineContainer(baseNodes);
 
-  if (accentedNode.accent.type === "predefined") {
-    console.warn(`Trying to transform to custom accent, but got predefined ${nodeToLatex(accentedNode)}`)
-    return state;
-  }
-  
+  const newNode = transformFn(base);
+
   const newChildren = [
-    ...container.children.slice(0, idx - 1),
-    accentedNode,
-    ...container.children.slice(idx),
+    ...container.children.slice(0, start),
+    newNode,
+    ...container.children.slice(end),
   ];
 
   const updatedRoot = updateNodeById(state.rootNode, container.id, {
@@ -68,11 +67,32 @@ export function transformToCustomAccent( //TODO remove
 
   return {
     rootNode: updatedRoot,
-    cursor: {
-      containerId: accentedNode.accent.content.id,
-      index: 0,
-    },
+    cursor: getCursor(newNode),
   };
+}
+
+export function transformToFraction(state: EditorState): EditorState {
+  return transformPreviousNode(
+    state,
+    (base) => transformToFractionNode(base),
+    (frac) => ({ containerId: frac.denominator.id, index: 0 })
+  );
+}
+
+export function transformToCustomAccent(state: EditorState, position: "above" | "below"): EditorState {
+  return transformPreviousNode(
+    state,
+    (base) => {
+      const accentedNode = transformToCustomAccentNode(base, position);
+      if (accentedNode.accent.type === "predefined") {
+        console.warn(`Trying to transform to custom accent, but got predefined ${nodeToLatex(accentedNode)}`);
+        // Return the original base if invalid, so no transform
+        return base;
+      }
+      return accentedNode;
+    },
+    (accentedNode) => ({ containerId: accentedNode.accent.content.id, index: 0 })
+  );
 }
 
 export function transformToOverUnderset(
@@ -80,33 +100,11 @@ export function transformToOverUnderset(
   variant: OverUndersetVariant,
   position: "above" | "below"
 ): EditorState {
-  const container = findNodeById(state.rootNode, state.cursor.containerId);
-  if (!container || container.type !== "inline-container") return state;
-  const idx = state.cursor.index;
-  if (idx === 0) return state;
-
-  const base = container.children[idx - 1]; 
-
-  const overUndersetNode = transformtoOverUndersetNode(base, variant, position);
-  
-  const newChildren = [
-    ...container.children.slice(0, idx - 1),
-    overUndersetNode,
-    ...container.children.slice(idx),
-  ];
-
-  const updatedRoot = updateNodeById(state.rootNode, container.id, {
-    ...container,
-    children: newChildren,
-  });
-
-  return {
-    rootNode: updatedRoot,
-    cursor: {
-      containerId: overUndersetNode.content.id,
-      index: 0,
-    },
-  };
+  return transformPreviousNode(
+    state,
+    (base) => transformtoOverUndersetNode(base, variant, position),
+    (node) => ({ containerId: node.content.id, index: 0 })
+  );
 }
 
 export function transformToChildedNode(
@@ -114,37 +112,14 @@ export function transformToChildedNode(
   cornerPosition: CornerPosition,
   variant: "subsup" | "actsymb" = "subsup"
 ): EditorState {
-  const container = findNodeById(state.rootNode, state.cursor.containerId);
-  if (!container || container.type !== "inline-container") return state;
-  const idx = state.cursor.index;
-  if (idx === 0) return state;
-
-  const base = container.children[idx - 1]; 
-
-  // console.log(`Turning ${nodeToLatex(base)} ${base.type} into childed`)^
-  // if (base.type === "") TODO here can check for types that need wrapping into group to allow childing
-
-  const subsupBase = createInlineContainer([base])
-  const subsupNode = createChildedNode(subsupBase, variant);
-
-  const newChildren = [
-    ...container.children.slice(0, idx - 1),
-    subsupNode,
-    ...container.children.slice(idx),
-  ];
-
-  const updatedRoot = updateNodeById(state.rootNode, container.id, {
-    ...container,
-    children: newChildren,
-  });
-
-  return {
-    rootNode: updatedRoot,
-    cursor: {
-      containerId: subsupNode[cornerPosition].id,
-      index: 0,
+  return transformPreviousNode(
+    state,
+    (base) => {
+      const subsupBase = createInlineContainer([base]);
+      return createChildedNode(subsupBase, variant);
     },
-  };
+    (node) => ({ containerId: node[cornerPosition].id, index: 0 })
+  );
 }
 
 export function transformToSubSupNode(

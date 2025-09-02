@@ -39,14 +39,30 @@ const NoteActionsDropdown: React.FC<Props> = ({
     const dropdown = menuRef.current;
     if (anchor && dropdown) {
       const rect = anchor.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+  
+      const spaceBelow = viewportHeight - rect.bottom;
+      const spaceAbove = rect.top;
+  
+      let top = rect.bottom + window.scrollY + 4;
+      let maxHeight = spaceBelow - 8; // leave a little margin
+  
+      // If not enough space below, and more space above, flip above
+      if (spaceBelow < dropdown.offsetHeight && spaceAbove > spaceBelow) {
+        top = rect.top + window.scrollY - dropdown.offsetHeight - 4;
+        maxHeight = spaceAbove - 8;
+      }
+  
       setStyle({
         position: "absolute",
-        top: rect.bottom + window.scrollY + 4,
+        top,
         left: rect.left + window.scrollX,
         zIndex: 1000,
         visibility: "visible",
         opacity: 1,
         pointerEvents: "auto",
+        maxHeight: Math.min(300, maxHeight), // cap at 300px
+        overflowY: "auto",
       });
     }
   }, [anchorRef]);

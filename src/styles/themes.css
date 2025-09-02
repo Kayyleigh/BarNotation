@@ -5,369 +5,404 @@
 /* pink: #d70087, darkblue: #015f86, orange: #d86410, purple: #8700af, green: #038700  */
 
 :root {
-    --lib-entry-meta-visibility: hidden;
+  --lib-entry-meta-visibility: hidden;
 
-    --empty-math-inline-container-width: 0.3em;
+  --empty-math-inline-container-width: 0.3em;
 
-    /* Logo colors */
-    --logo-color-1: #4ec9b0;
-    --logo-color-1-dark: #3a9583;
-    --logo-color-2: #c586c0;
-    --logo-color-2-light: #ecd7ea;
+  /* Logo colors */
+  --logo-color-1: #4ec9b0;
+  --logo-color-1-dark: #3a9583;
+  --logo-color-2: #c586c0;
+  --logo-color-2-light: #ecd7ea;
 
-    /* Other */
-    --editor-font-size: 2.4em;
+  /* Common (concepts?) */
+  --command-color: #2e7d32;
+  --command-color-trans: #2e7d3220;
+
+  /* Other */
+  --editor-font-size: 2.4em;
+
+  --main-text-color: #000000;
+
+  --background-color: #f3f3f4;
+  --app-background: var(--background-color);
+
+  --main-header-bg: #ffffff;
+  --main-header-text-color: #000000;
+
+  --editor-header-bg: var(--app-background);
+
+  /* ===== Typography & Scaling ===== */
+  --math-font-family: 'STIX Two Math', 'Cambria Math', 'Times New Roman', serif;
+  --math-font-size-base: 10em;
+  --math-scale-factor: 0.5;
+
+  /* Recursive scale-down for nested nodes */
+  --math-font-size-sub: 0.6em;
+  --math-font-size-fraction: 1em;
+
+  --math-editor-container-padding: 1rem;
+
+  /* ===== Layout ===== */
+  --math-line-height: 1.2;
+
+  /* ===== Cursor & Selection ===== */
+  --math-text-color: #444444;
+  --math-cursor-color: black;
+  --math-drop-cursor-color: black;
+  --math-selection-bg: rgba(0, 0, 0, 0.07);
+  --math-hover-bg: #1ba0ff1a;
+
+  /* ===== Sub/Sup Alignment ===== */
+  --math-sub-overlap-x: 0.1em;
+  --math-sub-overlap-y: 1.4em;
+  --math-sup-overlap-y: 1.35em;
+
+  /* ===== Theming (Custom Palette) ===== */
+
+  --math-accent-color: #880e4f;
+
+  --math-color-single-bracket: #b71c1c;
+  /* Keep red for clarity */
+  --math-color-pair-brackets: #1565c0;
+
+  --math-color-binom-brackets: #e65100;
+  --math-color-matrix-brackets: #da70d6;
+
+  --math-color-actuarial-text: #00796b;
+  --math-color-actuarial-bg: #00796b14;
+
+  --math-color-big-operator-symbol: #e65100;
+  --math-color-big-operator-limits: var(--math-text-color);
+
+  --math-color-nth-root-symbol: #e65100;
+  --math-color-nth-root-index: #e65100;
+
+  --math-color-upright-text: #6a1b9a;
+  --math-color-upright-bg: #6a1b9a14;
+
+  /* --math-color-command-input-text: #929270; */
+  --math-color-command-input-text: var(--command-color);
+
+  --math-color-multi-digit-text: #880e4f;
+
+  /* ===== Editor Container ===== */
+  --math-editor-bg: white;
+  --math-editor-border: #ccc;
+  --math-editor-shadow: rgba(0, 0, 0, 0.05);
+
+  /* ===== Latex Container ===== */
+  --latex-text-color: #767677;
+  --latex-refresh-button-color-updated: #3a9e5a;
+  --latex-refresh-button-color-updated-hover: #2c7d46;
+  --latex-refresh-button-color-updated-active: #24683a;
+  --latex-refresh-button-color-outdated: #d98200;
+  --latex-refresh-button-color-outdated-hover: #aa6a00;
+  --latex-refresh-button-color-outdated-active: #8a5500;
+
+  --latex-text-color-command: #833fba;
+  --latex-text-color-comment: #777777;
+  --latex-text-color-bracket: #000000;
+  --latex-text-color-other: #036a07;
+  --latex-text-color-actsymb: #00ff08;
+
+  /* Hotkey Ovelay */
+  --hotkey-overlay-bg: var(--background-color);
+  --hotkey-overlay-color: var(--main-text-color);
+
+  --hotkey-key-bg: #eee;
+  --hotkey-key-color: #111;
+
+  --hotkey-menu-close-button-bg: #333;
+  --hotkey-menu-close-button-color: #eee;
+
+  /* Main app buttons etc */
+  --button-bg: #eee;
+  --button-color: #333;
+  --button-color-hover: #aaa;
+
+  /* Zoom panel */
+  --panel-bg: var(--background-color);
+
+  --text-cell-color: #000000;
+
+  --selected-cell-bar: #4ec9b0;
+
+
+  /* Sidebar panels */
+  --sidebar-resizer-bg: var(--logo-color-1);
+
+  --sidebar-toggle: white;
+  --sidebar-toggle-bg: var(--logo-color-2);
+  --sidebar-toggle-bg-hover: var(--logo-color-1-dark);
+
+  --sidebar-panel-bg: #ffffff;
+  --sidebar-panel-edge: var(--app-background);
+
+  --sidebar-text: black;
+
+  /* Math Library */
+  --library-tabs-inactive-bg: var(--logo-color-1);
+  --library-tabs-hover-bg: var(--logo-color-1);
+  --delete-button-hover-bg: #ff8e97;
+
+  /* Scrollbars */
+  --scrollbar-thumb: #cccccc;
+  --scrollbar-track: transparent;
+  --scrollbar-thumb-hover: #aaaaaa;
+
+  /* Notes menu */
+  --notes-menu-selected-note-entry-bg: var(--logo-color-1);
+  --notes-menu-hovered-note-entry-bg: #c586c060;
+
+  /* Modal-specific (Light Mode) */
+  --modal-text-secondary: #555555;
+  /* Slightly muted, readable */
+  --modal-text-tertiary: #888888;
+  /* Lighter tertiary hint text */
+
+  --modal-border-muted: #dddddd;
+  /* Light separators */
+  --modal-border-dark: #2e2e2e;
+  /* For preview box contrast */
+
+  --modal-bg: var(--math-editor-bg);
+  /* Reuse clean editor white */
+  --modal-button-bg: var(--button-bg);
+  --modal-button-hover-bg: #ddd;
+  /* Slight hover effect */
+
+  /* Preview mode */
+  --cell-preview-hover-bg: #001aff11;
+
+
+  /* editor layout */
+  --cell-dragspot-width: 2.5em;
+  --cell-selection-indicator-offset-left: 0.15em;
+  --editor-margin-right: 0.75em;
+  /* --editor-margin-left: calc(var(--cell-dragspot-width) + var(--cell-selection-indicator-offset-left)); */
+  --editor-margin-left: 2.65em;
+
+  /* Command input autocomplete */
+  --command-autocomplete-dropdown-bg: var(--main-header-bg);
+  --command-autocomplete-dropdown-text: var(--main-text-color);
+  --command-autocomplete-highlight-bg: var(--math-hover-bg);
+
+  --command-autocomplete-custom-bg-left: var(--command-color-trans);
   
-    --main-text-color: #000000;
-  
-    --background-color: #f3f3f4;
-    --app-background: var(--background-color);
+  --command-autocomplete-matching-sequence: #42b4ff;
+}
 
-    --main-header-bg: #0a302a;
-    --main-header-text-color: #ffffff;
+.dark {
 
-    --editor-header-bg: var(--app-background);
-  
-    /* ===== Typography & Scaling ===== */
-    --math-font-family: 'STIX Two Math', 'Cambria Math', 'Times New Roman', serif;
-    --math-font-size-base: 10em;
-    --math-scale-factor: 0.5; /* Recursive scale-down for nested nodes */
-    --math-font-size-sub: 0.6em;
-    --math-font-size-fraction: 1em;
-  
-    --math-editor-container-padding: 1rem;
-  
-    /* ===== Layout ===== */
-    --math-line-height: 1.2;
-  
-    /* ===== Cursor & Selection ===== */
-    --math-text-color: #444444;
-    --math-cursor-color: black;
-    --math-drop-cursor-color: black;
-    --math-selection-bg: rgba(0, 0, 0, 0.07);
-    --math-hover-bg: #1ba0ff1a;
-  
-    /* ===== Sub/Sup Alignment ===== */
-    --math-sub-overlap-x: 0.1em;
-    --math-sub-overlap-y: 1.4em;
-    --math-sup-overlap-y: 1.35em;
-  
-    /* ===== Theming (Custom Palette) ===== */
-  
-    --math-accent-color: #5f8700;
-  
-    --math-color-single-bracket: #d70000;      /* Keep red for clarity */
-    --math-color-pair-brackets: #444444;
-  
-    --math-color-binom-brackets: #d70087;
-    --math-color-matrix-brackets: #da70d6;
-
-    --math-color-actuarial-text: #005f87;
-    --math-color-actuarial-bg: #005f8714;
-  
-    --math-color-big-operator-symbol: #d70087;
-    --math-color-big-operator-limits: var(--math-text-color);
-  
-    --math-color-nth-root-symbol: #d70087;
-    --math-color-nth-root-index: #d70087;
-  
-    --math-color-upright-text: #8700af;
-    --math-color-upright-bg: #8700af14;
-  
-    /* --math-color-command-input-text: #929270; */
-    --math-color-command-input-text: #5f8700;
-  
-    --math-color-multi-digit-text: #547046;
-
-    /* ===== Editor Container ===== */
-    --math-editor-bg: white;
-    --math-editor-border: #ccc;
-    --math-editor-shadow: rgba(0, 0, 0, 0.05);
-  
-    /* ===== Latex Container ===== */
-    --latex-text-color: #767677;
-    --latex-refresh-button-color-updated: #3a9e5a; 
-    --latex-refresh-button-color-updated-hover: #2c7d46;
-    --latex-refresh-button-color-updated-active: #24683a;
-    --latex-refresh-button-color-outdated: #d98200;
-    --latex-refresh-button-color-outdated-hover: #aa6a00;
-    --latex-refresh-button-color-outdated-active: #8a5500;
-  
-    --latex-text-color-command: #833fba; 
-    --latex-text-color-comment: #777777; 
-    --latex-text-color-bracket: #000000;
-    --latex-text-color-other: #036a07;
-    --latex-text-color-actsymb: #00ff08;
-  
-    /* Hotkey Ovelay */
-    --hotkey-overlay-bg: var(--background-color);
-    --hotkey-overlay-color: var(--main-text-color);
-  
-    --hotkey-key-bg: #eee;
-    --hotkey-key-color: #111;
-  
-    --hotkey-menu-close-button-bg: #333;
-    --hotkey-menu-close-button-color: #eee;
-  
-    /* Main app buttons etc */
-    --button-bg: #eee;
-    --button-color: #333;
-    --button-color-hover: #aaa;
-
-    /* Zoom panel */
-    --panel-bg: var(--background-color);
-
-    --text-cell-color: #000000;
-
-    --selected-cell-bar: #4ec9b0;
+  /* Common (concepts?) */
+  --command-color: #dcdcaa;
+  --command-color-trans: #dcdcaa20;
 
 
-    /* Sidebar panels */
-    --sidebar-resizer-bg: #377569;
+  --main-text-color: #ffffff;
 
-    --sidebar-toggle: white;
-    --sidebar-toggle-bg: var(--logo-color-2);
-    --sidebar-toggle-bg-hover: var(--logo-color-1-dark);
+  --background-color: #1e1e1e;
+  --app-background: var(--background-color);
 
-    --sidebar-panel-bg: #ffffff;
-    --sidebar-panel-edge: var(--app-background);
+  --main-header-bg: #323233;
+  --main-header-text-color: #ffffff;
 
-    --sidebar-text: black;
+  --math-cursor-color: white;
+  --math-drop-cursor-color: white;
 
-    /* Math Library */
-    --library-tabs-inactive-bg: #377569;
-    --library-tabs-hover-bg: var(--logo-color-1);
-    --delete-button-hover-bg: #ff8e97;
+  --math-text-color: white;
+  --math-selection-bg: rgba(255, 255, 255, 0.1);
+  /* --math-hover-bg: #1ba0ff2c; */
+  --math-hover-bg: #1b9fff2c;
+  --math-editor-bg: #252526;
+  --math-editor-border: #444;
+  --math-editor-shadow: rgba(0, 0, 0, 0.3);
+  --math-accent-color: #ce9178;
 
-    /* Scrollbars */
-    --scrollbar-thumb: #cccccc;
-    --scrollbar-track: transparent;
-    --scrollbar-thumb-hover: #aaaaaa;
+  --math-color-single-bracket: #d21618;
+  --math-color-pair-brackets: #1b9fff;
 
-    /* Notes menu */
-    --notes-menu-selected-note-entry-bg: var(--logo-color-1);
-    --notes-menu-hovered-note-entry-bg: #c586c060;
+  --math-color-binom-brackets: #ffd700;
 
-    /* Modal-specific (Light Mode) */
-    --modal-text-secondary: #555555;     /* Slightly muted, readable */
-    --modal-text-tertiary: #888888;      /* Lighter tertiary hint text */
+  --math-color-actuarial-text: #4ec9b0;
+  --math-color-actuarial-bg: rgb(78, 201, 176, 0.1);
 
-    --modal-border-muted: #dddddd;       /* Light separators */
-    --modal-border-dark: #2e2e2e;        /* For preview box contrast */
+  --math-color-big-operator-symbol: #ffd700;
+  --math-color-big-operator-limits: var(--math-text-color);
 
-    --modal-bg: var(--math-editor-bg);   /* Reuse clean editor white */
-    --modal-button-bg: var(--button-bg); 
-    --modal-button-hover-bg: #ddd;       /* Slight hover effect */
+  --math-color-nth-root-symbol: #ffd700;
+  --math-color-nth-root-index: #ffd700;
 
-    /* Preview mode */
-    --cell-preview-hover-bg: #001aff11;
+  --math-color-upright-text: #c586c0;
+  --math-color-upright-bg: #c586c01a;
 
+  --math-color-command-input-text: var(--command-color);
 
-    /* editor layout */    
-    --cell-dragspot-width: 2.5em;
-    --cell-selection-indicator-offset-left: 0.15em;
-    --editor-margin-right: 0.75em;
-    /* --editor-margin-left: calc(var(--cell-dragspot-width) + var(--cell-selection-indicator-offset-left)); */
-    --editor-margin-left: 2.65em;
+  --math-color-multi-digit-text: #b5cea8;
 
-    /* Command input autocomplete */
-    --command-autocomplete-dropdown-bg: var(--main-header-bg);
-    --command-autocomplete-dropdown-text: var(--main-text-color);
-    --command-autocomplete-highlight-bg: var(--math-hover-bg);
-  }
-  
-  .dark {
-        
-    --main-text-color: #ffffff;
-  
-    --background-color: #1e1e1e;
-    --app-background: var(--background-color);
+  /* ===== Latex Container ===== */
+  --latex-text-color: #8B8B8D;
+  --latex-refresh-button-color-updated: #43ac6a;
+  --latex-refresh-button-color-updated-hover: #358753;
+  --latex-refresh-button-color-updated-active: #2b6e44;
+  --latex-refresh-button-color-outdated: #e99002;
+  --latex-refresh-button-color-outdated-hover: #b67102;
+  --latex-refresh-button-color-outdated-active: #935b01;
 
-    --main-header-bg: #323233;
-    --main-header-text-color: #ffffff;
-  
-    --math-cursor-color: white;
-    --math-drop-cursor-color: white;
-  
-    --math-text-color: white;
-    --math-selection-bg: rgba(255, 255, 255, 0.1);
-    /* --math-hover-bg: #1ba0ff2c; */
-    --math-hover-bg: #1b9fff2c;
-    --math-editor-bg: #252526;
-    --math-editor-border: #444;
-    --math-editor-shadow: rgba(0, 0, 0, 0.3);
-    --math-accent-color: #ce9178;
-  
-    --math-color-single-bracket: #d21618;
-    --math-color-pair-brackets: #1b9fff;
-  
-    --math-color-binom-brackets: #ffd700;
+  --latex-text-color-command: #c586c0;
+  /* softer violet, easy on dark bg */
+  --latex-text-color-bracket: #d4d4d4;
+  /* light gray to ensure visibility on dark */
+  --latex-text-color-other: #6a9955;
+  /* cool green, consistent with code editors */
 
-    --math-color-actuarial-text: #4ec9b0;
-    --math-color-actuarial-bg: rgb(78, 201, 176, 0.1);
-  
-    --math-color-big-operator-symbol: #ffd700;
-    --math-color-big-operator-limits: var(--math-text-color);
-  
-    --math-color-nth-root-symbol: #ffd700;
-    --math-color-nth-root-index: #ffd700;
-  
-    --math-color-upright-text: #c586c0;
-    --math-color-upright-bg: #c586c01a; 
-  
-    --math-color-command-input-text: #dcdcaa;
+  /* Hotkey Overlay */
+  --hotkey-overlay-bg: #252526;
+  --hotkey-overlay-color: var(--main-text-color);
 
-    --math-color-multi-digit-text: #b5cea8;
-  
-    /* ===== Latex Container ===== */
-    --latex-text-color: #8B8B8D;
-    --latex-refresh-button-color-updated: #43ac6a; 
-    --latex-refresh-button-color-updated-hover: #358753;
-    --latex-refresh-button-color-updated-active: #2b6e44;
-    --latex-refresh-button-color-outdated: #e99002; 
-    --latex-refresh-button-color-outdated-hover: #b67102;
-    --latex-refresh-button-color-outdated-active: #935b01;
-  
-    --latex-text-color-command: #c586c0;  /* softer violet, easy on dark bg */
-    --latex-text-color-bracket: #d4d4d4;  /* light gray to ensure visibility on dark */
-    --latex-text-color-other: #6a9955;    /* cool green, consistent with code editors */
-    
-    /* Hotkey Overlay */
-    --hotkey-overlay-bg: #252526;
-    --hotkey-overlay-color: var(--main-text-color);
-  
-    --hotkey-key-bg: #444;
-    --hotkey-key-color: #eee;
-  
-    --hotkey-menu-close-button-bg: #eee;
-    --hotkey-menu-close-button-color: #333;
-  
-    /* Main app buttons etc */
-    --button-bg: #333;
-    --button-color: #eee;
-    --button-color-hover: #444;
+  --hotkey-key-bg: #444;
+  --hotkey-key-color: #eee;
 
-    /* Zoom panel */
-    --panel-bg: var(--background-color);
+  --hotkey-menu-close-button-bg: #eee;
+  --hotkey-menu-close-button-color: #333;
 
-    --text-cell-color: #d4d4d4;
+  /* Main app buttons etc */
+  --button-bg: #333;
+  --button-color: #eee;
+  --button-color-hover: #444;
 
-    --selected-cell-bar: #4ec9b0;
+  /* Zoom panel */
+  --panel-bg: var(--background-color);
 
-    /* Sidebar panels */
-    --sidebar-resizer-bg: #2e2e2e;
+  --text-cell-color: #d4d4d4;
 
-    --sidebar-toggle: black;
-    --sidebar-toggle-bg: #6e6e6e;
-    --sidebar-toggle-bg-hover: var(--logo-color-1);
+  --selected-cell-bar: #4ec9b0;
 
-    --sidebar-panel-bg: #252526;
-    --sidebar-panel-edge: var(--app-background);
+  /* Sidebar panels */
+  --sidebar-resizer-bg: #2e2e2e;
 
-    --sidebar-text: #eeeeee;
+  --sidebar-toggle: black;
+  --sidebar-toggle-bg: #6e6e6e;
+  --sidebar-toggle-bg-hover: var(--logo-color-1);
 
-    /* Math Library */
-    --library-tabs-inactive-bg: #000000;
-    --library-tabs-hover-bg: #1b9fff43;
-    --delete-button-hover-bg: #980a16;
+  --sidebar-panel-bg: #252526;
+  --sidebar-panel-edge: var(--app-background);
 
-    /* Scrollbars */
-    --scrollbar-thumb: #4a4a4a;
-    --scrollbar-track: transparent;
-    --scrollbar-thumb-hover: #5e5e5e;
+  --sidebar-text: #eeeeee;
 
-    /* Notes menu */
-    --notes-menu-selected-note-entry-bg: var(--logo-color-1);
-    --notes-menu-hovered-note-entry-bg: #c586c040;
+  /* Math Library */
+  --library-tabs-inactive-bg: #000000;
+  --library-tabs-hover-bg: #1b9fff43;
+  --delete-button-hover-bg: #980a16;
 
-    /* ===== Modal (Dark Mode) ===== */
-    --modal-text-secondary: #aaaaaa;     /* Softer gray for labels, metadata */
-    --modal-text-tertiary: #888888;      /* Hinted text, less visual priority */
+  /* Scrollbars */
+  --scrollbar-thumb: #4a4a4a;
+  --scrollbar-track: transparent;
+  --scrollbar-thumb-hover: #5e5e5e;
 
-    --modal-border-muted: #3a3a3a;       /* Darker border than bg */
-    --modal-border-dark: #5a5a5a;        /* Used in preview outline */
+  /* Notes menu */
+  --notes-menu-selected-note-entry-bg: var(--logo-color-1);
+  --notes-menu-hovered-note-entry-bg: #c586c040;
 
-    --modal-bg: var(--math-editor-bg);   /* Reuse dark editor background */
-    --modal-button-bg: var(--button-bg); 
-    --modal-button-hover-bg: #444444;    /* Subtle dark hover effect */
+  /* ===== Modal (Dark Mode) ===== */
+  --modal-text-secondary: #aaaaaa;
+  /* Softer gray for labels, metadata */
+  --modal-text-tertiary: #888888;
+  /* Hinted text, less visual priority */
 
-  }
+  --modal-border-muted: #3a3a3a;
+  /* Darker border than bg */
+  --modal-border-dark: #5a5a5a;
+  /* Used in preview outline */
 
-  .preview {
-    --editor-margin-right: 0.5em;
-  }
+  --modal-bg: var(--math-editor-bg);
+  /* Reuse dark editor background */
+  --modal-button-bg: var(--button-bg);
+  --modal-button-hover-bg: #444444;
+  /* Subtle dark hover effect */
+}
 
-  .locked {
-    --cell-dragspot-width: 0em;
-    --cell-selection-indicator-offset-left: 0em;
-    --editor-margin-left: 1em;
-  }
+.preview {
+  --editor-margin-right: 0.5em;
+}
 
-  .nerdMode {
-    --lib-entry-meta-visibility: shown;
-  }
+.locked {
+  --cell-dragspot-width: 0em;
+  --cell-selection-indicator-offset-left: 0em;
+  --editor-margin-left: 1em;
+}
 
-  .unColoredPreview .preview {
-    --math-color-single-bracket: var(--math-text-color);
-    --math-color-pair-brackets: var(--math-text-color);
-    --math-color-actuarial-text: var(--math-text-color);  
-    --math-color-big-operator-symbol: var(--math-text-color);
-    --math-color-big-operator-limits: var(--math-text-color);
-    --math-color-nth-root-symbol: var(--math-text-color);
-    --math-color-nth-root-index: var(--math-text-color);
-    --math-color-upright-text: var(--math-text-color);
-    --math-color-command-input-text: var(--math-text-color);
-  }
+.nerdMode {
+  --lib-entry-meta-visibility: shown;
+}
 
-  html, body {
-    margin: 0;
-    max-width: 100vw;
-    overflow-x: hidden;
-    padding: 0;
-    box-sizing: border-box;
-  }
+.unColoredPreview .preview {
+  --math-color-single-bracket: var(--math-text-color);
+  --math-color-pair-brackets: var(--math-text-color);
+  --math-color-actuarial-text: var(--math-text-color);
+  --math-color-big-operator-symbol: var(--math-text-color);
+  --math-color-big-operator-limits: var(--math-text-color);
+  --math-color-nth-root-symbol: var(--math-text-color);
+  --math-color-nth-root-index: var(--math-text-color);
+  --math-color-upright-text: var(--math-text-color);
+  --math-color-command-input-text: var(--math-text-color);
+}
 
-  body {
-    font-family: sans-serif;
-    height: 100vh;
-    background-color: var(--background-color);
-    overflow-y: hidden;
-  }
+html,
+body {
+  margin: 0;
+  max-width: 100vw;
+  overflow-x: hidden;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-  h1, h2, h3, h4 {
-    color: var(--main-text-color);
-  }
+body {
+  font-family: sans-serif;
+  height: 100vh;
+  background-color: var(--background-color);
+  overflow-y: hidden;
+}
 
-  label {
-    color: var(--main-text-color);
-  }
+h1,
+h2,
+h3,
+h4 {
+  color: var(--main-text-color);
+}
 
-  span {
-    /* color: var(--main-text-color); */
-  }
+label {
+  color: var(--main-text-color);
+}
 
-  /* Works in WebKit browsers: Chrome, Edge, Safari */
-  ::-webkit-scrollbar {
-    width: 12px;
-    height: 12px;
-  }
+/* span {
+  color: var(--main-text-color);
+} */
 
-  ::-webkit-scrollbar-track {
-    background: var(--scrollbar-track);
-  }
+/* Works in WebKit browsers: Chrome, Edge, Safari */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
 
-  ::-webkit-scrollbar-thumb {
-    background-color: var(--scrollbar-thumb);
-    border-radius: 6px;
-    border: 3px solid var(--scrollbar-track); /* gives thumb padding */
-  }
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
 
-  ::-webkit-scrollbar-thumb:hover {
-    background-color: var(--scrollbar-thumb-hover);
-  }
+::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb);
+  border-radius: 6px;
+  border: 3px solid var(--scrollbar-track);
+  /* gives thumb padding */
+}
 
-  /* Firefox support */
-  * {
-    scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
-    scrollbar-width: thin;
-  }
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scrollbar-thumb-hover);
+}
+
+/* Firefox support */
+* {
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+  scrollbar-width: thin;
+}

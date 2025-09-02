@@ -5,10 +5,12 @@ import { handleBackspace } from "./deletion";
 import { transformToActsymbNode, transformToFraction, transformToSubSupNode, transformToOverUnderset } from "./transformations";
 import { getStyleFromSymbol, isClosingBracket, isOpeningBracket } from "../utils/bracketUtils";
 import { handleCtrlArrow } from "./matrix-manipulation";
+import type { LibraryEntry } from "../models/libraryTypes";
 
 export function handleKeyDown(
   e: React.KeyboardEvent,
-  state: EditorState
+  state: EditorState, 
+  commandMap?: Record<string, LibraryEntry>,
 ): EditorState | null {
 
   // === Triple-key events ===
@@ -136,7 +138,7 @@ export function handleKeyDown(
   if (key.length === 1 && !e.ctrlKey && !e.metaKey) {
     e.preventDefault();
     console.log("yyou typed", key)
-    return handleCharacterInsert(state, key);
+    return handleCharacterInsert(state, key, commandMap);
   }
 
   return null; // Unhandled

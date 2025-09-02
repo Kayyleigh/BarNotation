@@ -200,6 +200,8 @@ const nl = {
         longestArchived: "Langst gearchiveerd",
         newestCreated: "Nieuwste aangemaakt",
         oldestCreated: "Oudste aangemaakt",
+        recentlyModified: "Recent gewijzigd",
+        leastRecentlyModified: "Langst niet gewijzigd",
         mostCells: "Meeste cellen",
         leastCells: "Minste cellen",
         titleAZ: "Titel A → Z",

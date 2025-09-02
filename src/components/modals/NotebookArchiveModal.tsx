@@ -54,8 +54,7 @@ const NotebookArchiveModal: React.FC<Props> = ({ notes, onClose, onUnarchive, on
     const sorted = [...notes]
       .filter(n =>
         n.metadata.title.toLowerCase().includes(search) ||
-        n.metadata.author?.toLowerCase().includes(search) ||
-        n.metadata.courseCode?.toLowerCase().includes(search)
+        n.metadata.author?.toLowerCase().includes(search) 
       )
       .sort((a, b) => dir === "asc" ? -sortFn(a, b) : sortFn(a, b));
     return sorted;

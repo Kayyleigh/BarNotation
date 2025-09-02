@@ -43,7 +43,7 @@ const NoteListItem: React.FC<Props> = ({
 
   return (
     <li
-      className={`${styles.noteItem} ${selected ? styles.selected : ""}`}
+      className={`${styles.noteItem} ${selected ? styles.selected : ""} ${menuOpen ? styles.menuOpen : ""}`}
       onClick={onClick}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") onClick();
@@ -56,7 +56,7 @@ const NoteListItem: React.FC<Props> = ({
           <div className={styles.noteTitle}>{note.title}</div>
           <div className={styles.noteMeta}>
             <span>
-              {note.cellCount} { t("modals.notebookArchive.cell", { count: note.cellCount } )}
+              {note.cellCount} {t("modals.notebookArchive.cell", { count: note.cellCount })}
             </span>
             <span className={styles.noteDate}>
               {note.createdAt && <span>{formatCreatedAt(note.createdAt, t, lang)}</span>}

@@ -11,7 +11,7 @@ import {
   renderChildedNode,
   renderAccentedNode,
   renderStyledNode,
-  renderCommandInputNode,
+  // renderCommandInputNode,
   renderMultiDigitNode,
   renderBigOperatorNode,
   renderRootWrapperNode,
@@ -21,9 +21,9 @@ import {
   renderMatrixNode,
 } from "./MathRenderers";
 import type { CursorPosition } from "../../logic/cursor";
-import type { DropTarget } from "../layout/EditorWorkspace";
-import type { DragSource } from "../../hooks/mathDrag/DragContext";
 import type { EditorState } from "../../logic/editor-state";
+import type { DragSource, DropTarget } from "../../models/dragTypes";
+import { CommandInputRenderer } from "./CommandInputRenderer";
 
 export type MathRendererProps = {
   node: MathNode;
@@ -83,53 +83,64 @@ const InnerMathRenderer: React.FC<MathRendererProps> = ({
   updateEditorState,
   editorRef
 }) => {
-  const { draggingNode, setDraggingNode, dropTarget, setDropTarget } = useDragContext();
+  const { draggingSource, setDraggingSource, dropTarget, setDropTarget } = useDragContext();
 
   const handleDragStart = (e: React.DragEvent) => {
     e.stopPropagation();
-    setDraggingNode({
-      sourceType: "cell",
+    setDraggingSource({
+      type: "cell",
       cellId,
       containerId,
       index,
       node,
     });
   };
-
   const handleDragEnd = () => {
-    setDraggingNode(null);
+    setDraggingSource(null);
     setDropTarget(null);
   };
-
+  
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setDropTarget({ cellId, containerId, index });
+    setDropTarget({
+      type: "cell",
+      cellId,
+      containerId,
+      index,
+    });
   };
-
+  
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!draggingNode) return;
-    console.log(`in MathRenderer 481 handleDrop`) //This stuff is deleted on refresh unless more input 
-
+    if (!draggingSource) return;
+  
     let dropContainerId = containerId;
     let dropIndex = index;
-
+  
     if (node.type === "root-wrapper" && node.child) {
       dropContainerId = node.child.id;
       dropIndex = node.child.children.length - 1;
     }
-
-    onDropNode(draggingNode, {
+  
+    onDropNode(draggingSource, {
+      type: "cell",
       cellId,
       containerId: dropContainerId,
       index: dropIndex,
     });
-
-    setDraggingNode(null);
+  
+    setDraggingSource(null);
     setDropTarget(null);
   };
+  
+  const isDropTarget =
+    node.type !== "inline-container" &&
+    dropTarget?.type === "cell" &&
+    dropTarget.cellId === cellId &&
+    dropTarget.containerId === containerId &&
+    dropTarget.index === index;
 
   const baseRenderProps: BaseRenderProps = {
     inheritedStyle,
@@ -168,7 +179,8 @@ const InnerMathRenderer: React.FC<MathRendererProps> = ({
       content = renderMultiDigitNode(node, props);
       break;
     case "command-input":
-      content = renderCommandInputNode(node, props);
+      // content = renderCommandInputNode(node, props);
+      content = <CommandInputRenderer node={node} baseProps={props} />;
       break;
     case "inline-container":
       content = renderInlineContainerNode(node, props);
@@ -212,12 +224,6 @@ const InnerMathRenderer: React.FC<MathRendererProps> = ({
         <span className="math-node unsupported">Unsupported node: {node.id}</span>
       );
   }
-
-  const isDropTarget =
-    node.type !== "inline-container" &&
-    dropTarget?.cellId === cellId &&
-    dropTarget?.containerId === containerId &&
-    dropTarget?.index === index;
 
   const isDraggable = node.type !== "root-wrapper";
 
