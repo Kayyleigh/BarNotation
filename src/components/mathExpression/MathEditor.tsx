@@ -19,6 +19,7 @@ import { useDragContext } from "../../hooks/mathDrag/useDragContext";
 import type { TextStyle } from "../../models/mathNodeTypes";
 import { useHover } from "../../hooks/mathHover/useHover";
 import type { DragSource, DropTarget } from "../../models/dragTypes";
+import { useCustomCommands } from "../../hooks/customCommands/useCustomCommands";
 
 interface MathEditorProps {
   resetZoomSignal: number;
@@ -45,6 +46,7 @@ const MathEditor: React.FC<MathEditorProps> = ({
   onHoverInfoChange,
 }) => {
   // console.log("Rendering MathEditor", cellId);
+  const { commandMap } = useCustomCommands();
 
   const { hoverPath, setHoverPath } = useHover();
 
@@ -89,7 +91,7 @@ const MathEditor: React.FC<MathEditorProps> = ({
   const onKeyDown = (e: React.KeyboardEvent) => {
     const prevFocusedNodeContainerId = editorState.cursor?.containerId;
 
-    const updated = handleKeyDown(e, editorState);
+    const updated = handleKeyDown(e, editorState, commandMap);
 
     if (updated) {
       const prevFocusedNodeContainer = findNodeById(updated.rootNode, prevFocusedNodeContainerId);

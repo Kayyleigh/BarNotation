@@ -205,7 +205,7 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({
   const { undo, redo } = useEditorHistory();
 
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => { // BUG this is the shit place where I do not have the custom commands available
+    const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key === "z") {
         e.preventDefault();
         undo();
