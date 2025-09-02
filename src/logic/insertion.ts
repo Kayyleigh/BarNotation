@@ -120,9 +120,13 @@ export const handleCharacterInsert = (
 
       let replacementChildren: MathNode[] = [];
 
+      let targetContainer = container;
+      let targetIndex = index;
+
       if (transformedNode.type === "inline-container") {
         // Flatten its children instead of inserting a nested inline-container
         replacementChildren = transformedNode.children;
+        targetIndex += transformedNode.children.length - 1;
       } else {
         replacementChildren = [transformedNode];
       }
@@ -159,9 +163,6 @@ export const handleCharacterInsert = (
         ...container,
         children: updatedChildren,
       });
-
-      let targetContainer = container;
-      let targetIndex = index;
 
       // Adjust cursor for specific complex node types
       if (transformedNode.type === "nth-root") {
@@ -494,6 +495,10 @@ export function replaceCommandWithNode(
   // Step 4: Decide cursor target
   let targetContainerId = container.id;
   let targetIndex = index + 1;
+
+  if (replacementNode.type === "inline-container") {
+    targetIndex += replacementNode.children.length - 1;
+  }
 
   if (replacementNode.type === "nth-root") {
     targetContainerId = replacementNode.base.id;
