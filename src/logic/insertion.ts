@@ -170,11 +170,6 @@ export const handleCharacterInsert = (
         targetIndex = 0;
       }
 
-      if (transformedNode.type === "accented") {
-        targetContainer = transformedNode.base;
-        targetIndex = 0;
-      }
-
       if (transformedNode.type === "decorated" || transformedNode.type === "overunderset") {
         targetContainer = transformedNode.base;
         targetIndex = 0;
@@ -501,11 +496,6 @@ export function replaceCommandWithNode(
   }
 
   if (replacementNode.type === "nth-root") {
-    targetContainerId = replacementNode.base.id;
-    targetIndex = 0;
-  }
-
-  if (replacementNode.type === "accented") { //TODO remove
     targetContainerId = replacementNode.base.id;
     targetIndex = 0;
   }

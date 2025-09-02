@@ -1,8 +1,6 @@
 import type { NodeDecoration } from "../utils/accentUtils";
 import type { BracketStyle } from "../utils/bracketUtils";
 
-// TODO: rename to mathtypes? 
-
 export type MathNode =
   | MultilineEquationNode
   | RootWrapperNode
@@ -18,12 +16,10 @@ export type StructureNode =
   | NthRootNode
   | BigOperatorNode
   | ChildedNode
-  | AccentedNode //TODO remove
   | DecoratedNode
   | OverUndersetNode
   | ArrowNode
   | GroupNode
-  | VectorNode
   | MatrixNode
   | CasesNode
   | TextNode
@@ -44,12 +40,10 @@ export type NodeType =
   | "nth-root"
   | "big-operator"
   | "childed"
-  | "accented" // TODO remove
   | "overunderset"
   | "decorated"
   | "arrow"
   | "matrix"
-  | "vector"
   | "cases";
 
 export interface BaseNode {
@@ -124,18 +118,6 @@ export interface ChildedNode extends BaseNode {
   supRight: InlineContainerNode;
 }
 
-// TODO REMOVE ONCE THE SPLIT ONES EXIST AND FUNCTION WELL
-export type AccentKind =
-  | { type: "predefined"; decoration: NodeDecoration }  // e.g., "hat", "tilde", "overline"
-  | { type: "custom"; content: InlineContainerNode; position: "above" | "below" };
-
-// TODO REMOVE
-export interface AccentedNode extends BaseNode {
-  type: "accented";
-  base: InlineContainerNode;
-  accent: AccentKind;
-}
-
 export interface DecoratedNode extends BaseNode {
   type: "decorated";
   base: InlineContainerNode;
@@ -163,14 +145,6 @@ export interface GroupNode extends BaseNode {
   type: "group";
   child: InlineContainerNode;
   bracketStyle: BracketStyle;
-}
-
-export interface VectorNode extends BaseNode { //TODO maybe don't use -- Matrix can be vector if 1xn or mx1
-  type: "vector";
-  elements: InlineContainerNode[];
-  bracketStyle: BracketStyle;
-  orientation: "horizontal" | "vertical";
-  // Maybe enable diff style for L vs R
 }
 
 // types: matrix, pmatrix, bmatrix, Bmatrix, vmatrix, Vmatrix
@@ -237,8 +211,6 @@ export const nodeToMathText = (node: MathNode): string => {
       return `BigOp(${node.operator}, lower=${nodeToMathText(node.lower)}, upper=${nodeToMathText(node.upper)})`;
     case "childed":
       return `_{${nodeToMathText(node.subLeft)}}^{${nodeToMathText(node.supLeft)}}{${nodeToMathText(node.base)}}_{${nodeToMathText(node.subRight)}}^{${nodeToMathText(node.supRight)}}`;
-    case "accented":
-      //TODO
       return `Accented(TODO)`;
     case "arrow":
       //TODO
@@ -246,9 +218,6 @@ export const nodeToMathText = (node: MathNode): string => {
     case "matrix":
       //TODO
       return `Matrix(TODO)`;
-    case "vector":
-      //TODO
-      return `Vector(TODO)`;
     case "cases":
       //TODO
       return `Cases(TODO)`;

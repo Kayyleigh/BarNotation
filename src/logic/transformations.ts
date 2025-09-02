@@ -1,11 +1,10 @@
 import { type EditorState } from "./editor-state";
 import { findNodeById, updateNodeById } from "../utils/treeUtils";
-import { transformToCustomAccentNode, transformToFractionNode, transformtoOverUndersetNode } from "../models/transformations";
+import { transformToFractionNode, transformtoOverUndersetNode } from "../models/transformations";
 import { type BracketStyle } from "../utils/bracketUtils";
 import { createChildedNode, createGroupNode, createInlineContainer, generateId } from "../models/nodeFactories";
 import type { InlineContainerNode, MathNode, MatrixNode, OverUndersetVariant, TextNode } from "../models/mathNodeTypes";
 import type { CornerPosition } from "../utils/subsupUtils";
-import { nodeToLatex } from "../models/nodeToLatex";
 
 function isOperatorNode(node: MathNode): boolean {
   return node.type === "text" && typeof (node as TextNode).content === "string" &&
@@ -76,22 +75,6 @@ export function transformToFraction(state: EditorState): EditorState {
     state,
     (base) => transformToFractionNode(base),
     (frac) => ({ containerId: frac.denominator.id, index: 0 })
-  );
-}
-
-export function transformToCustomAccent(state: EditorState, position: "above" | "below"): EditorState {
-  return transformPreviousNode(
-    state,
-    (base) => {
-      const accentedNode = transformToCustomAccentNode(base, position);
-      if (accentedNode.accent.type === "predefined") {
-        console.warn(`Trying to transform to custom accent, but got predefined ${nodeToLatex(accentedNode)}`);
-        // Return the original base if invalid, so no transform
-        return base;
-      }
-      return accentedNode;
-    },
-    (accentedNode) => ({ containerId: accentedNode.accent.content.id, index: 0 })
   );
 }
 

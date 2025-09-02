@@ -566,7 +566,6 @@ import type {
   NthRootNode,
   BigOperatorNode,
   ChildedNode,
-  AccentedNode,
   StyledNode,
   RootWrapperNode,
   MathNode,
@@ -1032,92 +1031,6 @@ export function renderChildedNode(
           <MathRenderer {...getChildProps(child, i)} />
         </span>
       ))}
-    </span>
-  );
-}
-
-
-// 10. Accented Node (has base) //TODO remove
-export function renderAccentedNode(
-  node: AccentedNode,
-  baseProps: BaseRenderProps & MathRendererProps
-): React.ReactNode {
-  const styleClass = getStyleClass(baseProps.inheritedStyle);
-  const isCustom = node.accent.type === "custom";
-  const above = isCustom && node.accent.position === "above";
-  const below = isCustom && node.accent.position === "below";
-
-  const commonProps = {
-    cellId: baseProps.cellId,
-    isActive: baseProps.isActive,
-    cursor: baseProps.cursor,
-    hoverPath: baseProps.hoverPath,
-    onCursorChange: baseProps.onCursorChange,
-    setHoverPath: baseProps.setHoverPath,
-    inheritedStyle: baseProps.inheritedStyle,
-    onDropNode: baseProps.onDropNode,
-    showPlaceholder: baseProps.showPlaceholder,
-    editorState: baseProps.editorState,
-    updateEditorState: baseProps.updateEditorState
-  };
-
-  const updatedAncestors = [node.id, ...(baseProps.ancestorIds ?? [])];
-
-  return (
-    <span
-      data-nodeid={node.id}
-      className={clsx(
-        "math-node",
-        "type-accented",
-        isCustom ? "decoration-custom" : `decoration-${node.accent.decoration}`,
-        styleClass,
-        { hovered: getIsHovered(node, baseProps.hoverPath) }
-      )}
-      style={getInlineStyle(baseProps.inheritedStyle)}
-      onClick={(e) => {
-        e.stopPropagation();
-        if (node.base.children.length === 0) {
-          baseProps.onCursorChange({ containerId: node.base.id, index: 0 });
-        }
-      }}
-      onMouseEnter={() => handleMouseEnter([...baseProps.ancestorIds], baseProps.setHoverPath)}
-      onMouseLeave={(e) =>
-        handleMouseLeave(e, updatedAncestors, baseProps.setHoverPath)
-      }
-    >
-      {above && (
-        <div className="accent-content accent-above">
-          <MathRenderer
-            node={node.accent.content}
-            {...commonProps}
-            ancestorIds={updatedAncestors}
-            containerId={node.accent.content.id}
-            index={0}
-          />
-        </div>
-      )}
-
-      <span className="accent-base">
-        <MathRenderer
-          node={node.base}
-          {...commonProps}
-          ancestorIds={updatedAncestors}
-          containerId={node.base.id}
-          index={0}
-        />
-      </span>
-
-      {below && (
-        <div className="accent-content accent-below">
-          <MathRenderer
-            node={node.accent.content}
-            {...commonProps}
-            ancestorIds={updatedAncestors}
-            containerId={node.accent.content.id}
-            index={0}
-          />
-        </div>
-      )}
     </span>
   );
 }

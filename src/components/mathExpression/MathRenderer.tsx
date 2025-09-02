@@ -9,9 +9,7 @@ import {
   renderFractionNode,
   renderGroupNode,
   renderChildedNode,
-  renderAccentedNode,
   renderStyledNode,
-  // renderCommandInputNode,
   renderMultiDigitNode,
   renderBigOperatorNode,
   renderRootWrapperNode,
@@ -199,9 +197,6 @@ const InnerMathRenderer: React.FC<MathRendererProps> = ({
       break;
     case "childed":
       content = renderChildedNode(node, props);
-      break;
-    case "accented":
-      content = renderAccentedNode(node, props);
       break;
     case "decorated":
       content = renderDecoratedNode(node, props);

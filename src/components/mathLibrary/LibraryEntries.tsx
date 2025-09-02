@@ -35,7 +35,7 @@ interface LibraryEntryItemProps {
   onDelete: () => void;
   showDeleteButton: boolean;
   onDoubleClick?: () => void; //TODO remove later when replaced w other way to set edit mode
-  highlight?: boolean; // optional green border support //TODO change to prettier later
+  highlight?: boolean;
 }
 
 const LibraryEntryItem: React.FC<LibraryEntryItemProps> = React.memo(
@@ -45,7 +45,7 @@ const LibraryEntryItem: React.FC<LibraryEntryItemProps> = React.memo(
     return (
       <div
         // className={`${styles.libraryEntry}`}
-        className={clsx(styles.libraryEntry, highlight && styles.customCommand)} //TODO no green border
+        className={clsx(styles.libraryEntry, highlight && styles.customCommand)} 
         draggable
         onDragStart={onDragStart}
         onDragLeave={onDragLeave}

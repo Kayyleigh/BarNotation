@@ -161,34 +161,6 @@ export const nodeToLatex = (node: MathNode, highlighted = false): string => {
       }
     }
 
-    case "accented": { //TODO remove
-      if (node.accent.type === 'predefined') {
-        const decorationInfo = decorationToLatexCommand[node.accent.decoration];
-        if (!decorationInfo) {
-          throw new Error(`Unknown decoration: ${node.accent}`);
-        }
-        const latexCommand = decorationInfo.command;
-        const packageName = decorationInfo.package;
-
-        const latexContent =
-          (highlighted ? wrapCmd(latexCommand) : latexCommand) +
-          (highlighted ? wrapBracket("{") : "{") +
-          nodeToLatex(node.base, highlighted) +
-          (highlighted ? wrapBracket("}") : "}");
-
-        return wrapWithPackage(latexContent, packageName);
-      } else {
-        const latexCommand = node.accent.position === 'above' ? (highlighted ? wrapCmd("\\overset") : "\\overset") : (highlighted ? wrapCmd("\\underset") : "\\underset");
-        return latexCommand
-          + (highlighted ? wrapBracket("{") : "{")
-          + nodeToLatex(node.accent.content, highlighted)
-          + (highlighted ? wrapBracket("}") : "}")
-          + (highlighted ? wrapBracket("{") : "{")
-          + nodeToLatex(node.base, highlighted)
-          + (highlighted ? wrapBracket("}") : "}");
-      }
-    }
-
     case "decorated": {
       const decorationInfo = decorationToLatexCommand[node.decoration];
       if (!decorationInfo) {

@@ -66,17 +66,9 @@ export function cloneTreeWithNewIds(node: MathNode): MathNode {
   const childKeys = directionalChildOrder[node.type] || [];
 
   for (const key of childKeys) {
-    if (node.type === "accented" && key === "accent" && node.accent.type === "custom") { //TODO remove?
-      clone.accent = {
-        ...node.accent,
-        content: cloneTreeWithNewIds(node.accent.content),
-      };
-    }
-    else {
-      const child = (node as any)[key];
-      if (child) {
-        clone[key] = cloneTreeWithNewIds(child);
-      }
+    const child = (node as any)[key];
+    if (child) {
+      clone[key] = cloneTreeWithNewIds(child);
     }
   }
 
@@ -85,11 +77,9 @@ export function cloneTreeWithNewIds(node: MathNode): MathNode {
     clone.children = node.children.map(cloneTreeWithNewIds);
   }
 
-  // Handle matrix and vector
+  // Handle matrix
   if (node.type === "matrix") {
     clone.rows = node.rows.map((row) => row.map(cloneTreeWithNewIds));
-  } else if (node.type === "vector") {
-    clone.elements = node.elements.map(cloneTreeWithNewIds);
   }
 
   return clone as MathNode;
@@ -121,10 +111,6 @@ export const getLogicalChildren = (node: MathNode): MathNode[] => {
       return [node.child];
     case "styled":
       return [node.child];
-    case "accented": //TODO remove
-      return node.accent.type === "custom"
-        ? [node.base, node.accent.content]
-        : [node.base];
     case "overunderset":
       return [node.base, node.content];
     case "decorated":
@@ -259,15 +245,6 @@ export function updateStructureNodeById(
     }
   }
 
-  if (node.type === "accented" && node.accent.type === "predefined") { //TODO remove
-    const newChild = updateInlineContainerNodeById(node.base, targetId, replacement)
-    return {
-      ...node,
-      base: newChild,
-      accent: node.accent,
-    }
-  }
-
   if (node.type === "decorated") {
     const newChild = updateInlineContainerNodeById(node.base, targetId, replacement)
     return {
@@ -322,17 +299,6 @@ export function updateStructureNodeById(
         supLeft: newChildren[2],
         subRight: newChildren[3],
         supRight: newChildren[4],
-      }
-    }
-    if (node.type === "accented" && node.accent.type === "custom") { //TODO remove
-      return {
-        ...node,
-        base: newChildren[0],
-        accent: {
-          type: 'custom',
-          content: newChildren[1],
-          position: node.accent.position
-        }
       }
     }
     if (node.type === "overunderset") {
@@ -433,16 +399,6 @@ export function findParentOfInlineContainer(
   else if (root.type === 'styled') {
     if (root.child.id === inlineContainerId) return { parent: root, key: "child" };
   }
-  else if (root.type === 'accented') { //TODO remove
-    if (root.base.id === inlineContainerId) return { parent: root, key: "child" };
-
-    if (root.accent.type === 'custom') {
-      if (root.accent.content.id === inlineContainerId) {
-        console.log(`Yes, ${root.accent.content}`)
-        return { parent: root, key: "accent.content" };
-      }
-    }
-  }
   else if (root.type === 'decorated') {
     if (root.base.id === inlineContainerId) return { parent: root, key: "base" };
   }
@@ -516,9 +472,6 @@ function getChildContainers(node: MathNode): InlineContainerNode[] {
     case "styled":
       containers.push(...[node.child] as InlineContainerNode[]);
       break;
-    case "accented": //TODO remove
-      containers.push(...[node.base] as InlineContainerNode[]);
-      break;
     case "overunderset":
       containers.push(
         ...(node.base.type === "inline-container" ? [node.base] : []),
@@ -534,9 +487,6 @@ function getChildContainers(node: MathNode): InlineContainerNode[] {
         const val = node[sub];
         if (val?.type === "inline-container") containers.push(val);
       }
-      break;
-    case "vector":
-      containers.push(...node.elements.filter(n => n.type === "inline-container") as InlineContainerNode[]);
       break;
     case "matrix":
       for (const row of node.rows) {
