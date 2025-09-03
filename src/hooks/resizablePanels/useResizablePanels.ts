@@ -1,10 +1,11 @@
 // hooks/useResizablePanels.ts
 import { useCallback, useMemo, useState } from "react";
 
-const MIN_CONTENT = 0;
+//TODO maybe move these to editorConstants (or make new file)
+const MIN_CONTENT = 0; 
 const COLLAPSED = 8;
-const DEFAULT_L = 220;
-const DEFAULT_R = 320;
+const DEFAULT_L = 280;
+const DEFAULT_R = 610;
 
 export type PanelSide = "left" | "right";
 
