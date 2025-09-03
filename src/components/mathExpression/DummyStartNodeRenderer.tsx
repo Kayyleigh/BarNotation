@@ -3,9 +3,8 @@ import React from "react";
 import clsx from "clsx";
 import type { CursorPosition } from "../../logic/cursor";
 import { useDragContext } from "../../hooks/mathDrag/useDragContext";
-import type { DropTarget } from "../layout/EditorWorkspace";
-import type { DragSource } from "../../hooks/mathDrag/DragContext";
 import { handleMouseEnter, handleMouseLeave } from "../../utils/mathHoverUtils";
+import type { DragSource, DropTarget } from "../../models/dragTypes";
 
 type Props = {
   containerId: string;
@@ -32,9 +31,10 @@ const DummyStartNodeRenderer: React.FC<Props> = ({
   onDropNode,
   ancestorIds,
 }) => {
-  const { draggingNode, setDraggingNode, dropTarget, setDropTarget } = useDragContext();
+  const { draggingSource, setDraggingSource, dropTarget, setDropTarget } = useDragContext();
 
   const isDropTarget =
+    dropTarget?.type === "cell" &&
     dropTarget?.cellId === cellId && 
     dropTarget?.containerId === containerId && 
     dropTarget?.index === -1;
@@ -56,14 +56,14 @@ const DummyStartNodeRenderer: React.FC<Props> = ({
         onDragOver={(e) => {
           e.preventDefault();
           e.stopPropagation();
-          setDropTarget({ cellId, containerId, index: -1 });
+          setDropTarget({ type: "cell", cellId, containerId, index: -1 });
         }}
         onDrop={(e) => {
           e.preventDefault();
           e.stopPropagation();
-          if (!draggingNode) return;
-          onDropNode(draggingNode, { cellId, containerId, index: -1 });
-          setDraggingNode(null);
+          if (!draggingSource) return;
+          onDropNode(draggingSource, { type: "cell", cellId, containerId, index: -1 });
+          setDraggingSource(null);
           setDropTarget(null);
         }}
       />

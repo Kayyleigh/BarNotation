@@ -135,7 +135,8 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({
   
       // Avoid dropping into root directly
       let dropContainerId = to.containerId;
-      let dropIndex = to.index;
+      let dropIndex = to.index + 1;
+
       if (dropContainerId === destState.rootNode.id) {
         const child = destState.rootNode.child;
         dropContainerId = child.id;
