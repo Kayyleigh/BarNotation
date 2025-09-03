@@ -4,6 +4,7 @@ import clsx from "clsx";
 import Tooltip from "../tooltips/Tooltip";
 import { useToast } from "../../hooks/toast/useToast";
 import { useI18n } from "../../i18n/useI18n";
+import Logo from '../../assets/logo.svg';
 
 interface HeaderBarProps {
   onOpenSettings: () => void;
@@ -20,7 +21,7 @@ const HeaderBar: React.FC<HeaderBarProps> = ({
   return (
     <header className="app-header sticky-header">
       <div className="header-left">
-        <img className="app-logo" src="src/assets/logo.svg" alt="Logo" />
+        <img className="app-logo" src={Logo} alt="Logo" />
       </div>
       <div className="header-right">
         <Tooltip text={t("layout.header.hotkeys.tooltip")}>
