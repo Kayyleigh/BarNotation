@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="38" viewBox="0 0 160 38">
+  <style>
+    .italic {
+      font-family: "STIX Two Math", "Latin Modern Math", serif;
+      text-transform: math-auto;
+      font-size: 32px;
+      fill: #4ec9b0;
+    }
+    .upright {
+      font-family: "STIX Two Text", "Georgia", serif;
+      font-style: normal;
+      font-size: 24px;
+      fill: #c586c0;
+    }
+    .sub {
+      font-size: 20px;
+      text-transform: math-auto;
+      fill: #4ec9b0;
+    }
+    .bar {
+      stroke: #4ec9b0;
+      stroke-width: 2px;
+    }
+  </style>
+
+  <!-- Left subscript "B" -->
+  <text x="1" y="34" class="sub">B</text>
+
+  <!-- Right subscript "r" -->
+  <text x="39" y="34" class="sub">r</text>
+
+  <!-- Overbar -->
+  <line x1="25" y1="4" x2="35" y2="4" class="bar"/>
+
+  <!-- Math italic capital A -->
+  <text x="16" y="29" class="italic">A</text>
+
+  <!-- Background box behind "Notation" -->
+  <rect x="52" y="10" width="105" height="26" rx="4" fill="#c586c0" fill-opacity="0.1"/>
+
+  <!-- Upright Notation to the right -->
+  <text x="57" y="31" class="upright">Notation</text>
+</svg>
