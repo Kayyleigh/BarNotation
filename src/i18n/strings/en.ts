@@ -291,7 +291,9 @@ const en = {
       noMatches: "No matches found",
       ariaLabel: "Entries in collection {{name}}",
       toast: {
-        added: "Added entry.",
+        added: "Added entry.", //NEW
+        commandSaved: "Saved custom command.", //NEW
+        commandClearned: "Removed custom command.", //NEW
       }
     },
     error: {
@@ -337,7 +339,7 @@ const en = {
       defaultName: "My Collection",
       tooltip: {
         new: "New Collection",
-        archive: "Collections Archive",
+        archive: "View archived collections", //CHANGED
         moreOptions: "More options",
       },
       toast: {
