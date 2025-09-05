@@ -75,13 +75,16 @@ export const nodeToLatex = (node: MathNode, highlighted = false): string => {
       const openSymbol = getOpenSymbol(node.bracketStyle);
       const closeSymbol = getCloseSymbol(node.bracketStyle);
 
+      const escapedOpen = (openSymbol === "{") ? "\\{" : openSymbol; 
+      const escapedClose = (closeSymbol === "}") ? "\\}" : closeSymbol; 
+
       if (highlighted && ['square', 'curly'].includes(node.bracketStyle)) {
-        return wrapBracket(openSymbol) + nodeToLatex(node.child, highlighted) + wrapBracket(closeSymbol);
+        return wrapBracket(escapedOpen) + nodeToLatex(node.child, highlighted) + wrapBracket(escapedClose);
       }
       if (highlighted) {
-        return wrapText(openSymbol) + nodeToLatex(node.child, highlighted) + wrapText(closeSymbol);
+        return wrapText(escapedOpen) + nodeToLatex(node.child, highlighted) + wrapText(escapedClose);
       }
-      return openSymbol + nodeToLatex(node.child, highlighted) + closeSymbol;
+      return escapedOpen + nodeToLatex(node.child, highlighted) + escapedClose;
     }
 
     case "fraction": {
