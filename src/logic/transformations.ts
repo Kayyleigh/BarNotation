@@ -7,8 +7,8 @@ import type { InlineContainerNode, MathNode, MatrixNode, OverUndersetVariant, Te
 import type { CornerPosition } from "../utils/subsupUtils";
 
 function isOperatorNode(node: MathNode): boolean {
-  return node.type === "text" && typeof (node as TextNode).content === "string" &&
-    /^[+\-*/=<>^_]$/.test((node as TextNode).content.trim());
+  return (node.type === "big-operator") || (node.type === "text" && typeof (node as TextNode).content === "string" &&
+    /^[+\-*/=<>^_|]$/.test((node as TextNode).content.trim()));
 }
 
 function findBaseRange(container: InlineContainerNode, idx: number): { start: number, end: number } {
