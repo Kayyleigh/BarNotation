@@ -285,4 +285,4 @@ const MathLibrary: React.FC<MathLibraryProps> = ({ library, setLibrary, updateEn
   );
 };
 
-export default MathLibrary;
+export default React.memo(MathLibrary);

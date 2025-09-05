@@ -220,7 +220,7 @@ const InnerMathRenderer: React.FC<MathRendererProps> = ({
       );
   }
 
-  const isDraggable = node.type !== "root-wrapper";
+  const isDraggable = cellId !== "readonly" && node.type !== "root-wrapper";
 
   return (
     <span
