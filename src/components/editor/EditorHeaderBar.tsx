@@ -70,17 +70,6 @@ const EditorHeaderBar: React.FC<EditorHeaderBarProps> = ({
           </button>
         </Tooltip>
 
-        <Tooltip text={t("editor.cleanup")}>
-          <button
-            onClick={() =>
-              showToast({ message: t("editor.cleanupWip"), type: "warning" })
-            }
-            className={styles.button}
-          >
-            🧹 {t("editor.clean")}
-          </button>
-        </Tooltip>
-
         <Tooltip text={t("editor.showLatex")}>
           <button
             onClick={() => {

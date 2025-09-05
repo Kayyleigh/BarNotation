@@ -32,7 +32,7 @@ const en = {
     addMath: "Add math cell",
     addText: "Add text cell",
     lockedAdd: "Cannot add cells in locked mode",
-    cleanup: "Remove empty cells",
+    cleanup: "Remove empty cells", //UNUSED, I REMOVED THE CLEANUP FEATURE
     cleanupWip: "Cleanup is not yet implemented",
     clean: "Clean",
     showLatex: "Show all LaTeX",
@@ -244,7 +244,7 @@ const en = {
     editCommand: { //ALL NEW
       title: "Edit Custom Command",
       label: "Command",
-      placeholder: "Type command (no backslash)",
+      placeholder: "Type command",
       statusLabel: {
         valid: "Valid sequence.",
         invalid: "Invalid",
