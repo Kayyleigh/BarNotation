@@ -414,26 +414,14 @@
   }
 }
 
-/* .drop-target-cursor {
-    display: inline-block;
-    width: 3px;
-    height: 1em;
-    background-image: repeating-linear-gradient(
-      to bottom,
-      var(--math-drop-cursor-color),
-      var(--math-drop-cursor-color) 3px,
-      transparent 3px,
-      transparent 6px
-    );
-    background-color: transparent;
-  } */
-
 .draggable-node-wrapper {
   position: relative;
 }
 
 .drop-target-cursor {
   position: absolute;
+  display: inline-block;
+  align-self: center;
   width: 3px;
   height: 1em;
   background-image: repeating-linear-gradient(to bottom,
