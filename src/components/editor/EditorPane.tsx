@@ -17,7 +17,6 @@ import { MAX_ZOOM, MIN_ZOOM } from "../../constants/editorConstants";
 import { LatexRefreshProvider } from "../../hooks/latexViewRefresh/LatexRefreshProvider";
 import type { DragSource, DropTarget } from "../../models/dragTypes";
 
-
 interface EditorPaneProps {
   noteId: string | null;
   noteMetadata: NoteMetadata;

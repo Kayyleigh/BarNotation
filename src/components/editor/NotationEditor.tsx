@@ -14,8 +14,6 @@ import NoteMetaDataSection from "./NoteMetadataSection";
 import type { CellData, NoteMetadata, TextCellContent } from "../../models/noteTypes";
 import type { EditorState } from "../../logic/editor-state";
 import { nodeToLatex } from "../../models/nodeToLatex";
-import type { DropTarget } from "../layout/EditorWorkspace";
-import type { DragSource } from "../../hooks/mathDrag/DragContext";
 import CellRow from "./CellRow";
 import clsx from "clsx";
 import { useEditorMode } from "../../hooks/editorMode/useEditorMode";
@@ -23,6 +21,7 @@ import { computeDisplayNumbers } from "../../utils/noteUtils";
 import cellStyles from "./cells/cell.module.css";
 import Tooltip from "../tooltips/Tooltip";
 import { useI18n } from "../../i18n/useI18n";
+import type { DragSource, DropTarget } from "../../models/dragTypes";
 
 interface NotationEditorProps {
   defaultZoom: number;
@@ -255,21 +254,20 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
         metadata={metadata}
         setMetadata={handleMetadataUpdate}
       />
-  
+
       <div className={styles.cellList}>
         {visibleCells.length === 0 && (
           <div className={styles.emptyMessage}>
             {t("editor.emptyMessage")}
           </div>
         )}
-  
+
         {visibleCells.map((cell, index) => (
           <CellRow
             key={cell.id}
             cell={cell}
             index={index}
             displayNumber={displayNumbers[cell.id]}
-            selectedCellId={selectedCellId}
             draggingCellId={draggingCellId}
             dragOverInsertIndex={dragOverInsertIndex}
             updateDragOver={updateDragOver}
@@ -285,11 +283,12 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
             duplicateCell={duplicateCell}
             toggleShowLatex={toggleShowLatex}
             handlePointerDown={handlePointerDown}
+            selectedCellId={selectedCellId}
             setSelectedCellId={setSelectedCellId}
             onDropNode={onDropNode}
           />
         ))}
-  
+
         {mode !== "locked" && (
           <div
             className={clsx(
@@ -305,7 +304,7 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
           </div>
         )}
       </div>
-  
+
       {mode === "locked" && (
         <div className={styles.lockedBadge}>
           <div style={{ position: "relative" }}>
@@ -317,7 +316,7 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
       )}
     </main>
   );
-};  
+};
 
 export default React.memo(NotationEditor);
 

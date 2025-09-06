@@ -110,6 +110,11 @@ const InnerMathRenderer: React.FC<CoreRenderProps> = (props) => {
       index: props.index,
     });
   };
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDropTarget(null);
+  };
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -139,6 +144,7 @@ const InnerMathRenderer: React.FC<CoreRenderProps> = (props) => {
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
       onDrop={handleDrop}
       data-nodeid={props.node.id}
     >

@@ -91,11 +91,18 @@ const LibraryEntryItem = React.memo<LibraryEntryItemProps>(
       [activeCollId, entry.id, entry.node, entry.latex, setDraggingSource, setDropTarget]
     );
 
+    const handleDragEnd = useCallback(() => {
+      // Clean up no matter what
+      setDraggingSource(null);
+      setDropTarget(null);
+    }, [setDraggingSource, setDropTarget]);
+
     return (
       <span
         className={clsx(styles.libraryEntry, highlight && styles.customCommand)}
         draggable
         onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
         onDoubleClick={onDoubleClick}
         role="listitem"
         tabIndex={0}
