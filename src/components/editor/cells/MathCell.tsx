@@ -216,7 +216,18 @@ const MathCell: React.FC<MathCellProps> = ({
 
   return (
     <>
-      <div className={styles.mathCell}>
+      <div className={styles.mathCell}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            setSelectedCellId(cellId);
+            // Forward actual focus into the MathEditor
+            const editorDiv = document.querySelector<HTMLDivElement>(
+              `[data-math-editor="${cellId}"]`
+            );
+            editorDiv?.focus();
+          }
+        }}>
         <div className={styles.mathScrollContainer} style={style}>
           <HoverProvider>
             <MathEditor

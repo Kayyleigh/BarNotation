@@ -647,8 +647,10 @@ const MathEditor: React.FC<MathEditorProps> = ({
       }
   
       onDropNode(from, adjustedTo);
+      editorRef.current?.focus();
+      onFocus?.();
     },
-    [cellId, editorState, onDropNode]
+    [cellId, editorState.rootNode.child, onDropNode, onFocus]
   );
 
   const defaultInheritedStyle: TextStyle = { fontStyling: { fontStyle: "normal", fontStyleAlias: "" } };
