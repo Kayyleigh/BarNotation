@@ -1,7 +1,11 @@
 // hooks/mathDrag/useDragContext.ts
 import { useContext } from "react";
-import { DragContext } from "./DragContext";
+import { DragReaderContext, DragWriterContext } from "./DragContext";
 
-export const useDragContext = () => {
-  return useContext(DragContext);
+export const useDragReader = () => {
+  return useContext(DragReaderContext);
+};
+
+export const useDragWriter = () => {
+  return useContext(DragWriterContext);
 };

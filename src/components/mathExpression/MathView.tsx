@@ -1,7 +1,7 @@
 // components/mathExpression/MathView.tsx
 import React from "react";
 import type { MathNode } from "../../models/mathNodeTypes";
-import { MathRenderer } from "./MathRenderer";
+import { ReadOnlyMathRenderer } from "./MathRenderer";
 import { dummyCursorPosition } from "../../logic/cursor";
 import { noop } from "../../utils/noop";
 
@@ -14,7 +14,7 @@ type MathViewProps = {
 const MathView: React.FC<MathViewProps> = ({ node, className, showPlaceHolder }) => {
   return (
     <div className={className} style={{ pointerEvents: "none" }}>
-      <MathRenderer
+      <ReadOnlyMathRenderer
         node={node}
         cellId={"readonly"} // dummy value
         containerId={"readonly-container"}
@@ -32,6 +32,7 @@ const MathView: React.FC<MathViewProps> = ({ node, className, showPlaceHolder })
           fontStyling: { fontStyle: "normal", fontStyleAlias: "" },
         }}
         showPlaceholder={showPlaceHolder}
+        readOnly={true}
       />
     </div>
   );

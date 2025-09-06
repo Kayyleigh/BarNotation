@@ -25,6 +25,7 @@ function cloneLib(lib: MathNodeLibrary): MathNodeLibrary {
         entries: { ...lib.entries },
         collections: { ...lib.collections },
         memberships: [...lib.memberships],
+        collectionOrder: [...lib.collectionOrder],
     };
 }
 
@@ -136,7 +137,7 @@ export function loadLibrary(): MathNodeLibrary | null {
 /* ------------------------- Creation / Bootstrapping ------------------------- */
 
 export function createEmptyLibrary(): MathNodeLibrary {
-    return { entries: {}, collections: {}, memberships: [] };
+    return { entries: {}, collections: {}, memberships: [], collectionOrder: [] };
 }
 
 export function createDefaultLibrary(saveToStorage = true): MathNodeLibrary {
@@ -146,6 +147,9 @@ export function createDefaultLibrary(saveToStorage = true): MathNodeLibrary {
 
     const now = Date.now();
 
+    // explicit ordering array
+    const collectionOrder: string[] = [];
+
     PREMADE_COLLECTIONS_RAW.forEach((rawCol) => {
         // Create premade collection
         collections[rawCol.id] = {
@@ -154,6 +158,9 @@ export function createDefaultLibrary(saveToStorage = true): MathNodeLibrary {
             archivedAt: undefined,
             deletedAt: undefined,
         };
+
+        // record the order
+        collectionOrder.push(rawCol.id);
 
         rawCol.entries.forEach((rawEntry) => {
             try {
@@ -167,7 +174,7 @@ export function createDefaultLibrary(saveToStorage = true): MathNodeLibrary {
                         latex: rawEntry.latex,
                         node,
                         globalDragCount: 0,
-                        commandSequence: undefined, // At the start, this should be undefined
+                        commandSequence: undefined,
                     };
                 }
 
@@ -187,7 +194,12 @@ export function createDefaultLibrary(saveToStorage = true): MathNodeLibrary {
         });
     });
 
-    const library: MathNodeLibrary = { entries, collections, memberships };
+    const library: MathNodeLibrary = {
+        entries,
+        collections,
+        memberships,
+        collectionOrder
+    };
 
     if (saveToStorage) {
         try {
@@ -199,6 +211,7 @@ export function createDefaultLibrary(saveToStorage = true): MathNodeLibrary {
 
     return library;
 }
+
 
 export function addCustomCollection(
     lib: MathNodeLibrary,
@@ -576,7 +589,6 @@ export function duplicateCollection(
     sourceCollectionId: string,
     t: (key: string) => string,
     newName?: string,
-    targetIndex?: number
 ): MathNodeLibrary {
     const source = lib.collections[sourceCollectionId];
     if (!source) throw new Error("Source collection not found");
@@ -596,6 +608,13 @@ export function duplicateCollection(
     const next = cloneLib(lib);
     next.collections[newId] = created;
 
+    // Determine insertion index: default next to original
+    const originalIdx = next.collectionOrder.findIndex((id) => id === sourceCollectionId);
+    const insertIdx = originalIdx + 1; // insert right after original
+
+
+    next.collectionOrder.splice(insertIdx, 0, newId);
+
     // Copy memberships with zeroed counts
     const { byCollection } = indexMemberships(next);
     const srcMemberships = byCollection.get(sourceCollectionId) || [];
@@ -606,13 +625,6 @@ export function duplicateCollection(
         dragCount: 0,
     }));
     next.memberships.push(...newMemberships);
-
-    // Reorder if targetIndex is provided
-    if (typeof targetIndex === "number") {
-        const collectionsArray = Object.values(next.collections);
-        const newCollIndex = collectionsArray.findIndex((c) => c.id === newId);
-        return reorderCollections(next, newCollIndex, targetIndex);
-    }
 
     return next;
 }
@@ -663,8 +675,85 @@ export function getSortedEntriesForCollection(
     }
 }
 
+/** Reorder collections by visible (non-archived, non-deleted) index.
+ *
+ * - draggingId: id of the collection being moved (must be a visible id)
+ * - targetVisibleIndex: index into the *visible* list at which the item should be inserted
+ *
+ * Example: if visible list is [A,B,C,D] and you drag B to targetVisibleIndex = 3,
+ * the result visible list becomes [A,C,D,B].
+ */
+export function reorderCollectionsByVisibleIndex(
+    lib: MathNodeLibrary,
+    draggingId: string,
+    targetVisibleIndex: number
+): MathNodeLibrary {
+    if (!lib.collectionOrder) {
+        console.warn("Library missing collectionOrder; cannot reorder.");
+        return lib;
+    }
+
+    // Build visible order (skip archived and deleted)
+    const visibleOrder = lib.collectionOrder.filter((id) => {
+        const c = lib.collections[id];
+        return !!c && !c.archivedAt && !c.deletedAt;
+    });
+
+    const fromVisibleIndex = visibleOrder.indexOf(draggingId);
+    if (fromVisibleIndex === -1) {
+        // draggingId is not visible (shouldn't happen for normal tab drags)
+        return lib;
+    }
+
+    // Normalize/clamp target index
+    let target = Math.max(0, Math.min(Math.floor(targetVisibleIndex), visibleOrder.length));
+    // If removing from an earlier index, the insertion index shifts left by 1 after removal
+    if (fromVisibleIndex < target) target--;
+
+    // Build new visible order
+    const newVisibleOrder = visibleOrder.slice();
+    newVisibleOrder.splice(fromVisibleIndex, 1);
+    newVisibleOrder.splice(target, 0, draggingId);
+
+    // Rebuild the full collectionOrder:
+    // For each id in the previous collectionOrder:
+    // - if archived/deleted, keep it in-place
+    // - otherwise, pull the next id from newVisibleOrder in order
+    const newFullOrder: string[] = [];
+    let vi = 0;
+    for (const id of lib.collectionOrder) {
+        const c = lib.collections[id];
+        if (!c) {
+            // Missing collection (shouldn't happen), skip it.
+            continue;
+        }
+        if (c.archivedAt || c.deletedAt) {
+            newFullOrder.push(id); // preserve archived/deleted spot
+        } else {
+            // take next visible id from the new visible order
+            const nextVisibleId = newVisibleOrder[vi++];
+            if (!nextVisibleId) {
+                // Fallback: if something went wrong, keep current id
+                newFullOrder.push(id);
+            } else {
+                newFullOrder.push(nextVisibleId);
+            }
+        }
+    }
+
+    // In the very rare case newFullOrder is missing some ids (shouldn't happen), append the remainder:
+    const remaining = lib.collectionOrder.filter((id) => !newFullOrder.includes(id));
+    if (remaining.length) newFullOrder.push(...remaining);
+
+    return {
+        ...lib,
+        collectionOrder: newFullOrder,
+    };
+}
+
 /**
- * Reorders collections in a library.
+ * Reorders collections in a library by updating the `collectionOrder` array.
+ * 
  * @param lib Current library object
  * @param fromIndex Original index of the item
  * @param toIndex Target index
@@ -675,15 +764,14 @@ export function reorderCollections(
     fromIndex: number,
     toIndex: number
 ): MathNodeLibrary {
-    const collectionsArray = Object.values(lib.collections);
-    const [moved] = collectionsArray.splice(fromIndex, 1);
-    collectionsArray.splice(toIndex, 0, moved);
+    const order = [...lib.collectionOrder];
+    const [moved] = order.splice(fromIndex, 1);
+    order.splice(toIndex, 0, moved);
 
-    const newCollectionsMap = Object.fromEntries(
-        collectionsArray.map((c) => [c.id, c])
-    );
-
-    return { ...lib, collections: newCollectionsMap };
+    return {
+        ...lib,
+        collectionOrder: order,
+    };
 }
 
 /* ------------------------------- Old → New -------------------------------- */

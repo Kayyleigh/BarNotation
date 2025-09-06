@@ -2,11 +2,10 @@
 import React, { useState } from "react";
 import MathEditor from "../../mathExpression/MathEditor";
 import type { EditorState } from "../../../logic/editor-state";
-import type { DropTarget } from "../../layout/EditorWorkspace";
-import type { DragSource } from "../../../hooks/mathDrag/DragContext";
 import { HoverProvider } from "../../../hooks/mathHover/HoverProvider";
 import { useEditorMode } from "../../../hooks/editorMode/useEditorMode";
 import styles from "./cell.module.css";
+import type { DragSource, DropTarget } from "../../../models/dragTypes";
 
 type MathCellProps = {
   resetZoomSignal: number;

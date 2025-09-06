@@ -305,7 +305,7 @@ const en = {
       addLatex: "LaTeX added to library.",
       entryMoved: "Entry moved between collections.",
       entryAddedTo: `Entry {{latex}} added to {{collection}}.`,
-      unarchived: `Unarchived "{{name}}"`,
+      unarchived: `Unarchived collection.`,
       deleted: `Deleted "{{name}}"`,
     },
     warning: {

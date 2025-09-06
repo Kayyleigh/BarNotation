@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from "react";
 import clsx from "clsx";
 import Tooltip from "../tooltips/Tooltip";
-import { useToast } from "../../hooks/toast/useToast";
 import { useEditorMode } from "../../hooks/editorMode/useEditorMode";
 
 import styles from "./EditorHeaderBar.module.css";
@@ -36,7 +35,6 @@ const EditorHeaderBar: React.FC<EditorHeaderBarProps> = ({
   const { t } = useI18n(); // use language hook
 
   const { mode, togglePreview, toggleLocked } = useEditorMode();
-  const { showToast } = useToast();
 
   const [editingZoom, setEditingZoom] = useState(false);
   const [editingZoomValue, setEditingZoomValue] = useState(defaultZoom * 100);

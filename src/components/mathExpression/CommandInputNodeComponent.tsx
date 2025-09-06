@@ -13,7 +13,7 @@ import { specialSequences } from "../../models/specialSequences";
 import { type TextNode, type CommandInputNode, type MathNode } from "../../models/mathNodeTypes";
 import MathView from "./MathView";
 import { renderContainerChildren } from "./MathRenderers";
-import type { BaseRenderProps, MathRendererProps } from "./MathRenderer";
+import type { CoreRenderProps } from "./MathRenderer";
 import { useCustomCommands } from "../../hooks/customCommands/useCustomCommands";
 
 function getHighlightedSequence(seq: string, input: string): JSX.Element {
@@ -45,14 +45,16 @@ interface Props {
   node: CommandInputNode;
   isSelected: boolean;
   onSelectSuggestion: (sequence: string) => void;
-  baseProps: BaseRenderProps & MathRendererProps;
+  baseProps: CoreRenderProps;
+  Renderer: React.NamedExoticComponent<CoreRenderProps>;
 }
 
 export function CommandInputNodeComponent({
   node,
   isSelected,
   onSelectSuggestion,
-  baseProps
+  baseProps,
+  Renderer
 }: Props) {
   const inputString = node.children.map((n: TextNode) => n.content).join("");
 
@@ -209,7 +211,7 @@ export function CommandInputNodeComponent({
               fontStyleAlias: "",
             },
           },
-        })}
+        }, Renderer)}
       </span>
 
       {showDropdown &&

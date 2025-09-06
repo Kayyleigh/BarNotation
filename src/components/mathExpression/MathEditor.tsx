@@ -15,11 +15,11 @@ import { nodeToLatex } from "../../models/nodeToLatex";
 import { findNodeById } from "../../utils/treeUtils";
 import type { EditorState } from "../../logic/editor-state";
 import type { CursorPosition } from "../../logic/cursor";
-import { useDragContext } from "../../hooks/mathDrag/useDragContext";
 import type { TextStyle } from "../../models/mathNodeTypes";
 import { useHover } from "../../hooks/mathHover/useHover";
 import type { DragSource, DropTarget } from "../../models/dragTypes";
 import { useCustomCommands } from "../../hooks/customCommands/useCustomCommands";
+import { useDragReader, useDragWriter } from "../../hooks/mathDrag/useDragContext";
 
 interface MathEditorProps {
   resetZoomSignal: number;
@@ -45,7 +45,6 @@ const MathEditor: React.FC<MathEditorProps> = ({
   onDropNode,
   onHoverInfoChange,
 }) => {
-  // console.log("Rendering MathEditor", cellId);
   const { commandMap } = useCustomCommands();
 
   const { hoverPath, setHoverPath } = useHover();
@@ -55,7 +54,8 @@ const MathEditor: React.FC<MathEditorProps> = ({
 
   const [isActive, setIsActive] = useState(false);
 
-  const { draggingSource, dropTarget, setDropTarget } = useDragContext();
+  const { draggingSource, dropTarget } = useDragReader();
+  const { setDropTarget } = useDragWriter();
 
   const hoveredNode = hoverPath[hoverPath.length - 1]
     ? findNodeById(editorState.rootNode, hoverPath[hoverPath.length - 1])
@@ -170,17 +170,21 @@ const MathEditor: React.FC<MathEditorProps> = ({
     if (!to) return;
 
     // Only redirect if the drop target is a cell
-    if (to.type === "cell" && to.containerId === editorState.rootNode.id) {
+    if (
+      to.type === "cell" &&
+      to.cellId === cellId &&
+      to.containerId === "root" //TODO maybe dirty hardcoded
+    ) {
       const child = editorState.rootNode.child;
       to = {
         ...to,
         containerId: child.id,
-        index: 0,
+        index: child.children.length,
       };
     }
 
     onDropNode(from, to);
-  }, [editorState.rootNode, onDropNode]);
+  }, [cellId, editorState.rootNode.child, onDropNode]);
 
   const defaultInheritedStyle: TextStyle = React.useMemo(() => ({
     fontStyling: { fontStyle: "normal", fontStyleAlias: "" },
@@ -189,7 +193,7 @@ const MathEditor: React.FC<MathEditorProps> = ({
   const emptyAncestorIds = React.useMemo(() => [], []);
 
   return (
-    <div>
+    <>
       <div
         ref={editorRef}
         className="math-editor"
@@ -251,8 +255,8 @@ const MathEditor: React.FC<MathEditorProps> = ({
         </div>
       </div>
       <LatexViewer rootNode={editorState.rootNode} showLatex={showLatex} />
-    </div>
+    </>
   );
 };
 
-export default React.memo(MathEditor); //TODO should be memo or no?
+export default React.memo(MathEditor); 

@@ -1,27 +1,23 @@
-// components/DummyStartNodeRenderer.tsx
+// DummyStartNodeRenderer.tsx
 import React from "react";
 import clsx from "clsx";
 import type { CursorPosition } from "../../logic/cursor";
-import { useDragContext } from "../../hooks/mathDrag/useDragContext";
 import { handleMouseEnter, handleMouseLeave } from "../../utils/mathHoverUtils";
 import type { DragSource, DropTarget } from "../../models/dragTypes";
+import { useDragReader, useDragWriter } from "../../hooks/mathDrag/useDragContext";
 
 type Props = {
   containerId: string;
   cellId: string;
   isActive: boolean;
   cursor: CursorPosition;
-  hoverPath: string[]; 
+  hoverPath: string[];
   onCursorChange: (pos: CursorPosition) => void;
   setHoverPath: (path: string[]) => void;
-  onDropNode: (
-    from: DragSource,
-    to: DropTarget,
-  ) => void;
+  onDropNode: (from: DragSource, to: DropTarget) => void;
   ancestorIds: string[];
 };
 
-// STILL RE-RENDERING FOR NO REASON //TODO fix
 const DummyStartNodeRenderer: React.FC<Props> = ({
   containerId,
   cellId,
@@ -31,28 +27,27 @@ const DummyStartNodeRenderer: React.FC<Props> = ({
   onDropNode,
   ancestorIds,
 }) => {
-  const { draggingSource, setDraggingSource, dropTarget, setDropTarget } = useDragContext();
+  const { draggingSource, dropTarget } = useDragReader();
+  const { setDraggingSource, setDropTarget } = useDragWriter();
 
   const isDropTarget =
     dropTarget?.type === "cell" &&
-    dropTarget?.cellId === cellId && 
-    dropTarget?.containerId === containerId && 
+    dropTarget?.cellId === cellId &&
+    dropTarget?.containerId === containerId &&
     dropTarget?.index === -1;
 
   return (
     <span>
       <span
         className={clsx("start-interaction-point", {
-          hovered: hoverPath[hoverPath.length - 1] === containerId,    
+          hovered: hoverPath[hoverPath.length - 1] === containerId,
         })}
         onClick={(e) => {
           e.stopPropagation();
           onCursorChange({ containerId, index: 0 });
         }}
         onMouseEnter={() => handleMouseEnter([...ancestorIds], setHoverPath)}
-        onMouseLeave={(e) =>
-          handleMouseLeave(e, ancestorIds, setHoverPath)
-        }
+        onMouseLeave={(e) => handleMouseLeave(e, ancestorIds, setHoverPath)}
         onDragOver={(e) => {
           e.preventDefault();
           e.stopPropagation();

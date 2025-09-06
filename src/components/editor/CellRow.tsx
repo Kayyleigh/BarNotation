@@ -11,11 +11,11 @@ import styles from "./Editor.module.css";
 import textStyles from "../../styles/textStyles.module.css";
 import type { EditorState } from "../../logic/editor-state";
 import type { CellData, TextCellContent } from "../../models/noteTypes";
-import type { DragSource, DropTarget } from "../../hooks/mathDrag/DragContext";
 import { useEditorMode } from "../../hooks/editorMode/useEditorMode";
 import { noop } from "../../utils/noop";
 import { TEXT_CELL_TYPES, TEXT_TYPE_LABELS } from "../../models/textTypes";
 import { useI18n } from "../../i18n/useI18n";
+import type { DragSource, DropTarget } from "../../models/dragTypes";
 
 interface CellRowProps {
   cell: CellData;

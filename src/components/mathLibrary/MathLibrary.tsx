@@ -1,6 +1,6 @@
 // components/mathLibrary/MathLibrary.tsx
 import React, { useState, useMemo, useCallback, useEffect } from "react";
-import type { MathNodeLibrary, LibraryCollection, LibraryEntry } from "../../models/libraryTypes";
+import type { MathNodeLibrary, LibraryEntry } from "../../models/libraryTypes";
 import {
   ACTIVE_COLL_KEY,
   addEntryToCollection,
@@ -14,8 +14,8 @@ import { SortDropdown } from "../common/SortDropdown";
 import LibraryEntries from "./LibraryEntries";
 import LibCollectionArchiveModal from "../modals/LibCollectionArchiveModal";
 import { nodeToLatex } from "../../models/nodeToLatex";
-import { useDragContext } from "../../hooks/mathDrag/useDragContext";
 import { useToast } from "../../hooks/toast/useToast";
+import { useDragReader, useDragWriter } from "../../hooks/mathDrag/useDragContext";
 
 interface MathLibraryProps {
   library: MathNodeLibrary;
@@ -27,31 +27,29 @@ const MathLibrary: React.FC<MathLibraryProps> = ({ library, setLibrary, updateEn
   const { t } = useI18n();
   const { showToast } = useToast();
 
-  // === STATE ===
-  const [activeCollId, setActiveCollId] = useState<string | null>(() => {
+  const [activeCollId, setActiveCollId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (activeCollId) return; // already set
+
     try {
       const storedId = localStorage.getItem(ACTIVE_COLL_KEY);
       const storedCollection = storedId ? library.collections[storedId] : null;
 
       if (storedCollection && !storedCollection.archivedAt && !storedCollection.deletedAt) {
-        return storedId;
+        setActiveCollId(storedId);
+        return;
       }
 
-      // fallback to "premade-structures" if available and not archived/deleted
+      // fallback to "premade-structures" if available
       const defaultColl = library.collections["premade-structures"];
       if (defaultColl && !defaultColl.archivedAt && !defaultColl.deletedAt) {
-        return "premade-structures";
+        setActiveCollId("premade-structures");
       }
-
-      // fallback: none
-      return null;
     } catch {
-      const defaultColl = library.collections["premade-structures"];
-      return defaultColl && !defaultColl.archivedAt && !defaultColl.deletedAt
-        ? "premade-structures"
-        : null;
+      // ignore, leave null
     }
-  });
+  }, [activeCollId, library.collections]);
 
   // Persist active collection in localStorage whenever it changes
   useEffect(() => {
@@ -65,7 +63,8 @@ const MathLibrary: React.FC<MathLibraryProps> = ({ library, setLibrary, updateEn
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOption, setSortOption] = useState("date"); // default sort mode
   const [archiveModalOpen, setArchiveModalOpen] = useState(false);
-  const { draggingSource, setDraggingSource } = useDragContext();
+  const { draggingSource } = useDragReader();
+  const { setDraggingSource } = useDragWriter();
 
   // --- Update entry dragged count for a specific membership ---
   const updateEntryDraggedCount = useCallback(
@@ -125,14 +124,15 @@ const MathLibrary: React.FC<MathLibraryProps> = ({ library, setLibrary, updateEn
     return () => clearTimeout(timer);
   }, [loadingCollection]);
 
+  const handleLibraryRendered = useCallback(() => {
+    setLoadingCollection(false);
+  }, []);
+
   // === DERIVED ===
   const collections = useMemo(
     () => Object.values(library.collections).filter((c) => !c.deletedAt),
     [library]
   );
-  const activeColl: LibraryCollection | null = activeCollId
-    ? library.collections[activeCollId] ?? null
-    : null;
 
   // === HANDLERS ===
   const changeActiveCollection = useCallback((id: string) => {
@@ -145,7 +145,9 @@ const MathLibrary: React.FC<MathLibraryProps> = ({ library, setLibrary, updateEn
   const handleSortChange = useCallback((opt: string) => setSortOption(opt), []);
 
   const handleDropOnLibrary = useCallback(() => {
-    if (!activeColl || !draggingSource) return;
+    if (!activeCollId || !draggingSource) return;
+
+    if (draggingSource.type === "library" && activeCollId === draggingSource.collectionId) return;
 
     const latex = nodeToLatex(draggingSource.node, false);
     if (!latex) {
@@ -154,45 +156,61 @@ const MathLibrary: React.FC<MathLibraryProps> = ({ library, setLibrary, updateEn
     }
 
     let success = false;
+    let errorMessage: string | null = null;
 
+    // Attempt state update safely
     setLibrary((lib) => {
       try {
-        const updated = addEntryToCollection(lib, activeColl.id, latex, draggingSource.node);
+        const updated = addEntryToCollection(lib, activeCollId, latex, draggingSource.node);
         success = true;
         return updated;
       } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : t("mathLibrary.entries.toast.failed");
-        showToast({ type: "error", message }); //BUG? of duplication toast
-        return lib; // keep unchanged
+        errorMessage =
+          err instanceof Error ? err.message : t("mathLibrary.entries.toast.failed");
+        return lib; // No state change if failed
       }
     });
 
     setDraggingSource(null);
 
+    // Show toast outside of state updater
     if (success) {
       showToast({ type: "success", message: t("mathLibrary.entries.toast.added") });
+    } else if (errorMessage) {
+      showToast({ type: "error", message: errorMessage });
     }
-  }, [activeColl, draggingSource, setLibrary, setDraggingSource, showToast, t]);
+  }, [activeCollId, draggingSource, setLibrary, setDraggingSource, showToast, t]);
 
   const handleUnarchive = useCallback((collectionId: string) => {
-    try {
-      setLibrary((lib) => {
-        const col = lib.collections[collectionId];
-        if (!col) throw new Error(t("mathLibrary.collections.toast.notFound"));
-        return {
-          ...lib,
-          collections: {
-            ...lib.collections,
-            [collectionId]: { ...col, archivedAt: undefined },
-          },
-        };
-      });
-      showToast({ type: "success", message: t("mathLibrary.collections.toast.unarchived") });
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : t("mathLibrary.collections.toast.failed");
-      showToast({ type: "error", message });
+    let success = false;
+    let errorMessage: string | null = null;
+
+    setLibrary((lib) => {
+      const col = lib.collections[collectionId];
+      if (!col) {
+        errorMessage = t("mathLibrary.collections.toast.notFound");
+        return lib;
+      }
+
+      success = true;
+      return {
+        ...lib,
+        collections: {
+          ...lib.collections,
+          [collectionId]: { ...col, archivedAt: undefined },
+        },
+      };
+    });
+
+    if (success) {
+      // Update active collection after library state is updated
+      setActiveCollId(collectionId);
+
+      showToast({ type: "success", message: t("mathLibrary.success.unarchived") });
+    } else if (errorMessage) {
+      showToast({ type: "error", message: errorMessage });
     }
-  }, [setLibrary, showToast, t]);
+  }, [setLibrary, setActiveCollId, showToast, t]);
 
   const handleDelete = useCallback((collectionId: string) => {
     try {
@@ -205,7 +223,7 @@ const MathLibrary: React.FC<MathLibraryProps> = ({ library, setLibrary, updateEn
   }, [setLibrary, showToast, t]);
 
   const handleCloseArchiveModal = useCallback(() => setArchiveModalOpen(false), []);
-  
+
   const sortOptions = [
     { label: t("mathLibrary.sort.newest"), value: "date" },
     { label: t("mathLibrary.sort.oldest"), value: "date-asc" },
@@ -265,7 +283,7 @@ const MathLibrary: React.FC<MathLibraryProps> = ({ library, setLibrary, updateEn
             sortOption={sortOption} //Type 'string' is not assignable to type 'LibraryEntriesSortOption'.ts(2322)
             searchTerm={searchTerm}
             onDrop={handleDropOnLibrary}
-            onRendered={() => setLoadingCollection(false)}
+            onRendered={handleLibraryRendered}
           />
         )
       ) : (
