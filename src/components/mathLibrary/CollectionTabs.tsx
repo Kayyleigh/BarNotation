@@ -1,5 +1,5 @@
 // components/mathLibrary/CollectionTabs.tsx
-import React, { useRef, useState, useCallback, useEffect } from "react";
+import React, { useRef, useState, useCallback, useLayoutEffect } from "react";
 import Tooltip from "../tooltips/Tooltip";
 import clsx from "clsx";
 import { useI18n } from "../../i18n/useI18n";
@@ -309,7 +309,6 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
     }
   };
 
-
   const tabRowRef = useRef<HTMLDivElement>(null);
   const [scrollbar, setScrollbar] = useState({ width: 0, left: 0 });
 
@@ -317,24 +316,23 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
     const tabRow = tabRowRef.current;
     if (!tabRow) return;
 
-    const visibleRatio = tabRow.clientWidth / tabRow.scrollWidth; // fraction visible
+    const visibleRatio = tabRow.scrollWidth ? tabRow.clientWidth / tabRow.scrollWidth : 1;
     const width = tabRow.clientWidth * visibleRatio;              // thumb width
     const left = (tabRow.scrollLeft / tabRow.scrollWidth) * tabRow.clientWidth; // thumb left
 
-    setScrollbar({ width, left });
+    setScrollbar(visibleRatio === 1 ? { width: 0, left: 0 } : { width, left });
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const tabRow = tabRowRef.current;
     if (!tabRow) return;
 
-    const handleScroll = () => updateScrollbar();
+    const handleScroll = () => requestAnimationFrame(updateScrollbar);
     const handleResize = () => updateScrollbar();
 
     tabRow.addEventListener("scroll", handleScroll);
     window.addEventListener("resize", handleResize);
 
-    // initialize
     updateScrollbar();
 
     return () => {
@@ -353,7 +351,6 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
         onWheel={e => {
           if (e.deltaY !== 0) {
             e.currentTarget.scrollLeft += e.deltaY;
-            e.preventDefault();
           }
         }}
       >
@@ -375,7 +372,7 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
                     [styles.dragOverRight]: isDragOver && dragOverPosition === "right",
                     [styles.dropTarget]: isDropTarget,
                   })}
-                  draggable
+                  draggable={editingCollId === null}
                   onDragStart={e => onTabDragStart(e, c.id)}
                   onDragOver={e => {
                     onTabDragOver(e, idx);
