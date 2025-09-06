@@ -2,16 +2,49 @@
   height: 100%;
 }
 
+.tabRowWrapper {
+  position: relative;
+  overflow: hidden;
+  /* hide native scrollbar */
+}
+
+.tabRowWrapper:hover .tabRowScrollbar {
+  opacity: 1;
+}
+
 .tabRow {
   display: flex;
   overflow-x: auto;
+  overflow-y: hidden;
   white-space: nowrap;
   justify-content: space-between;
   border-bottom: 1px solid var(--border-color);
   background-color: var(--library-tabs-inactive-bg);
-  scroll-behavior: smooth;
-  position: relative;
   scrollbar-width: none;
+  /* hide Firefox scrollbar */
+  -ms-overflow-style: none;
+  /* hide IE/Edge scrollbar */
+  position: relative;
+}
+
+.tabRow::-webkit-scrollbar {
+  display: none;
+  /* hide WebKit scrollbar */
+}
+
+/* Overlay thumb */
+.tabRowScrollbar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  /* tiny overlay at bottom */
+  background-color: var(--horizontal-scrollbar-color);
+  border-radius: 2px;
+  transition: opacity 0.2s;
+  opacity: 0;
+  pointer-events: none;
+  /* allow clicks to pass through */
 }
 
 .tab {

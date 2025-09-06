@@ -1,5 +1,5 @@
 // components/mathLibrary/CollectionTabs.tsx
-import React, { useRef, useState, useCallback } from "react";
+import React, { useRef, useState, useCallback, useEffect } from "react";
 import Tooltip from "../tooltips/Tooltip";
 import clsx from "clsx";
 import { useI18n } from "../../i18n/useI18n";
@@ -245,15 +245,15 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
     (e: React.DragEvent, collectionId: string) => {
       e.preventDefault();
       e.stopPropagation();
-  
+
       if (!draggingSource || draggingSource.type !== "library") return;
-  
+
       const coll = library.collections[collectionId];
       if (!coll) return;
-  
+
       let success = false;
       let errorMessage: string | null = null;
-  
+
       setLibrary(prevLib => {
         try {
           const updated = copyEntryToCollection(prevLib, draggingSource.entryId, collectionId);
@@ -268,11 +268,11 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
           return prevLib; // return previous state on error
         }
       });
-  
+
       // Clear drag state immediately after update
       setDraggingSource(null);
       setDropTarget(null);
-  
+
       // Trigger toast outside updater to avoid React warnings
       if (success) {
         const entryLatex = library.entries[draggingSource.entryId]?.latex ?? "<unknown>";
@@ -298,7 +298,7 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
       showToast,
       t,
     ]
-  );  
+  );
 
   const handleDoubleClick = (c: LibraryCollection) => {
     if (c.type === "custom") {
@@ -309,139 +309,193 @@ const CollectionTabs: React.FC<CollectionTabsProps> = ({
     }
   };
 
+
+  const tabRowRef = useRef<HTMLDivElement>(null);
+  const [scrollbar, setScrollbar] = useState({ width: 0, left: 0 });
+
+  const updateScrollbar = useCallback(() => {
+    const tabRow = tabRowRef.current;
+    if (!tabRow) return;
+
+    const visibleRatio = tabRow.clientWidth / tabRow.scrollWidth; // fraction visible
+    const width = tabRow.clientWidth * visibleRatio;              // thumb width
+    const left = (tabRow.scrollLeft / tabRow.scrollWidth) * tabRow.clientWidth; // thumb left
+
+    setScrollbar({ width, left });
+  }, []);
+
+  useEffect(() => {
+    const tabRow = tabRowRef.current;
+    if (!tabRow) return;
+
+    const handleScroll = () => updateScrollbar();
+    const handleResize = () => updateScrollbar();
+
+    tabRow.addEventListener("scroll", handleScroll);
+    window.addEventListener("resize", handleResize);
+
+    // initialize
+    updateScrollbar();
+
+    return () => {
+      tabRow.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [updateScrollbar]);
+
   // --- Render ---
   return (
-    <div className={styles.tabRow}>
-      <div className={styles.tabHeaderLeft}>
-        {library.collectionOrder
-          .map(id => library.collections[id])               // map order → collections
-          .filter(c => c && !c.archivedAt && !c.deletedAt)  // skip missing/archived
-          .map((c, idx) => {
-            const isDragOver = dragOverTabIdx.current === idx;
-            const isDropTarget = dropTarget?.type === "libraryCollection" && dropTarget.collectionId === c.id;
+    <div className={styles.tabRowWrapper}>
 
-            return (
-              <div
-                key={c.id}
-                className={clsx(styles.tab, {
-                  [styles.active]: c.id === activeColl,
-                  [styles.dragging]: draggingTabId === c.id,
-                  [styles.dragOverLeft]: isDragOver && dragOverPosition === "left",
-                  [styles.dragOverRight]: isDragOver && dragOverPosition === "right",
-                  [styles.dropTarget]: isDropTarget,
-                })}
-                draggable
-                onDragStart={e => onTabDragStart(e, c.id)}
-                onDragOver={e => {
-                  onTabDragOver(e, idx);
-                  onTabDragOverEntry(e, c.id);
-                }}
-                onDrop={e => {
-                  onTabDrop(e, idx);
-                  onTabDropEntry(e, c.id);
-                }}
-                onDragEnd={onTabDragEnd}
-              >
-                {editingCollId === c.id ? (
-                  <div className={styles.collectionNameInput}>
-                    <input
-                      ref={renameInputRef}
-                      defaultValue={getCollectionDisplayName(c)}
-                      onBlur={e => renameCollectionHandler(c.id, e.target.value)}
-                      onKeyDown={e => {
-                        if (e.key === "Enter") renameCollectionHandler(c.id, (e.target as HTMLInputElement).value);
-                        if (e.key === "Escape") setEditingCollId(null);
-                      }}
-                      autoFocus
-                      disabled={c.type === "premade"}
-                    />
-                  </div>
-                ) : (
-                  <button
-                    className={styles.collectionTab}
-                    onClick={() => setActiveColl(c.id)}
-                    onDoubleClick={() => handleDoubleClick(c)}
-                  >
-                    {getCollectionDisplayName(c)}
-                  </button>
-                )}
+      <div
+        className={styles.tabRow}
+        ref={tabRowRef}
+        onWheel={e => {
+          if (e.deltaY !== 0) {
+            e.currentTarget.scrollLeft += e.deltaY;
+            e.preventDefault();
+          }
+        }}
+      >
+        <div className={styles.tabHeaderLeft}>
+          {library.collectionOrder
+            .map(id => library.collections[id])               // map order → collections
+            .filter(c => c && !c.archivedAt && !c.deletedAt)  // skip missing/archived
+            .map((c, idx) => {
+              const isDragOver = dragOverTabIdx.current === idx;
+              const isDropTarget = dropTarget?.type === "libraryCollection" && dropTarget.collectionId === c.id;
 
-                {c.id === activeColl && editingCollId !== c.id && (
-                  <div className={styles.tabActions}>
-                    <button
-                      ref={el => {
-                        buttonRefs.current[c.id] = el;
-                      }}
-                      className={styles.collectionTabButton}
-                      title={t("mathLibrary.tabs.tooltip.moreOptions")}
-                      onClick={() => setMenuOpenFor(c.id === menuOpenFor ? null : c.id)}
-                    >
-                      ⋯
-                    </button>
-
-                    {menuOpenFor === c.id && buttonRefs.current[c.id] && (
-                      <TabDropdownPortal
-                        anchorRef={{ current: buttonRefs.current[c.id] as HTMLButtonElement }}
-                        onRename={() => {
-                          if (c.type === "custom") setEditingCollId(c.id);
-                          setMenuOpenFor(null);
+              return (
+                <div
+                  key={c.id}
+                  className={clsx(styles.tab, {
+                    [styles.active]: c.id === activeColl,
+                    [styles.dragging]: draggingTabId === c.id,
+                    [styles.dragOverLeft]: isDragOver && dragOverPosition === "left",
+                    [styles.dragOverRight]: isDragOver && dragOverPosition === "right",
+                    [styles.dropTarget]: isDropTarget,
+                  })}
+                  draggable
+                  onDragStart={e => onTabDragStart(e, c.id)}
+                  onDragOver={e => {
+                    onTabDragOver(e, idx);
+                    onTabDragOverEntry(e, c.id);
+                  }}
+                  onDrop={e => {
+                    onTabDrop(e, idx);
+                    onTabDropEntry(e, c.id);
+                  }}
+                  onDragEnd={onTabDragEnd}
+                >
+                  {editingCollId === c.id ? (
+                    <div className={styles.collectionNameInput}>
+                      <input
+                        ref={renameInputRef}
+                        defaultValue={getCollectionDisplayName(c)}
+                        onBlur={e => renameCollectionHandler(c.id, e.target.value)}
+                        onKeyDown={e => {
+                          if (e.key === "Enter") renameCollectionHandler(c.id, (e.target as HTMLInputElement).value);
+                          if (e.key === "Escape") setEditingCollId(null);
                         }}
-                        onDuplicate={() => {
-                          duplicateCollectionHandler(c.id);
-                          setMenuOpenFor(null);
-                        }}
-                        onDelete={() => {
-                          if (c.type === "custom" && window.confirm(t("mathLibrary.tabs.confirm.delete"))) {
-                            deleteCollectionHandler(c.id);
-                          }
-                          setMenuOpenFor(null);
-                        }}
-                        onArchive={() => {
-                          archiveCollectionHandler(c.id);
-                          setMenuOpenFor(null);
-                        }}
-                        onClose={() => setMenuOpenFor(null)}
-                        disabledOptions={{ rename: c.type !== "custom", delete: c.type !== "custom" }}
+                        autoFocus
+                        disabled={c.type === "premade"}
                       />
-                    )}
-                  </div>
-                )}
-              </div>
-            );
-          })}
+                    </div>
+                  ) : (
+                    <button
+                      className={styles.collectionTab}
+                      onClick={() => setActiveColl(c.id)}
+                      onDoubleClick={() => handleDoubleClick(c)}
+                    >
+                      {getCollectionDisplayName(c)}
+                    </button>
+                  )}
 
-        <Tooltip text={t("mathLibrary.tabs.tooltip.new")}>
-          <button
-            className={styles.tabAdd}
-            onClick={() => {
-              const id = crypto.randomUUID();
-              const name = t("mathLibrary.tabs.defaultName");
-              setLibrary(lib => {
-                const newCollection: LibraryCollection = {
-                  id,
-                  type: "custom",
-                  name,
-                  createdAt: Date.now(),
-                };
-                return { ...lib, collections: { ...lib.collections, [id]: newCollection }, collectionOrder: [...lib.collectionOrder, id] };
-              });
-              setActiveColl(id);
-              setEditingCollId(id);
-              setTimeout(() => renameInputRef.current?.focus(), 0);
-            }}
-          >
-            +
-          </button>
-        </Tooltip>
-      </div>
+                  {c.id === activeColl && editingCollId !== c.id && (
+                    <div className={styles.tabActions}>
+                      <button
+                        ref={el => {
+                          buttonRefs.current[c.id] = el;
+                        }}
+                        className={styles.collectionTabButton}
+                        title={t("mathLibrary.tabs.tooltip.moreOptions")}
+                        onClick={() => setMenuOpenFor(c.id === menuOpenFor ? null : c.id)}
+                      >
+                        ⋯
+                      </button>
 
-      <div className={styles.tabHeaderRight}>
-        <Tooltip text={t("mathLibrary.tabs.tooltip.archive")}>
-          <button className={styles.archiveButton} onClick={() => setMenuOpenFor("archive")}>
-            🗂️
-          </button>
-        </Tooltip>
+                      {menuOpenFor === c.id && buttonRefs.current[c.id] && (
+                        <TabDropdownPortal
+                          anchorRef={{ current: buttonRefs.current[c.id] as HTMLButtonElement }}
+                          onRename={() => {
+                            if (c.type === "custom") setEditingCollId(c.id);
+                            setMenuOpenFor(null);
+                          }}
+                          onDuplicate={() => {
+                            duplicateCollectionHandler(c.id);
+                            setMenuOpenFor(null);
+                          }}
+                          onDelete={() => {
+                            if (c.type === "custom" && window.confirm(t("mathLibrary.tabs.confirm.delete"))) {
+                              deleteCollectionHandler(c.id);
+                            }
+                            setMenuOpenFor(null);
+                          }}
+                          onArchive={() => {
+                            archiveCollectionHandler(c.id);
+                            setMenuOpenFor(null);
+                          }}
+                          onClose={() => setMenuOpenFor(null)}
+                          disabledOptions={{ rename: c.type !== "custom", delete: c.type !== "custom" }}
+                        />
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+
+          <Tooltip text={t("mathLibrary.tabs.tooltip.new")}>
+            <button
+              className={styles.tabAdd}
+              onClick={() => {
+                const id = crypto.randomUUID();
+                const name = t("mathLibrary.tabs.defaultName");
+                setLibrary(lib => {
+                  const newCollection: LibraryCollection = {
+                    id,
+                    type: "custom",
+                    name,
+                    createdAt: Date.now(),
+                  };
+                  return { ...lib, collections: { ...lib.collections, [id]: newCollection }, collectionOrder: [...lib.collectionOrder, id] };
+                });
+                setActiveColl(id);
+                setEditingCollId(id);
+                setTimeout(() => renameInputRef.current?.focus(), 0);
+              }}
+            >
+              +
+            </button>
+          </Tooltip>
+        </div>
+
+        <div className={styles.tabHeaderRight}>
+          <Tooltip text={t("mathLibrary.tabs.tooltip.archive")}>
+            <button className={styles.archiveButton} onClick={() => setMenuOpenFor("archive")}>
+              🗂️
+            </button>
+          </Tooltip>
+        </div>
       </div>
+      {/* Custom overlay scrollbar */}
+      <div
+        className={styles.tabRowScrollbar}
+        style={{
+          width: `${scrollbar.width}px`,
+          left: `${scrollbar.left}px`,
+        }}
+      />
     </div>
   );
 };

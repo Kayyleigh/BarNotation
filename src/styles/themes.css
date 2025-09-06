@@ -15,6 +15,9 @@
   --logo-color-2: #c586c0;
   --logo-color-2-light: #ecd7ea;
 
+  /* horizontal scrollbar */
+  --horizontal-scrollbar-color: #555a;
+
   /* Common (concepts?) */
   --command-color: #2e7d32;
   --command-color-trans: #2e7d3220;
@@ -189,16 +192,17 @@
   --command-autocomplete-highlight-bg: var(--math-hover-bg);
 
   --command-autocomplete-custom-bg-left: var(--command-color-trans);
-  
+
   --command-autocomplete-matching-sequence: #42b4ff;
 }
 
 .dark {
+  /* horizontal scrollbar */
+  --horizontal-scrollbar-color: #555a;
 
   /* Common (concepts?) */
   --command-color: #dcdcaa;
   --command-color-trans: #dcdcaa20;
-
 
   --main-text-color: #ffffff;
 
