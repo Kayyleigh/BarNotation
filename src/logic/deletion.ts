@@ -172,10 +172,19 @@ export const handleBackspace = (state: EditorState): EditorState => {
         break;
       }
       case "big-operator": {
-        //const lower = parent.lower;
-        //const upper = parent.upper;
-        return handleArrowLeft(state);
+        const lower = parent.lower;
+        const upper = parent.upper;
+        console.log(`I am in biop. I am at ${key}`)
 
+        const allChildrenEmpty = isEmptyNode(upper) && isEmptyNode(lower)
+        
+        if ((key === 'lower') && allChildrenEmpty) {
+          replacementChildren = [];
+        }
+        else {
+          return handleArrowLeft(state);
+        }
+        break;
       }
       case "childed": {
         console.log(`I am in childed. I am at ${key}`)
@@ -319,9 +328,8 @@ export const handleBackspace = (state: EditorState): EditorState => {
   }
 
   if (cursor.index === 0 && container.children.length > 0) {
-    console.log(`Trying to backspace at start of non-empty ${container.type}. I have not decided yet how to handle that`)
-
     const parentInfo = findParentOfInlineContainer(state.rootNode, container.id);
+
     if (!parentInfo) {
       console.log(`you do not have IC parent`)
       return state;
@@ -362,8 +370,10 @@ export const handleBackspace = (state: EditorState): EditorState => {
         },
       };
     }
-
-    return state
+    else {
+      console.log(`Trying to backspace at start of non-empty ${container.type}. For now, dealt with by doing arrow left`)
+      return handleArrowLeft(state);
+    }
   }
 
   const currentToDelete = container.children[cursor.index - 1]
