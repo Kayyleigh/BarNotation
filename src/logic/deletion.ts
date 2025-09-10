@@ -388,7 +388,6 @@ export const handleBackspace = (state: EditorState): EditorState => {
 
   //console.log(`${childToDelete}`)
   if (currentToDelete.type !== "text"
-    && currentToDelete.type !== "styled"
     && (currentToDelete.type !== "big-operator" || !isEmptyNode(currentToDelete.lower) || !isEmptyNode(currentToDelete.upper))) {
     const simulatePrevState = handleArrowLeft(state)
 
