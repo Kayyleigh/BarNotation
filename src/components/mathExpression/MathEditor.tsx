@@ -595,7 +595,6 @@ const MathEditor: React.FC<MathEditorProps> = ({
   // Focus only if selected
   useEffect(() => {
     if (isSelected) {
-      console.log(`isSelected useEffect on editorRef`, editorRef)
       editorRef.current?.focus();
       onFocus?.();
     }

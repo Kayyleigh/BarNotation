@@ -307,7 +307,6 @@ export function copyEntryToCollection(
     if (isPremadeCollection(coll)) throw new Error("Cannot modify premade collection");
 
     const entry = lib.entries[entryId];
-    console.log(entryId)
     if (!entry) throw new Error("Entry not found");
 
     if (hasLatexInCollection(lib, toCollectionId, entry.latex))

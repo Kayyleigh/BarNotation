@@ -138,7 +138,7 @@ export const handleBackspace = (state: EditorState): EditorState => {
   if (cursor.index === 0 && container.children.length === 0) {
     const parentInfo = findParentOfInlineContainer(state.rootNode, container.id);
     if (!parentInfo) {
-      console.log(`you do not have IC parent`)
+      // console.log(`you do not have IC parent`)
       return state;
     }
     const { parent, key } = parentInfo;
@@ -174,7 +174,6 @@ export const handleBackspace = (state: EditorState): EditorState => {
       case "big-operator": {
         const lower = parent.lower;
         const upper = parent.upper;
-        console.log(`I am in biop. I am at ${key}`)
 
         const allChildrenEmpty = isEmptyNode(upper) && isEmptyNode(lower)
 
@@ -187,19 +186,16 @@ export const handleBackspace = (state: EditorState): EditorState => {
         break;
       }
       case "childed": {
-        console.log(`I am in childed. I am at ${key}`)
         const child = parent[key as keyof typeof parent];
         const corners = [parent.subLeft, parent.supLeft, parent.subRight, parent.supRight];
 
         if (key === 'supLeft' && corners.every(corner => isEmptyNode(corner))) {
-          console.log(`YOU SHOULD REVERT`)
           replacementChildren = parent.base.children;
         }
         if (key === 'base' && isEmptyNode(parent.base)) {
           replacementChildren = [];
         }
         else if (isEmptyNode(child)) {
-          console.log("THIS SI HAPPENING")
           return handleArrowLeft(state);
           //return state
         }
@@ -375,7 +371,7 @@ export const handleBackspace = (state: EditorState): EditorState => {
       };
     }
     else {
-      console.log(`Trying to backspace at start of non-empty ${container.type}. For now, dealt with by doing arrow left`)
+      // console.log(`Trying to backspace at start of non-empty ${container.type}. For now, dealt with by doing arrow left`)
       return handleArrowLeft(state);
     }
   }
@@ -386,21 +382,16 @@ export const handleBackspace = (state: EditorState): EditorState => {
     // Either deal with this or make implicit group
   }
 
-  console.log(`Deleting ${currentToDelete.type}`)
-  //const order = directionalChildOrder[currentToDelete.type];
-  //const childToDelete = currentToDelete[order[order.length - 1]]
+  // console.log(`Deleting ${currentToDelete.type}`)
 
-  //console.log(`${childToDelete}`)
   if (currentToDelete.type !== "text"
     && (currentToDelete.type !== "big-operator" || !isEmptyNode(currentToDelete.lower) || !isEmptyNode(currentToDelete.upper))) {
     const simulatePrevState = handleArrowLeft(state)
 
-    const children = getLogicalChildren(currentToDelete)
-    const lastChild = children[children.length - 1]
+    // const children = getLogicalChildren(currentToDelete)
+    // const lastChild = children[children.length - 1]
 
-    console.log(lastChild?.type)
-
-    //TODO: handle brackets (revert)
+    // console.log(lastChild?.type)
 
     return handleBackspace(simulatePrevState)
   }

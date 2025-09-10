@@ -57,7 +57,7 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({
   const syncNoteCellsWithOrder = useCallback(
     (order: string[], states: typeof editorStates, textContentsParam: typeof textContents) => {
       const newCells: CellData[] = order.map((id) => {
-        console.log(`const newCells in syncnotecellswithorder in editorworkspace`)
+        // console.log(`const newCells in syncnotecellswithorder in editorworkspace`)
 
         if (states[id]) {
           return {
@@ -186,7 +186,6 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({
     else if (to.type === "libraryCollection") {
       if (from.type === "library") return; // premade or same collection no-op
       if (from.type === "cell") {
-        console.log(`Cloning ${nodeToLatex(from.node)} to library collection ${to.collectionId}`);
         // Optional: add to library collection if desired
       }
     }

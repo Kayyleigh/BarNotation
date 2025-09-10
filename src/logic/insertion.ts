@@ -14,7 +14,7 @@ export const handleCharacterInsertInTextContainer = (state: EditorState, char: s
 
   if (container.type === "multi-digit" || container.type === "command-input") {
     //TODO if command-input still check for sequence match, and transform if match found
-    console.log(`trying to insert ${char} inside ${container.type}`)
+    // console.log(`trying to insert ${char} inside ${container.type}`)
 
     const children = container.children
     // Keep node, update content
@@ -374,7 +374,7 @@ export const handleBracketInsert = (
       );
     }
     else {
-      console.log(`Maybe end of container`)
+      // console.log(`Maybe end of container`)
       //return handleBracketInsert(updatedState, bracketStyle, "close")
     }
 
@@ -417,7 +417,7 @@ export const handleBracketInsert = (
         "close"
       );
     }
-    else console.log(`uhm?`)
+    // else console.log(`uhm?`)
 
     return updatedState;
   }

@@ -451,7 +451,7 @@ export function parseLatex(input: string): MathNode {
         }
 
         else if (name.startsWith("\\")) {
-          console.warn(`Escape sequence: ${name}`);
+          console.log(`Escape sequence: ${name}`);
           if (name === "\\,") {
             base = createTextNode(" ", name);
             //TODO fix here: make even escaped brackets parse as bracketed group
