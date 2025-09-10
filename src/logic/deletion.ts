@@ -177,7 +177,7 @@ export const handleBackspace = (state: EditorState): EditorState => {
         console.log(`I am in biop. I am at ${key}`)
 
         const allChildrenEmpty = isEmptyNode(upper) && isEmptyNode(lower)
-        
+
         if ((key === 'lower') && allChildrenEmpty) {
           replacementChildren = [];
         }
@@ -192,10 +192,14 @@ export const handleBackspace = (state: EditorState): EditorState => {
         const corners = [parent.subLeft, parent.supLeft, parent.subRight, parent.supRight];
 
         if (key === 'supLeft' && corners.every(corner => isEmptyNode(corner))) {
-          // console.log(`YOU SHOULD REVERT`)
+          console.log(`YOU SHOULD REVERT`)
           replacementChildren = parent.base.children;
         }
-        else if (key != 'supLeft' && isEmptyNode(child)) {
+        if (key === 'base' && isEmptyNode(parent.base)) {
+          replacementChildren = [];
+        }
+        else if (isEmptyNode(child)) {
+          console.log("THIS SI HAPPENING")
           return handleArrowLeft(state);
           //return state
         }
@@ -346,7 +350,7 @@ export const handleBackspace = (state: EditorState): EditorState => {
       ];
 
       const parentContainerInfo = findParentContainerAndIndex(state.rootNode, parent.id);
-      
+
       if (!parentContainerInfo) return state;
 
       const { container: parentContainer, indexInParent: indexInParentContainer } = parentContainerInfo
