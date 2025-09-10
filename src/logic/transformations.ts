@@ -103,7 +103,9 @@ export function transformToChildedNode(
   return transformPreviousNode(
     state,
     (base) => {
-      const subsupBase = createInlineContainer([base]);
+      // Avoid InlineContainer nesting
+      const subsupBase =
+        base.type === "inline-container" ? base : createInlineContainer([base]);
       return createChildedNode(subsupBase, variant);
     },
     (node) => ({ containerId: node[cornerPosition].id, index: 0 })

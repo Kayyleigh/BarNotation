@@ -183,11 +183,11 @@ export const handleBackspace = (state: EditorState): EditorState => {
         const corners = [parent.subLeft, parent.supLeft, parent.subRight, parent.supRight];
 
         if (key === 'supLeft' && corners.every(corner => isEmptyNode(corner))) {
-          console.log(`YOU SHOULD REVERT`)
-          replacementChildren = (parent.base as InlineContainerNode).children
+          // console.log(`YOU SHOULD REVERT`)
+          replacementChildren = parent.base.children;
         }
         else if (key != 'supLeft' && isEmptyNode(child)) {
-          return handleArrowLeft(state)
+          return handleArrowLeft(state);
           //return state
         }
         break;
