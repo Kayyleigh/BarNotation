@@ -20,10 +20,11 @@ export const PREMADE_COLLECTIONS_RAW = [
     archived: false,
     isPremade: true,
     entries: [
-      { id: "struc-1", latex: `\\iiiint _{}^{}` },
+      { id: "struc-0", latex: `\\int _{}^{}` },
+      { id: "struc-1", latex: `\\iint _{}^{}` },
       { id: "struc-2", latex: `\\iiint _{}^{}` },
-      { id: "struc-3", latex: `\\iint _{}^{}` },
-      { id: "struc-4", latex: `\\int _{}^{}` },
+      { id: "struc-3", latex: `\\iiiint _{}^{}` },
+      { id: "struc-4", latex: `\\oint _{}^{}` },
       { id: "struc-5", latex: `\\overset{}{}` },
       { id: "struc-6", latex: `\\sqrt[]{} ` },
       { id: "struc-7", latex: `\\sum _{}^{}` },
@@ -39,6 +40,7 @@ export const PREMADE_COLLECTIONS_RAW = [
       { id: "struc-17", latex: `[{}]` },
       { id: "struc-18", latex: `\\{\\}` },
       { id: "struc-19", latex: `({})` },
+      { id: "struc-20", latex: `\\begin{Vmatrix}{}\\end{Vmatrix}` },
     ],
   },
   {
@@ -128,6 +130,7 @@ export const PREMADE_COLLECTIONS_RAW = [
       { id: "calc-79", latex: `{\\mathcal{L}}_{}^{-1}\\{f\\}` },
       { id: "calc-80", latex: `\\mathcal{F}\\{f\\}` },
       { id: "calc-81", latex: `\\hat{f}` },
+      { id: "calc-4", latex: `\\int _{}^{}` },
     ],
   },
   {
