@@ -94,14 +94,14 @@
 }
 
 .math-node .math-style-calligraphic {
-  font-family: "Brush Script MT", "Lucida Handwriting", cursive;
+  font-family: "STIX Two Math", serif;
+  font-style: italic;
 }
 
 .math-node .math-style-blackboard {
-  font-family: serif;
-  font-weight: bold;
-  letter-spacing: 1px;
-  /* Optional for extra distinction */
+  font-family: "STIX Two Math", serif;
+  font-weight: normal;
+  font-style: normal;
 }
 
 .math-node :not(.type-text).math-style-upright {

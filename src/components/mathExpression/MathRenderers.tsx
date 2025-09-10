@@ -24,6 +24,7 @@ import { type CoreRenderProps } from "./MathRenderer";
 import { getCloseSymbol, getOpenSymbol, isClosingBracket, isOpeningBracket } from "../../utils/bracketUtils";
 import { getIsHovered, handleMouseEnter, handleMouseLeave } from "../../utils/mathHoverUtils";
 import DummyStartNodeRenderer from "./DummyStartNodeRenderer";
+import { blackboardMap, calligraphicMap } from "../../constants/mathStyleMaps";
 
 // Helper to get CSS classes for font styles
 function getStyleClass(style: TextStyle) {
@@ -138,13 +139,21 @@ export function renderContainerChildren(
   return nodes;
 }
 
-
 // 1. Text Node
 export function renderTextNode(
   node: TextNode,
   baseProps: CoreRenderProps,
 ): React.ReactNode {
   const styleClass = getStyleClass(baseProps.inheritedStyle);
+
+  // map raw content if style requires it
+  let finalContent = node.content;
+  if (styleClass === "math-style-calligraphic") {
+    finalContent = calligraphicMap[node.content] ?? node.content;
+  } else if (styleClass === "math-style-blackboard") {
+    finalContent = blackboardMap[node.content] ?? node.content;
+  }
+
   return (
     <span
       data-nodeid={node.id}
@@ -158,7 +167,7 @@ export function renderTextNode(
         handleMouseLeave(e, baseProps.ancestorIds, baseProps.setHoverPath)
       }
     >
-      {node.content}
+      {finalContent}
     </span>
   );
 }
