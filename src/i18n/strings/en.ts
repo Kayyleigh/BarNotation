@@ -388,7 +388,7 @@ const en = {
     "premade-calculus": "Calculus",
     "premade-logic": "Logic",
     "premade-probability": "Probability & Statistics",
-    "greek-letters": "Greek Letters",
+    "greek-and-hebrew": "Greek & Hebrew", //CHANGED
     "premade-actuarial": "Actuarial Science",
     "premade-linalg": "Linear Algebra", //TODO NEW; ADD TO OTHER LANGUAGES 
   }

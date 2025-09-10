@@ -282,7 +282,8 @@
 
 /* Binomial variant only */
 .type-fraction.is-binom {
-  flex-direction: row; /* Lay out horizontally: ( content ) */
+  flex-direction: row;
+  /* Lay out horizontally: ( content ) */
   align-items: stretch;
   gap: 0.1em;
 }
@@ -339,6 +340,21 @@
   color: var(--math-color-big-operator-symbol);
 }
 
+/* only affect integrals */
+.math-node.type-big-operator.integral .big-operator-lower {
+  margin-left: calc(100% - 2em);
+  align-self: start;
+}
+
+.math-node.type-big-operator.integral .big-operator-upper {
+  margin-left: calc(100% - 0.8em);
+  align-self: start;
+}
+
+.math-node.type-big-operator.integral .big-operator-symbol {
+  line-height: 0.8;
+  margin-bottom: 0;
+}
 
 /* ============================================= */
 /* =============== DECORATIONS ================= */
@@ -502,7 +518,8 @@
 
 .matrix-content {
   display: grid;
-  gap: 0.05em 0.5em; /* Space between cells */
+  gap: 0.05em 0.5em;
+  /* Space between cells */
 }
 
 .matrix-row {

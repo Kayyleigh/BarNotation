@@ -1,7 +1,7 @@
 // accentUtils.ts
 
 // Extract keys as a union type of accents/decorations:
-export type NodeDecoration = "tilde" | "hat" | "widehat" | "bar" | "ddot" | "mathring" | "angl" | "underline" | "joint" | "overline" | "underbrace" | "vec" | "group";
+export type NodeDecoration = "tilde" | "hat" | "widehat" | "bar" | "dot"| "ddot"| "dddot"| "ddddot" | "mathring" | "angl" | "underline" | "joint" | "overline" | "underbrace" | "vec" | "group";
 
 export interface DecorationInfo {
   command: string;        // The LaTeX command string
@@ -13,7 +13,10 @@ export const decorationToLatexCommand: Record<NodeDecoration, DecorationInfo> = 
   bar: { command: "\\bar" },
   widehat: { command: "\\widehat", package: "amsmath" }, // example package
   tilde: { command: "\\tilde" },
+  dot: { command: "\\dot" },
   ddot: { command: "\\ddot" },
+  dddot: { command: "\\dddot" },
+  ddddot: { command: "\\ddddot" },
   mathring: { command: "\\mathring" },
   angl: { command: "\\angl", package: "actuarialangle" },
   group: { command: "\\group", package: "actuarialsymbol" }, //TODO might not be actuarial??

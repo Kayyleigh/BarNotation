@@ -396,10 +396,18 @@ export function renderBigOperatorNode(
     index,
   });
 
+  // detect integrals
+  const isIntegral = ["∫", "∬", "∭", "⨌", "∮"].includes(node.operator);
+
   return (
     <span
       data-nodeid={node.id}
-      className={clsx("math-node", styleClass, "type-big-operator", { hovered: isHovered })}
+      className={clsx(
+        "math-node",
+        styleClass,
+        "type-big-operator",
+        { integral: isIntegral },
+        { hovered: isHovered })}
       style={getInlineStyle(inheritedStyle)}
       onMouseEnter={handleEnter}
       onMouseLeave={handleLeave}

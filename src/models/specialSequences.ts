@@ -84,9 +84,9 @@ export const bigOperatorSequences: SpecialSequence[] = [
   makeBigOp("\\sum ", "Σ"),
   makeBigOp("\\prod ", "Π"),
   makeBigOp("\\int ", "∫"),
-  makeBigOp("\\iint ", "∫∫"),
-  makeBigOp("\\iiint ", "∫∫∫"),
-  makeBigOp("\\iiiint ", "∫∫∫∫"),
+  makeBigOp("\\iint ", "∬"),
+  makeBigOp("\\iiint ", "∭"),
+  makeBigOp("\\iiiint ", "⨌"),
   makeBigOp("\\oint ", "∮"),
 ];
 

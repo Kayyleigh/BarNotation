@@ -32,9 +32,27 @@
   /* wide hat approximation */
 }
 
+.decoration-dot::before {
+  left: calc(50% + 0.5 * var(--empty-math-inline-container-width));
+  content: '˙';
+  /* umlaut */
+}
+
 .decoration-ddot::before {
   left: calc(50% + 0.5 * var(--empty-math-inline-container-width));
   content: '¨';
+  /* umlaut */
+}
+
+.decoration-dddot::before {
+  left: calc(50% + 0.5 * var(--empty-math-inline-container-width));
+  content: '˙˙˙';
+  /* umlaut */
+}
+
+.decoration-ddddot::before {
+  left: calc(50% + 0.5 * var(--empty-math-inline-container-width));
+  content: '¨¨';
   /* umlaut */
 }
 
