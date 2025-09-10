@@ -142,6 +142,8 @@ const en = {
       insertMatrixColumnRight: "(Inside matrix) Insert column right", //TODO NEW; ADD TO OTHER LANGUAGES 
 
       fraction: "Turn node into numerator of new fraction",
+      command: "Insert command node", //NEW
+
       structuralShortcuts: "Structural Shortcuts",
       rearrangeNodes: "Rearrange nodes",
       editingAndNavigation: "Editing & Navigation",
