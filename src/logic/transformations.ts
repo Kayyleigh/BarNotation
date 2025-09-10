@@ -5,10 +5,13 @@ import { type BracketStyle } from "../utils/bracketUtils";
 import { createChildedNode, createGroupNode, createInlineContainer, generateId } from "../models/nodeFactories";
 import type { InlineContainerNode, MathNode, MatrixNode, OverUndersetVariant, TextNode } from "../models/mathNodeTypes";
 import type { CornerPosition } from "../utils/subsupUtils";
+import { normalizedOperatorLikeMap } from "../models/specialSequences";
 
 function isOperatorNode(node: MathNode): boolean {
-  return (node.type === "big-operator") || (node.type === "text" && typeof (node as TextNode).content === "string" &&
+  return (node.type === "text" && normalizedOperatorLikeMap[node.inputAlias] !== null) || (node.type === "big-operator") || (node.type === "text" && typeof (node as TextNode).content === "string" &&
     /^[+\-*/=<>^_|]$/.test((node as TextNode).content.trim()));
+
+    // ALSO test for if text node and node.inputAlias in keys of binaryOperators or arrowSymbols (which are constant lists)
 }
 
 function findBaseRange(container: InlineContainerNode, idx: number): { start: number, end: number } {

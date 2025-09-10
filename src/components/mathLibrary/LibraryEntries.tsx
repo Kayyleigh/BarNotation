@@ -142,7 +142,8 @@ const LibraryEntryItem = React.memo<LibraryEntryItemProps>(
     return (
       prev.entry.id === next.entry.id &&
       prev.localDragCount === next.localDragCount &&
-      prev.highlight === next.highlight
+      prev.highlight === next.highlight &&
+      prev.entry.commandSequence === next.entry.commandSequence
     );
   }
 );

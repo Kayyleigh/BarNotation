@@ -461,6 +461,7 @@ export function parseLatex(input: string): MathNode {
         }
 
         else {
+          //TODO paste as command-input??
           console.log(`Name not found: '${name}'. Creating fallback text node`);
           base = createStyledNode(
             createTextNode("\\" + name, "\\" + name),

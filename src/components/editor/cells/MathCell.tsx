@@ -208,6 +208,11 @@ const MathCell: React.FC<MathCellProps> = ({
     setSelectedCellId(cellId);
   }, [cellId, setSelectedCellId]);
 
+  // Handler when editor loses focus
+  const handleEditorBlur = useCallback(() => {
+    setSelectedCellId(null);
+  }, [setSelectedCellId]);
+
   const style: React.CSSProperties = {
     textAlign: isEditMode ? "left" : "center",
     boxShadow: isEditMode ? undefined : "none",
@@ -240,6 +245,7 @@ const MathCell: React.FC<MathCellProps> = ({
               onDropNode={onDropNode}
               onHoverInfoChange={setHoverInfo}
               onFocus={handleEditorFocus} // notify parent when focused
+              onBlur={handleEditorBlur}
               isSelected={isSelected}     // only selected cell can receive focus
             />
           </HoverProvider>

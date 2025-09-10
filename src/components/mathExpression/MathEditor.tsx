@@ -557,6 +557,7 @@ interface MathEditorProps {
   onDropNode: (from: DragSource, to: DropTarget) => void;
   onHoverInfoChange?: (info: { hoveredType: string; zoomLevel: number }) => void;
   onFocus?: () => void;          // notify parent when focused
+  onBlur?: () => void;          // notify parent when blurred
   isSelected: boolean;           // only selected cell can focus
 }
 
@@ -569,6 +570,7 @@ const MathEditor: React.FC<MathEditorProps> = ({
   onDropNode,
   onHoverInfoChange,
   onFocus,
+  onBlur,
   isSelected,
 }) => {
   const { commandMap } = useCustomCommands();
@@ -593,14 +595,23 @@ const MathEditor: React.FC<MathEditorProps> = ({
   // Focus only if selected
   useEffect(() => {
     if (isSelected) {
+      console.log(`isSelected useEffect on editorRef`, editorRef)
       editorRef.current?.focus();
       onFocus?.();
     }
   }, [isSelected, onFocus]);
 
   const onKeyDown = (e: React.KeyboardEvent) => {
+    const prevNode = getSelectedNode(editorState)
     const updated = handleKeyDown(e, editorState, commandMap);
     if (updated) {
+      if (prevNode?.type === 'command-input') {
+        const newNode = getSelectedNode(updated)
+        if (newNode?.type !== "command-input") {
+          editorRef.current?.focus();
+          onFocus?.();
+        }
+      }
       updateEditorState(updated);
     }
   };
@@ -638,14 +649,14 @@ const MathEditor: React.FC<MathEditorProps> = ({
   const handleDropNode = useCallback(
     (from: DragSource, to: DropTarget) => {
       if (!to || to.type === "libraryCollection") return;
-  
+
       let adjustedTo = to;
-  
+
       if (to.type === "cell" && to.cellId === cellId && to.containerId === "root") {
         const child = editorState.rootNode.child;
         adjustedTo = { ...to, containerId: child.id, index: child.children.length - 1 };
       }
-  
+
       onDropNode(from, adjustedTo);
       editorRef.current?.focus();
       onFocus?.();
@@ -666,6 +677,7 @@ const MathEditor: React.FC<MathEditorProps> = ({
       onCut={onCut}
       onPaste={onPaste}
       onFocus={onFocus}
+      onBlur={onBlur}
       onMouseLeave={() => setHoverPath([])}
     >
       <div className="math-editor-scroll-inner">
