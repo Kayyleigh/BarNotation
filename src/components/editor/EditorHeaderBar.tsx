@@ -18,7 +18,7 @@ interface EditorHeaderBarProps {
   showZoomDropdown: boolean;
   setShowZoomDropdown: React.Dispatch<React.SetStateAction<boolean>>;
   dropdownRef: React.RefObject<HTMLDivElement | null>;
-  onAddCell: (type: "math" | "text") => void;
+  addCellRef: React.RefObject<(type: "math" | "text", index?: number) => void>;
 }
 
 const EditorHeaderBar: React.FC<EditorHeaderBarProps> = ({
@@ -30,7 +30,7 @@ const EditorHeaderBar: React.FC<EditorHeaderBarProps> = ({
   showZoomDropdown,
   setShowZoomDropdown,
   dropdownRef,
-  onAddCell,
+  addCellRef,
 }) => {
   const { t } = useI18n(); // use language hook
 
@@ -57,13 +57,13 @@ const EditorHeaderBar: React.FC<EditorHeaderBarProps> = ({
     <div className={styles.editorHeaderBar}>
       <div className={styles.buttonBar}>
         <Tooltip text={t("editor.addMath")}>
-          <button onClick={() => onAddCell("math")} className={styles.button}>
+          <button onClick={() => addCellRef.current("math")} className={styles.button}>
             ➕ {t("editor.math")}
           </button>
         </Tooltip>
 
         <Tooltip text={t("editor.addText")}>
-          <button onClick={() => onAddCell("text")} className={styles.button}>
+          <button onClick={() => addCellRef.current("text")} className={styles.button}>
             ➕ {t("editor.text")}
           </button>
         </Tooltip>

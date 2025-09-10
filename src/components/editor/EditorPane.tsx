@@ -159,6 +159,7 @@ const EditorPane: React.FC<EditorPaneProps> = ({
   );
 
   const addCellRef = useRef(addCell);
+
   useEffect(() => {
     addCellRef.current = addCell;
   }, [addCell]);
@@ -283,7 +284,7 @@ const EditorPane: React.FC<EditorPaneProps> = ({
             showZoomDropdown={showZoomDropdown}
             setShowZoomDropdown={setShowZoomDropdown}
             dropdownRef={dropdownRef}
-            onAddCell={addCellRef.current}
+            addCellRef={addCellRef}
           />
           <NotationEditor
             noteId={noteId}
