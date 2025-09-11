@@ -75,13 +75,16 @@ export const nodeToLatex = (node: MathNode, highlighted = false): string => {
       const openSymbol = getOpenSymbol(node.bracketStyle);
       const closeSymbol = getCloseSymbol(node.bracketStyle);
 
+      const escapedOpen = (openSymbol === "{") ? "\\{" : openSymbol; 
+      const escapedClose = (closeSymbol === "}") ? "\\}" : closeSymbol; 
+
       if (highlighted && ['square', 'curly'].includes(node.bracketStyle)) {
-        return wrapBracket(openSymbol) + nodeToLatex(node.child, highlighted) + wrapBracket(closeSymbol);
+        return wrapBracket(escapedOpen) + nodeToLatex(node.child, highlighted) + wrapBracket(escapedClose);
       }
       if (highlighted) {
-        return wrapText(openSymbol) + nodeToLatex(node.child, highlighted) + wrapText(closeSymbol);
+        return wrapText(escapedOpen) + nodeToLatex(node.child, highlighted) + wrapText(escapedClose);
       }
-      return openSymbol + nodeToLatex(node.child, highlighted) + closeSymbol;
+      return escapedOpen + nodeToLatex(node.child, highlighted) + escapedClose;
     }
 
     case "fraction": {
@@ -158,34 +161,6 @@ export const nodeToLatex = (node: MathNode, highlighted = false): string => {
 
         const content = wrapCmd("\\actsymb") + `${subLeft}${supLeft}${base}${subRight}${supRight}`;
         return highlighted ? wrapActsymb(content) : content;
-      }
-    }
-
-    case "accented": { //TODO remove
-      if (node.accent.type === 'predefined') {
-        const decorationInfo = decorationToLatexCommand[node.accent.decoration];
-        if (!decorationInfo) {
-          throw new Error(`Unknown decoration: ${node.accent}`);
-        }
-        const latexCommand = decorationInfo.command;
-        const packageName = decorationInfo.package;
-
-        const latexContent =
-          (highlighted ? wrapCmd(latexCommand) : latexCommand) +
-          (highlighted ? wrapBracket("{") : "{") +
-          nodeToLatex(node.base, highlighted) +
-          (highlighted ? wrapBracket("}") : "}");
-
-        return wrapWithPackage(latexContent, packageName);
-      } else {
-        const latexCommand = node.accent.position === 'above' ? (highlighted ? wrapCmd("\\overset") : "\\overset") : (highlighted ? wrapCmd("\\underset") : "\\underset");
-        return latexCommand
-          + (highlighted ? wrapBracket("{") : "{")
-          + nodeToLatex(node.accent.content, highlighted)
-          + (highlighted ? wrapBracket("}") : "}")
-          + (highlighted ? wrapBracket("{") : "{")
-          + nodeToLatex(node.base, highlighted)
-          + (highlighted ? wrapBracket("}") : "}");
       }
     }
 

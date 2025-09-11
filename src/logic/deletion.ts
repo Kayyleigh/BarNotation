@@ -124,7 +124,7 @@ export const handleBackspace = (state: EditorState): EditorState => {
   }
 
   if (prevNode && (prevNode.type === "command-input" || prevNode.type === "multi-digit")) {
-    console.log(`Delling ${prevNode.children.map(child => child.content).join("")}`)
+    // console.log(`Delling ${prevNode.children.map(child => child.content).join("")}`)
     return handleBackspace({
       rootNode: state.rootNode,
       cursor: {
@@ -138,7 +138,7 @@ export const handleBackspace = (state: EditorState): EditorState => {
   if (cursor.index === 0 && container.children.length === 0) {
     const parentInfo = findParentOfInlineContainer(state.rootNode, container.id);
     if (!parentInfo) {
-      console.log(`you do not have IC parent`)
+      // console.log(`you do not have IC parent`)
       return state;
     }
     const { parent, key } = parentInfo;
@@ -146,19 +146,6 @@ export const handleBackspace = (state: EditorState): EditorState => {
     let replacementChildren: MathNode[] = [];
 
     switch (parent.type) {
-      case "accented": { //TODO remove
-        const baseChild = parent.base;
-
-        if (parent.accent.type === 'custom') {
-          if (key === "accent.content" && baseChild.type === "inline-container") {
-            replacementChildren = baseChild.children;
-          }
-        }
-        break;
-      }
-      // case "decorated": {
-      //   break;
-      // }
       case "overunderset": {
         const baseChild = parent.base;
 
@@ -185,22 +172,31 @@ export const handleBackspace = (state: EditorState): EditorState => {
         break;
       }
       case "big-operator": {
-        //const lower = parent.lower;
-        //const upper = parent.upper;
-        return handleArrowLeft(state);
+        const lower = parent.lower;
+        const upper = parent.upper;
 
+        const allChildrenEmpty = isEmptyNode(upper) && isEmptyNode(lower)
+
+        if ((key === 'lower') && allChildrenEmpty) {
+          replacementChildren = [];
+        }
+        else {
+          return handleArrowLeft(state);
+        }
+        break;
       }
       case "childed": {
-        console.log(`I am in childed. I am at ${key}`)
         const child = parent[key as keyof typeof parent];
         const corners = [parent.subLeft, parent.supLeft, parent.subRight, parent.supRight];
 
         if (key === 'supLeft' && corners.every(corner => isEmptyNode(corner))) {
-          console.log(`YOU SHOULD REVERT`)
-          replacementChildren = (parent.base as InlineContainerNode).children
+          replacementChildren = parent.base.children;
         }
-        else if (key != 'supLeft' && isEmptyNode(child)) {
-          return handleArrowLeft(state)
+        if (key === 'base' && isEmptyNode(parent.base)) {
+          replacementChildren = [];
+        }
+        else if (isEmptyNode(child)) {
+          return handleArrowLeft(state);
           //return state
         }
         break;
@@ -332,9 +328,8 @@ export const handleBackspace = (state: EditorState): EditorState => {
   }
 
   if (cursor.index === 0 && container.children.length > 0) {
-    console.log(`Trying to backspace at start of non-empty ${container.type}. I have not decided yet how to handle that`)
-
     const parentInfo = findParentOfInlineContainer(state.rootNode, container.id);
+
     if (!parentInfo) {
       console.log(`you do not have IC parent`)
       return state;
@@ -351,7 +346,7 @@ export const handleBackspace = (state: EditorState): EditorState => {
       ];
 
       const parentContainerInfo = findParentContainerAndIndex(state.rootNode, parent.id);
-      
+
       if (!parentContainerInfo) return state;
 
       const { container: parentContainer, indexInParent: indexInParentContainer } = parentContainerInfo
@@ -375,8 +370,10 @@ export const handleBackspace = (state: EditorState): EditorState => {
         },
       };
     }
-
-    return state
+    else {
+      // console.log(`Trying to backspace at start of non-empty ${container.type}. For now, dealt with by doing arrow left`)
+      return handleArrowLeft(state);
+    }
   }
 
   const currentToDelete = container.children[cursor.index - 1]
@@ -385,22 +382,16 @@ export const handleBackspace = (state: EditorState): EditorState => {
     // Either deal with this or make implicit group
   }
 
-  console.log(`Deleting ${currentToDelete.type}`)
-  //const order = directionalChildOrder[currentToDelete.type];
-  //const childToDelete = currentToDelete[order[order.length - 1]]
+  // console.log(`Deleting ${currentToDelete.type}`)
 
-  //console.log(`${childToDelete}`)
   if (currentToDelete.type !== "text"
-    && currentToDelete.type !== "styled"
     && (currentToDelete.type !== "big-operator" || !isEmptyNode(currentToDelete.lower) || !isEmptyNode(currentToDelete.upper))) {
     const simulatePrevState = handleArrowLeft(state)
 
-    const children = getLogicalChildren(currentToDelete)
-    const lastChild = children[children.length - 1]
+    // const children = getLogicalChildren(currentToDelete)
+    // const lastChild = children[children.length - 1]
 
-    console.log(lastChild?.type)
-
-    //TODO: handle brackets (revert)
+    // console.log(lastChild?.type)
 
     return handleBackspace(simulatePrevState)
   }

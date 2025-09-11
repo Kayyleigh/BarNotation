@@ -32,6 +32,7 @@ const HotkeyOverlay: React.FC<HotkeyOverlayProps> = ({ onClose }) => {
         [["Ctrl", "→"], t("modals.hotkeysModal.insertMatrixColumnRight")],
 
         [["/"], t("modals.hotkeysModal.fraction")],
+        [["\\"], t("modals.hotkeysModal.command")],
       ],
     },
     {

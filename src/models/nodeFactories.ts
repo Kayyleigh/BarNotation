@@ -9,12 +9,9 @@ import type {
   NthRootNode,
   BigOperatorNode,
   ChildedNode,
-  AccentedNode,
   MatrixNode,
   CasesNode,
-  VectorNode,
   GroupNode,
-  AccentKind,
   TextStyle,
   TextNode,
   MultiDigitNode,
@@ -105,16 +102,6 @@ export const createChildedNode = (
   variant,
 });
 
-export const createAccentedNode = (
-  base: InlineContainerNode = createInlineContainer(),
-  accent: AccentKind,
-): AccentedNode => ({
-  id: uuidv4(),
-  type: "accented",
-  base,
-  accent,
-});
-
 export const createDecoratedNode = (
   base: InlineContainerNode = createInlineContainer(),
   decoration: NodeDecoration,
@@ -162,18 +149,6 @@ export const createGroupNode = (
 });
 
 // ========== Composite Layout Structures ==========
-
-export const createVectorNode = ( //TODO remove
-  elements: InlineContainerNode[] = [createInlineContainer()],
-  bracketStyle: BracketStyle = "parentheses",
-  orientation: "horizontal" | "vertical" = "vertical"
-): VectorNode => ({
-  id: uuidv4(),
-  type: "vector",
-  elements,
-  bracketStyle,
-  orientation
-});
 
 export const createMatrixNode = (
   rows: InlineContainerNode[][] = [[createInlineContainer()]],

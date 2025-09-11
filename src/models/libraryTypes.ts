@@ -66,4 +66,7 @@ export interface MathNodeLibrary {
   entries: Record<string, LibraryEntry>;
   collections: Record<string, LibraryCollection>;
   memberships: LibraryMembership[];
+
+  // Explicit ordering of collection IDs
+  collectionOrder: string[];
 }

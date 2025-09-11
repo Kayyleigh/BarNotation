@@ -234,5 +234,5 @@
 /* Ensure MathEditor does not shrink or wrap  */
 .mathScrollContainer>* {
   display: inline-block;
-  min-width: 100%;
+  min-width: calc(100% - 1.6em); /* prevent scrollability of short math due to cell padding*/
 }

@@ -32,7 +32,7 @@ const en = {
     addMath: "Add math cell",
     addText: "Add text cell",
     lockedAdd: "Cannot add cells in locked mode",
-    cleanup: "Remove empty cells",
+    cleanup: "Remove empty cells", //UNUSED, I REMOVED THE CLEANUP FEATURE
     cleanupWip: "Cleanup is not yet implemented",
     clean: "Clean",
     showLatex: "Show all LaTeX",
@@ -142,6 +142,8 @@ const en = {
       insertMatrixColumnRight: "(Inside matrix) Insert column right", //TODO NEW; ADD TO OTHER LANGUAGES 
 
       fraction: "Turn node into numerator of new fraction",
+      command: "Insert command node", //NEW
+
       structuralShortcuts: "Structural Shortcuts",
       rearrangeNodes: "Rearrange nodes",
       editingAndNavigation: "Editing & Navigation",
@@ -244,7 +246,7 @@ const en = {
     editCommand: { //ALL NEW
       title: "Edit Custom Command",
       label: "Command",
-      placeholder: "Type command (no backslash)",
+      placeholder: "Type command",
       statusLabel: {
         valid: "Valid sequence.",
         invalid: "Invalid",
@@ -291,7 +293,9 @@ const en = {
       noMatches: "No matches found",
       ariaLabel: "Entries in collection {{name}}",
       toast: {
-        added: "Added entry.",
+        added: "Added entry.", //NEW
+        commandSaved: "Saved custom command.", //NEW
+        commandClearned: "Removed custom command.", //NEW
       }
     },
     error: {
@@ -303,7 +307,7 @@ const en = {
       addLatex: "LaTeX added to library.",
       entryMoved: "Entry moved between collections.",
       entryAddedTo: `Entry {{latex}} added to {{collection}}.`,
-      unarchived: `Unarchived "{{name}}"`,
+      unarchived: `Unarchived collection.`,
       deleted: `Deleted "{{name}}"`,
     },
     warning: {
@@ -337,7 +341,7 @@ const en = {
       defaultName: "My Collection",
       tooltip: {
         new: "New Collection",
-        archive: "Collections Archive",
+        archive: "View archived collections", //CHANGED
         moreOptions: "More options",
       },
       toast: {
@@ -384,7 +388,7 @@ const en = {
     "premade-calculus": "Calculus",
     "premade-logic": "Logic",
     "premade-probability": "Probability & Statistics",
-    "greek-letters": "Greek Letters",
+    "greek-and-hebrew": "Greek & Hebrew", //CHANGED
     "premade-actuarial": "Actuarial Science",
     "premade-linalg": "Linear Algebra", //TODO NEW; ADD TO OTHER LANGUAGES 
   }

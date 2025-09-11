@@ -84,9 +84,9 @@ export const bigOperatorSequences: SpecialSequence[] = [
   makeBigOp("\\sum ", "Σ"),
   makeBigOp("\\prod ", "Π"),
   makeBigOp("\\int ", "∫"),
-  makeBigOp("\\iint ", "∫∫"),
-  makeBigOp("\\iiint ", "∫∫∫"),
-  makeBigOp("\\iiiint ", "∫∫∫∫"),
+  makeBigOp("\\iint ", "∬"),
+  makeBigOp("\\iiint ", "∭"),
+  makeBigOp("\\iiiint ", "⨌"),
   makeBigOp("\\oint ", "∮"),
 ];
 
@@ -1027,14 +1027,18 @@ export const actuarialSymbols: SpecialSequence[] = [
   },
 ]
 
+export const operatorLikeSymbols: SpecialSequence[] = [
+  ...arrowSymbols,
+  ...binaryOperators
+]
+
 export const specialSymbols: SpecialSequence[] = [
+  ...operatorLikeSymbols,
   ...greekLetters,
   ...hebrewLetters,
-  ...binaryOperators,
   ...logicSymbols,
   ...otherSymbols,
   ...standardFunctionNames,
-  ...arrowSymbols,
   ...bracketSymbolSequences,
 ]
 
@@ -1057,6 +1061,11 @@ const normalizeCommand = (cmd: string) => cmd.trim().replace(/^\\/, "");
 // Normalized string → SpecialSequence
 export const normalizedSpecialSequenceMap: Record<string, SpecialSequence> = Object.fromEntries(
   specialSequences.map(s => [normalizeCommand(s.sequence), s])
+);
+
+// Normalized string → SpecialSequence for operator-like symbols (incl arrows)
+export const normalizedOperatorLikeMap: Record<string, SpecialSequence> = Object.fromEntries(
+  operatorLikeSymbols.map(s => [normalizeCommand(s.sequence), s])
 );
 
 // Set of all known commands

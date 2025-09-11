@@ -4,6 +4,7 @@ import './styles/themes.css';
 import MainLayout from "./components/layout/MainLayout";
 import { ToastProvider } from "./hooks/toast/ToastProvider";
 import ModalsLayer from "./components/layout/ModalsLayer";
+import KeyOverlay from "./components/temporary/KeyOverlay";
 
 const App: React.FC = () => {
   const [showHotkeys, setShowHotkeys] = useState(false);
@@ -60,26 +61,29 @@ const App: React.FC = () => {
   }, [theme]);
 
   return (
-    <ToastProvider>
-      <MainLayout
-        onOpenSettings={handleOpenSettings}
-        onOpenHotkeys={handleOpenHotkeys}
-        authorName={authorName}
-        setAuthorName={setAuthorName}
-        nerdMode={nerdMode}
-        theme={theme}
-        showColorInPreview={showColorInPreview}
-      // onOpenNotesArchive={handleOpenNotesArchive}
-      />
-      <ModalsLayer
-        showHotkeys={showHotkeys}
-        onCloseHotkeys={handleCloseHotkeys}
-        showSettings={showSettings}
-        onCloseSettings={handleCloseSettings}
-        settingsProps={settingsProps} //Property 'setTheme' is missing in type '{ theme: string; handleThemeChange: (newTheme: string) => void; showColorInPreview: boolean; toggleShowColorInPreview: () => void; authorName: string; setAuthorName: React.Dispatch<React.SetStateAction<string>>; nerdMode: boolean; toggleNerdMode: () => void; }' but required in type '{ theme: string; setTheme: (theme: string) => void; showColorInPreview: boolean; toggleShowColorInPreview: () => void; authorName: string; setAuthorName: (name: string) => void; nerdMode: boolean; toggleNerdMode: () => void; }'.ts(2741)
+    <>
+      <ToastProvider>
+        <MainLayout
+          onOpenSettings={handleOpenSettings}
+          onOpenHotkeys={handleOpenHotkeys}
+          authorName={authorName}
+          setAuthorName={setAuthorName}
+          nerdMode={nerdMode}
+          theme={theme}
+          showColorInPreview={showColorInPreview}
+        // onOpenNotesArchive={handleOpenNotesArchive}
+        />
+        <ModalsLayer
+          showHotkeys={showHotkeys}
+          onCloseHotkeys={handleCloseHotkeys}
+          showSettings={showSettings}
+          onCloseSettings={handleCloseSettings}
+          settingsProps={settingsProps} //Property 'setTheme' is missing in type '{ theme: string; handleThemeChange: (newTheme: string) => void; showColorInPreview: boolean; toggleShowColorInPreview: () => void; authorName: string; setAuthorName: React.Dispatch<React.SetStateAction<string>>; nerdMode: boolean; toggleNerdMode: () => void; }' but required in type '{ theme: string; setTheme: (theme: string) => void; showColorInPreview: boolean; toggleShowColorInPreview: () => void; authorName: string; setAuthorName: (name: string) => void; nerdMode: boolean; toggleNerdMode: () => void; }'.ts(2741)
 
-      />
-    </ToastProvider>
+        />
+      </ToastProvider>
+      <KeyOverlay />
+    </>
   );
 };
 

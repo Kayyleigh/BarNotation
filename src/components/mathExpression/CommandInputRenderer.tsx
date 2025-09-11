@@ -4,14 +4,15 @@ import type { CommandInputNode } from "../../models/mathNodeTypes";
 import { specialSequences } from "../../models/specialSequences";
 import { cloneTreeWithNewIds } from "../../utils/treeUtils";
 import { CommandInputNodeComponent } from "./CommandInputNodeComponent";
-import type { BaseRenderProps, MathRendererProps } from "./MathRenderer";
+import type { CoreRenderProps } from "./MathRenderer";
 
 interface CommandInputRendererProps {
     node: CommandInputNode;
-    baseProps: BaseRenderProps & MathRendererProps;
+    baseProps: CoreRenderProps;
+    Renderer: React.NamedExoticComponent<CoreRenderProps>;
   }
   
-  export const CommandInputRenderer: React.FC<CommandInputRendererProps> = ({ node, baseProps }) => {
+  export const CommandInputRenderer: React.FC<CommandInputRendererProps> = ({ node, baseProps, Renderer }) => {
     const { commandMap } = useCustomCommands();
     const isSelected = baseProps.cursor?.containerId === node.id;
   
@@ -38,6 +39,7 @@ interface CommandInputRendererProps {
         isSelected={isSelected}
         onSelectSuggestion={handleSelectSuggestion}
         baseProps={baseProps}
+        Renderer={Renderer}
       />
     );
   };

@@ -11,10 +11,7 @@ export function moveNodeByDrag(
 ): EditorState {
   const draggedNode = findNodeById(state.rootNode, draggedNodeId);
   
-  console.log(`${draggedNode} ? is dragged ??`)
   if (!draggedNode) return state;
-
-  console.log(`YOu are dragging a ${draggedNode.type}`)
 
   // Remove node
   let newState = deleteNodeById(state, draggedNodeId);
@@ -67,10 +64,8 @@ export function insertNodeAtIndex(
 
 export function deleteNodeById(state: EditorState, nodeId: string): EditorState {
   const info = findParentContainerAndIndex(state.rootNode, nodeId);
-  console.log(`Do we have a parent? ${info}`)
   if (!info) return state;
 
-  console.log(`Deleting node ${(info.container.children.map(c=> nodeToLatex(c, false)).join(""))}`)
   const { container, indexInParent } = info;
   const newChildren = [...container.children];
   newChildren.splice(indexInParent, 1);
@@ -90,7 +85,6 @@ export function deleteNodeById(state: EditorState, nodeId: string): EditorState 
 // Inserts the given node at the cursor position //TODO not sure if broken
 export function insertNodeAtCursor(state: EditorState, newNode: MathNode): EditorState {
   const container = findNodeById(state.rootNode, state.cursor.containerId);
-  console.log(`Inserting ${newNode.type} into ${container?.type}`);
 
   if (!container || container.type !== "inline-container") return state;
 

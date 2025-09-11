@@ -17,7 +17,6 @@ import { MAX_ZOOM, MIN_ZOOM } from "../../constants/editorConstants";
 import { LatexRefreshProvider } from "../../hooks/latexViewRefresh/LatexRefreshProvider";
 import type { DragSource, DropTarget } from "../../models/dragTypes";
 
-
 interface EditorPaneProps {
   noteId: string | null;
   noteMetadata: NoteMetadata;
@@ -160,6 +159,7 @@ const EditorPane: React.FC<EditorPaneProps> = ({
   );
 
   const addCellRef = useRef(addCell);
+
   useEffect(() => {
     addCellRef.current = addCell;
   }, [addCell]);
@@ -284,7 +284,7 @@ const EditorPane: React.FC<EditorPaneProps> = ({
             showZoomDropdown={showZoomDropdown}
             setShowZoomDropdown={setShowZoomDropdown}
             dropdownRef={dropdownRef}
-            onAddCell={addCellRef.current}
+            addCellRef={addCellRef}
           />
           <NotationEditor
             noteId={noteId}

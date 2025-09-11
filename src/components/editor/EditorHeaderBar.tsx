@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from "react";
 import clsx from "clsx";
 import Tooltip from "../tooltips/Tooltip";
-import { useToast } from "../../hooks/toast/useToast";
 import { useEditorMode } from "../../hooks/editorMode/useEditorMode";
 
 import styles from "./EditorHeaderBar.module.css";
@@ -19,7 +18,7 @@ interface EditorHeaderBarProps {
   showZoomDropdown: boolean;
   setShowZoomDropdown: React.Dispatch<React.SetStateAction<boolean>>;
   dropdownRef: React.RefObject<HTMLDivElement | null>;
-  onAddCell: (type: "math" | "text") => void;
+  addCellRef: React.RefObject<(type: "math" | "text", index?: number) => void>;
 }
 
 const EditorHeaderBar: React.FC<EditorHeaderBarProps> = ({
@@ -31,12 +30,11 @@ const EditorHeaderBar: React.FC<EditorHeaderBarProps> = ({
   showZoomDropdown,
   setShowZoomDropdown,
   dropdownRef,
-  onAddCell,
+  addCellRef,
 }) => {
   const { t } = useI18n(); // use language hook
 
   const { mode, togglePreview, toggleLocked } = useEditorMode();
-  const { showToast } = useToast();
 
   const [editingZoom, setEditingZoom] = useState(false);
   const [editingZoomValue, setEditingZoomValue] = useState(defaultZoom * 100);
@@ -59,25 +57,14 @@ const EditorHeaderBar: React.FC<EditorHeaderBarProps> = ({
     <div className={styles.editorHeaderBar}>
       <div className={styles.buttonBar}>
         <Tooltip text={t("editor.addMath")}>
-          <button onClick={() => onAddCell("math")} className={styles.button}>
+          <button onClick={() => addCellRef.current("math")} className={styles.button}>
             ➕ {t("editor.math")}
           </button>
         </Tooltip>
 
         <Tooltip text={t("editor.addText")}>
-          <button onClick={() => onAddCell("text")} className={styles.button}>
+          <button onClick={() => addCellRef.current("text")} className={styles.button}>
             ➕ {t("editor.text")}
-          </button>
-        </Tooltip>
-
-        <Tooltip text={t("editor.cleanup")}>
-          <button
-            onClick={() =>
-              showToast({ message: t("editor.cleanupWip"), type: "warning" })
-            }
-            className={styles.button}
-          >
-            🧹 {t("editor.clean")}
           </button>
         </Tooltip>
 
