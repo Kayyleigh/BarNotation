@@ -1,7 +1,7 @@
 import { decorationToLatexCommandInverse, type NodeDecoration } from "../utils/accentUtils";
 import { bracketSymbols, getStyleFromSymbol, isOpeningBracket } from "../utils/bracketUtils";
 import { nodeToLatex } from "./nodeToLatex";
-import { createChildedNode, createDecoratedNode, createFraction, createGroupNode, createInlineContainer, createMatrixNode, createNthRoot, createOverUndersetNode, createStyledNode, createTextNode } from "./nodeFactories";
+import { createChildedNode, createCommandInputNode, createDecoratedNode, createFraction, createGroupNode, createInlineContainer, createMatrixNode, createNthRoot, createOverUndersetNode, createStyledNode, createTextNode } from "./nodeFactories";
 import { getBigOpNodeFromAlias, getStyledNodeFromAlias, getSymbolNodeFromAlias, symbolToLatex } from "./specialSequences";
 import type { GroupNode, InlineContainerNode, MathNode, StructureNode } from "./mathNodeTypes";
 import { ensureInContainerNode } from "./transformations";
@@ -452,7 +452,10 @@ export function parseLatex(input: string): MathNode {
 
         else if (name.startsWith("\\")) {
           console.log(`Escape sequence: ${name}`);
-          if (name === "\\,") {
+          if (name === "\\\\") { //TODO maybe remove; this is to allow user to foce backslash if they dont have it on their keyboard
+            base = createCommandInputNode([createTextNode("\\")]);
+          } 
+          else if (name === "\\,") {
             base = createTextNode(" ", name);
             //TODO fix here: make even escaped brackets parse as bracketed group
           } else {
