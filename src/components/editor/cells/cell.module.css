@@ -77,9 +77,9 @@
   background: transparent;
 }
 
-.mathCell {
+/* .mathCell {
   position: relative;
-}
+} */
 
 .hoverTypeInfo {
   position: absolute;
@@ -92,7 +92,7 @@
   user-select: none;
 }
 
-.textCell {
+/* .textCell {
   box-sizing: border-box;
   background: var(--math-editor-bg);
   border: 1px solid var(--math-editor-border);
@@ -100,7 +100,7 @@
   box-shadow: 0 0 4px var(--math-editor-shadow);
   padding: 1em;
   position: relative;
-}
+} */
 
 /* Optional global preview text tweaks */
 :global(.preview) .textCellInput,
@@ -142,9 +142,7 @@
 }
 
 .cellInner {
-  /* width: calc(100% - 2.5em); */
-  width: calc(100% - var(--editor-margin-left));
-  /* margin-right: var(--editor-margin-right); */
+  width: calc(100% - var(--editor-margin-left) - 1.6em);
   height: fit-content;
   padding: 0.6em 0.8em;
   position: relative;
@@ -155,9 +153,9 @@
   color: var(--math-text-color);
 }
 
-.cellInner:has(.mathCell) {
+/* .cellInner:has(.mathCell) {
   padding: 0em;
-}
+} */
 
 .cellMainContent {
   flex: 1;
@@ -174,7 +172,7 @@
 
 .cellMargin {
   /* width: 2.5em; */
-  height: 100%;
+  height: auto;
   display: flex;
   flex-direction: column;
   align-items: center;

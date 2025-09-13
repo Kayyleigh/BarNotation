@@ -1,3 +1,4 @@
+import type { EditorState } from "../logic/editor-state";
 import type { TextCellType } from "./textTypes";
 
 export interface NoteMetadata {
@@ -24,26 +25,21 @@ export type TextCellContent = {
   type: TextCellType;
 };
 
-// export type CellData = {
-//   id: string;
-//   type: "math" | "text";
-//   content: string;
-// };
-
 type TextCellData = {
   id: string;
   type: "text";
-  content: TextCellContent;  // { text: string; type: string }
+  content: TextCellContent;
 };
 
 type MathCellData = {
   id: string;
   type: "math";
-  // content: EditorState;  // later use this? It's a huge flaw that I don't yet 
-  content: string;  // for now, store LaTeX here
+  content: EditorState;
 };
 
-export type CellData = TextCellData | MathCellData;
+export type CellData =
+  | TextCellData
+  | MathCellData;
 
 // For notes menu:
 export type NoteSummary = {

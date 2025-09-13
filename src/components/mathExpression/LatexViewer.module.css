@@ -1,5 +1,5 @@
   .latexViewer {
-    padding: 0.75em;
+    margin: 1em 0 0 var(--editor-margin-left);
     color: var(--math-text-color);
     border-radius: 6px;
     font-family: monospace;
@@ -62,6 +62,7 @@
     width: 100%;
     text-align: left;
     overflow: auto;
+    min-height: 5.2em;
     height: auto;
     resize: none;
     background: inherit;
@@ -69,7 +70,7 @@
     border: 1px solid var(--math-editor-border);
     color: var(--latex-text-color);
     border-radius: 4px;
-    padding: 0.5em 10em 0.5em 0.5em;
+    padding: 0.5em 2em 0.5em 0.5em;
     margin: 0;
     font-family: inherit;
     font-size: 1em;

@@ -13,15 +13,17 @@ import styles from "./Editor.module.css";
 import NoteMetaDataSection from "./NoteMetadataSection";
 import type { CellData, NoteMetadata, TextCellContent } from "../../models/noteTypes";
 import type { EditorState } from "../../logic/editor-state";
-import { nodeToLatex } from "../../models/nodeToLatex";
-import CellRow from "./CellRow";
-import clsx from "clsx";
+// import { nodeToLatex } from "../../models/nodeToLatex";
+// import CellRow from "./CellRow";
 import { useEditorMode } from "../../hooks/editorMode/useEditorMode";
-import { computeDisplayNumbers } from "../../utils/noteUtils";
+// import { computeDisplayNumbers } from "../../utils/noteUtils";
 import cellStyles from "./cells/cell.module.css";
 import Tooltip from "../tooltips/Tooltip";
 import { useI18n } from "../../i18n/useI18n";
 import type { DragSource, DropTarget } from "../../models/dragTypes";
+// import { CellWrapper } from "./cells/cellWrapper";
+// import { cellRegistry, type BaseCellProps, type CellContent, type CellType } from "../../models/cellRegistry";
+import { CellRenderer } from "./cells/CellRenderer";
 
 interface NotationEditorProps {
   defaultZoom: number;
@@ -54,7 +56,7 @@ const reconstructCells = (
       return {
         id,
         type: "math",
-        content: nodeToLatex(editorStates[id].rootNode),
+        content: editorStates[id],
       };
     } else if (textContents[id]) {
       return {
@@ -96,15 +98,15 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
   const cellRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const { mode } = useEditorMode();
-  const isEditMode = mode === "edit";
+  // const isEditMode = mode === "edit";
   // const isLockedMode = mode === "locked";
 
   const {
     draggingCellId,
     dragOverInsertIndex,
-    startDrag,
-    updateDragOver,
-    endDrag,
+    startDrag: startCellDrag,
+    updateDragOver: updateCellDragOver,
+    endDrag: endCellDrag,
   } = useCellDragState();
 
   const baseCells = useMemo(
@@ -112,20 +114,20 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
     [order, editorStates, textContents]
   );
 
-  const textCellIds = useMemo(
-    () => baseCells
-      .filter((cell) => cell.type === "text")
-      .map((cell) => cell.id),
-    [baseCells]
-  );
+  // const textCellIds = useMemo(
+  //   () => baseCells
+  //     .filter((cell) => cell.type === "text")
+  //     .map((cell) => cell.id),
+  //   [baseCells]
+  // );
 
-  const displayNumbers = useMemo(
-    () =>
-      !isEditMode
-        ? computeDisplayNumbers(textContents, textCellIds)
-        : {},
-    [isEditMode, textContents, textCellIds]
-  );
+  // const displayNumbers = useMemo(
+  //   () =>
+  //     !isEditMode
+  //       ? computeDisplayNumbers(textContents, textCellIds)
+  //       : {},
+  //   [isEditMode, textContents, textCellIds]
+  // );
 
   const [visibleCells, setVisibleCells] = useState(baseCells);
   const [, startTransition] = useTransition();
@@ -150,7 +152,7 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
     }
   }, [noteId]);
 
-  const updateCellContent = useCallback(
+  const updateTextCellContent = useCallback(
     (id: string, partialContent: Partial<TextCellContent>) => {
       setTextContents(prev => {
         const prevContent = prev[id];
@@ -185,17 +187,17 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
     setEditorStates((prev) => ({ ...prev, [id]: newState }));
   }, [setEditorStates]);
 
-  const memoizedUpdateEditorStateFns = useMemo(() => {
-    const fns: Record<string, (newState: EditorState) => void> = {};
-    for (const id of order) {
-      fns[id] = (newState) => updateEditorState(id, newState);
-    }
-    return fns;
-  }, [order, updateEditorState]);
+  // const memoizedUpdateEditorStateFns = useMemo(() => {
+  //   const fns: Record<string, (newState: EditorState) => void> = {};
+  //   for (const id of order) {
+  //     fns[id] = (newState) => updateEditorState(id, newState);
+  //   }
+  //   return fns;
+  // }, [order, updateEditorState]);
 
   const handlePointerDown = useCallback((e: React.PointerEvent, id: string, index: number) => {
     e.preventDefault();
-    startDrag(id, index);
+    startCellDrag(id, index);
 
     const handlePointerMove = (moveEvent: PointerEvent) => {
       moveEvent.preventDefault();
@@ -205,11 +207,11 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
         (rect) => rect && cursorY < rect.top + rect.height / 2
       );
       const overIndex = overIndexRaw === -1 ? rects.length : overIndexRaw;
-      updateDragOver(overIndex);
+      updateCellDragOver(overIndex);
     };
 
     const handlePointerUp = () => {
-      const { from, to } = endDrag();
+      const { from, to } = endCellDrag();
       if (from !== null && to !== null && from !== to) {
         const newOrder = [...order];
         const [movedId] = newOrder.splice(from, 1);
@@ -222,7 +224,7 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
 
     window.addEventListener("pointermove", handlePointerMove);
     window.addEventListener("pointerup", handlePointerUp);
-  }, [startDrag, updateDragOver, endDrag, order, updateOrder]);
+  }, [startCellDrag, updateCellDragOver, endCellDrag, order, updateOrder]);
 
   // const handleInsertAtEnd = useCallback(
   //   (type: "text" | "math") => addCell(type, visibleCells.length), //TODO do not hardcode text math like that for extensibility
@@ -263,45 +265,37 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
         )}
 
         {visibleCells.map((cell, index) => (
-          <CellRow
+          <CellRenderer
             key={cell.id}
+            ref={(el: HTMLDivElement | null) => (cellRefs.current[index] = el)}
             cell={cell}
             index={index}
-            displayNumber={displayNumbers[cell.id]}
-            draggingCellId={draggingCellId}
-            dragOverInsertIndex={dragOverInsertIndex}
-            updateDragOver={updateDragOver}
-            editorStates={editorStates}
-            updateEditorStates={memoizedUpdateEditorStateFns}
-            cellRefs={cellRefs}
-            showLatexMap={showLatexMap}
-            defaultZoom={defaultZoom}
-            resetZoomSignal={resetZoomSignal}
-            addCell={handleInsertAtIndex}
-            updateCellContent={updateCellContent}
-            deleteCell={deleteCell}
-            duplicateCell={duplicateCell}
-            toggleShowLatex={toggleShowLatex}
-            handlePointerDown={handlePointerDown}
             selectedCellId={selectedCellId}
             setSelectedCellId={setSelectedCellId}
+            draggingCellId={draggingCellId}
+            updateDragOver={updateCellDragOver}
+            dragOverInsertIndex={dragOverInsertIndex}
+            handleInsertAtIndex={handleInsertAtIndex}
+            handlePointerDown={handlePointerDown}
+            deleteCell={deleteCell}
+            duplicateCell={duplicateCell}
+            updateTextCellContent={updateTextCellContent}
+            toggleShowLatex={toggleShowLatex}
+            showLatexMap={showLatexMap}
             onDropNode={onDropNode}
+            resetZoomSignal={resetZoomSignal}
+            defaultZoom={defaultZoom}
+            editorStates={editorStates}
+            updateEditorState={updateEditorState}
           />
         ))}
 
         {mode !== "locked" && (
-          <div
-            className={clsx(
-              styles.insertZone,
-              { [styles.dragOver]: dragOverInsertIndex === visibleCells.length }
-            )}
-            onPointerEnter={() => draggingCellId !== null && updateDragOver(visibleCells.length)}
-          >
-            <InsertCellButtons
-              onInsert={handleInsertAtEnd}
-              isPermanent={true}
-            />
-          </div>
+          <InsertCellButtons
+            onInsert={handleInsertAtEnd}
+            handlePointerEnter={() => draggingCellId !== null && updateCellDragOver(visibleCells.length)}
+            isDropTarget={dragOverInsertIndex === visibleCells.length}
+          />
         )}
       </div>
 
@@ -313,8 +307,9 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
             </Tooltip>
           </div>
         </div>
-      )}
-    </main>
+      )
+      }
+    </main >
   );
 };
 

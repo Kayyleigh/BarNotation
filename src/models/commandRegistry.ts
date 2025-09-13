@@ -1,6 +1,8 @@
 import type { MathNode } from "./mathNodeTypes";
 import { createTextNode, createInlineContainer } from "./nodeFactories";
 
+//TODO remove? I AM NOT USING THIS!!
+
 export type CommandDefinition = {
   sequence: string;
   description: string;

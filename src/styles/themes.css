@@ -180,11 +180,11 @@
 
 
   /* editor layout */
-  --cell-dragspot-width: 2.5em;
-  --cell-selection-indicator-offset-left: 0.15em;
-  --editor-margin-right: 0.75em;
+  --cell-dragspot-width: 2.5rem;
+  --cell-selection-indicator-offset-left: 0.15rem;
+  --editor-margin-right: 0.75rem;
   /* --editor-margin-left: calc(var(--cell-dragspot-width) + var(--cell-selection-indicator-offset-left)); */
-  --editor-margin-left: 2.65em;
+  --editor-margin-left: 2.65rem;
 
   /* Command input autocomplete */
   --command-autocomplete-dropdown-bg: var(--main-header-bg);

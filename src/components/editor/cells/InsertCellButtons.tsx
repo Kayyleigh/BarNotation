@@ -8,11 +8,15 @@ import { useI18n } from "../../../i18n/useI18n";
 
 interface InsertCellButtonsProps {
   onInsert: (type: "math" | "text") => void;
+  handlePointerEnter: React.PointerEventHandler<HTMLDivElement>;
+  isDropTarget?: boolean;
   isPermanent?: boolean;
 }
 
 const InsertCellButtons: React.FC<InsertCellButtonsProps> = ({
   onInsert,
+  handlePointerEnter,
+  isDropTarget = false,
   isPermanent = false
 }) => {
   const { mode } = useEditorMode();
@@ -28,6 +32,7 @@ const InsertCellButtons: React.FC<InsertCellButtonsProps> = ({
   const handleMouseEnter = !isPermanent ? () => setHovered(true) : undefined;
   const handleMouseLeave = !isPermanent ? () => setHovered(false) : undefined;
 
+  // TODO make generic??
   const handleInsert = useCallback(
     (type: "math" | "text") => {
       if (!isLocked) onInsert(type);
@@ -37,33 +42,40 @@ const InsertCellButtons: React.FC<InsertCellButtonsProps> = ({
 
   return (
     <div
-      className={clsx(styles.addButtons, styles.insertBetween, { [styles.visible]: show })}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      style={{ pointerEvents: isLocked ? "none" : "auto" }}
-      aria-hidden={isLocked}
+      className={clsx(styles.insertZone, {
+        [styles.dragOver]: isDropTarget,
+      })}
+      onPointerEnter={handlePointerEnter}
     >
-      <Tooltip text={isLocked ? t("editor.lockedAdd") : t("editor.addMath")}>
-        <button
-          className={clsx(styles.mathCellButton, "button")}
-          onClick={() => handleInsert("math")}
-          disabled={isLocked}
-          type="button"
-        >
-          + {t("editor.math")}
-        </button>
-      </Tooltip>
+      <div
+        className={clsx(styles.addButtons, styles.insertBetween, { [styles.visible]: show })}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        style={{ pointerEvents: isLocked ? "none" : "auto" }}
+        aria-hidden={isLocked}
+      >
+        <Tooltip text={isLocked ? t("editor.lockedAdd") : t("editor.addMath")}>
+          <button
+            className={clsx(styles.mathCellButton, "button")}
+            onClick={() => handleInsert("math")}
+            disabled={isLocked}
+            type="button"
+          >
+            + {t("editor.math")}
+          </button>
+        </Tooltip>
 
-      <Tooltip text={isLocked ? t("editor.lockedAdd") : t("editor.addText")}>
-        <button
-          className={clsx(styles.textCellButton, "button")}
-          onClick={() => handleInsert("text")}
-          disabled={isLocked}
-          type="button"
-        >
-          + {t("editor.text")}
-        </button>
-      </Tooltip>
+        <Tooltip text={isLocked ? t("editor.lockedAdd") : t("editor.addText")}>
+          <button
+            className={clsx(styles.textCellButton, "button")}
+            onClick={() => handleInsert("text")}
+            disabled={isLocked}
+            type="button"
+          >
+            + {t("editor.text")}
+          </button>
+        </Tooltip>
+      </div>
     </div>
   );
 };

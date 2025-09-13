@@ -1,0 +1,88 @@
+// models/cellRegistry.ts
+import MathCell from "../components/editor/cells/MathCell";
+import TextCell from "../components/editor/cells/TextCell";
+import type { EditorState } from "../logic/editor-state";
+import { nodeToLatex } from "./nodeToLatex";
+import type { TextCellContent } from "./noteTypes";
+import { TEXT_CELL_TYPES, TEXT_TYPE_LABELS } from "./textTypes";
+import styles from "../components/editor/Editor.module.css";
+import textStyles from "../styles/textStyles.module.css";
+import toolbarStyles from "../components/editor/cells/CellToolbar.module.css";
+import clsx from "clsx";
+
+// models/cellRegistry.ts
+export interface BaseCellProps<TContent> {
+  id: string;
+  content: TContent;
+  onChange: (newContent: TContent) => void;
+}
+
+// Define toolbar extras per cell type
+export type TextToolbarExtrasProps = {
+  id: string;
+  content: TextCellContent;
+  onChange: (id: string, partial: Partial<TextCellContent>) => void;
+  t: (key: string) => string;
+};
+
+export type MathToolbarExtrasProps = {
+  id: string;
+  toggleShowLatex: (id: string) => void;
+  showLatex: boolean;
+};
+
+// Generic cell type definition
+export interface CellTypeDefinition<TContent, TToolbarProps = object> {
+  component: React.FC<BaseCellProps<TContent> & TToolbarProps>;
+  label: string;
+  getLabel?: (content: TContent) => string;
+  hasLatex?: boolean;
+  getLatex?: (content: TContent) => string;
+  getToolbarExtras?: (args: TToolbarProps) => React.ReactNode;
+}
+
+export const cellRegistry = {
+  text: {
+    component: TextCell,
+    label: "Text",
+    getLabel: (content: TextCellContent) => TEXT_TYPE_LABELS[content.type],
+    getToolbarExtras: (props: TextToolbarExtrasProps) => (
+      <div className={styles.hierarchyTypeButtons}>
+        {Object.values(TEXT_CELL_TYPES).map((typeOption) => (
+          <button
+            key={typeOption}
+            type="button"
+            className={clsx(
+              styles.hierarchyTypeButton,
+              textStyles[typeOption],
+              { [styles.active]: props.content.type === typeOption }
+            )}
+            onClick={() => props.onChange(props.id, { type: typeOption })}
+            title={props.t(`cellRow.${typeOption}`)}
+          >
+            A
+          </button>
+        ))}
+      </div>
+    ),
+  },
+  math: {
+    component: MathCell,
+    label: "Math",
+    hasLatex: true,
+    getLatex: (editorState: EditorState) => nodeToLatex(editorState.rootNode, true),
+    getToolbarExtras: (props: MathToolbarExtrasProps) => (
+      <button className={toolbarStyles.button} onClick={() => props.toggleShowLatex(props.id)}>
+        {props.showLatex ? "Hide LaTeX" : "View LaTeX"}
+      </button>
+    ),
+  },
+} as const;
+
+export type CellType = keyof typeof cellRegistry;
+export type CellRegistryEntry<T extends CellType> = typeof cellRegistry[T];
+export type CellContent<T extends CellType> = T extends 'math'
+  ? EditorState
+  : T extends 'text'
+  ? TextCellContent
+  : never;

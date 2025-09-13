@@ -5,7 +5,6 @@ import MathLibrary from "../mathLibrary/MathLibrary";
 import { deleteNodeById, insertNodeAtIndex } from "../../logic/node-manipulation";
 import { cloneTreeWithNewIds, isDescendantOrSelf } from "../../utils/treeUtils";
 import { useEditorHistory } from "../../hooks/editorHistory/EditorHistoryContext";
-import { nodeToLatex } from "../../models/nodeToLatex";
 import type { CellData, NoteMetadata } from "../../models/noteTypes";
 import styles from "./EditorWorkspace.module.css";
 import ResizableSidebar from "./ResizableSidebar";
@@ -63,7 +62,7 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({
           return {
             id,
             type: "math",
-            content: nodeToLatex(states[id].rootNode),
+            content: states[id],
           };
         }
         if (textContentsParam[id] !== undefined) {
