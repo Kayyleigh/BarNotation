@@ -214,6 +214,7 @@ export interface CellRendererProps {
   draggingCellId: string | null;
   dragOverInsertIndex: number | null;
   updateDragOver: (index: number) => void;
+  displayNumbers: Record<string, string>;
 }
 
 export const CellRenderer = React.memo(
@@ -238,6 +239,7 @@ export const CellRenderer = React.memo(
       draggingCellId,
       dragOverInsertIndex,
       updateDragOver,
+      displayNumbers,
     } = props;
 
     const { t } = useI18n();
@@ -305,6 +307,12 @@ export const CellRenderer = React.memo(
             : (newState: EditorState) => handleEditorStateChange(cell.id, newState),
       };
 
+      if (cell.type === "text") {
+        Object.assign(baseProps, {
+          displayNumber: displayNumbers[cell.id],
+        });
+      }
+
       if (cell.type === "math") {
         Object.assign(baseProps, {
           editorState: editorStates[cell.id],
@@ -319,18 +327,11 @@ export const CellRenderer = React.memo(
 
       return baseProps;
     }, [
-      cell.id,
-      cell.content,
-      cell.type,
-      editorStates,
-      selectedCellId,
-      setSelectedCellId,
-      defaultZoom,
-      resetZoomSignal,
-      showLatexMap,
-      handleTextCellChange,
-      handleEditorStateChange,
-      onDropNode,
+      cell.id, cell.content, cell.type, 
+      handleTextCellChange, handleEditorStateChange, 
+      displayNumbers, editorStates, selectedCellId, 
+      setSelectedCellId, defaultZoom, resetZoomSignal, 
+      showLatexMap, onDropNode
     ]);
 
     const isDragging = draggingCellId === cell.id;

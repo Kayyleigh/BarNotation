@@ -14,12 +14,11 @@ import NoteMetaDataSection from "./noteMetadata/NoteMetadataSection";
 import type { NoteMetadata, TextCellContent } from "../../models/noteTypes";
 import type { EditorState } from "../../logic/editor-state";
 import { useEditorMode } from "../../hooks/editorMode/useEditorMode";
-// import { computeDisplayNumbers } from "../../utils/noteUtils";
 import cellStyles from "./cells/cell.module.css";
 import { useI18n } from "../../i18n/useI18n";
 import type { DragSource, DropTarget } from "../../models/dragTypes";
 import { CellRenderer } from "./cells/CellRenderer";
-import { reconstructCells } from "../../utils/noteUtils";
+import { computeDisplayNumbers, reconstructCells } from "../../utils/noteUtils";
 
 interface NotebookEditorProps {
   defaultZoom: number;
@@ -83,20 +82,20 @@ const NotebookEditor: React.FC<NotebookEditorProps> = ({
     [order, editorStates, textContents]
   );
 
-  // const textCellIds = useMemo(
-  //   () => baseCells
-  //     .filter((cell) => cell.type === "text")
-  //     .map((cell) => cell.id),
-  //   [baseCells]
-  // );
+  const textCellIds = useMemo(
+    () => baseCells
+      .filter((cell) => cell.type === "text")
+      .map((cell) => cell.id),
+    [baseCells]
+  );
 
-  // const displayNumbers = useMemo(
-  //   () =>
-  //     !isEditMode
-  //       ? computeDisplayNumbers(textContents, textCellIds)
-  //       : {},
-  //   [isEditMode, textContents, textCellIds]
-  // );
+  const displayNumbers = useMemo(
+    () =>
+      editingMode !== "edit"
+        ? computeDisplayNumbers(textContents, textCellIds)
+        : {},
+    [editingMode, textContents, textCellIds]
+  );
 
   const [visibleCells, setVisibleCells] = useState(baseCells);
   const [, startTransition] = useTransition();
@@ -200,6 +199,13 @@ const NotebookEditor: React.FC<NotebookEditorProps> = ({
   //   [addCell, visibleCells.length]
   // );
 
+  // Only text cells need display numbers
+  // const textCells = visibleCells.filter((c): c is Extract<CellData, { type: "text" }> => c.type === "text");
+  // const displayNumbers = computeDisplayNumbers(
+  //   Object.fromEntries(textCells.map(c => [c.id, c.content])),
+  //   textCells.map(c => c.id)
+  // );
+
   const handleInsertAtIndex = useCallback((type: "math" | "text", idx: number) => {
     addCellRef.current(type, idx);
   },
@@ -236,7 +242,9 @@ const NotebookEditor: React.FC<NotebookEditorProps> = ({
         {visibleCells.map((cell, index) => (
           <CellRenderer
             key={cell.id}
-            ref={(el: HTMLDivElement | null) => (cellRefs.current[index] = el)}
+            ref={el => {
+              cellRefs.current[index] = el;
+            }} 
             cell={cell}
             index={index}
             selectedCellId={selectedCellId}
@@ -256,6 +264,7 @@ const NotebookEditor: React.FC<NotebookEditorProps> = ({
             defaultZoom={defaultZoom}
             editorStates={editorStates}
             updateEditorState={updateEditorState}
+            displayNumbers={displayNumbers}
           />
         ))}
 

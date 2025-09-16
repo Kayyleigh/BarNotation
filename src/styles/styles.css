@@ -167,23 +167,12 @@
   }
 
   .math-editor {
-    /* max-width: 100%;
-    height: fit-content;
-    padding: 0.6em 0.8em;
-    position: relative;
-    font-size: var(--editor-font-size);
-    overflow: auto;
-    background: var(--math-editor-bg);
-    color: var(--math-text-color);
-    border: 1px solid var(--math-editor-border);
-    border-radius: 6px;
-    box-shadow: 0 0 4px var(--math-editor-shadow); */
     font-size: var(--editor-font-size);
     color: var(--math-text-color);
     padding: 1em 0.8em;
     outline: none;
-
-    cursor: text; /* By default, should feel typable */
+    cursor: text;
+    text-align: var(--math-cell-content-alignment); 
   }
 /* 
   .math-editor {

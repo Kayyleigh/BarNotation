@@ -12,6 +12,7 @@
   box-shadow: none;
   background: transparent;
   padding: 0;
+  text-align: center;
 }
 
 :global(.preview) .hoverTypeInfo,
@@ -77,10 +78,6 @@
   background: transparent;
 }
 
-/* .mathCell {
-  position: relative;
-} */
-
 .hoverTypeInfo {
   position: absolute;
   top: 1em;
@@ -92,16 +89,6 @@
   user-select: none;
 }
 
-/* .textCell {
-  box-sizing: border-box;
-  background: var(--math-editor-bg);
-  border: 1px solid var(--math-editor-border);
-  border-radius: 6px;
-  box-shadow: 0 0 4px var(--math-editor-shadow);
-  padding: 1em;
-  position: relative;
-} */
-
 /* Optional global preview text tweaks */
 :global(.preview) .textCellInput,
 :global(.locked) .textCellInput {
@@ -112,10 +99,6 @@
   display: flex;
   align-items: flex-start;
   gap: 0.5rem;
-}
-
-.textCellWrapper .preview {
-
 }
 
 .displayNumber {

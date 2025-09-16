@@ -7,6 +7,13 @@
     gap: 0.4rem;
     z-index: 1;
     align-items: center;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.cellToolbar.visible {
+    opacity: 1;
+    pointer-events: auto;
 }
 
 .button {

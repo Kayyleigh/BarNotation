@@ -6,6 +6,7 @@
 
 :root {
   --lib-entry-meta-visibility: hidden;
+  --math-cell-content-alignment: left;
 
   --empty-math-inline-container-width: 0.3em;
 
@@ -329,6 +330,7 @@
 
 .preview {
   --editor-margin-right: 0.5em;
+  --math-cell-content-alignment: center;
 }
 
 .locked {

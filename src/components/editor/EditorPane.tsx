@@ -290,7 +290,6 @@ const EditorPane: React.FC<EditorPaneProps> = ({
 
         {locked ? (
           <NotebookViewer
-            defaultZoom={defaultZoom}
             cells={reconstructCells(order, editorStates, textContents)}
             metadata={noteMetadata}
           />
