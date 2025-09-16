@@ -262,6 +262,7 @@ const NotebookEditor: React.FC<NotebookEditorProps> = ({
         <InsertCellButtons
           onInsert={handleInsertAtEnd}
           handlePointerEnter={() => draggingCellId !== null && updateCellDragOver(visibleCells.length)}
+          isPermanent={true}
           isDropTarget={dragOverInsertIndex === visibleCells.length}
         />
       </div>

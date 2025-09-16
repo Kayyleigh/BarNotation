@@ -83,15 +83,33 @@
 
 /* Cell insertion buttons */
 
-.addButtons {
+/* .addButtons {
   display: flex;
   gap: 1rem;
   margin: 1rem 0;
+} */
+/* 
+.addButtons.visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+} */
+
+/* Default: hidden unless permanent */
+.addButtons {
+  display: flex;
+  opacity: 0;
+  pointer-events: none; /* don’t block mouse if hidden */
+  transition: opacity 0.15s ease;
+}
+
+.insertZone:hover .addButtons {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .addButtons.visible {
   opacity: 1;
-  visibility: visible;
   pointer-events: auto;
 }
 

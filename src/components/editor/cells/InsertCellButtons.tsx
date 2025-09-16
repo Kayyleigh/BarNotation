@@ -1,5 +1,5 @@
 // components/editor/cells/InsertCellButtons.tsx
-import React, { useState, useCallback } from "react";
+import React from "react";
 import clsx from "clsx";
 import Tooltip from "../../tooltips/Tooltip";
 import { useEditorMode } from "../../../hooks/editorMode/useEditorMode";
@@ -17,29 +17,15 @@ const InsertCellButtons: React.FC<InsertCellButtonsProps> = ({
   onInsert,
   handlePointerEnter,
   isDropTarget = false,
-  isPermanent = false
+  isPermanent = false,
 }) => {
-  //TODO: think abt how to make this whole thing generic when later adding more cell types
-
   const { editingMode } = useEditorMode();
-  const { t } = useI18n(); // use language hook
+  const { t } = useI18n();
 
   const isEdit = editingMode === "edit";
 
-  const [hovered, setHovered] = useState(false);
-
-  const show = (isPermanent && isEdit) || hovered;
-
-  const handleMouseEnter = !isPermanent ? () => setHovered(true) : undefined;
-  const handleMouseLeave = !isPermanent ? () => setHovered(false) : undefined;
-
-  // TODO make generic??
-  const handleInsert = useCallback(
-    (type: "math" | "text") => {
-      onInsert(type);
-    },
-    [onInsert]
-  );
+  // Show permanently if in edit + isPermanent, otherwise rely on CSS hover
+  const alwaysVisible = isPermanent && isEdit;
 
   return (
     <div
@@ -49,14 +35,14 @@ const InsertCellButtons: React.FC<InsertCellButtonsProps> = ({
       onPointerEnter={handlePointerEnter}
     >
       <div
-        className={clsx(styles.addButtons, styles.insertBetween, { [styles.visible]: show })}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
+        className={clsx(styles.addButtons, styles.insertBetween, {
+          [styles.visible]: alwaysVisible,
+        })}
       >
         <Tooltip text={t("editor.addMath")}>
           <button
             className={clsx(styles.mathCellButton, "button")}
-            onClick={() => handleInsert("math")}
+            onClick={() => onInsert("math")}
             type="button"
           >
             + {t("editor.math")}
@@ -66,7 +52,7 @@ const InsertCellButtons: React.FC<InsertCellButtonsProps> = ({
         <Tooltip text={t("editor.addText")}>
           <button
             className={clsx(styles.textCellButton, "button")}
-            onClick={() => handleInsert("text")}
+            onClick={() => onInsert("text")}
             type="button"
           >
             + {t("editor.text")}

@@ -114,6 +114,10 @@
   gap: 0.5rem;
 }
 
+.textCellWrapper .preview {
+
+}
+
 .displayNumber {
   line-height: 1.5;
   cursor: default;
@@ -126,7 +130,7 @@
 }
 
 .textCellInput {
-  /* width: 100%; */
+  width: 100%;
   overflow: hidden;
   resize: none;
   font: inherit;
