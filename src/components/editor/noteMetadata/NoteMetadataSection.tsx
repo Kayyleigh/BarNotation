@@ -4,6 +4,7 @@ import styles from "./NoteMetadataSection.module.css";
 import { useEditorMode } from "../../../hooks/editorMode/useEditorMode";
 import { useI18n } from "../../../i18n/useI18n";
 import type { NoteMetadata } from "../../../models/noteTypes";
+import clsx from "clsx";
 
 interface Props {
   metadata: NoteMetadata;
@@ -33,7 +34,10 @@ const NoteMetadataSection: React.FC<Props> = ({ metadata, setMetadata }) => {
   }, [editingMode, metadata.title, metadata.author, metadata.dateOrPeriod]);
 
   return (
-    <div className={editingMode === "preview" ? styles.previewMetadataBar : styles.metadataBar}>
+    <div className={clsx(
+      styles.metadataBar,
+      { [styles.preview]: editingMode === "preview" },
+    )}>
       <div className={editingMode === "preview" ? styles.previewTitle : styles.titleWrapper}>
         {editingMode === "preview" ? (
           <textarea
@@ -55,7 +59,7 @@ const NoteMetadataSection: React.FC<Props> = ({ metadata, setMetadata }) => {
         )}
       </div>
 
-      <div className={editingMode === "preview" ? undefined : styles.metaRow}>
+      <div className={editingMode === "preview" ? styles.metaList : styles.metaRow}>
         <div className={editingMode === "preview" ? styles.previewAuthor : styles.metaBox}>
           {editingMode === "preview" ? (
             <textarea

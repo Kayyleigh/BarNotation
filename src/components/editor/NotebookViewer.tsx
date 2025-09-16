@@ -6,6 +6,7 @@ import { useI18n } from "../../i18n/useI18n";
 import NoteMetadataViewer from "./noteMetadata/NoteMetadataViewer";
 import { cellRegistry, type CellType } from "../../models/cellRegistry";
 import { computeDisplayNumbers } from "../../utils/noteUtils";
+import clsx from "clsx";
 
 function getRegistryEntry<T extends CellType>(type: T): typeof cellRegistry[T] {
   return cellRegistry[type];
@@ -27,7 +28,7 @@ const NotebookViewer: React.FC<NotebookViewerProps> = ({ cells, metadata }) => {
   );
 
   return (
-    <main className={styles.editorLayout}>
+    <main className={clsx(styles.editorLayout, styles.locked)}>
       <NoteMetadataViewer metadata={metadata} />
 
       <div className={styles.cellList}>

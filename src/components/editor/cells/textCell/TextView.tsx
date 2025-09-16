@@ -13,8 +13,8 @@ const TextView: React.FC<TextViewProps> = ({ content, displayNumber }) => {
   const textClass = clsx(styles.preview, textStyles[content.type]);
 
   return (
-    <div className={clsx(styles.textCellWrapper, styles.preview)}>
-      <div className={clsx(styles.displayNumber, textClass)}>{displayNumber}</div>
+    <div className={clsx(styles.textCellWrapper, styles.preview, styles.locked)}>
+      <div className={clsx(styles.displayNumber, styles.locked, textClass)}>{displayNumber}</div>
       <div className={textClass}>{content.text}</div>
     </div>
   );

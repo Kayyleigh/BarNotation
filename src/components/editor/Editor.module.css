@@ -18,6 +18,10 @@
   padding-bottom: 6em;
 }
 
+.editorLayout.locked {
+  margin-left: var(--editor-margin-right);
+}
+
 .emptyMessage {
   text-align: center;
   color: #888;
@@ -177,6 +181,7 @@
   overflow: hidden;
   text-align: center;
   padding: 1em 0;
+  color: var(--math-text-color);
 }
 
 .lockedBadge {

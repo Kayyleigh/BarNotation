@@ -10,7 +10,7 @@ interface Props {
 
 const NoteMetadataViewer: React.FC<Props> = ({ metadata }) => {
   return (
-    <div className={clsx(styles.metadataBar, styles.preview, styles.locked)}>
+    <div className={clsx(styles.metadataBar, styles.locked)}>
       <div className={styles.previewTitle}>{metadata.title}</div>
       {metadata.author && <div className={styles.previewAuthor}>{metadata.author}</div>}
       {metadata.dateOrPeriod && <div className={styles.previewDate}>{metadata.dateOrPeriod}</div>}

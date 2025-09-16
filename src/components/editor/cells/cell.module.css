@@ -101,6 +101,10 @@
   gap: 0.5rem;
 }
 
+.textCellWrapper.locked {
+  color: var(--main-text-color);
+}
+
 .displayNumber {
   line-height: 1.5;
   cursor: default;
@@ -110,6 +114,12 @@
   min-height: 1.5em;
   text-align: left;
   flex-shrink: 0;
+}
+
+/* TODO */
+.displayNumber.locked {
+  padding-top: 0rem;
+  line-height: 1;
 }
 
 .textCellInput {
@@ -139,10 +149,6 @@
   box-shadow: 0 0 4px var(--math-editor-shadow);
   color: var(--math-text-color);
 }
-
-/* .cellInner:has(.mathCell) {
-  padding: 0em;
-} */
 
 .cellMainContent {
   flex: 1;
