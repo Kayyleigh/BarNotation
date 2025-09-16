@@ -13,6 +13,7 @@ import type { MathNodeLibrary } from "../../models/libraryTypes";
 import { createDefaultLibrary, loadLibrary } from "../../utils/mathLibraryUtils";
 import type { DragSource, DropTarget } from "../../models/dragTypes";
 import { CustomCommandProvider } from "../../hooks/customCommands/CustomCommandProvider";
+import { EditorModeProvider } from "../../hooks/editorMode/EditorModeProvider";
 
 interface EditorWorkspaceProps {
   noteId: string | null;
@@ -40,7 +41,7 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({
     const stored = loadLibrary(); // your util: tries localStorage first
     return stored ?? createDefaultLibrary();
   });
-  
+
   // persist to localStorage whenever library changes
   useEffect(() => {
     try {
@@ -119,19 +120,19 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({
 
   const onDropNode = useCallback((from: DragSource, to: DropTarget) => {
     if (!to) return;
-  
+
     const editorStates = editorStatesRef.current;
     const noteId = noteIdRef.current;
     const order = orderRef.current;
     const textContents = textContentsRef.current;
-  
+
     const updatedEditorStates = { ...editorStates };
-  
+
     // Handle dropping from library
     if (from.type === "library" && to.type === "cell") {
       const destState = editorStates[to.cellId];
       if (!destState) return;
-  
+
       // Avoid dropping into root directly
       let dropContainerId = to.containerId;
       let dropIndex = to.index + 1;
@@ -141,38 +142,38 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({
         dropContainerId = child.id;
         dropIndex = child.children.length;
       }
-  
+
       const cloned = cloneTreeWithNewIds(from.node);
       const updated = insertNodeAtIndex(destState, dropContainerId, dropIndex, cloned);
-  
+
       if (updated !== destState) {
         updatedEditorStates[to.cellId] = updated;
         updateLibraryEntryRef.current?.(from.entryId);
       }
     }
-  
+
     // Handle dragging within a cell
     else if (from.type === "cell" && to.type === "cell") {
       const sourceState = editorStates[from.cellId];
       const destState = editorStates[to.cellId];
       if (!sourceState || !destState) return;
-  
+
       // Dropping into same cell
       if (from.cellId === to.cellId) {
         if (isDescendantOrSelf(from.node, to.containerId)) return;
-  
+
         const node = cloneTreeWithNewIds(from.node);
         let updated = deleteNodeById(destState, from.node.id);
-  
+
         if (from.containerId === to.containerId && to.index >= from.index) {
           updated = insertNodeAtIndex(updated, to.containerId, to.index, node);
         } else {
           updated = insertNodeAtIndex(updated, to.containerId, to.index + 1, node);
         }
-  
+
         updatedEditorStates[to.cellId] = updated;
       }
-  
+
       // Between cells
       else {
         const node = cloneTreeWithNewIds(from.node);
@@ -180,7 +181,7 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({
         updatedEditorStates[to.cellId] = updatedDest;
       }
     }
-  
+
     // Dropping library nodes into "libraryCollection" is ignored
     else if (to.type === "libraryCollection") {
       if (from.type === "library") return; // premade or same collection no-op
@@ -188,18 +189,18 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({
         // Optional: add to library collection if desired
       }
     }
-  
+
     // Commit the updated editor states
     updateState({
       states: updatedEditorStates,
       order,
       textContents,
     });
-  
+
     if (noteId) {
       syncNoteCellsWithOrderRef.current(order, updatedEditorStates, textContents);
     }
-  }, [updateState]);  
+  }, [updateState]);
 
   const { undo, redo } = useEditorHistory();
 
@@ -223,7 +224,7 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({
     <CustomCommandProvider library={library}>
       <div className="editor-workspace" style={{ display: "flex", height: "100%", width: "100%" }}>
         {noteId && noteMetadata ? (
-          <div style={{ flex: 1, minWidth: 0 }}>
+          <EditorModeProvider>
             <EditorPane
               style={editorPaneStyle}
               noteId={noteId}
@@ -231,8 +232,7 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({
               noteMetadata={noteMetadata}
               setNoteMetadata={setNoteMetadata}
             />
-          </div>
-
+          </EditorModeProvider>
         ) : (
           <div className={styles.emptyMessage} style={{ flex: 1, minWidth: 0 }}>
             Select a note or create a new one.

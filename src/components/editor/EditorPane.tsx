@@ -6,22 +6,23 @@ import React, {
   useCallback,
 } from "react";
 import EditorHeaderBar from "./EditorHeaderBar";
-import NotationEditor from "./NotationEditor";
+import NotebookEditor from "./NotebookEditor";
 import styles from "./Editor.module.css";
 import type { NoteMetadata, TextCellContent } from "../../models/noteTypes";
 import { useEditorHistory } from "../../hooks/editorHistory/EditorHistoryContext";
 import { createRootWrapper } from "../../models/nodeFactories";
 import { createEditorState, type EditorState } from "../../logic/editor-state";
-import { EditorModeProvider } from "../../hooks/editorMode/EditorModeProvider";
 import { MAX_ZOOM, MIN_ZOOM } from "../../constants/editorConstants";
 import { LatexRefreshProvider } from "../../hooks/latexViewRefresh/LatexRefreshProvider";
 import type { DragSource, DropTarget } from "../../models/dragTypes";
+import { useEditorMode } from "../../hooks/editorMode/useEditorMode";
+import NotebookViewer from "./NotebookViewer";
+import { reconstructCells } from "../../utils/noteUtils";
 
 interface EditorPaneProps {
   noteId: string | null;
   noteMetadata: NoteMetadata;
   setNoteMetadata: (noteId: string, metadata: Partial<NoteMetadata>) => void;
-  style?: React.CSSProperties;
   onDropNode: (from: DragSource, to: DropTarget) => void;
 }
 
@@ -59,9 +60,8 @@ const EditorPane: React.FC<EditorPaneProps> = ({
   noteId,
   noteMetadata,
   setNoteMetadata,
-  style,
   onDropNode,
-}) => {  
+}) => {
   const { history, updateState } = useEditorHistory();
   const { states: editorStates, order, textContents } = history.present;
 
@@ -72,6 +72,8 @@ const EditorPane: React.FC<EditorPaneProps> = ({
   const [showZoomDropdown, setShowZoomDropdown] = useState(false);
   const [showLatexMap, setShowLatexMap] = useState<Record<string, boolean>>({});
   const dropdownRef = useRef<HTMLDivElement | null>(null);
+
+  const { locked } = useEditorMode();
 
   const persistState = useCallback(
     (
@@ -256,7 +258,7 @@ const EditorPane: React.FC<EditorPaneProps> = ({
     setShowLatexMap(initialLatexMap);
 
     // skip updating updatedAt on load
-    persistState(state, { states: {}, textContents: {} }, true); 
+    persistState(state, { states: {}, textContents: {} }, true);
   }, [noteId, persistState]);
 
   useEffect(() => {
@@ -272,29 +274,36 @@ const EditorPane: React.FC<EditorPaneProps> = ({
   }, [showZoomDropdown]);
 
   return (
-    <EditorModeProvider>
-      <div className={styles.editorPane} style={style}>
-        <LatexRefreshProvider>
-          <EditorHeaderBar
+    <div className={styles.editorPane}>
+      <LatexRefreshProvider>
+        <EditorHeaderBar
+          defaultZoom={defaultZoom}
+          resetAllZooms={resetAllZooms}
+          handleZoomChange={handleZoomChange}
+          showAllLatex={showAllLatex}
+          hideAllLatex={hideAllLatex}
+          showZoomDropdown={showZoomDropdown}
+          setShowZoomDropdown={setShowZoomDropdown}
+          dropdownRef={dropdownRef}
+          addCellRef={addCellRef}
+        />
+
+        {locked ? (
+          <NotebookViewer
             defaultZoom={defaultZoom}
-            resetAllZooms={resetAllZooms}
-            handleZoomChange={handleZoomChange}
-            showAllLatex={showAllLatex}
-            hideAllLatex={hideAllLatex}
-            showZoomDropdown={showZoomDropdown}
-            setShowZoomDropdown={setShowZoomDropdown}
-            dropdownRef={dropdownRef}
-            addCellRef={addCellRef}
+            cells={reconstructCells(order, editorStates, textContents)}
+            metadata={noteMetadata}
           />
-          <NotationEditor
+        ) : (
+          <NotebookEditor
             noteId={noteId}
             resetZoomSignal={resetZoomSignal}
             defaultZoom={defaultZoom}
             order={order}
+            updateOrder={updateOrder}
             addCellRef={addCellRef}
             deleteCell={deleteCell}
             duplicateCell={duplicateCell}
-            updateOrder={updateOrder}
             editorStates={editorStates}
             setEditorStates={setEditorStates}
             textContents={textContents}
@@ -305,9 +314,9 @@ const EditorPane: React.FC<EditorPaneProps> = ({
             setMetadata={setNoteMetadata}
             onDropNode={onDropNode}
           />
-        </LatexRefreshProvider>
-      </div>
-    </EditorModeProvider>
+        )}
+      </LatexRefreshProvider>
+    </div>
   );
 };
 

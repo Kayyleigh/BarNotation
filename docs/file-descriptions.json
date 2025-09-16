@@ -24,11 +24,11 @@
     "src/components/editor/cells/TextCell.tsx": "Cell with simple textarea",
     "src/components/editor/cells/cell.module.css": "Cell styling",
     "src/components/editor/CellRow.tsx": "Row in the editor: a cell and its preceding insert buttons",
-    "src/components/editor/Editor.module.css": "Styling for EditorPane/NotationEditor",
+    "src/components/editor/Editor.module.css": "Styling for EditorPane/NotebookEditor",
     "src/components/editor/EditorHeaderBar.module.css": "Styling for the editor header bar",
     "src/components/editor/EditorHeaderBar.tsx": "EditorPane header (controls, zoom, add cell, etc.)",
     "src/components/editor/EditorPane.tsx": "Manages cells and header/editor coordination",
-    "src/components/editor/NotationEditor.tsx": "Renders single Notebook's cell list",
+    "src/components/editor/NotebookEditor.tsx": "Renders single Notebook's cell list",
     "src/components/editor/NoteMetadataSection.module.css": "CSS for note metadata section",
     "src/components/editor/NoteMetadataSection.tsx": "Note metadata (title, author, date)",
 

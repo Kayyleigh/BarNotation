@@ -19,11 +19,12 @@ const InsertCellButtons: React.FC<InsertCellButtonsProps> = ({
   isDropTarget = false,
   isPermanent = false
 }) => {
-  const { mode } = useEditorMode();
+  //TODO: think abt how to make this whole thing generic when later adding more cell types
+
+  const { editingMode } = useEditorMode();
   const { t } = useI18n(); // use language hook
 
-  const isLocked = mode === "locked";
-  const isEdit = mode === "edit";
+  const isEdit = editingMode === "edit";
 
   const [hovered, setHovered] = useState(false);
 
@@ -35,9 +36,9 @@ const InsertCellButtons: React.FC<InsertCellButtonsProps> = ({
   // TODO make generic??
   const handleInsert = useCallback(
     (type: "math" | "text") => {
-      if (!isLocked) onInsert(type);
+      onInsert(type);
     },
-    [isLocked, onInsert]
+    [onInsert]
   );
 
   return (
@@ -51,25 +52,21 @@ const InsertCellButtons: React.FC<InsertCellButtonsProps> = ({
         className={clsx(styles.addButtons, styles.insertBetween, { [styles.visible]: show })}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        style={{ pointerEvents: isLocked ? "none" : "auto" }}
-        aria-hidden={isLocked}
       >
-        <Tooltip text={isLocked ? t("editor.lockedAdd") : t("editor.addMath")}>
+        <Tooltip text={t("editor.addMath")}>
           <button
             className={clsx(styles.mathCellButton, "button")}
             onClick={() => handleInsert("math")}
-            disabled={isLocked}
             type="button"
           >
             + {t("editor.math")}
           </button>
         </Tooltip>
 
-        <Tooltip text={isLocked ? t("editor.lockedAdd") : t("editor.addText")}>
+        <Tooltip text={t("editor.addText")}>
           <button
             className={clsx(styles.textCellButton, "button")}
             onClick={() => handleInsert("text")}
-            disabled={isLocked}
             type="button"
           >
             + {t("editor.text")}

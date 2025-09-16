@@ -3,6 +3,8 @@
   position: relative;
   flex-direction: column;
   height: 100%;
+  flex: 1;
+  min-width: 0;
 }
 
 .cellList {
@@ -172,4 +174,8 @@
   z-index: 2;
   opacity: 0.95;
   cursor: default;
+}
+
+.innerLockedBadge {
+  position: "relative";
 }

@@ -1,4 +1,5 @@
-import type { TextCellContent } from "../models/noteTypes";
+import type { EditorState } from "../logic/editor-state";
+import type { CellData, TextCellContent } from "../models/noteTypes";
 
 // function computeDisplayTexts(
 //     textContents: Record<string, TextCellContent>,
@@ -33,6 +34,21 @@ import type { TextCellContent } from "../models/noteTypes";
 //     return displayTexts;
 //   }
 
+export function reconstructCells(
+  order: string[],
+  editorStates: Record<string, EditorState>,
+  textContents: Record<string, TextCellContent> = {}
+): CellData[] {
+  return order.map((id) => {
+    if (editorStates[id]) {
+      return { id, type: "math", content: editorStates[id] };
+    } else if (textContents[id]) {
+      return { id, type: "text", content: textContents[id] };
+    } else {
+      return { id, type: "text", content: { text: "", type: "plain" } };
+    }
+  });
+}
 
 export function computeDisplayNumbers(
   textContents: Record<string, TextCellContent>,

@@ -34,7 +34,7 @@ const EditorHeaderBar: React.FC<EditorHeaderBarProps> = ({
 }) => {
   const { t } = useI18n(); // use language hook
 
-  const { mode, togglePreview, toggleLocked } = useEditorMode();
+  const { editingMode, toggleEditingMode, locked, toggleLocked } = useEditorMode();
 
   const [editingZoom, setEditingZoom] = useState(false);
   const [editingZoomValue, setEditingZoomValue] = useState(defaultZoom * 100);
@@ -86,22 +86,22 @@ const EditorHeaderBar: React.FC<EditorHeaderBarProps> = ({
           </button>
         </Tooltip>
 
-        <Tooltip text={mode === "edit" ? t("editor.enterPreview") : t("editor.returnEdit")}>
+        <Tooltip text={editingMode === "edit" ? t("editor.enterPreview") : t("editor.returnEdit")}>
           <button
-            onClick={togglePreview}
+            onClick={toggleEditingMode}
             className={clsx(styles.button, styles.previewToggleButton)}
           >
-            {mode === "edit" ? "📜 " + t("editor.preview") : "✏️ " + t("editor.edit")}
+            {editingMode === "edit" ? "📜 " + t("editor.preview") : "✏️ " + t("editor.edit")}
           </button>
         </Tooltip>
 
-        {(mode === "preview" || mode === "locked") && (
-          <Tooltip text={mode === "locked" ? t("editor.unlock") : t("editor.lock")}>
+        {(editingMode === "preview") && (
+          <Tooltip text={locked ? t("editor.unlock") : t("editor.lock")}>
             <button
               onClick={toggleLocked}
               className={clsx(styles.button, styles.previewToggleButton)}
             >
-              {mode === "locked" ? "🔓 " + t("editor.unlock") : "🔒 " + t("editor.lock")}
+              {locked ? "🔓 " + t("editor.unlock") : "🔒 " + t("editor.lock")}
             </button>
           </Tooltip>
         )}

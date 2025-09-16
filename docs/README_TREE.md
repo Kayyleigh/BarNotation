@@ -16,11 +16,11 @@
       - [`ToastRenderer.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/common/ToastRenderer.tsx) — Component for toasts
     - [`editor/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/editor/) — Editor and Notation-related components
       - [`CellRow.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/editor/CellRow.tsx) — Row in the editor: a cell and its preceding insert buttons
-      - [`Editor.module.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/editor/Editor.module.css) — Styling for EditorPane/NotationEditor
+      - [`Editor.module.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/editor/Editor.module.css) — Styling for EditorPane/NotebookEditor
       - [`EditorHeaderBar.module.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/editor/EditorHeaderBar.module.css) — Styling for the editor header bar
       - [`EditorHeaderBar.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/editor/EditorHeaderBar.tsx) — EditorPane header (controls, zoom, add cell, etc.)
       - [`EditorPane.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/editor/EditorPane.tsx) — Manages cells and header/editor coordination
-      - [`NotationEditor.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/editor/NotationEditor.tsx) — Renders single Notebook's cell list
+      - [`NotebookEditor.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/editor/NotebookEditor.tsx) — Renders single Notebook's cell list
       - [`NoteMetadataSection.module.css`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/editor/NoteMetadataSection.module.css) — CSS for note metadata section
       - [`NoteMetadataSection.tsx`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/editor/NoteMetadataSection.tsx) — Note metadata (title, author, date)
       - [`cells/`](https://github.com/Kayyleigh/BarNotation/blob/main/src/components/editor/cells/) — Reusable cell components (math/text)

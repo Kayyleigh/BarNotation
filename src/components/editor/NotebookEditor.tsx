@@ -1,4 +1,4 @@
-// components/editor/NotationEditor.tsx
+// components/editor/NotebookEditor.tsx
 import React, {
   useState,
   useRef,
@@ -10,22 +10,18 @@ import React, {
 import InsertCellButtons from "./cells/InsertCellButtons";
 import { useCellDragState } from "../../hooks/cellDrag/useCellDragState";
 import styles from "./Editor.module.css";
-import NoteMetaDataSection from "./NoteMetadataSection";
-import type { CellData, NoteMetadata, TextCellContent } from "../../models/noteTypes";
+import NoteMetaDataSection from "./noteMetadata/NoteMetadataSection";
+import type { NoteMetadata, TextCellContent } from "../../models/noteTypes";
 import type { EditorState } from "../../logic/editor-state";
-// import { nodeToLatex } from "../../models/nodeToLatex";
-// import CellRow from "./CellRow";
 import { useEditorMode } from "../../hooks/editorMode/useEditorMode";
 // import { computeDisplayNumbers } from "../../utils/noteUtils";
 import cellStyles from "./cells/cell.module.css";
-import Tooltip from "../tooltips/Tooltip";
 import { useI18n } from "../../i18n/useI18n";
 import type { DragSource, DropTarget } from "../../models/dragTypes";
-// import { CellWrapper } from "./cells/cellWrapper";
-// import { cellRegistry, type BaseCellProps, type CellContent, type CellType } from "../../models/cellRegistry";
 import { CellRenderer } from "./cells/CellRenderer";
+import { reconstructCells } from "../../utils/noteUtils";
 
-interface NotationEditorProps {
+interface NotebookEditorProps {
   defaultZoom: number;
   resetZoomSignal: number;
   noteId: string | null;
@@ -46,34 +42,7 @@ interface NotationEditorProps {
   onDropNode: (from: DragSource, to: DropTarget) => void;
 }
 
-const reconstructCells = (
-  order: string[],
-  editorStates: Record<string, EditorState>,
-  textContents: Record<string, TextCellContent> = {}
-): CellData[] =>
-  order.map((id) => {
-    if (editorStates[id]) {
-      return {
-        id,
-        type: "math",
-        content: editorStates[id],
-      };
-    } else if (textContents[id]) {
-      return {
-        id,
-        type: "text",
-        content: textContents[id],
-      };
-    } else {
-      return {
-        id,
-        type: "text",
-        content: { text: "", type: "plain" },
-      };
-    }
-  });
-
-const NotationEditor: React.FC<NotationEditorProps> = ({
+const NotebookEditor: React.FC<NotebookEditorProps> = ({
   noteId,
   defaultZoom,
   resetZoomSignal,
@@ -97,7 +66,7 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
   const [selectedCellId, setSelectedCellId] = useState<string | null>(null);
   const cellRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  const { mode } = useEditorMode();
+  const { editingMode } = useEditorMode();
   // const isEditMode = mode === "edit";
   // const isLockedMode = mode === "locked";
 
@@ -290,28 +259,15 @@ const NotationEditor: React.FC<NotationEditorProps> = ({
           />
         ))}
 
-        {mode !== "locked" && (
-          <InsertCellButtons
-            onInsert={handleInsertAtEnd}
-            handlePointerEnter={() => draggingCellId !== null && updateCellDragOver(visibleCells.length)}
-            isDropTarget={dragOverInsertIndex === visibleCells.length}
-          />
-        )}
+        <InsertCellButtons
+          onInsert={handleInsertAtEnd}
+          handlePointerEnter={() => draggingCellId !== null && updateCellDragOver(visibleCells.length)}
+          isDropTarget={dragOverInsertIndex === visibleCells.length}
+        />
       </div>
-
-      {mode === "locked" && (
-        <div className={styles.lockedBadge}>
-          <div style={{ position: "relative" }}>
-            <Tooltip text={t("editor.lockedTooltip")}>
-              🔒
-            </Tooltip>
-          </div>
-        </div>
-      )
-      }
     </main >
   );
 };
 
-export default React.memo(NotationEditor);
+export default React.memo(NotebookEditor);
 

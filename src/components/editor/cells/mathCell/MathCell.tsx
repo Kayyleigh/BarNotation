@@ -315,13 +315,13 @@
 // export default React.memo(MathCell);
 
 import React, { useState, useCallback } from "react";
-import MathEditor from "../../mathExpression/MathEditor";
-import type { EditorState } from "../../../logic/editor-state";
-import { HoverProvider } from "../../../hooks/mathHover/HoverProvider";
-import { useEditorMode } from "../../../hooks/editorMode/useEditorMode";
-import styles from "./cell.module.css";
-import type { BaseCellProps } from "../../../models/cellRegistry";
-import type { DragSource, DropTarget } from "../../../models/dragTypes";
+import MathEditor from "../../../mathExpression/MathEditor";
+import type { EditorState } from "../../../../logic/editor-state";
+import { HoverProvider } from "../../../../hooks/mathHover/HoverProvider";
+import { useEditorMode } from "../../../../hooks/editorMode/useEditorMode";
+import styles from "../cell.module.css";
+import type { BaseCellProps } from "../../../../models/cellRegistry";
+import type { DragSource, DropTarget } from "../../../../models/dragTypes";
 
 interface MathCellExtraProps {
   resetZoomSignal: number;
@@ -347,8 +347,8 @@ const MathCell: React.FC<MathCellProps> = ({
   setSelectedCellId,
   onDropNode,
 }) => {
-  const { mode } = useEditorMode();
-  const isEditMode = mode === "edit";
+  const { editingMode } = useEditorMode();
+  const isEditMode = editingMode === "edit";
   const isSelected = selectedCellId === id;
 
   const [hoverInfo, setHoverInfo] = useState<{ hoveredType: string; zoomLevel: number }>({

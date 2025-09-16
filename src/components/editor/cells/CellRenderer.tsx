@@ -189,7 +189,7 @@ import type { CellData, TextCellContent } from "../../../models/noteTypes";
 import type { EditorState } from "../../../logic/editor-state";
 import InsertCellButtons from "./InsertCellButtons";
 import { cellRegistry, type CellType, type CellContent } from "../../../models/cellRegistry";
-import { CellWrapper } from "./cellWrapper";
+import { CellWrapper } from "./CellWrapper";
 import type { DragSource, DropTarget } from "../../../models/dragTypes";
 import { useI18n } from "../../../i18n/useI18n";
 import LatexViewer from "../../mathExpression/LatexViewer";

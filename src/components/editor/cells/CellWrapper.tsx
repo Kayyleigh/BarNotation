@@ -3,6 +3,7 @@ import React from "react";
 import styles from "./cell.module.css";
 import { CellToolbar } from "./CellToolbar";
 import clsx from "clsx";
+import { useEditorMode } from "../../../hooks/editorMode/useEditorMode";
 
 interface CellWrapperProps {
   id: string;
@@ -34,14 +35,15 @@ export const CellWrapper: React.FC<CellWrapperProps> = ({
   children,
   typeLabel,
 }) => {
+  const { editingMode } = useEditorMode();
+
   return (
     <div
       className={clsx(styles.cell, {
         selected: isSelected,
-        preview: false,
+        preview: editingMode === 'preview',
         dragging: isDragging,
         dragOver: isDragOver,
-        locked: false,
       })}
       onClick={onSelect}
     >

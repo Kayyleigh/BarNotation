@@ -25,13 +25,13 @@ export type TextCellContent = {
   type: TextCellType;
 };
 
-type TextCellData = {
+export type TextCellData = {
   id: string;
   type: "text";
   content: TextCellContent;
 };
 
-type MathCellData = {
+export type MathCellData = {
   id: string;
   type: "math";
   content: EditorState;
