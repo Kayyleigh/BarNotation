@@ -156,7 +156,7 @@
 .lockedMath {
   overflow: hidden;
   text-align: center;
-  padding: 1em 0;
+  padding: 1rem 0 1rem 1rem;
   color: var(--math-text-color);
 }
 

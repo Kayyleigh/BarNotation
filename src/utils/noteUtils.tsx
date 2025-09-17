@@ -76,7 +76,8 @@ export function computeDisplayNumbers(
         numbers[id] = `${counters[0]}.${counters[1]}.${counters[2]}.`;
         break;
       default:
-        numbers[id] = "";
+        // do nothing, don't add empty string
+        break;
     }
   }
 

@@ -6,7 +6,7 @@ import type { TextCellContent } from "../../../../models/noteTypes";
 
 interface TextViewProps {
   content: TextCellContent;
-  displayNumber: string;
+  displayNumber?: string;
 }
 
 const TextView: React.FC<TextViewProps> = ({ content, displayNumber }) => {
@@ -14,7 +14,7 @@ const TextView: React.FC<TextViewProps> = ({ content, displayNumber }) => {
 
   return (
     <div className={clsx(styles.textCellWrapper, styles.preview, styles.locked)}>
-      <div className={clsx(styles.displayNumber, styles.locked, textClass)}>{displayNumber}</div>
+      {displayNumber &&<div className={clsx(styles.displayNumber, styles.locked, textClass)}>{displayNumber}</div>}
       <div className={textClass}>{content.text}</div>
     </div>
   );

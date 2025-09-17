@@ -99,6 +99,7 @@
   display: flex;
   align-items: baseline;
   gap: 0.8rem;
+  padding: 0.5rem 1rem;
 }
 
 .textCellWrapper.locked {
@@ -124,7 +125,6 @@
   font: inherit;
   line-height: 1.5;
   color: var(--text-cell-color, inherit);
-  padding: 0.5rem 1.3rem;
   border: none;
   outline: none;
   background-color: transparent;
