@@ -31,8 +31,13 @@
   background: var(--button-bg);
 }
 
-.previewToggleButton {
-  /* Can add unique styling here if needed */
+.button:disabled {
+  opacity: 0.5;
+  /* visually faded */
+  cursor: not-allowed;
+  /* cursor shows it’s inactive */
+  pointer-events: none;
+  /* prevents hover/tooltip triggers */
 }
 
 .zoomControlsGroup {

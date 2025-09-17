@@ -557,7 +557,7 @@ interface MathEditorProps {
   onDropNode: (from: DragSource, to: DropTarget) => void;
   onHoverInfoChange?: (info: { hoveredType: string; zoomLevel: number }) => void;
   onFocus?: () => void;          // notify parent when focused
-  onBlur?: () => void;          // notify parent when blurred
+  // onBlur?: () => void;          // notify parent when blurred
   isSelected: boolean;           // only selected cell can focus
 }
 
@@ -570,7 +570,7 @@ const MathEditor: React.FC<MathEditorProps> = ({
   onDropNode,
   onHoverInfoChange,
   onFocus,
-  onBlur,
+  // onBlur,
   isSelected,
 }) => {
   const { commandMap } = useCustomCommands();
@@ -676,7 +676,7 @@ const MathEditor: React.FC<MathEditorProps> = ({
       onCut={onCut}
       onPaste={onPaste}
       onFocus={onFocus}
-      onBlur={onBlur}
+      // onBlur={onBlur}
       onMouseLeave={() => setHoverPath([])}
     >
       <div className="math-editor-scroll-inner">

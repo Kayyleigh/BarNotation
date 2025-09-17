@@ -357,7 +357,7 @@ const MathCell: React.FC<MathCellProps> = ({
   });
 
   const handleEditorFocus = useCallback(() => setSelectedCellId(id), [id, setSelectedCellId]);
-  const handleEditorBlur = useCallback(() => setSelectedCellId(null), [setSelectedCellId]);
+  // const handleEditorBlur = useCallback(() => setSelectedCellId(null), [setSelectedCellId]);
 
   return (
     <>
@@ -384,7 +384,7 @@ const MathCell: React.FC<MathCellProps> = ({
               onDropNode={onDropNode}
               onHoverInfoChange={setHoverInfo}
               onFocus={handleEditorFocus}
-              onBlur={handleEditorBlur}
+              // onBlur={handleEditorBlur}
               isSelected={isSelected}
             />
           </HoverProvider>

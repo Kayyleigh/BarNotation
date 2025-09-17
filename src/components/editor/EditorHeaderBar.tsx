@@ -36,8 +36,13 @@ const EditorHeaderBar: React.FC<EditorHeaderBarProps> = ({
 
   const { editingMode, toggleEditingMode, locked, toggleLocked } = useEditorMode();
 
+  const disableWhileLocked = locked && editingMode === "preview";
+
   const [editingZoom, setEditingZoom] = useState(false);
   const [editingZoomValue, setEditingZoomValue] = useState(defaultZoom * 100);
+
+  const getTooltip = (defaultText: string) =>
+    disableWhileLocked ? t("editor.cannotDoInLocked") : defaultText;
 
   useEffect(() => {
     if (editingZoom) {
@@ -56,40 +61,53 @@ const EditorHeaderBar: React.FC<EditorHeaderBarProps> = ({
   return (
     <div className={styles.editorHeaderBar}>
       <div className={styles.buttonBar}>
-        <Tooltip text={t("editor.addMath")}>
-          <button onClick={() => addCellRef.current("math")} className={styles.button}>
+        <Tooltip text={getTooltip(t("editor.addMath"))}>
+          <button
+            className={styles.button}
+            onClick={() => addCellRef.current("math")}
+            disabled={disableWhileLocked}
+          >
             ➕ {t("editor.math")}
           </button>
         </Tooltip>
 
-        <Tooltip text={t("editor.addText")}>
-          <button onClick={() => addCellRef.current("text")} className={styles.button}>
+        <Tooltip text={getTooltip(t("editor.addText"))}>
+          <button
+            className={styles.button}
+            onClick={() => addCellRef.current("text")}
+            disabled={disableWhileLocked}
+          >
             ➕ {t("editor.text")}
           </button>
         </Tooltip>
 
-        <Tooltip text={t("editor.showLatex")}>
+        <Tooltip text={getTooltip(t("editor.showLatex"))}>
           <button
+            className={styles.button}
             onClick={() => {
               showAllLatex();
               triggerLatexRefresh();
             }}
-            className={styles.button}
+            disabled={disableWhileLocked}
           >
             👁️ LaTeX
           </button>
         </Tooltip>
 
-        <Tooltip text={t("editor.hideLatex")}>
-          <button onClick={hideAllLatex} className={styles.button}>
+        <Tooltip text={getTooltip(t("editor.hideLatex"))}>
+          <button
+            className={styles.button}
+            onClick={hideAllLatex}
+            disabled={disableWhileLocked}
+          >
             🙈 LaTeX
           </button>
         </Tooltip>
 
         <Tooltip text={editingMode === "edit" ? t("editor.enterPreview") : t("editor.returnEdit")}>
           <button
-            onClick={toggleEditingMode}
             className={clsx(styles.button, styles.previewToggleButton)}
+            onClick={toggleEditingMode}
           >
             {editingMode === "edit" ? "📜 " + t("editor.preview") : "✏️ " + t("editor.edit")}
           </button>
@@ -98,8 +116,8 @@ const EditorHeaderBar: React.FC<EditorHeaderBarProps> = ({
         {(editingMode === "preview") && (
           <Tooltip text={locked ? t("editor.unlock") : t("editor.lock")}>
             <button
-              onClick={toggleLocked}
               className={clsx(styles.button, styles.previewToggleButton)}
+              onClick={toggleLocked}
             >
               {locked ? "🔓 " + t("editor.unlock") : "🔒 " + t("editor.lock")}
             </button>
@@ -107,14 +125,15 @@ const EditorHeaderBar: React.FC<EditorHeaderBarProps> = ({
         )}
 
         <div className={styles.zoomControlsGroup}>
-          <Tooltip text={t("editor.resetZoom")}>
+          <Tooltip text={getTooltip(t("editor.resetZoom"))}>
             <button
-              onClick={resetAllZooms}
               className={clsx(styles.button, styles.zoomButton, styles.resetZoomButton)}
+              onClick={resetAllZooms}
               onDoubleClick={(e) => {
                 e.preventDefault();
                 setEditingZoom(true);
               }}
+              disabled={disableWhileLocked}
             >
               ⛶{" "}
               {editingZoom ? (
@@ -138,10 +157,11 @@ const EditorHeaderBar: React.FC<EditorHeaderBarProps> = ({
           </Tooltip>
 
           <div className={styles.zoomDropdownWrapper} ref={dropdownRef}>
-            <Tooltip text={t("editor.changeZoom")}>
+            <Tooltip text={getTooltip(t("editor.changeZoom"))}>
               <button
-                onClick={() => setShowZoomDropdown((v) => !v)}
                 className={clsx(styles.button, styles.zoomButton, styles.zoomDropdownButton)}
+                onClick={() => setShowZoomDropdown((v) => !v)}
+                disabled={disableWhileLocked}
               >
                 <span>{showZoomDropdown ? "▴" : "▾"}</span>
               </button>

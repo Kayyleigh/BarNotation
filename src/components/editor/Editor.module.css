@@ -10,7 +10,6 @@
 .cellList {
   display: flex;
   flex-direction: column;
-  margin-right: var(--editor-margin-right);
 }
 
 .editorLayout {
@@ -19,7 +18,7 @@
 }
 
 .editorLayout.locked {
-  margin-left: var(--editor-margin-right);
+  padding: 0 var(--editor-margin-right);
 }
 
 .emptyMessage {
@@ -40,31 +39,6 @@
   color: var(--math-text-color);
 }
 
-/* Text cell buttons */
-/* 
-.hierarchyTypeButton {
-  cursor: pointer;
-  background: none;
-  border: 1px solid var(--math-text-color);
-  border-radius: 4px;
-  padding: 6px 10px;
-  font-weight: 600;
-  font-family: inherit;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
-  user-select: none;
-  color: var(--math-text-color);
-} */
-
-/* .hierarchyTypeButton:hover:not(:disabled) {
-  background-color: #f0f0f0;
-  border-color: #999;
-}
-
-.hierarchyTypeButton:disabled {
-  cursor: default;
-  opacity: 0.5;
-} */
-
 /* Active button style */
 .active {
   background-color: #007acc;
@@ -78,6 +52,8 @@
 .insertZone {
   height: 1.8rem;
   position: relative;
+  padding-right: var(--editor-margin-right); 
+  /* Padding instead of margin makes buttons visible on hover of the "margin" */
 }
 
 .insertZone.dragOver {

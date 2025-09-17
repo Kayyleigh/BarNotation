@@ -1,5 +1,5 @@
   .latexViewer {
-    margin: 1em 0 0 var(--editor-margin-left);
+    margin: 1em var(--editor-margin-right) 0 var(--editor-margin-left);
     color: var(--math-text-color);
     border-radius: 6px;
     font-family: monospace;

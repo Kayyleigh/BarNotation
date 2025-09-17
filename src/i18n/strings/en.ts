@@ -46,6 +46,7 @@ const en = {
     resetZoom: "Reset all zoom levels",
     changeZoom: "Change default zoom level",
     defaultZoom: "Default Zoom",
+    cannotDoInLocked: "Cannot edit in locked mode", //NEW
     math: "Math",
     text: "Text",
     emptyMessage: "No cells yet. Add one to get started!",

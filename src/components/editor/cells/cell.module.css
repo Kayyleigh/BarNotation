@@ -44,7 +44,7 @@
   display: flex;
   flex-direction: row;
   color: var(--math-text-color);
-  margin: 0em 0em 0em var(--cell-selection-indicator-offset-left);
+  margin: 0em var(--editor-margin-right) 0em var(--cell-selection-indicator-offset-left);
   position: relative;
   outline: none;
   /* width: 100%; */
