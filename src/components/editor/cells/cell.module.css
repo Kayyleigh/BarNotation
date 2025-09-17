@@ -97,12 +97,13 @@
 
 .textCellWrapper {
   display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
+  align-items: baseline;
+  gap: 0.8rem;
 }
 
 .textCellWrapper.locked {
-  color: var(--main-text-color);
+  color: var(--text-cell-color);
+  line-height: 1.5;
 }
 
 .displayNumber {
@@ -114,12 +115,6 @@
   min-height: 1.5em;
   text-align: left;
   flex-shrink: 0;
-}
-
-/* TODO */
-.displayNumber.locked {
-  padding-top: 0rem;
-  line-height: 1;
 }
 
 .textCellInput {

@@ -17,7 +17,7 @@ interface ExportLatexModalProps {
 }
 
 const ExportLatexModal: React.FC<ExportLatexModalProps> = ({ note, onClose }) => {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const [copied, setCopied] = useState(false);
 
   const [format, setFormat] = useState<LatexFormat>(() => {
@@ -38,7 +38,7 @@ const ExportLatexModal: React.FC<ExportLatexModalProps> = ({ note, onClose }) =>
     }
   });  
 
-  const exportOptions = useMemo(() => ({ format, wrapMathEquations }), [format, wrapMathEquations]);
+  const exportOptions = useMemo(() => ({ format, lang, wrapMathEquations }), [format, lang, wrapMathEquations]);
 
   // Raw version for copy/download
   const plainLatexContent = useMemo(() => {

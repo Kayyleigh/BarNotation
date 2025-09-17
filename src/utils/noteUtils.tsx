@@ -1,5 +1,5 @@
 import type { EditorState } from "../logic/editor-state";
-import type { CellData, TextCellContent } from "../models/noteTypes";
+import type { CellData, NoteMetadata, TextCellContent } from "../models/noteTypes";
 
 // function computeDisplayTexts(
 //     textContents: Record<string, TextCellContent>,
@@ -81,4 +81,21 @@ export function computeDisplayNumbers(
   }
 
   return numbers;
+}
+
+/**
+ * Returns a locale-aware fallback date string
+ */
+export function getDisplayDate(metadata: NoteMetadata, lang: string): string {
+  const fallbackDate = (date?: string | number) =>
+    date
+      ? new Date(date).toLocaleDateString(lang, { month: "short", day: "numeric" })
+      : "";
+
+  return (
+    metadata.dateOrPeriod ||
+    fallbackDate(metadata.updatedAt) ||  // last edited
+    fallbackDate(metadata.createdAt) ||  // created
+    fallbackDate(Date.now())                  // exporting
+  );
 }

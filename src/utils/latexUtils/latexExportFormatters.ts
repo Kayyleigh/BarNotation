@@ -1,12 +1,15 @@
+import type { LanguageKey } from "../../i18n/languages";
 import { nodeToLatex } from "../../models/nodeToLatex";
-import type { Note, TextCellContent } from "../../models/noteTypes";
+import type { Note, NoteMetadata, TextCellContent } from "../../models/noteTypes";
 import { TEXT_CELL_TYPES } from "../../models/textTypes";
+import { getDisplayDate } from "../noteUtils";
 import { noteUsesActuarialSymbols } from "./latexDependencies";
 
 export type LatexFormat = "singleColumn" | "doubleColumn";
 
 export interface LatexExportOptions {
   format: LatexFormat;
+  lang: LanguageKey;
   wrapMathEquations: boolean;
 }
 
@@ -17,17 +20,13 @@ export interface LatexExportTemplate {
   renderFooter(): string;
 }
 
-function getLatexSafeDate(note: Note): string {
-  const fallbackDate = (date?: string | number) =>
-    date ? new Date(date).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "";
-
-  return escapeLatex(
-    note.metadata.dateOrPeriod ||
-    fallbackDate(note.metadata.updatedAt) ||  // If no date is given, take "last edited"
-    fallbackDate(note.metadata.createdAt) ||  // If never edited, take creation date
-    fallbackDate(Date.now())                  // else take date of exporting
-  );
+/**
+ * Returns a Note's getDisplayDate but safe for LaTeX
+ */
+export function getLatexSafeDate(metadata: NoteMetadata, lang: string): string {
+  return escapeLatex(getDisplayDate(metadata, lang));
 }
+
 
 function stripOuterDisplayMath(content: string, includeHtmlStyling: boolean): string {
   if (!includeHtmlStyling) {
@@ -116,7 +115,7 @@ function defaultPreamble(note: Note, options: LatexExportOptions): string {
     ``,
     `\\title{${escapeLatex(note.metadata.title || "Untitled")}}`,
     `\\author{${escapeLatex(note.metadata.author || "Anonymous")}}`,
-    `\\date{${getLatexSafeDate(note)}}`,
+    `\\date{${getLatexSafeDate(note.metadata, options.lang)}}`,
     ``,
     `\\begin{document}`,
     `\\maketitle`

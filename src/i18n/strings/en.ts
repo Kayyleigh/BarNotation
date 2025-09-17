@@ -54,6 +54,7 @@ const en = {
       untitled: "Untitled Note",
       author: "Author",
       date: "Date or Period",
+      nodate: "No Date", //NEW
       course: "Course Code"
     },
     cell: {
