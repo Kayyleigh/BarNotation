@@ -156,6 +156,8 @@ const EditorPane: React.FC<EditorPaneProps> = ({
         { order: newOrder, states: newStates, textContents: newTextContents },
         { states: editorStates, textContents }
       );
+
+      return newId; // return the ID so caller can use it
     },
     [order, editorStates, textContents, persistState]
   );
@@ -206,6 +208,8 @@ const EditorPane: React.FC<EditorPaneProps> = ({
         { order: newOrder, states: newStates, textContents: newTextContents },
         { states: editorStates, textContents }
       );
+
+      return newId; // return the ID so caller can use it
     },
     [order, editorStates, textContents, persistState]
   );

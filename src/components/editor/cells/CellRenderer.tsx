@@ -327,10 +327,10 @@ export const CellRenderer = React.memo(
 
       return baseProps;
     }, [
-      cell.id, cell.content, cell.type, 
-      handleTextCellChange, handleEditorStateChange, 
-      displayNumbers, editorStates, selectedCellId, 
-      setSelectedCellId, defaultZoom, resetZoomSignal, 
+      cell.id, cell.content, cell.type,
+      handleTextCellChange, handleEditorStateChange,
+      displayNumbers, editorStates, selectedCellId,
+      setSelectedCellId, defaultZoom, resetZoomSignal,
       showLatexMap, onDropNode
     ]);
 

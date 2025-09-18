@@ -30,21 +30,21 @@
 // //   useEffect(() => {
 // //     const el = textareaRef.current;
 // //     if (!el) return;
-  
+
 // //     const resize = () => {
 // //       el.style.height = "auto";
 // //       el.style.height = `${el.scrollHeight}px`;
 // //     };
-  
+
 // //     resize(); // initial call
-  
+
 // //     const observer = new ResizeObserver(resize);
 // //     observer.observe(el);
-  
+
 // //     // Also observe parent if width affects wrapping
 // //     const parent = el.parentElement;
 // //     if (parent) observer.observe(parent);
-  
+
 // //     return () => observer.disconnect();
 // //   }, []);  
 

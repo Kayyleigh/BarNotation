@@ -29,9 +29,8 @@ interface NotebookEditorProps {
   setEditorStates: React.Dispatch<React.SetStateAction<Record<string, EditorState>>>;
   textContents: Record<string, TextCellContent>;
   setTextContents: React.Dispatch<React.SetStateAction<Record<string, TextCellContent>>>;
-  // addCell: (type: "math" | "text", index?: number) => void;
-  addCellRef: React.RefObject<(type: "math" | "text", index?: number) => void>;
-  duplicateCell: (id: string) => void;
+  addCellRef: React.RefObject<(type: "math" | "text", index?: number) => string>;
+  duplicateCell: (id: string) => string;
   deleteCell: (id: string) => void;
   updateOrder: (newOrder: string[]) => void;
   showLatexMap: Record<string, boolean>;
@@ -66,8 +65,6 @@ const NotebookEditor: React.FC<NotebookEditorProps> = ({
   const cellRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const { editingMode } = useEditorMode();
-  // const isEditMode = mode === "edit";
-  // const isLockedMode = mode === "locked";
 
   const {
     draggingCellId,
@@ -142,7 +139,6 @@ const NotebookEditor: React.FC<NotebookEditorProps> = ({
     [setTextContents]
   );
 
-
   const toggleShowLatex = useCallback((cellId: string) => {
     setShowLatexMap((prev) => ({ ...prev, [cellId]: !prev[cellId] }));
   }, [setShowLatexMap]);
@@ -154,14 +150,6 @@ const NotebookEditor: React.FC<NotebookEditorProps> = ({
   const updateEditorState = useCallback((id: string, newState: EditorState) => {
     setEditorStates((prev) => ({ ...prev, [id]: newState }));
   }, [setEditorStates]);
-
-  // const memoizedUpdateEditorStateFns = useMemo(() => {
-  //   const fns: Record<string, (newState: EditorState) => void> = {};
-  //   for (const id of order) {
-  //     fns[id] = (newState) => updateEditorState(id, newState);
-  //   }
-  //   return fns;
-  // }, [order, updateEditorState]);
 
   const handlePointerDown = useCallback((e: React.PointerEvent, id: string, index: number) => {
     e.preventDefault();
@@ -194,29 +182,46 @@ const NotebookEditor: React.FC<NotebookEditorProps> = ({
     window.addEventListener("pointerup", handlePointerUp);
   }, [startCellDrag, updateCellDragOver, endCellDrag, order, updateOrder]);
 
-  // const handleInsertAtEnd = useCallback(
-  //   (type: "text" | "math") => addCell(type, visibleCells.length), //TODO do not hardcode text math like that for extensibility
-  //   [addCell, visibleCells.length]
-  // );
+  // Track pending selection
+  const pendingSelectionRef = useRef<string | null>(null);
 
-  // Only text cells need display numbers
-  // const textCells = visibleCells.filter((c): c is Extract<CellData, { type: "text" }> => c.type === "text");
-  // const displayNumbers = computeDisplayNumbers(
-  //   Object.fromEntries(textCells.map(c => [c.id, c.content])),
-  //   textCells.map(c => c.id)
-  // );
-
-  const handleInsertAtIndex = useCallback((type: "math" | "text", idx: number) => {
-    addCellRef.current(type, idx);
-  },
+  const handleInsertAtIndex = useCallback(
+    (type: "math" | "text", idx: number) => {
+      const newId = addCellRef.current?.(type, idx);
+      console.log(newId)
+      if (newId) {
+        pendingSelectionRef.current = newId; // store it
+      }
+    },
     [addCellRef]
   );
 
-  const handleInsertAtEnd = useCallback((type: "text" | "math") => {
-    addCellRef.current(type, visibleCells.length);
-  },
+  const handleInsertAtEnd = useCallback(
+    (type: "text" | "math") => {
+      const newId = addCellRef.current?.(type, visibleCells.length);
+      if (newId) {
+        pendingSelectionRef.current = newId; // store it
+      }
+    },
     [visibleCells.length, addCellRef]
   );
+
+  const handleDuplicateCell = useCallback(
+    (id: string) => {
+      const newId = duplicateCell(id);
+      if (newId) {
+        pendingSelectionRef.current = newId; // store it
+      }
+    },
+    [duplicateCell]
+  );
+
+  useEffect(() => {
+    if (pendingSelectionRef.current) {
+      setSelectedCellId(pendingSelectionRef.current);
+      pendingSelectionRef.current = null;
+    }
+  }, [visibleCells]); // run whenever cells update
 
   return (
     <main
@@ -244,7 +249,7 @@ const NotebookEditor: React.FC<NotebookEditorProps> = ({
             key={cell.id}
             ref={el => {
               cellRefs.current[index] = el;
-            }} 
+            }}
             cell={cell}
             index={index}
             selectedCellId={selectedCellId}
@@ -255,7 +260,7 @@ const NotebookEditor: React.FC<NotebookEditorProps> = ({
             handleInsertAtIndex={handleInsertAtIndex}
             handlePointerDown={handlePointerDown}
             deleteCell={deleteCell}
-            duplicateCell={duplicateCell}
+            duplicateCell={handleDuplicateCell}
             updateTextCellContent={updateTextCellContent}
             toggleShowLatex={toggleShowLatex}
             showLatexMap={showLatexMap}
