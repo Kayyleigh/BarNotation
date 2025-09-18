@@ -119,7 +119,7 @@ const ExportLatexModal: React.FC<ExportLatexModalProps> = ({ note, onClose }) =>
               ⬇️ {t("modals.exportLatex.download")}
             </button>
           </Tooltip>
-          <Tooltip text={t("modals.exportLatex.downloadTooltip")}>
+          <Tooltip text={t("modals.exportLatex.copyTooltip")}>
             <button
               className={styles.button}
               onClick={handleCopy}

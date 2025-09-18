@@ -244,6 +244,7 @@ const en = {
       wrapEquations: "Wrap math in equation environments",
       download: "Download",
       downloadTooltip: "Download .tex file",
+      copyTooltip: "Copy .tex file contents", //NEW
     },
     editCommand: { //ALL NEW
       title: "Edit Custom Command",
