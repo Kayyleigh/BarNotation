@@ -10,7 +10,7 @@ import type {
 } from './mathNodeTypes';
 import { generateId, createInlineContainer } from './nodeFactories';
 
-export const transformToFractionNode = (node: StructureNode): FractionNode => ({
+export const transformToFractionNode = (node: StructureNode | InlineContainerNode): FractionNode => ({
   id: generateId(),
   type: 'fraction',
   variant: 'frac',
@@ -18,7 +18,7 @@ export const transformToFractionNode = (node: StructureNode): FractionNode => ({
   denominator: createInlineContainer(),
 });
 
-export const transformtoOverUndersetNode = (node: StructureNode, variant: OverUndersetVariant = "overunderset", position: "above" | "below"): OverUndersetNode => ({
+export const transformtoOverUndersetNode = (node: StructureNode | InlineContainerNode, variant: OverUndersetVariant = "overunderset", position: "above" | "below"): OverUndersetNode => ({
   id: generateId(),
   type: 'overunderset',
   base: ensureInContainerNode(node),
@@ -68,4 +68,4 @@ export const transformToNthRootNode = (index: InlineContainerNode): NthRootNode 
 });
 
 export const ensureInContainerNode = (node: StructureNode | InlineContainerNode): InlineContainerNode =>
-  node.type === 'inline-container' ? node : createInlineContainer([node as StructureNode]);
+  node.type === 'inline-container' ? node : createInlineContainer([node]);

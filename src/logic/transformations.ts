@@ -3,7 +3,7 @@ import { findNodeById, updateNodeById } from "../utils/treeUtils";
 import { transformToFractionNode, transformtoOverUndersetNode } from "../models/transformations";
 import { type BracketStyle } from "../utils/bracketUtils";
 import { createChildedNode, createGroupNode, createInlineContainer, generateId } from "../models/nodeFactories";
-import type { InlineContainerNode, MathNode, MatrixNode, OverUndersetVariant } from "../models/mathNodeTypes";
+import type { InlineContainerNode, MathNode, MatrixNode, OverUndersetVariant, RootWrapperNode, StructureNode } from "../models/mathNodeTypes";
 import type { CornerPosition } from "../utils/subsupUtils";
 import { normalizedOperatorLikeMap } from "../models/specialSequences";
 
@@ -15,6 +15,23 @@ function isOperatorNode(node: MathNode): boolean {
       /^[+\-*/=<>^_|,]$/.test(node.content.trim()))
   );
 }
+
+// --- Selection strategies --------------------------------
+
+type BaseSelection = (
+  container: InlineContainerNode,
+  idx: number
+) => { start: number; end: number };
+
+// Backwalk behavior (for fractions)
+const selectRangeBackwalk: BaseSelection = (container, idx) =>
+  findBaseRange(container, idx);
+
+// Only the immediately previous node
+const selectSinglePrevious: BaseSelection = (_container, idx) => {
+  const start = Math.max(0, idx - 1);
+  return { start, end: idx };
+};
 
 function findBaseRange(container: InlineContainerNode, idx: number): { start: number, end: number } {
   // end is exclusive (so slice end)
@@ -37,10 +54,13 @@ function findBaseRange(container: InlineContainerNode, idx: number): { start: nu
   return { start: scanIndex, end: idx };
 }
 
-function transformPreviousNode<T extends { id: string }>(
+// --- Core transform function ------------------------------
+
+function transformPreviousNode<T extends StructureNode>(
   state: EditorState,
-  transformFn: (base: any) => T, //Unexpected any. Specify a different type.eslint@typescript-eslint/no-explicit-any
-  getCursor: (newNode: T) => { containerId: string; index: number }
+  transformFn: (base: InlineContainerNode) => T,
+  getCursor: (newNode: T) => { containerId: string; index: number },
+  selectBase: BaseSelection = selectSinglePrevious // default to "just the previous node"
 ): EditorState {
   const container = findNodeById(state.rootNode, state.cursor.containerId);
   if (!container || container.type !== "inline-container") return state;
@@ -48,13 +68,11 @@ function transformPreviousNode<T extends { id: string }>(
   const idx = state.cursor.index;
   if (idx === 0) return state;
 
-  // Find the range for base nodes
-  const { start, end } = findBaseRange(container, idx);
+  // Flexible base selection
+  const { start, end } = selectBase(container, idx);
   const baseNodes = container.children.slice(start, end);
 
-  // Wrap them into an inline container if multiple
-  const base =
-    baseNodes.length === 1 ? baseNodes[0] : createInlineContainer(baseNodes);
+  const base = createInlineContainer(baseNodes);
 
   const newNode = transformFn(base);
 
@@ -66,20 +84,23 @@ function transformPreviousNode<T extends { id: string }>(
 
   const updatedRoot = updateNodeById(state.rootNode, container.id, {
     ...container,
-    children: newChildren,
-  });
+    children: newChildren, 
+    });
 
   return {
-    rootNode: updatedRoot,
+    rootNode: updatedRoot as RootWrapperNode, //TODO clean
     cursor: getCursor(newNode),
   };
 }
+
+// --- Transform functions ---------------------------------
 
 export function transformToFraction(state: EditorState): EditorState {
   return transformPreviousNode(
     state,
     (base) => transformToFractionNode(base),
-    (frac) => ({ containerId: frac.denominator.id, index: 0 })
+    (frac) => ({ containerId: frac.denominator.id, index: 0 }),
+    selectRangeBackwalk // fraction needs backwalking
   );
 }
 
@@ -92,6 +113,7 @@ export function transformToOverUnderset(
     state,
     (base) => transformtoOverUndersetNode(base, variant, position),
     (node) => ({ containerId: node.content.id, index: 0 })
+    // uses default: just previous node
   );
 }
 
@@ -103,14 +125,13 @@ export function transformToChildedNode(
   return transformPreviousNode(
     state,
     (base) => {
-      // Avoid InlineContainer nesting
-      const subsupBase =
-        base.type === "inline-container" ? base : createInlineContainer([base]);
-      return createChildedNode(subsupBase, variant);
+      return createChildedNode(base, variant);
     },
     (node) => ({ containerId: node[cornerPosition].id, index: 0 })
+    // uses default: just previous node
   );
 }
+
 
 export function transformToSubSupNode(
   state: EditorState,
@@ -160,7 +181,7 @@ export function transformToGroupNode(
 
   return {
     ...state,
-    rootNode: updatedRoot,
+    rootNode: updatedRoot as RootWrapperNode, //TODO clean
     cursor: {
       containerId: (side === 'open') ? groupNode.child.id : container.id, // inline container inside the GroupNode
       index: (side === 'open') ? 0 : startIndex + 1, //TODO: ideally know if should jump to end for after close is made
