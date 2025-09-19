@@ -187,18 +187,28 @@ export const handleBackspace = (state: EditorState): EditorState => {
       }
       case "childed": {
         const child = parent[key as keyof typeof parent];
-        const corners = [parent.subLeft, parent.supLeft, parent.subRight, parent.supRight];
 
-        if (key === 'supLeft' && corners.every(corner => isEmptyNode(corner))) {
+        // Gather corners in a consistent order
+        const corners: (typeof child)[] = [
+          parent.supLeft,
+          parent.subLeft,
+          parent.subRight,
+          parent.supRight,
+        ];
+
+        // Check if all prior siblings are empty
+        const allChildrenEmpty = corners.every((c) => isEmptyNode(c as InlineContainerNode));
+
+        if (allChildrenEmpty) {
           replacementChildren = parent.base.children;
         }
-        if (key === 'base' && isEmptyNode(parent.base)) {
+        else if (key === "base" && isEmptyNode(parent.base)) {
           replacementChildren = [];
         }
-        else if (isEmptyNode(child)) {
+        else {
           return handleArrowLeft(state);
-          //return state
         }
+
         break;
       }
       case "matrix": {

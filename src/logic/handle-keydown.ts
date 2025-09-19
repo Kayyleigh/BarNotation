@@ -1,5 +1,5 @@
 import type { EditorState } from "./editor-state";
-import { handleArrowLeft, handleArrowRight } from "./navigation";
+import { handleArrowDown, handleArrowLeft, handleArrowRight, handleArrowUp } from "./navigation";
 import { handleBracketInsert, handleCharacterInsert } from "./insertion";
 import { handleBackspace } from "./deletion";
 import { transformToActsymbNode, transformToFraction, transformToSubSupNode, transformToOverUnderset } from "./transformations";
@@ -189,6 +189,8 @@ const keyMap: Record<
   // Single-key events
   "ArrowLeft": (state) => handleArrowLeft(state),
   "ArrowRight": (state) => handleArrowRight(state),
+  "ArrowUp": (state) => handleArrowUp(state),
+  "ArrowDown": (state) => handleArrowDown(state),
   "Backspace": (state) => handleBackspace(state),
   "Slash": (state) => transformToFraction(state), // "/"
 };
