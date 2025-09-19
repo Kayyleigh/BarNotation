@@ -1,5 +1,5 @@
 import type { EditorState } from "./editor-state";
-import { handleArrowDown, handleArrowLeft, handleArrowRight, handleArrowUp } from "./navigation";
+import { handleArrowDown, handleArrowLeft, handleArrowRight, handleArrowUp, handleJumpLeft, handleJumpRight } from "./navigation";
 import { handleBracketInsert, handleCharacterInsert } from "./insertion";
 import { handleBackspace } from "./deletion";
 import { transformToActsymbNode, transformToFraction, transformToSubSupNode, transformToOverUnderset } from "./transformations";
@@ -184,7 +184,9 @@ const keyMap: Record<
   "Shift+ArrowUp": (state) => transformToOverUnderset(state, "overunderset", "above"),
   "Shift+ArrowDown": (state) => transformToOverUnderset(state, "overunderset", "below"),
   "Shift+Digit6": (state) => transformToSubSupNode(state, "supRight"),
-  "Shift+Underscore": (state) => transformToSubSupNode(state, "subRight"),
+  "Shift+Minus": (state) => transformToSubSupNode(state, "subRight"),
+  "Shift+ArrowLeft": (state) => handleJumpLeft(state),
+  "Shift+ArrowRight": (state) => handleJumpRight(state),
 
   // Single-key events
   "ArrowLeft": (state) => handleArrowLeft(state),

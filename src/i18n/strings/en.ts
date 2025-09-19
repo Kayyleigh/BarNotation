@@ -150,7 +150,8 @@ const en = {
       rearrangeNodes: "Rearrange nodes",
       cellContentEditingAndNavigation: "Cell Content Editing & Navigation",//NEW(KEY NAME CHANGE)
       cellListEditingAndNavigation: "Notebook Editing & Navigation",//NEW(KEY NAME CHANGE)
-      navigate: "Navigate between nodes within a cell", //CHANGED; MORE SPECIFIC
+      navigate: "Navigate between nodes within a math expression", //CHANGED; MORE SPECIFIC
+      fastNavigate: "Fast navigate within current math container", //NEW
       delete: "Delete node",
       copy: "Copy as LaTeX",
       cut: "Cut as LaTeX",

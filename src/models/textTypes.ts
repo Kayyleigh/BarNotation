@@ -22,3 +22,20 @@ export const TEXT_TYPE_LABELS: Record<TextCellType, string> = {
     [TEXT_CELL_TYPES.Subsection]: "Subsection header",
     [TEXT_CELL_TYPES.Subsubsection]: "Subsubsection header",
 };
+
+const TEXT_CELL_TYPES_ORDER: TextCellType[] = [
+    TEXT_CELL_TYPES.Section,
+    TEXT_CELL_TYPES.Subsection,
+    TEXT_CELL_TYPES.Subsubsection,
+    TEXT_CELL_TYPES.Plain,
+];
+
+/**
+ * Returns the next or previous TextCellType in a cyclic manner.
+ */
+export function getNextTextCellType(current: TextCellType, direction: 1 | -1): TextCellType {
+    const idx = TEXT_CELL_TYPES_ORDER.indexOf(current);
+    if (idx === -1) return TEXT_CELL_TYPES.Plain; // fallback
+    const nextIdx = (idx + direction + TEXT_CELL_TYPES_ORDER.length) % TEXT_CELL_TYPES_ORDER.length;
+    return TEXT_CELL_TYPES_ORDER[nextIdx];
+}

@@ -3,6 +3,38 @@ import { flattenCursorPositions, findCursorIndex } from "../utils/navigationUtil
 import type { MathNode, MatrixNode } from "../models/mathNodeTypes";
 import { findNodePath } from "../utils/treeUtils";
 //TODO: textnode nav? if prev is text then in_idx is its len. 
+
+export function handleJumpLeft(state: EditorState): EditorState {
+  const { cursor, rootNode } = state;
+  const path = findNodePath(rootNode, cursor.containerId);
+  if (!path) return state;
+
+  if (cursor.index > 0) {
+    // Normal jump left within container
+    return { ...state, cursor: { containerId: cursor.containerId, index: cursor.index - 1 } };
+  }
+
+  // At start of container → fallback to handleArrowLeft (flattened/tree-aware)
+  return handleArrowLeft(state);
+}
+
+export function handleJumpRight(state: EditorState): EditorState {
+  const { cursor, rootNode } = state;
+  const path = findNodePath(rootNode, cursor.containerId);
+  if (!path) return state;
+
+  const container = path[path.length - 1];
+  const length = "children" in container ? container.children.length : 0;
+
+  if (cursor.index < length) {
+    // Normal jump right within container
+    return { ...state, cursor: { containerId: cursor.containerId, index: cursor.index + 1 } };
+  }
+
+  // At end of container → fallback to handleArrowRight
+  return handleArrowRight(state);
+}
+
 export function handleArrowLeft(state: EditorState): EditorState {
   const flat = flattenCursorPositions(state.rootNode);
   const i = findCursorIndex(flat, state.cursor);
@@ -41,7 +73,7 @@ function tryMoveMatrixVertical(state: EditorState, direction: -1 | 1): EditorSta
 
   if (!path) return state;
 
-  const matrixNode = path.find((n: MathNode ) => n.type === "matrix");
+  const matrixNode = path.find((n: MathNode) => n.type === "matrix");
 
   if (!matrixNode) return state;
 
