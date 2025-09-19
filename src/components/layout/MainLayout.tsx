@@ -104,7 +104,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     if (theme !== "light") {
       root.classList.add(theme);
     }
-  
+
     localStorage.setItem("mathEditorTheme", theme);
   }, [theme]);
 
@@ -145,19 +145,23 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   const selectedNoteMetadata = useMemo(() => selectedNote?.metadata, [selectedNote]);
   const selectedNoteCells = useMemo(() => selectedNote?.cells, [selectedNote]);
 
-  const menuNotes = useMemo(() => {
-    return notes
-      .filter(n => !n.metadata.archived)
-      .map(note => ({
-        id: note.id,
-        title: note.metadata.title,
-        cellCount: note.cells.length,
-        archived: note.metadata.archived,
-        createdAt: note.metadata.createdAt,
-        updatedAt: note.metadata.updatedAt,
-      }));
-  }, [notes]);
+  const notesForMenuDeps = useMemo(
+    () =>
+      notes.map(n => ({
+        id: n.id,
+        title: n.metadata.title,
+        cellCount: n.cells.length,
+        archived: n.metadata.archived,
+        createdAt: n.metadata.createdAt,
+        updatedAt: n.metadata.updatedAt,
+      })),
+    [notes] // Only recalc when notes array reference changes
+  );
 
+  const menuNotes = useMemo(
+    () => notesForMenuDeps.filter(n => !n.archived),
+    [notesForMenuDeps]
+  );
 
   const prevArchivedIdsRef = React.useRef(new Set<string>());
   const prevNotesRef = React.useRef<Note[]>([]);
@@ -363,7 +367,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({
             />
           </ResizableSidebar>
           <div style={{ flex: 1, display: "flex", minWidth: 0 }}>
-            {/* {selectedNoteId && selectedNote && initialSnapshot ? ( */}
             <EditorHistoryProvider initialSnapshot={initialSnapshot}>
               <DragProvider>
                 <EditorWorkspace
@@ -372,8 +375,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                   setNoteMetadata={updateNoteMetadata}
                   noteCells={selectedNoteCells}
                   setNoteCells={updateNoteCells}
-                // editorStates={editorStates}
-                // setEditorStates={setEditorStates}
                 />
               </DragProvider>
             </EditorHistoryProvider>

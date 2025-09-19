@@ -341,7 +341,7 @@ export const handleBackspace = (state: EditorState): EditorState => {
     const parentInfo = findParentOfInlineContainer(state.rootNode, container.id);
 
     if (!parentInfo) {
-      console.log(`you do not have IC parent`)
+      // console.log(`you do not have IC parent`)
       return state;
     }
 

@@ -337,6 +337,10 @@ const NotebookEditor: React.FC<NotebookEditorProps> = ({
     updateTextCellContent
   ]);
 
+  const setCellRef = useCallback((index: number) => (el: HTMLDivElement | null) => {
+    cellRefs.current[index] = el;
+  }, []);
+
   return (
     <main
       className={styles.editorLayout}
@@ -361,9 +365,7 @@ const NotebookEditor: React.FC<NotebookEditorProps> = ({
         {visibleCells.map((cell, index) => (
           <CellRenderer
             key={cell.id}
-            ref={el => {
-              cellRefs.current[index] = el;
-            }}
+            ref={setCellRef(index)}
             cell={cell}
             index={index}
             selectedCellId={selectedCellId}

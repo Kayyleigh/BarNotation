@@ -20,8 +20,6 @@ export const CommandInputRenderer: React.FC<CommandInputRendererProps> = ({ node
     const specialMatch = specialSequences.find(seq => seq.sequence === sequence);
     let transformedNode = specialMatch?.createNode();
 
-    console.log(transformedNode)
-
     if (!transformedNode && commandMap[sequence]) {
       transformedNode = cloneTreeWithNewIds(commandMap[sequence].node);
     }
