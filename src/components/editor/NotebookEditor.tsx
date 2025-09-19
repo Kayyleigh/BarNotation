@@ -236,10 +236,10 @@ const NotebookEditor: React.FC<NotebookEditorProps> = ({
 
   useEffect(() => {
     const handlerKeyDown = (e: KeyboardEvent) => {
-      if (!selectedCellId) return;
-
-      const currentIndex = visibleCells.findIndex(c => c.id === selectedCellId);
-      if (currentIndex === -1) return;
+      const currentIndex =
+        selectedCellId != null
+          ? visibleCells.findIndex(c => c.id === selectedCellId)
+          : visibleCells.length - 1; // -1 if no cells yet, will insert at end
 
       const keymap: Record<string, "text" | "math"> = {
         Digit1: "math",
@@ -248,54 +248,57 @@ const NotebookEditor: React.FC<NotebookEditorProps> = ({
         Numpad2: "text",
       };
 
-      // --- Delete cell immediately ---
-      if (e.altKey && e.code === "Delete") {
+      // Alt+Delete: delete selected cell if any
+      if (e.altKey && e.code === "Delete" && selectedCellId) {
         e.preventDefault();
         handleDeleteCell(selectedCellId);
         return;
       }
 
-      // --- Alt+Digit marks pending insertion ---
+      // store pending insertion instead of inserting immediately
       if (e.altKey && keymap[e.code]) {
         e.preventDefault();
-        pendingInsertRef.current = keymap[e.code];
-        return;
+        pendingInsertRef.current = keymap[e.code]; // mark type
+        return; // don't insert yet
       }
 
-      // --- Alt+Arrow → insert if pending, else navigate ---
+      // Alt+Arrow: insert in direction
       if (e.altKey && (e.key === "ArrowUp" || e.key === "ArrowDown")) {
         e.preventDefault();
         const direction = e.key === "ArrowUp" ? "above" : "below";
 
         if (pendingInsertRef.current) {
+          // insert now according to direction
           const insertIndex =
             direction === "above"
-              ? Math.max(0, currentIndex)
-              : Math.min(visibleCells.length, currentIndex + 1);
+              ? (selectedCellId != null ? currentIndex : visibleCells.length)
+              : (selectedCellId != null ? currentIndex + 1 : visibleCells.length);
+
           handleInsertAtIndex(pendingInsertRef.current, insertIndex);
           pendingInsertRef.current = null;
           return;
         }
 
         // No pending → normal Alt+Arrow navigation
-        if (direction === "above" && currentIndex > 0) {
-          setSelectedCellId(visibleCells[currentIndex - 1].id);
-        } else if (direction === "below" && currentIndex < visibleCells.length - 1) {
-          setSelectedCellId(visibleCells[currentIndex + 1].id);
+        if (selectedCellId != null) {
+          if (direction === "above" && currentIndex > 0) {
+            setSelectedCellId(visibleCells[currentIndex - 1].id);
+          } else if (direction === "below" && currentIndex < visibleCells.length - 1) {
+            setSelectedCellId(visibleCells[currentIndex + 1].id);
+          }
         }
-        return;
       }
-
-      // --- Clear pending insertion only if a non-Alt key is pressed ---
-      if (!e.altKey && pendingInsertRef.current) {
-        pendingInsertRef.current = null;
-      }
-    };
+    }
 
     window.addEventListener("keydown", handlerKeyDown);
     return () => window.removeEventListener("keydown", handlerKeyDown);
-  }, [selectedCellId, visibleCells, handleInsertAtIndex, setSelectedCellId, handleDeleteCell]);
-
+  }, [
+    selectedCellId,
+    visibleCells,
+    handleInsertAtIndex,
+    setSelectedCellId,
+    handleDeleteCell,
+  ]);
 
   return (
     <main
