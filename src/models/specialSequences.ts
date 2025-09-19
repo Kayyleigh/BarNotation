@@ -318,22 +318,22 @@ export const standardFunctionNames: SpecialSequence[] = [
   // ... and `\\arg\\max` is not one of the sequences. It's two of them! So this behavior is expected and acceptable imo. 
   {
     sequence: "\\argmax ",
-    createNode: () => createStyledNode(
-      createTextNode("arg max", "\\arg\\max"),
+    createNode: () =>  createStyledNode(
+      createInlineContainer([createTextNode("arg max", "\\arg\\max")]),
       { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   {
     sequence: "\\argmin ",
-    createNode: () => createStyledNode(
-      createTextNode("arg min", "\\arg\\min"),
+    createNode: () =>  createStyledNode(
+      createInlineContainer([createTextNode("arg min", "\\arg\\min")]),
       { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   {
     sequence: "\\Var ",
-    createNode: () => createStyledNode(
-      createTextNode("Var", "\\operatorname{Var}"),
+    createNode: () =>  createStyledNode(
+      createInlineContainer([createTextNode("Var", "\\operatorname{Var}")]),
       { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
@@ -404,133 +404,133 @@ export const standardFunctionNames: SpecialSequence[] = [
   {
     sequence: "\\arccos ",
     createNode: () => createStyledNode(
-      createTextNode("arccos", "\\arccos "),
+      createInlineContainer([createTextNode("arccos", "\\arccos ")]),
       { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   {
     sequence: "\\arcsin ",
     createNode: () => createStyledNode(
-      createTextNode("arcsin", "\\arcsin "),
+      createInlineContainer([createTextNode("arcsin", "\\arcsin ")]),
       { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   {
     sequence: "\\arctan ",
     createNode: () => createStyledNode(
-      createTextNode("arctan", "\\arctan "),
+      createInlineContainer([createTextNode("arctan", "\\arctan ")]),
       { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   {
     sequence: "\\arg ",
     createNode: () => createStyledNode(
-      createTextNode("arg", "\\arg "),
+      createInlineContainer([createTextNode("arg", "\\arg ")]),
       { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   {
     sequence: "\\cos ",
     createNode: () => createStyledNode(
-      createTextNode("cos", "\\cos "),
+      createInlineContainer([createTextNode("cos", "\\cos ")]),
       { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   {
     sequence: "\\cosh ",
-    createNode: () => createStyledNode(
-      createTextNode("cosh", "\\cosh "),
+    createNode: () =>  createStyledNode(
+      createInlineContainer([createTextNode("cosh", "\\cosh ")]),
       { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   {
     sequence: "\\cot ",
-    createNode: () => createStyledNode(
-      createTextNode("cot", "\\cot "),
+    createNode: () =>  createStyledNode(
+      createInlineContainer([createTextNode("cot", "\\cot ")]),
       { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   {
     sequence: "\\coth ",
-    createNode: () => createStyledNode(
-      createTextNode("coth", "\\coth "),
+    createNode: () =>  createStyledNode(
+      createInlineContainer([createTextNode("coth", "\\coth ")]),
       { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   {
     sequence: "\\csc ",
-    createNode: () => createStyledNode(
-      createTextNode("csc", "\\csc "),
+    createNode: () =>  createStyledNode(
+      createInlineContainer([createTextNode("csc", "\\csc ")]),
       { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   {
     sequence: "\\deg ",
-    createNode: () => createStyledNode(
-      createTextNode("deg", "\\deg "),
+    createNode: () =>  createStyledNode(
+      createInlineContainer([createTextNode("deg", "\\deg ")]),
       { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   {
     sequence: "\\det ",
-    createNode: () => createStyledNode(
-      createTextNode("det", "\\det "),
+    createNode: () =>  createStyledNode(
+      createInlineContainer([createTextNode("det", "\\det ")]),
       { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   {
     sequence: "\\dim ",
-    createNode: () => createStyledNode(
-      createTextNode("dim", "\\dim "),
+    createNode: () =>  createStyledNode(
+      createInlineContainer([createTextNode("dim", "\\dim ")]),
       { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   {
     sequence: "\\exp ",
-    createNode: () => createStyledNode(
-      createTextNode("exp", "\\exp "),
+    createNode: () =>  createStyledNode(
+      createInlineContainer([createTextNode("exp", "\\exp ")]),
       { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   {
     sequence: "\\gcd ",
-    createNode: () => createStyledNode(
-      createTextNode("gcd", "\\gcd "),
+    createNode: () =>  createStyledNode(
+      createInlineContainer([createTextNode("gcd", "\\gcd ")]),
       { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   {
     sequence: "\\hom ",
-    createNode: () => createStyledNode(
-      createTextNode("hom", "\\hom "),
+    createNode: () =>  createStyledNode(
+      createInlineContainer([createTextNode("hom", "\\hom ")]),
       { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   {
     sequence: "\\inf ",
-    createNode: () => createStyledNode(
-      createTextNode("inf", "\\inf "),
+    createNode: () =>  createStyledNode(
+      createInlineContainer([createTextNode("inf", "\\inf ")]),
       { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   {
     sequence: "\\ker ",
-    createNode: () => createStyledNode(
-      createTextNode("ker", "\\ker "),
+    createNode: () =>  createStyledNode(
+      createInlineContainer([createTextNode("ker", "\\ker ")]),
       { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   {
     sequence: "\\lg ",
-    createNode: () => createStyledNode(
-      createTextNode("lg", "\\lg "),
+    createNode: () =>  createStyledNode(
+      createInlineContainer([createTextNode("lg", "\\lg ")]),
       { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   {
     sequence: "\\lim ",
     createNode: () => createStyledNode(
-      createTextNode("lim", "\\lim "),
+      createInlineContainer([createTextNode("lim", "\\lim ")]),
       { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
@@ -550,78 +550,78 @@ export const standardFunctionNames: SpecialSequence[] = [
   },
   {
     sequence: "\\ln ",
-    createNode: () => createStyledNode(
-      createTextNode("ln", "\\ln "),
+    createNode: () =>  createStyledNode(
+      createInlineContainer([createTextNode("ln", "\\ln ")]),
       { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   {
     sequence: "\\log ",
-    createNode: () => createStyledNode(
-      createTextNode("log", "\\log "),
+    createNode: () =>  createStyledNode(
+      createInlineContainer([createTextNode("log", "\\log ")]),
       { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   {
     sequence: "\\max ",
-    createNode: () => createStyledNode(
-      createTextNode("max", "\\max "),
+    createNode: () =>  createStyledNode(
+      createInlineContainer([createTextNode("max", "\\max ")]),
       { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   {
     sequence: "\\min ",
-    createNode: () => createStyledNode(
-      createTextNode("min", "\\min "),
+    createNode: () =>  createStyledNode(
+      createInlineContainer([createTextNode("min", "\\min ")]),
       { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   {
     sequence: "\\Pr ",
-    createNode: () => createStyledNode(
-      createTextNode("Pr", "\\Pr "),
+    createNode: () =>  createStyledNode(
+      createInlineContainer([createTextNode("Pr", "\\Pr ")]),
       { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   {
     sequence: "\\sec ",
-    createNode: () => createStyledNode(
-      createTextNode("sec", "\\sec "),
+    createNode: () =>  createStyledNode(
+      createInlineContainer([createTextNode("sec", "\\sec ")]),
       { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   {
     sequence: "\\sin ",
-    createNode: () => createStyledNode(
-      createTextNode("sin", "\\sin "),
+    createNode: () =>  createStyledNode(
+      createInlineContainer([createTextNode("sin", "\\sin ")]),
       { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   {
     sequence: "\\sinh ",
-    createNode: () => createStyledNode(
-      createTextNode("sinh", "\\sinh "),
+    createNode: () =>  createStyledNode(
+      createInlineContainer([createTextNode("sinh", "\\sinh ")]),
       { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   {
     sequence: "\\sup ",
-    createNode: () => createStyledNode(
-      createTextNode("sup", "\\sup "),
+    createNode: () =>  createStyledNode(
+      createInlineContainer([createTextNode("sup", "\\sup ")]),
       { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   {
     sequence: "\\tan ",
-    createNode: () => createStyledNode(
-      createTextNode("tan", "\\tan "),
+    createNode: () =>  createStyledNode(
+      createInlineContainer([createTextNode("tan", "\\tan ")]),
       { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },
   {
     sequence: "\\tanh ",
-    createNode: () => createStyledNode(
-      createTextNode("tanh", "\\tanh "),
+    createNode: () =>  createStyledNode(
+      createInlineContainer([createTextNode("tanh", "\\tanh ")]),
       { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
     ),
   },

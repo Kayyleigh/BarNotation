@@ -177,8 +177,14 @@ export const handleCharacterInsert = (
 
       if (transformedNode.type === "styled") {
         if (transformedNode.child.type === "inline-container") {
-          targetContainer = transformedNode.child;
-          targetIndex = 0;
+          if (transformedNode.child.children.length === 0) {
+            targetContainer = transformedNode.child;
+            targetIndex = transformedNode.child.children.length;
+          }
+          else {
+            targetContainer = container;
+            targetIndex = index;
+          }
         }
       }
 
