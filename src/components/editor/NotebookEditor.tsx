@@ -31,7 +31,7 @@ interface NotebookEditorProps {
   setTextContents: React.Dispatch<React.SetStateAction<Record<string, TextCellContent>>>;
   addCellRef: React.RefObject<(type: "math" | "text", index?: number) => string>;
   duplicateCell: (id: string) => string;
-  deleteCell: (id: string) => void;
+  deleteCell: (id: string) => string | null;
   updateOrder: (newOrder: string[]) => void;
   showLatexMap: Record<string, boolean>;
   setShowLatexMap: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
@@ -188,7 +188,6 @@ const NotebookEditor: React.FC<NotebookEditorProps> = ({
   const handleInsertAtIndex = useCallback(
     (type: "math" | "text", idx: number) => {
       const newId = addCellRef.current?.(type, idx);
-      console.log(newId)
       if (newId) {
         pendingSelectionRef.current = newId; // store it
       }
@@ -216,6 +215,16 @@ const NotebookEditor: React.FC<NotebookEditorProps> = ({
     [duplicateCell]
   );
 
+  const handleDeleteCell = useCallback(
+    (id: string) => {
+      const prevId = deleteCell(id);
+      if (prevId) {
+        pendingSelectionRef.current = prevId; // store it
+      }
+    },
+    [deleteCell]
+  );
+
   useEffect(() => {
     if (pendingSelectionRef.current) {
       setSelectedCellId(pendingSelectionRef.current);
@@ -223,36 +232,69 @@ const NotebookEditor: React.FC<NotebookEditorProps> = ({
     }
   }, [visibleCells]); // run whenever cells update
 
+  const pendingInsertRef = useRef<"math" | "text" | null>(null);
+
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
+    const handlerKeyDown = (e: KeyboardEvent) => {
       if (!selectedCellId) return;
 
-      // Find index of the currently selected cell
       const currentIndex = visibleCells.findIndex(c => c.id === selectedCellId);
       if (currentIndex === -1) return;
 
-      // Alt + ArrowUp → previous cell
-      if (e.altKey && e.key === "ArrowUp") {
+      const keymap: Record<string, "text" | "math"> = {
+        Digit1: "math",
+        Digit2: "text",
+        Numpad1: "math",
+        Numpad2: "text",
+      };
+
+      // --- Delete cell immediately ---
+      if (e.altKey && e.code === "Delete") {
         e.preventDefault();
-        if (currentIndex > 0) {
-          setSelectedCellId(visibleCells[currentIndex - 1].id);
-        }
+        handleDeleteCell(selectedCellId);
+        return;
       }
 
-      // Alt + ArrowDown → next cell
-      if (e.altKey && e.key === "ArrowDown") {
+      // --- Alt+Digit marks pending insertion ---
+      if (e.altKey && keymap[e.code]) {
         e.preventDefault();
-        if (currentIndex < visibleCells.length - 1) {
+        pendingInsertRef.current = keymap[e.code];
+        return;
+      }
+
+      // --- Alt+Arrow → insert if pending, else navigate ---
+      if (e.altKey && (e.key === "ArrowUp" || e.key === "ArrowDown")) {
+        e.preventDefault();
+        const direction = e.key === "ArrowUp" ? "above" : "below";
+
+        if (pendingInsertRef.current) {
+          const insertIndex =
+            direction === "above"
+              ? Math.max(0, currentIndex)
+              : Math.min(visibleCells.length, currentIndex + 1);
+          handleInsertAtIndex(pendingInsertRef.current, insertIndex);
+          pendingInsertRef.current = null;
+          return;
+        }
+
+        // No pending → normal Alt+Arrow navigation
+        if (direction === "above" && currentIndex > 0) {
+          setSelectedCellId(visibleCells[currentIndex - 1].id);
+        } else if (direction === "below" && currentIndex < visibleCells.length - 1) {
           setSelectedCellId(visibleCells[currentIndex + 1].id);
         }
+        return;
+      }
+
+      // --- Clear pending insertion only if a non-Alt key is pressed ---
+      if (!e.altKey && pendingInsertRef.current) {
+        pendingInsertRef.current = null;
       }
     };
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [selectedCellId, visibleCells]);
+    window.addEventListener("keydown", handlerKeyDown);
+    return () => window.removeEventListener("keydown", handlerKeyDown);
+  }, [selectedCellId, visibleCells, handleInsertAtIndex, setSelectedCellId, handleDeleteCell]);
 
 
   return (
@@ -291,7 +333,7 @@ const NotebookEditor: React.FC<NotebookEditorProps> = ({
             dragOverInsertIndex={dragOverInsertIndex}
             handleInsertAtIndex={handleInsertAtIndex}
             handlePointerDown={handlePointerDown}
-            deleteCell={deleteCell}
+            deleteCell={handleDeleteCell}
             duplicateCell={handleDuplicateCell}
             updateTextCellContent={updateTextCellContent}
             toggleShowLatex={toggleShowLatex}

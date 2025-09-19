@@ -184,7 +184,7 @@
 // CellRenderer.displayName = "CellRenderer";
 
 // components/editor/cells/CellRenderer.tsx
-import React, { useMemo, useCallback, useRef } from "react";
+import React, { useMemo, useCallback, useRef, useEffect } from "react";
 import type { CellData, TextCellContent } from "../../../models/noteTypes";
 import type { EditorState } from "../../../logic/editor-state";
 import InsertCellButtons from "./InsertCellButtons";
@@ -247,6 +247,17 @@ export const CellRenderer = React.memo(
     const registryEntry = cellRegistry[cell.type as CellType];
     type ContentType = CellContent<typeof cell.type>;
     const Component = registryEntry.component as React.FC<any>;
+
+    // Create a ref to hold the child's focusAndScroll
+    const cellHandleRef = useRef<{ focusAndScroll: () => void } | null>(null);
+
+    // Whenever selection changes, call it
+    useEffect(() => {
+      if (selectedCellId === cell.id) {
+        cellHandleRef.current?.focusAndScroll();
+      }
+    }, [selectedCellId, cell.id]);
+
 
     const typeLabel = useMemo(
       () => registryEntry.getLabel?.(cell.content as ContentType) ?? registryEntry.label,
@@ -362,7 +373,9 @@ export const CellRenderer = React.memo(
           typeLabel={typeLabel}
           toolbarExtras={toolbarExtras}
         >
-          <Component {...componentProps} />
+          {/* <Component {...componentProps} /> */}
+          <Component {...componentProps} ref={cellHandleRef} />
+
         </CellWrapper>
 
         {registryEntry.hasLatex && (

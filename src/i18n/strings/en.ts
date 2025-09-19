@@ -149,7 +149,7 @@ const en = {
       structuralShortcuts: "Structural Shortcuts",
       rearrangeNodes: "Rearrange nodes",
       editingAndNavigation: "Editing & Navigation",
-      navigate: "Navigate between nodes",
+      navigate: "Navigate between nodes within a cell", //CHANGED; MORE SPECIFIC
       delete: "Delete node",
       copy: "Copy as LaTeX",
       cut: "Cut as LaTeX",
@@ -160,6 +160,11 @@ const en = {
       zoomIn: "Zoom in",
       zoomOut: "Zoom out",
       zoomReset: "Reset zoom",
+      navigateCellUp: "Jump to previous cell", //NEW
+      navigateCellDown: "Jump to next cell", //NEW
+      deleteCurrCell: "Delete current cell", //NEW
+      insertCellAbove: "Insert cell (1 → Math, 2 → Text) above", //NEW
+      insertCellBelow: "Insert cell (1 → Math, 2 → Text) below", //NEW
     },
     collectionArchive: {
       title: "Archived Collections",

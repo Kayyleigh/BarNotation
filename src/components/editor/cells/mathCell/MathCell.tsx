@@ -314,7 +314,102 @@
 
 // export default React.memo(MathCell);
 
-import React, { useState, useCallback } from "react";
+// import React, { useState, useCallback } from "react";
+// import MathEditor from "../../../mathExpression/MathEditor";
+// import type { EditorState } from "../../../../logic/editor-state";
+// import { HoverProvider } from "../../../../hooks/mathHover/HoverProvider";
+// import { useEditorMode } from "../../../../hooks/editorMode/useEditorMode";
+// import styles from "../cell.module.css";
+// import type { BaseCellProps } from "../../../../models/cellRegistry";
+// import type { DragSource, DropTarget } from "../../../../models/dragTypes";
+
+// interface MathCellExtraProps {
+//   resetZoomSignal: number;
+//   defaultZoom: number;
+//   showLatex: boolean;
+//   editorState: EditorState;
+//   updateEditorState: (newState: EditorState) => void;
+//   selectedCellId: string | null;
+//   setSelectedCellId: (id: string | null) => void;
+//   onDropNode: (from: DragSource, to: DropTarget) => void;
+// }
+
+// type MathCellProps = BaseCellProps<EditorState> & MathCellExtraProps;
+
+// const MathCell: React.FC<MathCellProps> = ({
+//   id,
+//   content,
+//   onChange,
+//   resetZoomSignal,
+//   defaultZoom,
+//   showLatex,
+//   selectedCellId,
+//   setSelectedCellId,
+//   onDropNode,
+// }) => {
+//   const { editingMode } = useEditorMode();
+//   const isEditMode = editingMode === "edit";
+//   const isSelected = selectedCellId === id;
+
+//   const [hoverInfo, setHoverInfo] = useState<{ hoveredType: string; zoomLevel: number }>({
+//     hoveredType: "",
+//     zoomLevel: defaultZoom,
+//   });
+
+//   const handleEditorFocus = useCallback(() => setSelectedCellId(id), [id, setSelectedCellId]);
+//   // const handleEditorBlur = useCallback(() => setSelectedCellId(null), [setSelectedCellId]);
+
+//   return (
+//     <>
+//       <div
+//         className={styles.mathCell}
+//         onKeyDown={(e) => {
+//           if (e.key === "Enter") {
+//             e.preventDefault();
+//             setSelectedCellId(id);
+//             const editorDiv = document.querySelector<HTMLDivElement>(`[data-math-editor="${id}"]`);
+//             editorDiv?.focus();
+//           }
+//         }}
+//       >
+//         <div className={styles.mathScrollContainer}>
+//           <HoverProvider>
+//             <MathEditor
+//               resetZoomSignal={resetZoomSignal}
+//               defaultZoom={defaultZoom}
+//               showLatex={showLatex}
+//               cellId={id}
+//               editorState={content}
+//               updateEditorState={onChange}
+//               onDropNode={onDropNode}
+//               onHoverInfoChange={setHoverInfo}
+//               onFocus={handleEditorFocus}
+//               // onBlur={handleEditorBlur}
+//               isSelected={isSelected}
+//             />
+//           </HoverProvider>
+//         </div>
+
+//         {isEditMode && (
+//           <div className={styles.hoverTypeInfo}>
+//             {hoverInfo.hoveredType ? `${hoverInfo.hoveredType} • ` : ""}
+//             {Math.round(hoverInfo.zoomLevel * 100)}%
+//           </div>
+//         )}
+//       </div>
+//     </>
+//   );
+// };
+
+// export default React.memo(MathCell);
+
+import React, {
+  useState,
+  useCallback,
+  forwardRef,
+  useImperativeHandle,
+  useRef,
+} from "react";
 import MathEditor from "../../../mathExpression/MathEditor";
 import type { EditorState } from "../../../../logic/editor-state";
 import { HoverProvider } from "../../../../hooks/mathHover/HoverProvider";
@@ -322,6 +417,10 @@ import { useEditorMode } from "../../../../hooks/editorMode/useEditorMode";
 import styles from "../cell.module.css";
 import type { BaseCellProps } from "../../../../models/cellRegistry";
 import type { DragSource, DropTarget } from "../../../../models/dragTypes";
+
+export interface MathCellHandle {
+  focusAndScroll: () => void;
+}
 
 interface MathCellExtraProps {
   resetZoomSignal: number;
@@ -336,38 +435,61 @@ interface MathCellExtraProps {
 
 type MathCellProps = BaseCellProps<EditorState> & MathCellExtraProps;
 
-const MathCell: React.FC<MathCellProps> = ({
-  id,
-  content,
-  onChange,
-  resetZoomSignal,
-  defaultZoom,
-  showLatex,
-  selectedCellId,
-  setSelectedCellId,
-  onDropNode,
-}) => {
-  const { editingMode } = useEditorMode();
-  const isEditMode = editingMode === "edit";
-  const isSelected = selectedCellId === id;
+const MathCell = forwardRef<MathCellHandle, MathCellProps>(
+  (
+    {
+      id,
+      content,
+      onChange,
+      resetZoomSignal,
+      defaultZoom,
+      showLatex,
+      selectedCellId,
+      setSelectedCellId,
+      onDropNode,
+    },
+    ref
+  ) => {
+    const { editingMode } = useEditorMode();
+    const isEditMode = editingMode === "edit";
+    const isSelected = selectedCellId === id;
 
-  const [hoverInfo, setHoverInfo] = useState<{ hoveredType: string; zoomLevel: number }>({
-    hoveredType: "",
-    zoomLevel: defaultZoom,
-  });
+    const containerRef = useRef<HTMLDivElement>(null);
 
-  const handleEditorFocus = useCallback(() => setSelectedCellId(id), [id, setSelectedCellId]);
-  // const handleEditorBlur = useCallback(() => setSelectedCellId(null), [setSelectedCellId]);
+    useImperativeHandle(ref, () => ({
+      focusAndScroll: () => {
+        if (containerRef.current) {
+          containerRef.current.scrollIntoView({ block: "center", behavior: "smooth" });
+          // optional: focus inner math editor DOM node
+          const editorDiv = containerRef.current.querySelector<HTMLDivElement>(
+            `[data-math-editor="${id}"]`
+          );
+          editorDiv?.focus();
+        }
+      },
+    }));
 
-  return (
-    <>
+    const [hoverInfo, setHoverInfo] = useState({
+      hoveredType: "",
+      zoomLevel: defaultZoom,
+    });
+
+    const handleEditorFocus = useCallback(
+      () => setSelectedCellId(id),
+      [id, setSelectedCellId]
+    );
+
+    return (
       <div
+        ref={containerRef}
         className={styles.mathCell}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
             e.preventDefault();
             setSelectedCellId(id);
-            const editorDiv = document.querySelector<HTMLDivElement>(`[data-math-editor="${id}"]`);
+            const editorDiv = document.querySelector<HTMLDivElement>(
+              `[data-math-editor="${id}"]`
+            );
             editorDiv?.focus();
           }
         }}
@@ -384,7 +506,6 @@ const MathCell: React.FC<MathCellProps> = ({
               onDropNode={onDropNode}
               onHoverInfoChange={setHoverInfo}
               onFocus={handleEditorFocus}
-              // onBlur={handleEditorBlur}
               isSelected={isSelected}
             />
           </HoverProvider>
@@ -397,8 +518,8 @@ const MathCell: React.FC<MathCellProps> = ({
           </div>
         )}
       </div>
-    </>
-  );
-};
+    );
+  }
+);
 
 export default React.memo(MathCell);

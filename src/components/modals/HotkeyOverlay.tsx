@@ -35,10 +35,10 @@ const HotkeyOverlay: React.FC<HotkeyOverlayProps> = ({ onClose }) => {
         [["\\"], t("modals.hotkeysModal.command")],
       ],
     },
-    {
-      title: t("modals.hotkeysModal.structuralShortcuts"),
-      keys: [[["Drag & Drop"], t("modals.hotkeysModal.rearrangeNodes")]],
-    },
+    // {
+    //   title: t("modals.hotkeysModal.structuralShortcuts"),
+    //   keys: [[["Drag & Drop"], t("modals.hotkeysModal.rearrangeNodes")]],
+    // },
     {
       title: t("modals.hotkeysModal.editingAndNavigation"),
       keys: [
@@ -49,6 +49,14 @@ const HotkeyOverlay: React.FC<HotkeyOverlayProps> = ({ onClose }) => {
         [["Ctrl", "V"], t("modals.hotkeysModal.paste")],
         [["Ctrl", "Z"], t("modals.hotkeysModal.undo")],
         [["Ctrl", "Y"], t("modals.hotkeysModal.redo")],
+
+        [["Alt", "↑"], t("modals.hotkeysModal.navigateCellUp")],
+        [["Alt", "↓"], t("modals.hotkeysModal.navigateCellDown")],
+        [["Alt", "Del"], t("modals.hotkeysModal.deleteCurrCell")],
+        [["Alt", "Digit", "↑"], t("modals.hotkeysModal.insertCellAbove")],
+        [["Alt", "Digit", "↓"], t("modals.hotkeysModal.insertCellBelow")],
+        [["Drag & Drop"], t("modals.hotkeysModal.rearrangeNodes")],
+
       ],
     },
     {

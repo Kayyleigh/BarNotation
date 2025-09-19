@@ -168,17 +168,50 @@ const EditorPane: React.FC<EditorPaneProps> = ({
     addCellRef.current = addCell;
   }, [addCell]);
 
+  // const deleteCell = useCallback(
+  //   (id: string) => {
+  //     const newOrder = order.filter((cellId) => cellId !== id);
+  //     const newStates = { ...editorStates };
+  //     const newTextContents = { ...textContents };
+  //     delete newStates[id];
+  //     delete newTextContents[id];
+
+  //     persistState(
+  //       { order: newOrder, states: newStates, textContents: newTextContents },
+  //       { states: editorStates, textContents }
+  //     );
+
+  //     return newId; // TODO make it find the previous cell so that can be returned and thus selected in caller
+  //   },
+  //   [order, editorStates, textContents, persistState]
+  // );
+
   const deleteCell = useCallback(
-    (id: string) => {
+    (id: string): string | null => {
+      const index = order.indexOf(id);
+      if (index === -1) return null; // Cell not found
+
+      // Determine the new selected cell
+      const prevCellId = index > 0 ? order[index - 1] : null;
+      const nextCellId = index < order.length - 1 ? order[index + 1] : null;
+      const newSelectedId = nextCellId ?? prevCellId ?? null;
+
+      // Remove from order
       const newOrder = order.filter((cellId) => cellId !== id);
+
+      // Remove states/content
       const newStates = { ...editorStates };
       const newTextContents = { ...textContents };
       delete newStates[id];
       delete newTextContents[id];
+
+      // Persist new state
       persistState(
         { order: newOrder, states: newStates, textContents: newTextContents },
         { states: editorStates, textContents }
       );
+
+      return newSelectedId;
     },
     [order, editorStates, textContents, persistState]
   );
