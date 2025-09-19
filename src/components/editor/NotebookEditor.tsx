@@ -223,6 +223,38 @@ const NotebookEditor: React.FC<NotebookEditorProps> = ({
     }
   }, [visibleCells]); // run whenever cells update
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!selectedCellId) return;
+
+      // Find index of the currently selected cell
+      const currentIndex = visibleCells.findIndex(c => c.id === selectedCellId);
+      if (currentIndex === -1) return;
+
+      // Alt + ArrowUp → previous cell
+      if (e.altKey && e.key === "ArrowUp") {
+        e.preventDefault();
+        if (currentIndex > 0) {
+          setSelectedCellId(visibleCells[currentIndex - 1].id);
+        }
+      }
+
+      // Alt + ArrowDown → next cell
+      if (e.altKey && e.key === "ArrowDown") {
+        e.preventDefault();
+        if (currentIndex < visibleCells.length - 1) {
+          setSelectedCellId(visibleCells[currentIndex + 1].id);
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [selectedCellId, visibleCells]);
+
+
   return (
     <main
       className={styles.editorLayout}

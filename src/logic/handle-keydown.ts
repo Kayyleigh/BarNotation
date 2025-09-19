@@ -9,7 +9,7 @@ import type { LibraryEntry } from "../models/libraryTypes";
 
 export function handleKeyDown(
   e: React.KeyboardEvent,
-  state: EditorState, 
+  state: EditorState,
   commandMap?: Record<string, LibraryEntry>,
 ): EditorState | null {
 
@@ -23,6 +23,17 @@ export function handleKeyDown(
   if (e.shiftKey && e.ctrlKey && e.code === 'Minus') {
     e.preventDefault();
     return transformToActsymbNode(state, "subLeft");
+  }
+
+  // nth top/bottom
+  if (e.shiftKey && e.altKey && e.key === "ArrowUp") {
+    e.preventDefault();
+    return transformToOverUnderset(state, "nthtopbottom", "above");
+  }
+
+  if (e.shiftKey && e.altKey && e.key === "ArrowDown") {
+    e.preventDefault();
+    return transformToOverUnderset(state, "nthtopbottom", "below");
   }
 
   // === Double-key events ===
@@ -69,20 +80,9 @@ export function handleKeyDown(
     return transformToOverUnderset(state, "overunderset", "below");
   }
 
-  // nth top/bottom
-  if (e.altKey && e.key === "ArrowUp") {
-    e.preventDefault();
-    return transformToOverUnderset(state, "nthtopbottom", "above");
-  }
-
-  if (e.altKey && e.key === "ArrowDown") {
-    e.preventDefault();
-    return transformToOverUnderset(state, "nthtopbottom", "below");
-  }
-
   // Regular childed 
   if (e.shiftKey && e.code === 'Digit6') {
-    e.preventDefault();    
+    e.preventDefault();
     return transformToSubSupNode(state, "supRight");
   }
 

@@ -21,13 +21,13 @@ const HotkeyOverlay: React.FC<HotkeyOverlayProps> = ({ onClose }) => {
         [["Ctrl", "Shift", "6"], t("modals.hotkeysModal.actuarialTL")],
         [["Alt", "-"], t("modals.hotkeysModal.actuarialBR")],
         [["Alt", "6"], t("modals.hotkeysModal.actuarialTR")],
-        [["Shift", "↓"], t("modals.hotkeysModal.underset")],
         [["Shift", "↑"], t("modals.hotkeysModal.overset")],
-        [["Alt", "↓"], t("modals.hotkeysModal.nthbottom")],
-        [["Alt", "↑"], t("modals.hotkeysModal.nthtop")],
+        [["Shift", "↓"], t("modals.hotkeysModal.underset")],
+        [["Shift", "Alt", "↑"], t("modals.hotkeysModal.nthtop")],
+        [["Shift", "Alt", "↓"], t("modals.hotkeysModal.nthbottom")],
 
-        [["Ctrl", "↓"], t("modals.hotkeysModal.insertMatrixRowBelow")],
         [["Ctrl", "↑"], t("modals.hotkeysModal.insertMatrixRowAbove")],
+        [["Ctrl", "↓"], t("modals.hotkeysModal.insertMatrixRowBelow")],
         [["Ctrl", "←"], t("modals.hotkeysModal.insertMatrixColumnLeft")],
         [["Ctrl", "→"], t("modals.hotkeysModal.insertMatrixColumnRight")],
 
