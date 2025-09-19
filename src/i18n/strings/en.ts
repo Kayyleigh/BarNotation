@@ -153,9 +153,9 @@ const en = {
       navigate: "Navigate between nodes within a math expression", //CHANGED; MORE SPECIFIC
       fastNavigate: "Fast navigate within current math container", //NEW
       delete: "Delete node",
-      copy: "Copy as LaTeX",
-      cut: "Cut as LaTeX",
-      paste: "Paste LaTeX",
+      copy: "Copy previous node as LaTeX",
+      cut: "Cut previous node as LaTeX",
+      paste: "Paste LaTeX as node",
       undo: "Undo",
       redo: "Redo",
       viewControls: "View Controls",
@@ -168,6 +168,7 @@ const en = {
       duplicateCurrCell: "Duplicate current cell", //NEW
       insertCellAbove: "Insert cell (1 → Math, 2 → Text) above", //NEW
       insertCellBelow: "Insert cell (1 → Math, 2 → Text) below", //NEW
+      cycleTextTypes: "Change text cell type (plain text, header, etc.)", //NEW
     },
     collectionArchive: {
       title: "Archived Collections",

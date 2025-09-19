@@ -51,6 +51,7 @@ const HotkeyOverlay: React.FC<HotkeyOverlayProps> = ({ onClose }) => {
         [["Ctrl", "Z"], t("modals.hotkeysModal.undo")],
         [["Ctrl", "Y"], t("modals.hotkeysModal.redo")],
         [["Drag & Drop"], t("modals.hotkeysModal.rearrangeNodes")],
+        [["Alt", ",/."], t("modals.hotkeysModal.cycleTextTypes")],
       ],
     },
     {

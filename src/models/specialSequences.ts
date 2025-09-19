@@ -12,7 +12,7 @@ export const decoratedEntries: SpecialSequence[] = Object.entries(decorationToLa
     // Assert or cast decorationInfo if necessary
     const info = decorationInfo as DecorationInfo;
     return { //TODO SWITCH TO DECORATION NODE TYPE
-      sequence: info.command,  // Explicit key-value pair
+      sequence: info.command + " ",  // Explicit key-value pair
       createNode: () => createDecoratedNode(createInlineContainer(), decoration as NodeDecoration),
     };
   }

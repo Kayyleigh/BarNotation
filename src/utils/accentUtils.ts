@@ -1,7 +1,7 @@
 // accentUtils.ts
 
 // Extract keys as a union type of accents/decorations:
-export type NodeDecoration = "tilde" | "hat" | "widehat" | "bar" | "dot"| "ddot"| "dddot"| "ddddot" | "mathring" | "angl" | "underline" | "joint" | "overline" | "underbrace" | "vec" | "group";
+export type NodeDecoration = "tilde" | "hat" | "widehat" | "bar" | "dot" | "ddot" | "dddot" | "ddddot" | "mathring" | "angl" | "underline" | "joint" | "overline" | "underbrace" | "vec" | "group";
 
 export interface DecorationInfo {
   command: string;        // The LaTeX command string
