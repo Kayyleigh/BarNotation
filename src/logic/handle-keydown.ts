@@ -203,7 +203,7 @@ export function handleKeyDown(
 ): EditorState | null {
 
   // If Alt+digits (only digits 1-5) then preventdefault so the NotebookEditor can immediately catch it instead??
-  if (e.altKey && /^(Digit[1-5]|Numpad[1-5])$/.test(e.code)) {
+  if (e.altKey && /^(Digit[1-5]|Numpad[1-5]|Equal)$/.test(e.code)) {
     e.preventDefault();
     return null;
   }

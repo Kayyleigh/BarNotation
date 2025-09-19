@@ -255,6 +255,13 @@ const NotebookEditor: React.FC<NotebookEditorProps> = ({
         return;
       }
 
+      // Alt+Delete: delete selected cell if any
+      if (e.altKey && e.code === "Equal" && selectedCellId) {
+        e.preventDefault();
+        handleDuplicateCell(selectedCellId);
+        return;
+      }
+
       // store pending insertion instead of inserting immediately
       if (e.altKey && keymap[e.code]) {
         e.preventDefault();
@@ -292,13 +299,7 @@ const NotebookEditor: React.FC<NotebookEditorProps> = ({
 
     window.addEventListener("keydown", handlerKeyDown);
     return () => window.removeEventListener("keydown", handlerKeyDown);
-  }, [
-    selectedCellId,
-    visibleCells,
-    handleInsertAtIndex,
-    setSelectedCellId,
-    handleDeleteCell,
-  ]);
+  }, [selectedCellId, visibleCells, handleInsertAtIndex, setSelectedCellId, handleDeleteCell, handleDuplicateCell]);
 
   return (
     <main

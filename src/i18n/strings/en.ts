@@ -119,7 +119,7 @@ const en = {
     },
     hotkeysModal: {
       title: "Keyboard Shortcuts",
-      inputShortcuts: "Input Shortcuts",
+      mathInputShortcuts: "Math Input Shortcuts", //NEW (KEY NAME CHANGE!!)
 
       // Childed/Actuarial
       subscript: "Make subscript",
@@ -148,7 +148,8 @@ const en = {
 
       structuralShortcuts: "Structural Shortcuts",
       rearrangeNodes: "Rearrange nodes",
-      editingAndNavigation: "Editing & Navigation",
+      cellContentEditingAndNavigation: "Cell Content Editing & Navigation",//NEW(KEY NAME CHANGE)
+      cellListEditingAndNavigation: "Notebook Editing & Navigation",//NEW(KEY NAME CHANGE)
       navigate: "Navigate between nodes within a cell", //CHANGED; MORE SPECIFIC
       delete: "Delete node",
       copy: "Copy as LaTeX",
@@ -163,6 +164,7 @@ const en = {
       navigateCellUp: "Jump to previous cell", //NEW
       navigateCellDown: "Jump to next cell", //NEW
       deleteCurrCell: "Delete current cell", //NEW
+      duplicateCurrCell: "Duplicate current cell", //NEW
       insertCellAbove: "Insert cell (1 → Math, 2 → Text) above", //NEW
       insertCellBelow: "Insert cell (1 → Math, 2 → Text) below", //NEW
     },
