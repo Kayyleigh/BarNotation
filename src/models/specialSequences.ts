@@ -299,13 +299,13 @@ export const otherSymbols: SpecialSequence[] = [
   { sequence: "\\infty ", createNode: () => createTextNode("∞", "\\infty ") },
   { sequence: "\\partial ", createNode: () => createTextNode("∂", "\\partial ") },
   { sequence: "\\nabla ", createNode: () => createTextNode("∇", "\\nabla ") },
-  { sequence: "\\cdots	", createNode: () => createTextNode("⋯", "\\cdots ") },
-  { sequence: "\\dotsm	", createNode: () => createTextNode("⋯", "\\dotsm ") }, // TODO require amsmath package
+  { sequence: "\\cdots ", createNode: () => createTextNode("⋯", "\\cdots ") },
+  { sequence: "\\dotsm ", createNode: () => createTextNode("⋯", "\\dotsm ") }, // TODO require amsmath package
   { sequence: "\\quad ", createNode: () => createTextNode("\t", "\\quad ") },
-  { sequence: "\\ldots	", createNode: () => createTextNode("…", "\\ldots ") },
-  { sequence: "\\ddots	", createNode: () => createTextNode("⋱", "\\ddots ") },
-  { sequence: "\\dots	", createNode: () => createTextNode("…", "\\dots ") },
-  { sequence: "\\vdots	", createNode: () => createTextNode("⋮", "\\vdots ") },
+  { sequence: "\\ldots ", createNode: () => createTextNode("…", "\\ldots ") },
+  { sequence: "\\ddots ", createNode: () => createTextNode("⋱", "\\ddots ") },
+  { sequence: "\\dots ", createNode: () => createTextNode("…", "\\dots ") },
+  { sequence: "\\vdots ", createNode: () => createTextNode("⋮", "\\vdots ") },
 ];
 
 export const standardFunctionNames: SpecialSequence[] = [
