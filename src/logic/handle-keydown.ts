@@ -169,8 +169,8 @@ const keyMap: Record<
   (state: EditorState, e: KeyboardEvent | React.KeyboardEvent, commandMap?: Record<string, LibraryEntry>) => EditorState | null
 > = {
   // Triple-key events
-  "Shift+Ctrl+Digit6": (state) => transformToActsymbNode(state, "supLeft"),
-  "Shift+Ctrl+Minus": (state) => transformToActsymbNode(state, "subLeft"),
+  "Shift+Alt+Digit6": (state) => transformToActsymbNode(state, "supLeft"),
+  "Shift+Alt+Minus": (state) => transformToActsymbNode(state, "subLeft"),
   "Shift+Alt+ArrowUp": (state) => transformToOverUnderset(state, "nthtopbottom", "above"),
   "Shift+Alt+ArrowDown": (state) => transformToOverUnderset(state, "nthtopbottom", "below"),
 

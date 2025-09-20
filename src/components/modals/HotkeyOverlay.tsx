@@ -17,8 +17,8 @@ const HotkeyOverlay: React.FC<HotkeyOverlayProps> = ({ onClose }) => {
       keys: [
         [["Shift", "-"], t("modals.hotkeysModal.subscript")],
         [["Shift", "6"], t("modals.hotkeysModal.superscript")],
-        [["Ctrl", "Shift", "-"], t("modals.hotkeysModal.actuarialBL")],
-        [["Ctrl", "Shift", "6"], t("modals.hotkeysModal.actuarialTL")],
+        [["Shift", "Alt", "-"], t("modals.hotkeysModal.actuarialBL")],
+        [["Shift", "Alt", "6"], t("modals.hotkeysModal.actuarialTL")],
         [["Alt", "-"], t("modals.hotkeysModal.actuarialBR")],
         [["Alt", "6"], t("modals.hotkeysModal.actuarialTR")],
         [["Shift", "↑"], t("modals.hotkeysModal.overset")],
