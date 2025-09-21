@@ -26,6 +26,12 @@ interface EditorPaneProps {
   onDropNode: (from: DragSource, to: DropTarget) => void;
 }
 
+type NotebookState = {
+  order: string[];
+  states: Record<string, EditorState>;
+  textContents: Record<string, TextCellContent>;
+};
+
 function loadNoteState(noteId: string) {
   try {
     const saved = localStorage.getItem(`note-editor-state-${noteId}`);
@@ -52,9 +58,9 @@ function saveNoteState(noteId: string, state: {
   }
 }
 
-function shallowEqual<T extends object>(a: T, b: T): boolean {
-  return JSON.stringify(a) === JSON.stringify(b);
-}
+// function shallowEqual<T extends object>(a: T, b: T): boolean {
+//   return JSON.stringify(a) === JSON.stringify(b);
+// }
 
 const EditorPane: React.FC<EditorPaneProps> = ({
   noteId,
@@ -75,26 +81,35 @@ const EditorPane: React.FC<EditorPaneProps> = ({
 
   const { locked } = useEditorMode();
 
+  const lastUpdatedAtRef = React.useRef<number>(0);
+  const MIN_UPDATE_INTERVAL = 30000; // milliseconds, e.g., 30 seconds
+
   // const persistState = useCallback(
   //   (
   //     next: { order: string[]; states: Record<string, EditorState>; textContents: Record<string, TextCellContent> },
   //     prev: { states: Record<string, EditorState>; textContents: Record<string, TextCellContent> },
   //     skipUpdatedAt = false
   //   ) => {
-  //     console.log("PERSISTING")
   //     updateState(next);
 
   //     if (!noteId) return;
 
-  //     saveNoteState(noteId, next);
-
   //     if (!prev || skipUpdatedAt) return;
 
-  //     const editorStatesChanged = Object.keys(next.states).some((key) => {
-  //       const prevRoot = prev.states[key]?.rootNode;
-  //       const nextRoot = next.states[key]?.rootNode;
-  //       return !shallowEqual(prevRoot, nextRoot);
-  //     });
+  //     const editorStatesChanged = (() => {
+  //       const allKeys = new Set([
+  //         ...Object.keys(prev.states),
+  //         ...Object.keys(next.states),
+  //       ]);
+
+  //       return Array.from(allKeys).some((key) => {
+  //         const prevRoot = prev.states[key]?.rootNode;
+  //         const nextRoot = next.states[key]?.rootNode;
+
+  //         // If a cell was added or deleted, prevRoot vs nextRoot will differ
+  //         return !shallowEqual(prevRoot, nextRoot);
+  //       });
+  //     })();
 
   //     const textContentsChanged = Object.keys(next.textContents).some((key) => {
   //       const prevText = prev.textContents[key];
@@ -103,50 +118,63 @@ const EditorPane: React.FC<EditorPaneProps> = ({
   //     });
 
   //     if (editorStatesChanged || textContentsChanged) {
-  //       setNoteMetadata(noteId, { updatedAt: Date.now() });
+  //       saveNoteState(noteId, next); //This just ensures I don't write to storage for stupid little cursor updates
+
+  //       const now = Date.now();
+  //       if (now - lastUpdatedAtRef.current >= MIN_UPDATE_INTERVAL) {
+  //         setNoteMetadata(noteId, { updatedAt: now });
+  //         lastUpdatedAtRef.current = now;
+  //       }
   //     }
   //   },
   //   [noteId, setNoteMetadata, updateState]
   // );
 
-  const lastUpdatedAtRef = React.useRef<number>(0);
-  const MIN_UPDATE_INTERVAL = 30000; // milliseconds, e.g., 30 seconds
+  // keep a ref to the latest present state
+  const presentRef = useRef(history.present);
+
+  useEffect(() => {
+    presentRef.current = history.present;
+  }, [history.present]);
 
   const persistState = useCallback(
-    (
-      next: { order: string[]; states: Record<string, EditorState>; textContents: Record<string, TextCellContent> },
-      prev: { states: Record<string, EditorState>; textContents: Record<string, TextCellContent> },
-      skipUpdatedAt = false
-    ) => {
+    (patch: Partial<NotebookState>, skipUpdatedAt = false) => {
+      const prev = presentRef.current; // read from ref, not closure
+
+      const next: NotebookState = {
+        order: patch.order ?? prev.order,
+        states: patch.states ?? prev.states,
+        textContents: patch.textContents ?? prev.textContents,
+      };
+
       updateState(next);
 
-      if (!noteId) return;
-
-      if (!prev || skipUpdatedAt) return;
+      if (!noteId || skipUpdatedAt) return;
 
       const editorStatesChanged = (() => {
+        if (!patch.states) return false;
         const allKeys = new Set([
           ...Object.keys(prev.states),
           ...Object.keys(next.states),
         ]);
-
         return Array.from(allKeys).some((key) => {
           const prevRoot = prev.states[key]?.rootNode;
           const nextRoot = next.states[key]?.rootNode;
-
-          // If a cell was added or deleted, prevRoot vs nextRoot will differ
-          return !shallowEqual(prevRoot, nextRoot);
+          return JSON.stringify(prevRoot) !== JSON.stringify(nextRoot);
         });
       })();
 
-      const textContentsChanged = Object.keys(next.textContents).some((key) => {
-        const prevText = prev.textContents[key];
-        const nextText = next.textContents[key];
-        return !shallowEqual(prevText, nextText);
-      });
+      const textContentsChanged = (() => {
+        if (!patch.textContents) return false;
+        return Object.keys(next.textContents).some((key) => {
+          const prevText = prev.textContents[key];
+          const nextText = next.textContents[key];
+          return JSON.stringify(prevText) !== JSON.stringify(nextText);
+        });
+      })();
 
       if (editorStatesChanged || textContentsChanged) {
-        saveNoteState(noteId, next); //This just ensures I don't write to storage for stupid little cursor updates
+        saveNoteState(noteId, next);
 
         const now = Date.now();
         if (now - lastUpdatedAtRef.current >= MIN_UPDATE_INTERVAL) {
@@ -158,28 +186,49 @@ const EditorPane: React.FC<EditorPaneProps> = ({
     [noteId, setNoteMetadata, updateState]
   );
 
+
+  // const setEditorStates = useCallback(
+  //   (value: React.SetStateAction<typeof editorStates>) => {
+  //     const newStates =
+  //       typeof value === "function" ? value(editorStates) : value;
+  //     persistState(
+  //       { order, states: newStates, textContents },
+  //       { states: editorStates, textContents }
+  //     );
+  //   },
+  //   [order, editorStates, textContents, persistState]
+  // );
+
+  // const setTextContents = useCallback(
+  //   (value: React.SetStateAction<typeof textContents>) => {
+  //     const newContents =
+  //       typeof value === "function" ? value(textContents) : value;
+  //     persistState(
+  //       { order, states: editorStates, textContents: newContents },
+  //       { states: editorStates, textContents }
+  //     );
+  //   },
+  //   [order, editorStates, textContents, persistState]
+  // );
+
   const setEditorStates = useCallback(
     (value: React.SetStateAction<typeof editorStates>) => {
       const newStates =
         typeof value === "function" ? value(editorStates) : value;
-      persistState(
-        { order, states: newStates, textContents },
-        { states: editorStates, textContents }
-      );
+
+      persistState({ states: newStates });
     },
-    [order, editorStates, textContents, persistState]
+    [editorStates, persistState]
   );
 
   const setTextContents = useCallback(
     (value: React.SetStateAction<typeof textContents>) => {
       const newContents =
         typeof value === "function" ? value(textContents) : value;
-      persistState(
-        { order, states: editorStates, textContents: newContents },
-        { states: editorStates, textContents }
-      );
+
+      persistState({ textContents: newContents });
     },
-    [order, editorStates, textContents, persistState]
+    [textContents, persistState]
   );
 
   const addCell = useCallback(
@@ -202,10 +251,11 @@ const EditorPane: React.FC<EditorPaneProps> = ({
         newTextContents[newId] = { type: "plain", text: "" };
       }
 
-      persistState(
-        { order: newOrder, states: newStates, textContents: newTextContents },
-        { states: editorStates, textContents }
-      );
+      persistState({
+        order: newOrder,
+        states: newStates,
+        textContents: newTextContents,
+      });
 
       return newId; // return the ID so caller can use it
     },
@@ -217,24 +267,6 @@ const EditorPane: React.FC<EditorPaneProps> = ({
   useEffect(() => {
     addCellRef.current = addCell;
   }, [addCell]);
-
-  // const deleteCell = useCallback(
-  //   (id: string) => {
-  //     const newOrder = order.filter((cellId) => cellId !== id);
-  //     const newStates = { ...editorStates };
-  //     const newTextContents = { ...textContents };
-  //     delete newStates[id];
-  //     delete newTextContents[id];
-
-  //     persistState(
-  //       { order: newOrder, states: newStates, textContents: newTextContents },
-  //       { states: editorStates, textContents }
-  //     );
-
-  //     return newId; // TODO make it find the previous cell so that can be returned and thus selected in caller
-  //   },
-  //   [order, editorStates, textContents, persistState]
-  // );
 
   const deleteCell = useCallback(
     (id: string): string | null => {
@@ -255,11 +287,11 @@ const EditorPane: React.FC<EditorPaneProps> = ({
       delete newStates[id];
       delete newTextContents[id];
 
-      // Persist new state
-      persistState(
-        { order: newOrder, states: newStates, textContents: newTextContents },
-        { states: editorStates, textContents }
-      );
+      persistState({
+        order: newOrder,
+        states: newStates,
+        textContents: newTextContents,
+      });
 
       return newSelectedId;
     },
@@ -286,11 +318,11 @@ const EditorPane: React.FC<EditorPaneProps> = ({
       if (textContents[id] != null) {
         newTextContents[newId] = textContents[id];
       }
-
-      persistState(
-        { order: newOrder, states: newStates, textContents: newTextContents },
-        { states: editorStates, textContents }
-      );
+      persistState({
+        order: newOrder,
+        states: newStates,
+        textContents: newTextContents,
+      });
 
       return newId; // return the ID so caller can use it
     },
@@ -299,12 +331,11 @@ const EditorPane: React.FC<EditorPaneProps> = ({
 
   const updateOrder = useCallback(
     (newOrder: string[]) => {
-      persistState(
-        { order: newOrder, states: editorStates, textContents },
-        { states: editorStates, textContents }
-      );
+      persistState({
+        order: newOrder,
+      });
     },
-    [editorStates, textContents, persistState]
+    [persistState]
   );
 
   const resetAllZooms = useCallback(() => {
@@ -345,7 +376,7 @@ const EditorPane: React.FC<EditorPaneProps> = ({
     setShowLatexMap(initialLatexMap);
 
     // skip updating updatedAt on load
-    persistState(state, { states: {}, textContents: {} }, true);
+    persistState({ order: state.order, states: state.states, textContents: state.textContents }, true);
   }, [noteId, persistState]);
 
   useEffect(() => {

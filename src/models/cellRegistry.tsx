@@ -98,12 +98,11 @@ import TextView from "../components/editor/cells/textCell/TextView";
 import MathView from "../components/mathExpression/MathView";
 import type { EditorState } from "../logic/editor-state";
 import type { CellData, MathCellData, TextCellContent, TextCellData } from "./noteTypes";
-import { TEXT_CELL_TYPES, TEXT_TYPE_LABELS } from "./textTypes";
+import { TEXT_TYPE_LABELS, type TextCellType } from "./textTypes";
 import styles from "../components/editor/Editor.module.css";
-import textStyles from "../styles/textStyles.module.css";
-import toolbarStyles from "../components/editor/cells/CellToolbar.module.css";
-import clsx from "clsx";
 import { nodeToLatex } from "./nodeToLatex";
+import { TextCellToolbar } from "../components/editor/cells/textCell/TextCellToolbar";
+import { MathCellToolbar } from "../components/editor/cells/mathCell/MathCellToolbar";
 
 // Editable component props
 export interface BaseCellProps<TContent> {
@@ -121,8 +120,8 @@ export type LockedPropsBuilder<TCell extends CellData, TExtra = unknown> = (
 // Toolbar props
 export type TextToolbarExtrasProps = {
   id: string;
-  content: TextCellContent;
-  onChange: (id: string, partial: Partial<TextCellContent>) => void;
+  role: TextCellType;
+  updateRole: (newRole: TextCellType) => void;
   t: (key: string) => string;
 };
 
@@ -160,25 +159,27 @@ export const cellRegistry = {
     }),
     label: "Text",
     getLabel: (content: TextCellContent) => TEXT_TYPE_LABELS[content.type],
-    getToolbarExtras: (props: TextToolbarExtrasProps) => (
-      <div className={styles.hierarchyTypeButtons}>
-        {Object.values(TEXT_CELL_TYPES).map((typeOption) => (
-          <button
-            key={typeOption}
-            type="button"
-            className={clsx(
-              styles.hierarchyTypeButton,
-              textStyles[typeOption],
-              { [styles.active]: props.content.type === typeOption }
-            )}
-            onClick={() => props.onChange(props.id, { type: typeOption })}
-            title={props.t(`cellRow.${typeOption}`)}
-          >
-            A
-          </button>
-        ))}
-      </div>
-    ),
+    // getToolbarExtras: (props: TextToolbarExtrasProps) => (
+    //   <div className={styles.hierarchyTypeButtons}>
+    //     {Object.values(TEXT_CELL_TYPES).map((typeOption) => (
+    //       <button
+    //         key={typeOption}
+    //         type="button"
+    //         className={clsx(
+    //           styles.hierarchyTypeButton,
+    //           textStyles[typeOption],
+    //           { [styles.active]: props.content.type === typeOption }
+    //         )}
+    //         onClick={() => props.onChange(props.id, { type: typeOption })}
+    //         title={props.t(`cellRow.${typeOption}`)}
+    //       >
+    //         A
+    //       </button>
+    //     ))}
+    //   </div>
+    // ),
+    getToolbarExtras: (props: TextToolbarExtrasProps) => <TextCellToolbar {...props} />,
+
   },
   math: {
     component: MathCell,
@@ -191,11 +192,13 @@ export const cellRegistry = {
     label: "Math",
     hasLatex: true,
     getLatex: (editorState: EditorState) => nodeToLatex(editorState.rootNode, true),
-    getToolbarExtras: (props: MathToolbarExtrasProps) => (
-      <button className={toolbarStyles.button} onClick={() => props.toggleShowLatex(props.id)}>
-        {props.showLatex ? "Hide LaTeX" : "View LaTeX"}
-      </button>
-    ),
+    // getToolbarExtras: (props: MathToolbarExtrasProps) => (
+    //   <button className={toolbarStyles.button} onClick={() => props.toggleShowLatex(props.id)}>
+    //     {props.showLatex ? "Hide LaTeX" : "View LaTeX"}
+    //   </button>
+    // ),
+    getToolbarExtras: (props: MathToolbarExtrasProps) => <MathCellToolbar {...props} />,
+
   },
 } as const;
 

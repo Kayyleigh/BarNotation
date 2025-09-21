@@ -11,7 +11,7 @@ import InsertCellButtons from "./cells/InsertCellButtons";
 import { useCellDragState } from "../../hooks/cellDrag/useCellDragState";
 import styles from "./Editor.module.css";
 import NoteMetaDataSection from "./noteMetadata/NoteMetadataSection";
-import type { NoteMetadata, TextCellContent } from "../../models/noteTypes";
+import type { CellData, NoteMetadata, TextCellContent } from "../../models/noteTypes";
 import type { EditorState } from "../../logic/editor-state";
 import { useEditorMode } from "../../hooks/editorMode/useEditorMode";
 import cellStyles from "./cells/cell.module.css";
@@ -20,6 +20,7 @@ import type { DragSource, DropTarget } from "../../models/dragTypes";
 import { CellRenderer } from "./cells/CellRenderer";
 import { computeDisplayNumbers, reconstructCells } from "../../utils/noteUtils";
 import { createNotebookKeyMap } from "./notebookShortcuts";
+import type { TextCellType } from "../../models/textTypes";
 
 interface NotebookEditorProps {
   defaultZoom: number;
@@ -40,6 +41,120 @@ interface NotebookEditorProps {
   setMetadata: (noteId: string, metadata: Partial<NoteMetadata>) => void;
   onDropNode: (from: DragSource, to: DropTarget) => void;
 }
+
+// Small wrapper that can use hooks per cell
+const CellRendererWrapper: React.FC<{
+  cell: CellData;
+  index: number;
+  isSelected: boolean;
+  setSelectedCellId: (id: string) => void;
+  editorStates: Record<string, EditorState>;
+  // textContents: Record<string, TextCellContent>;
+  showLatexMap: Record<string, boolean>;
+  displayNumbers: Record<string, string>;
+  updateEditorState: (id: string, state: EditorState) => void;
+  updateTextCellContent: (id: string, content: Partial<TextCellContent>) => void;
+  toggleShowLatex: (id: string) => void;
+  handleDeleteCell: (id: string) => void;
+  handleDuplicateCell: (id: string) => void;
+  setCellRef: (index: number) => (el: HTMLDivElement | null) => void;
+  draggingCellId: string | null;
+  dragOverInsertIndex: number | null;
+  updateDragOver: (index: number) => void;
+  handleInsertAtIndex: (type: "math" | "text", idx: number) => void;
+  handlePointerDown: (e: React.PointerEvent, id: string, index: number) => void;
+  onDropNode: (from: DragSource, to: DropTarget) => void;
+  resetZoomSignal: number;
+  defaultZoom: number;
+}> = React.memo(({
+  cell,
+  index,
+  isSelected,
+  setSelectedCellId,
+  editorStates,
+  // textContents,
+  showLatexMap,
+  displayNumbers,
+  updateEditorState,
+  updateTextCellContent,
+  toggleShowLatex,
+  handleDeleteCell,
+  handleDuplicateCell,
+  setCellRef,
+  draggingCellId,
+  dragOverInsertIndex,
+  updateDragOver,
+  handleInsertAtIndex,
+  handlePointerDown,
+  onDropNode,
+  resetZoomSignal,
+  defaultZoom,
+}) => {
+  // Extract per-cell state
+  const editorState = editorStates[cell.id];
+  // const textContent = textContents[cell.id];
+  const showLatex = showLatexMap[cell.id] ?? false;
+  const displayNumber = displayNumbers[cell.id];
+
+  // Stable handlers bound to this cell
+  const handleUpdateEditorState = useCallback(
+    (newState: EditorState) => updateEditorState(cell.id, newState),
+    [cell.id, updateEditorState]
+  );
+
+  const handleUpdateTextContent = useCallback( //TODO optimize
+    (newRole: TextCellType) =>
+      updateTextCellContent(cell.id, { ...cell.content, type: newRole }),
+    [cell.content, cell.id, updateTextCellContent]
+  );
+
+  const handleToggleLatex = useCallback(
+    () => toggleShowLatex(cell.id),
+    [cell.id, toggleShowLatex]
+  );
+
+  const selectCell = useCallback(
+    () => setSelectedCellId(cell.id),
+    [cell.id, setSelectedCellId]
+  );
+
+  const handleDelete = useCallback(
+    () => handleDeleteCell(cell.id),
+    [cell.id, handleDeleteCell]
+  );
+
+  const handleDuplicate = useCallback(
+    () => handleDuplicateCell(cell.id),
+    [cell.id, handleDuplicateCell]
+  );
+
+  return (
+    <CellRenderer
+      key={cell.id}
+      ref={setCellRef(index)}
+      cell={cell}
+      index={index}
+      isSelected={isSelected}
+      selectCell={selectCell}
+      draggingCellId={draggingCellId}
+      updateDragOver={updateDragOver}
+      dragOverInsertIndex={dragOverInsertIndex}
+      handleInsertAtIndex={handleInsertAtIndex}
+      handlePointerDown={handlePointerDown}
+      deleteCell={handleDelete}
+      duplicateCell={handleDuplicate}
+      updateTextRole={handleUpdateTextContent}
+      toggleShowLatex={handleToggleLatex}
+      showLatex={showLatex}
+      onDropNode={onDropNode}
+      resetZoomSignal={resetZoomSignal}
+      defaultZoom={defaultZoom}
+      editorState={editorState}
+      updateEditorState={handleUpdateEditorState}
+      displayNumber={displayNumber}
+    />
+  );
+});
 
 const NotebookEditor: React.FC<NotebookEditorProps> = ({
   noteId,
@@ -118,7 +233,7 @@ const NotebookEditor: React.FC<NotebookEditorProps> = ({
     }
   }, [noteId]);
 
-  const updateTextCellContent = useCallback(
+  const updateTextCellContent = useCallback( //TODO ACTUALLY USE THIS !!! ATM NOT DOING IT!!!
     (id: string, partialContent: Partial<TextCellContent>) => {
       setTextContents(prev => {
         const prevContent = prev[id];
@@ -235,73 +350,6 @@ const NotebookEditor: React.FC<NotebookEditorProps> = ({
 
   const pendingInsertRef = useRef<"math" | "text" | null>(null);
 
-  // useEffect(() => {
-  //   const handlerKeyDown = (e: KeyboardEvent) => {
-  //     const currentIndex =
-  //       selectedCellId != null
-  //         ? visibleCells.findIndex(c => c.id === selectedCellId)
-  //         : visibleCells.length - 1; // -1 if no cells yet, will insert at end
-
-  //     const keymap: Record<string, "text" | "math"> = {
-  //       Digit1: "math",
-  //       Digit2: "text",
-  //       Numpad1: "math",
-  //       Numpad2: "text",
-  //     };
-
-  //     // Alt+Delete: delete selected cell if any
-  //     if (e.altKey && e.code === "Delete" && selectedCellId) {
-  //       e.preventDefault();
-  //       handleDeleteCell(selectedCellId);
-  //       return;
-  //     }
-
-  //     // Alt+Delete: delete selected cell if any
-  //     if (e.altKey && e.code === "Equal" && selectedCellId) {
-  //       e.preventDefault();
-  //       handleDuplicateCell(selectedCellId);
-  //       return;
-  //     }
-
-  //     // store pending insertion instead of inserting immediately
-  //     if (e.altKey && keymap[e.code]) {
-  //       e.preventDefault();
-  //       pendingInsertRef.current = keymap[e.code]; // mark type
-  //       return; // don't insert yet
-  //     }
-
-  //     // Alt+Arrow: insert in direction
-  //     if (e.altKey && (e.key === "ArrowUp" || e.key === "ArrowDown")) {
-  //       e.preventDefault();
-  //       const direction = e.key === "ArrowUp" ? "above" : "below";
-
-  //       if (pendingInsertRef.current) {
-  //         // insert now according to direction
-  //         const insertIndex =
-  //           direction === "above"
-  //             ? (selectedCellId != null ? currentIndex : visibleCells.length)
-  //             : (selectedCellId != null ? currentIndex + 1 : visibleCells.length);
-
-  //         handleInsertAtIndex(pendingInsertRef.current, insertIndex);
-  //         pendingInsertRef.current = null;
-  //         return;
-  //       }
-
-  //       // No pending → normal Alt+Arrow navigation
-  //       if (selectedCellId != null) {
-  //         if (direction === "above" && currentIndex > 0) {
-  //           setSelectedCellId(visibleCells[currentIndex - 1].id);
-  //         } else if (direction === "below" && currentIndex < visibleCells.length - 1) {
-  //           setSelectedCellId(visibleCells[currentIndex + 1].id);
-  //         }
-  //       }
-  //     }
-  //   }
-
-  //   window.addEventListener("keydown", handlerKeyDown);
-  //   return () => window.removeEventListener("keydown", handlerKeyDown);
-  // }, [selectedCellId, visibleCells, handleInsertAtIndex, setSelectedCellId, handleDeleteCell, handleDuplicateCell]);
-
   useEffect(() => {
     const handlerKeyDown = (e: KeyboardEvent) => {
       if (!selectedCellId) return;
@@ -363,29 +411,29 @@ const NotebookEditor: React.FC<NotebookEditorProps> = ({
         )}
 
         {visibleCells.map((cell, index) => (
-          <CellRenderer
+          <CellRendererWrapper
             key={cell.id}
-            ref={setCellRef(index)}
             cell={cell}
             index={index}
-            selectedCellId={selectedCellId}
+            isSelected={selectedCellId === cell.id}
             setSelectedCellId={setSelectedCellId}
-            draggingCellId={draggingCellId}
-            updateDragOver={updateCellDragOver}
-            dragOverInsertIndex={dragOverInsertIndex}
-            handleInsertAtIndex={handleInsertAtIndex}
-            handlePointerDown={handlePointerDown}
-            deleteCell={handleDeleteCell}
-            duplicateCell={handleDuplicateCell}
+            editorStates={editorStates}
+            showLatexMap={showLatexMap}
+            displayNumbers={displayNumbers}
+            updateEditorState={updateEditorState}
             updateTextCellContent={updateTextCellContent}
             toggleShowLatex={toggleShowLatex}
-            showLatexMap={showLatexMap}
+            handleDeleteCell={handleDeleteCell}
+            handleDuplicateCell={handleDuplicateCell}
+            setCellRef={setCellRef}
+            draggingCellId={draggingCellId}
+            dragOverInsertIndex={dragOverInsertIndex}
+            updateDragOver={updateCellDragOver}
+            handleInsertAtIndex={handleInsertAtIndex}
+            handlePointerDown={handlePointerDown}
             onDropNode={onDropNode}
             resetZoomSignal={resetZoomSignal}
             defaultZoom={defaultZoom}
-            editorStates={editorStates}
-            updateEditorState={updateEditorState}
-            displayNumbers={displayNumbers}
           />
         ))}
 

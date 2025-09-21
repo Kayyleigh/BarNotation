@@ -188,6 +188,12 @@ function areEqual(prev: CoreRenderProps, next: CoreRenderProps) {
 
   const ancestorIdChanged = prev.ancestorIds[prev.ancestorIds.length - 1] !== next.ancestorIds[next.ancestorIds.length - 1];
 
+  // const cursorChangedHere = (prev.cursor.containerId === prev.containerId && prev.cursor.index === prev.index)
+  //   || (next.cursor.containerId === next.containerId && next.cursor.index === next.index);
+
+  // const wasCursorInPath = prev.ancestorIds.includes(prev.cursor.containerId)
+  // const isCursorInPath = next.ancestorIds.includes(next.cursor.containerId)
+
   const propsAreEqual =
     prev.node === next.node &&
     prev.cellId === next.cellId &&
@@ -195,6 +201,7 @@ function areEqual(prev: CoreRenderProps, next: CoreRenderProps) {
     prev.index === next.index &&
     prev.isActive === next.isActive &&
     prev.cursor === next.cursor &&
+    // !cursorChangedHere &&
     prev.inheritedStyle === next.inheritedStyle &&
     !ancestorIdChanged;
 

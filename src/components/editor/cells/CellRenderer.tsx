@@ -8,28 +8,29 @@ import { CellWrapper } from "./CellWrapper";
 import type { DragSource, DropTarget } from "../../../models/dragTypes";
 import { useI18n } from "../../../i18n/useI18n";
 import LatexViewer from "../../mathExpression/LatexViewer";
+import type { TextCellType } from "../../../models/textTypes";
 
 export interface CellRendererProps {
   cell: CellData;
   index: number;
-  selectedCellId: string | null;
-  setSelectedCellId: (id: string | null) => void;
+  isSelected: boolean;
+  selectCell: () => void;
   handleInsertAtIndex: (type: CellType, idx: number) => void;
   handlePointerDown: (e: React.PointerEvent, id: string, index: number) => void;
-  deleteCell: (id: string) => void;
-  duplicateCell: (id: string) => void;
-  updateTextCellContent: (id: string, partialContent: Partial<TextCellContent>) => void;
-  toggleShowLatex: (id: string) => void;
-  showLatexMap: Record<string, boolean>;
+  deleteCell: () => void;
+  duplicateCell: () => void;
+  updateTextRole: (newRole: TextCellType) => void;
+  toggleShowLatex: () => void;
+  showLatex: boolean;
   onDropNode: (from: DragSource, to: DropTarget) => void;
   resetZoomSignal: number;
   defaultZoom: number;
-  editorStates: Record<string, EditorState>;
-  updateEditorState: (id: string, newState: EditorState) => void;
+  editorState: EditorState;
+  updateEditorState: (newState: EditorState) => void;
   draggingCellId: string | null;
   dragOverInsertIndex: number | null;
   updateDragOver: (index: number) => void;
-  displayNumbers: Record<string, string>;
+  displayNumber: string;
 }
 
 export const CellRenderer = React.memo(
@@ -37,24 +38,24 @@ export const CellRenderer = React.memo(
     const {
       cell,
       index,
-      selectedCellId,
-      setSelectedCellId,
+      isSelected,
+      selectCell,
       handleInsertAtIndex,
       handlePointerDown,
       deleteCell,
       duplicateCell,
-      updateTextCellContent,
+      updateTextRole,
       toggleShowLatex,
-      showLatexMap,
+      showLatex,
       onDropNode,
       resetZoomSignal,
       defaultZoom,
-      editorStates,
+      editorState,
       updateEditorState,
       draggingCellId,
       dragOverInsertIndex,
       updateDragOver,
-      displayNumbers,
+      displayNumber,
     } = props;
 
     const { t } = useI18n();
@@ -68,10 +69,10 @@ export const CellRenderer = React.memo(
 
     // Whenever selection changes, call it
     useEffect(() => {
-      if (selectedCellId === cell.id) {
+      if (isSelected) {
         cellHandleRef.current?.focusAndScroll();
       }
-    }, [selectedCellId, cell.id]);
+    }, [isSelected]);
 
 
     const typeLabel = useMemo(
@@ -82,17 +83,17 @@ export const CellRenderer = React.memo(
     const toolbarExtras = useMemo(() => {
       return registryEntry.getToolbarExtras?.({
         id: cell.id,
-        content: cell.content as any,
-        onChange: (id: string, newContent: any) => updateTextCellContent(id, newContent),
+        role: (cell.content as TextCellContent).type,
+        updateRole: (newRole: TextCellType) => updateTextRole(newRole),
         toggleShowLatex,
-        showLatex: showLatexMap[cell.id],
+        showLatex,
         t,
       });
-    }, [registryEntry, cell.id, cell.content, showLatexMap, t, toggleShowLatex, updateTextCellContent]);
+    }, [registryEntry, cell.id, cell.content, showLatex, t, toggleShowLatex, updateTextRole]);
 
-    const handleSelect = useCallback(() => setSelectedCellId(cell.id), [cell.id, setSelectedCellId]);
-    const handleDelete = useCallback(() => deleteCell(cell.id), [cell.id, deleteCell]);
-    const handleDuplicate = useCallback(() => duplicateCell(cell.id), [cell.id, duplicateCell]);
+    const handleSelect = useCallback(() => selectCell(), [selectCell]);
+    const handleDelete = useCallback(() => deleteCell(), [deleteCell]);
+    const handleDuplicate = useCallback(() => duplicateCell(), [duplicateCell]);
     const handlePointerDownLocal = useCallback(
       (e: React.PointerEvent) => handlePointerDown(e, cell.id, index),
       [handlePointerDown, cell.id, index]
@@ -105,59 +106,92 @@ export const CellRenderer = React.memo(
       latexVersionMapRef.current.set(cellId, current + 1);
     }, []);
 
-    const handleTextCellChange = useCallback(
-      //TODO why is this even needed? TextCell has no LatexViewer
-      (id: string, newContent: Partial<TextCellContent>) => {
-        updateTextCellContent(id, newContent);
-        markLatexOutdated(id);
-      },
-      [updateTextCellContent, markLatexOutdated]
-    );
+    // const handleTextChange = useCallback(
+    //   (newContent: TextCellType) => {
+    //     updateTextRole(newContent);
+    //     markLatexOutdated(cell.id);
+    //   },
+    //   [cell.id, updateTextRole, markLatexOutdated]
+    // );
 
-    const handleEditorStateChange = useCallback(
-      (id: string, newState: EditorState) => {
-        const oldState = editorStates[id];
-        updateEditorState(id, newState);
-        if (oldState.rootNode !== newState.rootNode) markLatexOutdated(id);
-      },
-      [editorStates, updateEditorState, markLatexOutdated]
-    );
+    // const handleMathChange = useCallback(
+    //   (newState: EditorState) => {
+    //     const oldState = editorState;
+    //     updateEditorState(newState);
+    //     if (oldState.rootNode !== newState.rootNode) markLatexOutdated(cell.id);
+    //   },
+    //   [cell.id, editorState, updateEditorState, markLatexOutdated]
+    // );
+
+    // --- inside CellRenderer ---
+    const handleChangeRef = useRef<((value: any) => void) | null>(null);
+
+    // always update the ref to point to the latest logic
+    useEffect(() => {
+      if (cell.type === "text") {
+        handleChangeRef.current = (newContent: TextCellType) => {
+          updateTextRole(newContent);
+          markLatexOutdated(cell.id);
+        };
+      } else if (cell.type === "math") {
+        handleChangeRef.current = (newState: EditorState) => {
+          const oldState = editorState;
+          updateEditorState(newState);
+          if (oldState.rootNode !== newState.rootNode) {
+            markLatexOutdated(cell.id);
+          }
+        };
+      }
+    }, [cell.type, cell.id, updateTextRole, updateEditorState, editorState, markLatexOutdated]);
+
+    // provide a stable callback to children
+    const cellOnChange = useCallback((value: any) => {
+      handleChangeRef.current?.(value);
+    }, []);
+
+    // const cellOnChange = useMemo(() => {
+    //   return cell.type === "text" ? handleTextChange : handleMathChange;
+    // }, [cell.type, handleTextChange, handleMathChange]);
 
     const componentProps = useMemo(() => {
       const baseProps: Record<string, unknown> = {
         id: cell.id,
         content: cell.content as ContentType,
-        onChange:
-          cell.type === "text"
-            ? (newContent: TextCellContent) => handleTextCellChange(cell.id, newContent)
-            : (newState: EditorState) => handleEditorStateChange(cell.id, newState),
+        onChange: cellOnChange,
       };
 
       if (cell.type === "text") {
         Object.assign(baseProps, {
-          displayNumber: displayNumbers[cell.id],
+          displayNumber: displayNumber,
         });
       }
 
       if (cell.type === "math") {
         Object.assign(baseProps, {
-          editorState: editorStates[cell.id],
-          selectedCellId,
-          setSelectedCellId,
+          editorState,
+          isSelected,
+          selectCell,
           defaultZoom,
           resetZoomSignal,
-          showLatex: showLatexMap[cell.id] ?? false,
+          showLatex,
           onDropNode,
         });
       }
 
       return baseProps;
     }, [
-      cell.id, cell.content, cell.type,
-      handleTextCellChange, handleEditorStateChange,
-      displayNumbers, editorStates, selectedCellId,
-      setSelectedCellId, defaultZoom, resetZoomSignal,
-      showLatexMap, onDropNode
+      cell.id,
+      cell.content,
+      cell.type,
+      cellOnChange,
+      displayNumber,
+      editorState,
+      isSelected,
+      selectCell,
+      defaultZoom,
+      resetZoomSignal,
+      showLatex,
+      onDropNode
     ]);
 
     const isDragging = draggingCellId === cell.id;
@@ -178,7 +212,7 @@ export const CellRenderer = React.memo(
 
         <CellWrapper
           id={cell.id}
-          isSelected={selectedCellId === cell.id}
+          isSelected={isSelected}
           isDragging={isDragging}
           isDragOver={isDragOver}
           onSelect={handleSelect}
@@ -195,7 +229,7 @@ export const CellRenderer = React.memo(
 
         {registryEntry.hasLatex && (
           <LatexViewer
-            showLatex={showLatexMap[cell.id] ?? false}
+            showLatex={showLatex}
             getLatex={stableGetLatex}
             contentVersion={latexVersionMapRef.current.get(cell.id) ?? 0}
           />

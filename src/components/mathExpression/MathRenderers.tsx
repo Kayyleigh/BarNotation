@@ -71,6 +71,8 @@ export function renderContainerChildren(
   } = baseProps;
 
   const nodes: React.ReactNode[] = [];
+  // console.log(children.length, "is nodes legnth")
+  // const isEmpty = children.length === 0;
 
   if (!readOnly) {
     nodes.push(

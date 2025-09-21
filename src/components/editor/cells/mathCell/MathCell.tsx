@@ -426,10 +426,10 @@ interface MathCellExtraProps {
   resetZoomSignal: number;
   defaultZoom: number;
   showLatex: boolean;
-  editorState: EditorState;
-  updateEditorState: (newState: EditorState) => void;
-  selectedCellId: string | null;
-  setSelectedCellId: (id: string | null) => void;
+  // editorState: EditorState;
+  // updateEditorState: (newState: EditorState) => void;
+  isSelected: boolean;
+  selectCell: () => void;
   onDropNode: (from: DragSource, to: DropTarget) => void;
 }
 
@@ -444,15 +444,14 @@ const MathCell = forwardRef<MathCellHandle, MathCellProps>(
       resetZoomSignal,
       defaultZoom,
       showLatex,
-      selectedCellId,
-      setSelectedCellId,
+      isSelected,
+      selectCell,
       onDropNode,
     },
     ref
   ) => {
     const { editingMode } = useEditorMode();
     const isEditMode = editingMode === "edit";
-    const isSelected = selectedCellId === id;
 
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -475,8 +474,8 @@ const MathCell = forwardRef<MathCellHandle, MathCellProps>(
     });
 
     const handleEditorFocus = useCallback(
-      () => setSelectedCellId(id),
-      [id, setSelectedCellId]
+      () => selectCell(),
+      [selectCell]
     );
 
     return (
@@ -486,7 +485,7 @@ const MathCell = forwardRef<MathCellHandle, MathCellProps>(
         onKeyDown={(e) => {
           if (e.key === "Enter") {
             e.preventDefault();
-            setSelectedCellId(id);
+            selectCell();
             const editorDiv = document.querySelector<HTMLDivElement>(
               `[data-math-editor="${id}"]`
             );
@@ -522,4 +521,6 @@ const MathCell = forwardRef<MathCellHandle, MathCellProps>(
   }
 );
 
+MathCell.displayName = "MathCell";
 export default React.memo(MathCell);
+

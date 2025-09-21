@@ -530,7 +530,7 @@
 
 // export default React.memo(MathEditor); 
 
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { setCursor } from "../../logic/editor-state";
 import { handleKeyDown } from "../../logic/handle-keydown";
 import { MathRenderer } from "./MathRenderer";
@@ -663,8 +663,16 @@ const MathEditor: React.FC<MathEditorProps> = ({
     [cellId, editorState.rootNode.child, onDropNode, onFocus]
   );
 
-  const defaultInheritedStyle: TextStyle = { fontStyling: { fontStyle: "normal", fontStyleAlias: "" } };
-  const emptyAncestorIds: string[] = [];
+  const onCursorChange = useCallback((cursor: CursorPosition) => {
+    updateEditorState(setCursor(editorState, cursor));
+  }, [editorState, updateEditorState]);
+
+  const defaultInheritedStyle = useMemo<TextStyle>(
+    () => ({ fontStyling: { fontStyle: "normal", fontStyleAlias: "" } }),
+    []
+  );
+
+  const emptyAncestorIds = useMemo<string[]>(() => [], []);
 
   return (
     <div
@@ -689,7 +697,7 @@ const MathEditor: React.FC<MathEditorProps> = ({
           hoverPath={hoverPath}
           setHoverPath={setHoverPath}
           inheritedStyle={defaultInheritedStyle}
-          onCursorChange={(cursor: CursorPosition) => updateEditorState(setCursor(editorState, cursor))}
+          onCursorChange={onCursorChange}
           isActive={isSelected}
           ancestorIds={emptyAncestorIds}
           onDropNode={handleDropNode}
