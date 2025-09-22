@@ -8,14 +8,16 @@ export const EditorModeProvider: React.FC<Props> = ({ children }) => {
   const [editingMode, setEditingMode] = useState<EditingMode>(() => {
     return localStorage.getItem("previewMode") === "on" ? "preview" : "edit";
   });
-  const [locked, setLocked] = useState(() => localStorage.getItem("lockedMode") === "on");
+
+  // always start as false, no persistence
+  const [locked, setLocked] = useState(false);
 
   const toggleEditingMode = useCallback(() => {
     setEditingMode(prev => {
       const next = prev === "edit" ? "preview" : "edit";
       localStorage.setItem("previewMode", next === "preview" ? "on" : "off");
-      // Exiting preview automatically clears locked
-      if (locked && next === "edit") setLocked(false);
+      // exiting preview automatically clears locked (but doesn’t persist)
+      if (locked && next === "edit") setLocked(false)
       return next;
     });
   }, [locked]);
@@ -23,7 +25,6 @@ export const EditorModeProvider: React.FC<Props> = ({ children }) => {
   const toggleLocked = useCallback(() => {
     setLocked(prev => {
       if (editingMode !== "preview") return prev; // only allow from preview
-      localStorage.setItem("lockedMode", prev ? "off" : "on");
       return !prev;
     });
   }, [editingMode]);
