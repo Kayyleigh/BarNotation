@@ -54,6 +54,7 @@ const MathCell = forwardRef<MathCellHandle, MathCellProps>(
     useImperativeHandle(ref, () => ({
       focusAndScroll: () => {
         if (containerRef.current) {
+          console.log(`NOW IMPERATIVE THIGN`)
           selectCell();
           containerRef.current.scrollIntoView({ block: "center", behavior: "smooth" });
           // optional: focus inner math editor DOM node

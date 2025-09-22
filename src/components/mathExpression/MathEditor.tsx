@@ -672,6 +672,18 @@ const MathEditor: React.FC<MathEditorProps> = ({
     []
   );
 
+  const setCursorToEnd = useCallback(() => {
+    const rootChild = editorState.rootNode.child;
+    if (!rootChild) return;
+
+    const newCursor: CursorPosition = {
+      containerId: rootChild.id,
+      index: rootChild.children.length, // place cursor at the end
+    };
+    updateEditorState(setCursor(editorState, newCursor));
+  }, [editorState, updateEditorState]);
+
+
   const emptyAncestorIds = useMemo<string[]>(() => [], []);
 
   return (
@@ -684,7 +696,7 @@ const MathEditor: React.FC<MathEditorProps> = ({
       onCut={onCut}
       onPaste={onPaste}
       onFocus={onFocus}
-      // onBlur={onBlur}
+      onBlur={setCursorToEnd}
       onMouseLeave={() => setHoverPath([])}
     >
       <div className="math-editor-scroll-inner">
