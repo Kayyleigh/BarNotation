@@ -498,6 +498,7 @@ export function renderOverUndersetNode(
     showPlaceholder: baseProps.showPlaceholder,
     editorState: baseProps.editorState,
     updateEditorState: baseProps.updateEditorState,
+    editorRef: baseProps.editorRef,
     readOnly: baseProps.readOnly
   };
 
@@ -581,6 +582,7 @@ export function renderDecoratedNode(
     showPlaceholder: baseProps.showPlaceholder,
     editorState: baseProps.editorState,
     updateEditorState: baseProps.updateEditorState,
+    editorRef: baseProps.editorRef,
     readOnly: baseProps.readOnly
   };
 
