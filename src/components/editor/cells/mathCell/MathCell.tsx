@@ -69,10 +69,10 @@ const MathCell = forwardRef<MathCellHandle, MathCellProps>(
       zoomLevel: defaultZoom,
     });
 
-    const handleEditorFocus = useCallback(
-      () => selectCell(),
-      [selectCell]
-    );
+    // const handleEditorFocus = useCallback(
+    //   () => selectCell(),
+    //   [selectCell]
+    // );
 
     return (
       <div
@@ -100,7 +100,7 @@ const MathCell = forwardRef<MathCellHandle, MathCellProps>(
               updateEditorState={onChange}
               onDropNode={onDropNode}
               onHoverInfoChange={setHoverInfo}
-              onFocus={handleEditorFocus}
+              onFocus={selectCell}
               isSelected={isSelected}
             />
           </HoverProvider>
