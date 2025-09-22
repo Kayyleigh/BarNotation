@@ -1,5 +1,5 @@
 // components/editor/cells/CellRenderer.tsx
-import React, { useMemo, useCallback, useRef, useEffect } from "react";
+import React, { useMemo, useCallback, useRef, useEffect, useLayoutEffect } from "react";
 import type { CellData, TextCellContent } from "../../../models/noteTypes";
 import type { EditorState } from "../../../logic/editor-state";
 import InsertCellButtons from "./InsertCellButtons";
@@ -68,7 +68,7 @@ export const CellRenderer = React.memo(
     const cellHandleRef = useRef<{ focusAndScroll: () => void } | null>(null);
 
     // Whenever selection changes, call it
-    useEffect(() => {
+    useLayoutEffect(() => {
       if (isSelected) {
         cellHandleRef.current?.focusAndScroll();
       }

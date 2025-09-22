@@ -74,15 +74,19 @@ const TextCell = forwardRef<
   }, [inputValue]);
 
   const handleChange = useCallback(
-    (e: React.ChangeEvent<HTMLTextAreaElement>) => setInputValue(e.target.value),
-    []
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      const newValue = e.target.value;
+      setInputValue(newValue);
+      onChange({ ...content, text: newValue }); // persist immediately
+    },
+    [content, onChange]
   );
 
-  const handleBlur = useCallback(() => {
-    if (inputValue !== content.text) {
-      onChange({ ...content, text: inputValue });
-    }
-  }, [inputValue, content, onChange]);
+  // const handleBlur = useCallback(() => {
+  //   if (inputValue !== content.text) {
+  //     onChange({ ...content, text: inputValue });
+  //   }
+  // }, [inputValue, content, onChange]);
 
   const textareaClass = useMemo(
     () => clsx({ [styles.preview]: !isEditMode }, textStyles[content.type]),
@@ -100,7 +104,7 @@ const TextCell = forwardRef<
         ref={textareaRef}
         value={inputValue}
         onChange={handleChange}
-        onBlur={handleBlur}
+        // onBlur={handleBlur}
         spellCheck={isEditMode}
         className={clsx(styles.textCellInput, textareaClass)}
         rows={1}
