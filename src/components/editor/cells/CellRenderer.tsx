@@ -98,9 +98,6 @@ export const CellRenderer = React.memo(
       });
     }, [registryEntry, cell.id, cell.content, showLatex, t, toggleShowLatex, updateTextRole]);
 
-    const handleSelect = useCallback(() => selectCell(), [selectCell]);
-    const handleDelete = useCallback(() => deleteCell(), [deleteCell]);
-    const handleDuplicate = useCallback(() => duplicateCell(), [duplicateCell]);
     const handlePointerDownLocal = useCallback(
       (e: React.PointerEvent) => handlePointerDown(e, cell.id, index),
       [handlePointerDown, cell.id, index]
@@ -201,9 +198,9 @@ export const CellRenderer = React.memo(
           isSelected={isSelected}
           isDragging={isDragging}
           isDragOver={isDragOver}
-          onSelect={handleSelect}
-          onDelete={handleDelete}
-          onDuplicate={handleDuplicate}
+          onSelect={selectCell}
+          onDelete={deleteCell}
+          onDuplicate={duplicateCell}
           draggableProps={{ onPointerDown: handlePointerDownLocal }}
           typeLabel={typeLabel}
           toolbarExtras={toolbarExtras}

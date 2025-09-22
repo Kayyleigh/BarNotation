@@ -179,7 +179,7 @@ export const handleCharacterInsert = (
         if (transformedNode.child.type === "inline-container") {
           if (transformedNode.child.children.length === 0) {
             targetContainer = transformedNode.child;
-            targetIndex = transformedNode.child.children.length;
+            targetIndex = 0;
           }
           else {
             targetContainer = container;
@@ -518,9 +518,13 @@ export function replaceCommandWithNode(
   }
 
   if (replacementNode.type === "styled") {
-    if (replacementNode.child.type === "inline-container") {
+    if (replacementNode.child.type === "inline-container" && replacementNode.child.children.length === 0) {
       targetContainerId = replacementNode.child.id;
       targetIndex = 0;
+    }
+    else {
+      targetContainerId = container.id;
+      targetIndex = index + 1;
     }
   }
 

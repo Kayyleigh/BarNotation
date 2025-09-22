@@ -1,7 +1,7 @@
 // components/editor/cells/MathCell.tsx
 import React, {
   useState,
-  useCallback,
+  // useCallback,
   forwardRef,
   useImperativeHandle,
   useRef,
@@ -54,6 +54,7 @@ const MathCell = forwardRef<MathCellHandle, MathCellProps>(
     useImperativeHandle(ref, () => ({
       focusAndScroll: () => {
         if (containerRef.current) {
+          selectCell();
           containerRef.current.scrollIntoView({ block: "center", behavior: "smooth" });
           // optional: focus inner math editor DOM node
           const editorDiv = containerRef.current.querySelector<HTMLDivElement>(
@@ -81,7 +82,6 @@ const MathCell = forwardRef<MathCellHandle, MathCellProps>(
         onKeyDown={(e) => {
           if (e.key === "Enter") {
             e.preventDefault();
-            selectCell();
             const editorDiv = document.querySelector<HTMLDivElement>(
               `[data-math-editor="${id}"]`
             );
