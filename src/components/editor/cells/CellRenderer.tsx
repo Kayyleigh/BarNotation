@@ -19,7 +19,7 @@ export interface CellRendererProps {
   handlePointerDown: (e: React.PointerEvent, id: string, index: number) => void;
   deleteCell: () => void;
   duplicateCell: () => void;
-  updateTextRole: (newRole: TextCellType) => void;
+  updateTextCellContent: (newContent: Partial<TextCellContent>) => void;
   toggleShowLatex: () => void;
   showLatex: boolean;
   onDropNode: (from: DragSource, to: DropTarget) => void;
@@ -44,7 +44,7 @@ export const CellRenderer = React.memo(
       handlePointerDown,
       deleteCell,
       duplicateCell,
-      updateTextRole,
+      updateTextCellContent,
       toggleShowLatex,
       showLatex,
       onDropNode,
@@ -80,11 +80,18 @@ export const CellRenderer = React.memo(
       [registryEntry, cell.content]
     );
 
+    const updateTextRole = useCallback(
+      (newRole: TextCellType) => {
+        updateTextCellContent({ type: newRole });
+      },
+      [updateTextCellContent]
+    );
+
     const toolbarExtras = useMemo(() => {
       return registryEntry.getToolbarExtras?.({
         id: cell.id,
         role: (cell.content as TextCellContent).type,
-        updateRole: (newRole: TextCellType) => updateTextRole(newRole),
+        updateRole: updateTextRole, // pass stable callback
         toggleShowLatex,
         showLatex,
         t,
@@ -106,31 +113,14 @@ export const CellRenderer = React.memo(
       latexVersionMapRef.current.set(cellId, current + 1);
     }, []);
 
-    // const handleTextChange = useCallback(
-    //   (newContent: TextCellType) => {
-    //     updateTextRole(newContent);
-    //     markLatexOutdated(cell.id);
-    //   },
-    //   [cell.id, updateTextRole, markLatexOutdated]
-    // );
-
-    // const handleMathChange = useCallback(
-    //   (newState: EditorState) => {
-    //     const oldState = editorState;
-    //     updateEditorState(newState);
-    //     if (oldState.rootNode !== newState.rootNode) markLatexOutdated(cell.id);
-    //   },
-    //   [cell.id, editorState, updateEditorState, markLatexOutdated]
-    // );
-
     // --- inside CellRenderer ---
     const handleChangeRef = useRef<((value: any) => void) | null>(null);
 
     // always update the ref to point to the latest logic
     useEffect(() => {
       if (cell.type === "text") {
-        handleChangeRef.current = (newContent: TextCellType) => {
-          updateTextRole(newContent);
+        handleChangeRef.current = (newContent: TextCellContent) => {
+          updateTextCellContent(newContent);
           markLatexOutdated(cell.id);
         };
       } else if (cell.type === "math") {
@@ -142,16 +132,12 @@ export const CellRenderer = React.memo(
           }
         };
       }
-    }, [cell.type, cell.id, updateTextRole, updateEditorState, editorState, markLatexOutdated]);
+    }, [cell.type, cell.id, updateTextRole, updateEditorState, editorState, markLatexOutdated, updateTextCellContent]);
 
     // provide a stable callback to children
     const cellOnChange = useCallback((value: any) => {
       handleChangeRef.current?.(value);
     }, []);
-
-    // const cellOnChange = useMemo(() => {
-    //   return cell.type === "text" ? handleTextChange : handleMathChange;
-    // }, [cell.type, handleTextChange, handleMathChange]);
 
     const componentProps = useMemo(() => {
       const baseProps: Record<string, unknown> = {

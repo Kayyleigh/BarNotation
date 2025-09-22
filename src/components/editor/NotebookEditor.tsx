@@ -20,7 +20,6 @@ import type { DragSource, DropTarget } from "../../models/dragTypes";
 import { CellRenderer } from "./cells/CellRenderer";
 import { computeDisplayNumbers, reconstructCells } from "../../utils/noteUtils";
 import { createNotebookKeyMap } from "./notebookShortcuts";
-import type { TextCellType } from "../../models/textTypes";
 
 interface NotebookEditorProps {
   defaultZoom: number;
@@ -102,10 +101,13 @@ const CellRendererWrapper: React.FC<{
     [cell.id, updateEditorState]
   );
 
-  const handleUpdateTextContent = useCallback( //TODO optimize
-    (newRole: TextCellType) =>
-      updateTextCellContent(cell.id, { ...cell.content, type: newRole }),
-    [cell.content, cell.id, updateTextCellContent]
+  const handleUpdateTextContent = useCallback(
+    (partialContent: Partial<TextCellContent>) => {
+      updateTextCellContent(cell.id, {
+        ...partialContent, // merge only what the caller wants to update
+      });
+    },
+    [cell.id, updateTextCellContent]
   );
 
   const handleToggleLatex = useCallback(
@@ -143,7 +145,7 @@ const CellRendererWrapper: React.FC<{
       handlePointerDown={handlePointerDown}
       deleteCell={handleDelete}
       duplicateCell={handleDuplicate}
-      updateTextRole={handleUpdateTextContent}
+      updateTextCellContent={handleUpdateTextContent}
       toggleShowLatex={handleToggleLatex}
       showLatex={showLatex}
       onDropNode={onDropNode}
@@ -449,4 +451,3 @@ const NotebookEditor: React.FC<NotebookEditorProps> = ({
 };
 
 export default React.memo(NotebookEditor);
-

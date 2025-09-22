@@ -58,10 +58,6 @@ function saveNoteState(noteId: string, state: {
   }
 }
 
-// function shallowEqual<T extends object>(a: T, b: T): boolean {
-//   return JSON.stringify(a) === JSON.stringify(b);
-// }
-
 const EditorPane: React.FC<EditorPaneProps> = ({
   noteId,
   noteMetadata,
@@ -83,52 +79,6 @@ const EditorPane: React.FC<EditorPaneProps> = ({
 
   const lastUpdatedAtRef = React.useRef<number>(0);
   const MIN_UPDATE_INTERVAL = 30000; // milliseconds, e.g., 30 seconds
-
-  // const persistState = useCallback(
-  //   (
-  //     next: { order: string[]; states: Record<string, EditorState>; textContents: Record<string, TextCellContent> },
-  //     prev: { states: Record<string, EditorState>; textContents: Record<string, TextCellContent> },
-  //     skipUpdatedAt = false
-  //   ) => {
-  //     updateState(next);
-
-  //     if (!noteId) return;
-
-  //     if (!prev || skipUpdatedAt) return;
-
-  //     const editorStatesChanged = (() => {
-  //       const allKeys = new Set([
-  //         ...Object.keys(prev.states),
-  //         ...Object.keys(next.states),
-  //       ]);
-
-  //       return Array.from(allKeys).some((key) => {
-  //         const prevRoot = prev.states[key]?.rootNode;
-  //         const nextRoot = next.states[key]?.rootNode;
-
-  //         // If a cell was added or deleted, prevRoot vs nextRoot will differ
-  //         return !shallowEqual(prevRoot, nextRoot);
-  //       });
-  //     })();
-
-  //     const textContentsChanged = Object.keys(next.textContents).some((key) => {
-  //       const prevText = prev.textContents[key];
-  //       const nextText = next.textContents[key];
-  //       return !shallowEqual(prevText, nextText);
-  //     });
-
-  //     if (editorStatesChanged || textContentsChanged) {
-  //       saveNoteState(noteId, next); //This just ensures I don't write to storage for stupid little cursor updates
-
-  //       const now = Date.now();
-  //       if (now - lastUpdatedAtRef.current >= MIN_UPDATE_INTERVAL) {
-  //         setNoteMetadata(noteId, { updatedAt: now });
-  //         lastUpdatedAtRef.current = now;
-  //       }
-  //     }
-  //   },
-  //   [noteId, setNoteMetadata, updateState]
-  // );
 
   // keep a ref to the latest present state
   const presentRef = useRef(history.present);
@@ -185,31 +135,6 @@ const EditorPane: React.FC<EditorPaneProps> = ({
     },
     [noteId, setNoteMetadata, updateState]
   );
-
-
-  // const setEditorStates = useCallback(
-  //   (value: React.SetStateAction<typeof editorStates>) => {
-  //     const newStates =
-  //       typeof value === "function" ? value(editorStates) : value;
-  //     persistState(
-  //       { order, states: newStates, textContents },
-  //       { states: editorStates, textContents }
-  //     );
-  //   },
-  //   [order, editorStates, textContents, persistState]
-  // );
-
-  // const setTextContents = useCallback(
-  //   (value: React.SetStateAction<typeof textContents>) => {
-  //     const newContents =
-  //       typeof value === "function" ? value(textContents) : value;
-  //     persistState(
-  //       { order, states: editorStates, textContents: newContents },
-  //       { states: editorStates, textContents }
-  //     );
-  //   },
-  //   [order, editorStates, textContents, persistState]
-  // );
 
   const setEditorStates = useCallback(
     (value: React.SetStateAction<typeof editorStates>) => {
