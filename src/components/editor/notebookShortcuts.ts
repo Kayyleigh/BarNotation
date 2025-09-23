@@ -76,7 +76,7 @@ export function createNotebookKeyMap(
     },
 
     "Alt+ArrowUp": (e, _id, currentIndex) => {
-      const index = currentIndex ?? visibleCells.length;
+      const index = currentIndex ?? 1; // ensure up leads to first cell
       e.preventDefault();
 
       if (pendingInsertRef.current) {
@@ -90,7 +90,7 @@ export function createNotebookKeyMap(
     },
 
     "Alt+ArrowDown": (e, _id, currentIndex) => {
-      const index = currentIndex ?? -1; // default to 0 if undefined
+      const index = currentIndex ?? visibleCells.length - 2; // ensure down leads to last cell
       e.preventDefault();
 
       if (pendingInsertRef.current) {
