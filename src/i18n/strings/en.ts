@@ -28,6 +28,13 @@ const en = {
     plain: "Plain",
   },
 
+  cellToolbar: { //NEW + TODO: CENTRALISE HOTKEY INFO
+    delete: "Delete",
+    deleteTooltip: "Delete cell (Alt+Del)",
+    duplicate: "Duplicate",
+    duplicateTooltip: "Duplicate cell (Alt+=)"
+  },
+
   editor: {
     addMath: "Add math cell",
     addText: "Add text cell",

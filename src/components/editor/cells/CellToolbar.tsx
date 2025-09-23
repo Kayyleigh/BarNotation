@@ -2,6 +2,8 @@
 import React from "react";
 import styles from "./CellToolbar.module.css";
 import clsx from "clsx";
+import Tooltip from "../../tooltips/Tooltip";
+import { useI18n } from "../../../i18n/useI18n";
 
 interface CellToolbarProps {
   onDelete: () => void;
@@ -15,18 +17,36 @@ export const CellToolbar: React.FC<CellToolbarProps> = ({
   onDuplicate,
   extras,
   visible = false,
-}) => (
-  <div
-    className={clsx(styles.cellToolbar, {
-      [styles.visible]: visible,
-    })}
-  >
-    <button className={clsx(styles.button, styles.deleteButton)} onClick={onDelete}>
-      🗑️
-    </button>
-    <button className={styles.button} onClick={onDuplicate}>
-      Duplicate
-    </button>
-    {extras}
-  </div>
-);
+}) => {
+  const { t } = useI18n();
+
+  return (
+    <div
+      className={clsx(styles.cellToolbar, {
+        [styles.visible]: visible,
+      })}
+    >
+      <Tooltip text={t("cellToolbar.deleteTooltip")}>
+        <button
+          className={clsx(styles.button, styles.deleteButton)}
+          onClick={onDelete}
+          aria-label={t("cellToolbar.delete")} // accessibility
+        >
+          🗑️
+        </button>
+      </Tooltip>
+
+      <Tooltip text={t("cellToolbar.duplicateTooltip")}>
+        <button
+          className={styles.button}
+          onClick={onDuplicate}
+          aria-label={t("cellToolbar.duplicate")}
+        >
+          {t("cellToolbar.duplicate")}
+        </button>
+      </Tooltip>
+
+      {extras}
+    </div>
+  );
+};
