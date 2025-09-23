@@ -4,9 +4,10 @@ import React, {
   useRef,
   useEffect,
   useCallback,
+  forwardRef,
 } from "react";
 import EditorHeaderBar from "./EditorHeaderBar";
-import NotebookEditor from "./NotebookEditor";
+import NotebookEditor, { type NotebookEditorHandle } from "./NotebookEditor";
 import styles from "./Editor.module.css";
 import type { NoteMetadata, TextCellContent } from "../../models/noteTypes";
 import { useEditorHistory } from "../../hooks/editorHistory/EditorHistoryContext";
@@ -58,12 +59,14 @@ function saveNoteState(noteId: string, state: {
   }
 }
 
-const EditorPane: React.FC<EditorPaneProps> = ({
-  noteId,
-  noteMetadata,
-  setNoteMetadata,
-  onDropNode,
-}) => {
+const EditorPane = forwardRef<NotebookEditorHandle, EditorPaneProps>(
+  ({ 
+    noteId, 
+    noteMetadata, 
+    setNoteMetadata, 
+    onDropNode 
+  }, ref) => {
+
   const { history, updateState } = useEditorHistory();
   const { states: editorStates, order, textContents } = history.present;
 
@@ -338,6 +341,7 @@ const EditorPane: React.FC<EditorPaneProps> = ({
           />
         ) : (
           <NotebookEditor
+            ref={ref}
             noteId={noteId}
             resetZoomSignal={resetZoomSignal}
             defaultZoom={defaultZoom}
@@ -360,6 +364,6 @@ const EditorPane: React.FC<EditorPaneProps> = ({
       </LatexRefreshProvider>
     </div>
   );
-};
+});
 
 export default EditorPane;

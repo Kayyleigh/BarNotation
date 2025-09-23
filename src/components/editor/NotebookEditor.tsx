@@ -6,6 +6,8 @@ import React, {
   useMemo,
   useEffect,
   useTransition,
+  forwardRef,
+  useImperativeHandle,
 } from "react";
 import InsertCellButtons from "./cells/InsertCellButtons";
 import { useCellDragState } from "../../hooks/cellDrag/useCellDragState";
@@ -19,7 +21,7 @@ import { useI18n } from "../../i18n/useI18n";
 import type { DragSource, DropTarget } from "../../models/dragTypes";
 import { CellRenderer } from "./cells/CellRenderer";
 import { computeDisplayNumbers, reconstructCells } from "../../utils/noteUtils";
-import { createNotebookKeyMap } from "./notebookShortcuts";
+import { createNotebookKeyMap, useNotebookInsertResolver } from "./notebookShortcuts";
 
 interface NotebookEditorProps {
   defaultZoom: number;
@@ -158,296 +160,340 @@ const CellRendererWrapper: React.FC<{
   );
 });
 
-const NotebookEditor: React.FC<NotebookEditorProps> = ({
-  noteId,
-  defaultZoom,
-  resetZoomSignal,
-  order,
-  editorStates,
-  setEditorStates,
-  textContents,
-  setTextContents,
-  addCellRef,
-  duplicateCell,
-  deleteCell,
-  updateOrder,
-  showLatexMap,
-  setShowLatexMap,
-  metadata,
-  setMetadata,
-  onDropNode,
-}) => {
-  const { t } = useI18n(); // use language hook
+export interface NotebookEditorHandle {
+  focus: () => void;
+}
 
-  const [selectedCellId, setSelectedCellId] = useState<string | null>(null);
-  const cellRefs = useRef<(HTMLDivElement | null)[]>([]);
+// const NotebookEditor: React.FC<NotebookEditorProps> = ({
+const NotebookEditor = forwardRef<NotebookEditorHandle, NotebookEditorProps>(
+  ({
+    noteId,
+    defaultZoom,
+    resetZoomSignal,
+    order,
+    editorStates,
+    setEditorStates,
+    textContents,
+    setTextContents,
+    addCellRef,
+    duplicateCell,
+    deleteCell,
+    updateOrder,
+    showLatexMap,
+    setShowLatexMap,
+    metadata,
+    setMetadata,
+    onDropNode,
+  }, ref) => {
 
-  const { editingMode } = useEditorMode();
+    const notebookEditorContainerRef = useRef<HTMLDivElement>(null);
 
-  const {
-    draggingCellId,
-    dragOverInsertIndex,
-    startDrag: startCellDrag,
-    updateDragOver: updateCellDragOver,
-    endDrag: endCellDrag,
-  } = useCellDragState();
+    useImperativeHandle(ref, () => ({
+      focus: () => {
+        notebookEditorContainerRef.current?.focus();
+      },
+    }));
 
-  const baseCells = useMemo(
-    () => reconstructCells(order, editorStates, textContents),
-    [order, editorStates, textContents]
-  );
+    const { t } = useI18n(); // use language hook
 
-  const textCellIds = useMemo(
-    () => baseCells
-      .filter((cell) => cell.type === "text")
-      .map((cell) => cell.id),
-    [baseCells]
-  );
+    const [selectedCellId, setSelectedCellId] = useState<string | null>(null);
+    const cellRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  const displayNumbers = useMemo(
-    () =>
-      editingMode !== "edit"
-        ? computeDisplayNumbers(textContents, textCellIds)
-        : {},
-    [editingMode, textContents, textCellIds]
-  );
+    const { editingMode } = useEditorMode();
 
-  const [visibleCells, setVisibleCells] = useState(baseCells);
-  const [, startTransition] = useTransition();
+    const {
+      draggingCellId,
+      dragOverInsertIndex,
+      startDrag: startCellDrag,
+      updateDragOver: updateCellDragOver,
+      endDrag: endCellDrag,
+    } = useCellDragState();
 
-  const prevNoteIdRef = useRef(noteId);
-  const baseCellsRef = useRef(baseCells);
-  baseCellsRef.current = baseCells;
+    const baseCells = useMemo(
+      () => reconstructCells(order, editorStates, textContents),
+      [order, editorStates, textContents]
+    );
 
-  useEffect(() => {
-    if (noteId === prevNoteIdRef.current) {
-      setVisibleCells(baseCells);
-    }
-    prevNoteIdRef.current = noteId;
-  }, [baseCells, noteId]);
+    const textCellIds = useMemo(
+      () => baseCells
+        .filter((cell) => cell.type === "text")
+        .map((cell) => cell.id),
+      [baseCells]
+    );
 
-  useEffect(() => {
-    if (noteId !== prevNoteIdRef.current) {
-      startTransition(() => {
-        setVisibleCells(baseCellsRef.current);
-      });
+    const displayNumbers = useMemo(
+      () =>
+        editingMode !== "edit"
+          ? computeDisplayNumbers(textContents, textCellIds)
+          : {},
+      [editingMode, textContents, textCellIds]
+    );
+
+    const [visibleCells, setVisibleCells] = useState(baseCells);
+    const [, startTransition] = useTransition();
+
+    const prevNoteIdRef = useRef(noteId);
+    const baseCellsRef = useRef(baseCells);
+    baseCellsRef.current = baseCells;
+
+    useEffect(() => {
+      if (noteId === prevNoteIdRef.current) {
+        setVisibleCells(baseCells);
+      }
       prevNoteIdRef.current = noteId;
-    }
-  }, [noteId]);
+    }, [baseCells, noteId]);
 
-  const updateTextCellContent = useCallback( //TODO ACTUALLY USE THIS !!! ATM NOT DOING IT!!!
-    (id: string, partialContent: Partial<TextCellContent>) => {
-      setTextContents(prev => {
-        const prevContent = prev[id];
+    useEffect(() => {
+      if (noteId !== prevNoteIdRef.current) {
+        startTransition(() => {
+          setVisibleCells(baseCellsRef.current);
+        });
+        prevNoteIdRef.current = noteId;
+      }
+    }, [noteId]);
 
-        if (!prevContent) return prev; // or handle missing cell gracefully
+    const updateTextCellContent = useCallback( //TODO ACTUALLY USE THIS !!! ATM NOT DOING IT!!!
+      (id: string, partialContent: Partial<TextCellContent>) => {
+        setTextContents(prev => {
+          const prevContent = prev[id];
 
-        const updatedContent = { ...prevContent, ...partialContent };
+          if (!prevContent) return prev; // or handle missing cell gracefully
 
-        if (
-          prevContent.text === updatedContent.text &&
-          prevContent.type === updatedContent.type
-        ) {
-          return prev; // No actual change
+          const updatedContent = { ...prevContent, ...partialContent };
+
+          if (
+            prevContent.text === updatedContent.text &&
+            prevContent.type === updatedContent.type
+          ) {
+            return prev; // No actual change
+          }
+
+          return { ...prev, [id]: updatedContent };
+        });
+      },
+      [setTextContents]
+    );
+
+    const toggleShowLatex = useCallback((cellId: string) => {
+      setShowLatexMap((prev) => ({ ...prev, [cellId]: !prev[cellId] }));
+    }, [setShowLatexMap]);
+
+    const handleMetadataUpdate = useCallback((partial: Partial<NoteMetadata>) => {
+      if (noteId) setMetadata(noteId, partial);
+    }, [noteId, setMetadata]);
+
+    const updateEditorState = useCallback((id: string, newState: EditorState) => {
+      setEditorStates((prev) => ({ ...prev, [id]: newState }));
+    }, [setEditorStates]);
+
+    const handlePointerDown = useCallback((e: React.PointerEvent, id: string, index: number) => {
+      e.preventDefault();
+      startCellDrag(id, index);
+
+      const handlePointerMove = (moveEvent: PointerEvent) => {
+        moveEvent.preventDefault();
+        const rects = cellRefs.current.map((ref) => ref?.getBoundingClientRect());
+        const cursorY = moveEvent.clientY;
+        const overIndexRaw = rects.findIndex(
+          (rect) => rect && cursorY < rect.top + rect.height / 2
+        );
+        const overIndex = overIndexRaw === -1 ? rects.length : overIndexRaw;
+        updateCellDragOver(overIndex);
+      };
+
+      const handlePointerUp = () => {
+        const { from, to } = endCellDrag();
+        if (from !== null && to !== null && from !== to) {
+          const newOrder = [...order];
+          const [movedId] = newOrder.splice(from, 1);
+          newOrder.splice(from < to ? to - 1 : to, 0, movedId);
+          updateOrder(newOrder);
         }
+        window.removeEventListener("pointermove", handlePointerMove);
+        window.removeEventListener("pointerup", handlePointerUp);
+      };
 
-        return { ...prev, [id]: updatedContent };
-      });
-    },
-    [setTextContents]
-  );
+      window.addEventListener("pointermove", handlePointerMove);
+      window.addEventListener("pointerup", handlePointerUp);
+    }, [startCellDrag, updateCellDragOver, endCellDrag, order, updateOrder]);
 
-  const toggleShowLatex = useCallback((cellId: string) => {
-    setShowLatexMap((prev) => ({ ...prev, [cellId]: !prev[cellId] }));
-  }, [setShowLatexMap]);
+    // Track pending selection
+    const pendingSelectionRef = useRef<string | null>(null);
 
-  const handleMetadataUpdate = useCallback((partial: Partial<NoteMetadata>) => {
-    if (noteId) setMetadata(noteId, partial);
-  }, [noteId, setMetadata]);
-
-  const updateEditorState = useCallback((id: string, newState: EditorState) => {
-    setEditorStates((prev) => ({ ...prev, [id]: newState }));
-  }, [setEditorStates]);
-
-  const handlePointerDown = useCallback((e: React.PointerEvent, id: string, index: number) => {
-    e.preventDefault();
-    startCellDrag(id, index);
-
-    const handlePointerMove = (moveEvent: PointerEvent) => {
-      moveEvent.preventDefault();
-      const rects = cellRefs.current.map((ref) => ref?.getBoundingClientRect());
-      const cursorY = moveEvent.clientY;
-      const overIndexRaw = rects.findIndex(
-        (rect) => rect && cursorY < rect.top + rect.height / 2
-      );
-      const overIndex = overIndexRaw === -1 ? rects.length : overIndexRaw;
-      updateCellDragOver(overIndex);
-    };
-
-    const handlePointerUp = () => {
-      const { from, to } = endCellDrag();
-      if (from !== null && to !== null && from !== to) {
-        const newOrder = [...order];
-        const [movedId] = newOrder.splice(from, 1);
-        newOrder.splice(from < to ? to - 1 : to, 0, movedId);
-        updateOrder(newOrder);
-      }
-      window.removeEventListener("pointermove", handlePointerMove);
-      window.removeEventListener("pointerup", handlePointerUp);
-    };
-
-    window.addEventListener("pointermove", handlePointerMove);
-    window.addEventListener("pointerup", handlePointerUp);
-  }, [startCellDrag, updateCellDragOver, endCellDrag, order, updateOrder]);
-
-  // Track pending selection
-  const pendingSelectionRef = useRef<string | null>(null);
-
-  const handleInsertAtIndex = useCallback(
-    (type: "math" | "text", idx: number) => {
-      const newId = addCellRef.current?.(type, idx);
-      if (newId) {
-        pendingSelectionRef.current = newId; // store it
-      }
-    },
-    [addCellRef]
-  );
-
-  const handleInsertAtEnd = useCallback(
-    (type: "text" | "math") => {
-      const newId = addCellRef.current?.(type, visibleCells.length);
-      if (newId) {
-        pendingSelectionRef.current = newId; // store it
-      }
-    },
-    [visibleCells.length, addCellRef]
-  );
-
-  const handleDuplicateCell = useCallback(
-    (id: string) => {
-      const newId = duplicateCell(id);
-      if (newId) {
-        pendingSelectionRef.current = newId; // store it
-      }
-    },
-    [duplicateCell]
-  );
-
-  const handleDeleteCell = useCallback(
-    (id: string) => {
-      const prevId = deleteCell(id);
-      if (prevId) {
-        pendingSelectionRef.current = prevId; // store it
-      }
-    },
-    [deleteCell]
-  );
-
-  useEffect(() => {
-    if (pendingSelectionRef.current) {
-      setSelectedCellId(pendingSelectionRef.current);
-      pendingSelectionRef.current = null;
-    }
-  }, [visibleCells]); // run whenever cells update
-
-  const pendingInsertRef = useRef<"math" | "text" | null>(null);
-
-  useEffect(() => {
-    const handlerKeyDown = (e: KeyboardEvent) => {
-      if (!selectedCellId) return;
-
-      const currentIndex = visibleCells.findIndex(c => c.id === selectedCellId);
-      if (currentIndex === -1) return;
-
-      const combo = (e.altKey ? "Alt+" : "") + e.code;
-      const notebookKeyMap = createNotebookKeyMap(
-        visibleCells,
-        handleInsertAtIndex,
-        pendingInsertRef,
-        handleDeleteCell,
-        handleDuplicateCell,
-        setSelectedCellId,
-        updateTextCellContent
-      );
-
-      const handler = notebookKeyMap[combo];
-      if (handler) handler(e, selectedCellId, currentIndex);
-    };
-
-    window.addEventListener("keydown", handlerKeyDown);
-    return () => window.removeEventListener("keydown", handlerKeyDown);
-  }, [
-    selectedCellId,
-    visibleCells,
-    handleInsertAtIndex,
-    pendingInsertRef,
-    handleDeleteCell,
-    handleDuplicateCell,
-    setSelectedCellId,
-    updateTextCellContent
-  ]);
-
-  const setCellRef = useCallback((index: number) => (el: HTMLDivElement | null) => {
-    cellRefs.current[index] = el;
-  }, []);
-
-  return (
-    <main
-      className={styles.editorLayout}
-      onClick={(e) => {
-        if (!(e.target as HTMLElement).closest(`.${cellStyles.cell}`)) {
-          setSelectedCellId(null);
+    const handleInsertAtIndex = useCallback(
+      (type: "math" | "text", idx: number) => {
+        const newId = addCellRef.current?.(type, idx);
+        if (newId) {
+          pendingSelectionRef.current = newId; // store it
         }
-      }}
-    >
-      <NoteMetaDataSection
-        metadata={metadata}
-        setMetadata={handleMetadataUpdate}
-      />
+      },
+      [addCellRef]
+    );
 
-      <div className={styles.cellList}>
-        {visibleCells.length === 0 && (
-          <div className={styles.emptyMessage}>
-            {t("editor.emptyMessage")}
-          </div>
-        )}
+    const handleInsertAtEnd = useCallback(
+      (type: "text" | "math") => {
+        const newId = addCellRef.current?.(type, visibleCells.length);
+        if (newId) {
+          pendingSelectionRef.current = newId; // store it
+        }
+      },
+      [visibleCells.length, addCellRef]
+    );
 
-        {visibleCells.map((cell, index) => (
-          <CellRendererWrapper
-            key={cell.id}
-            cell={cell}
-            index={index}
-            isSelected={selectedCellId === cell.id}
-            setSelectedCellId={setSelectedCellId}
-            editorStates={editorStates}
-            showLatexMap={showLatexMap}
-            displayNumbers={displayNumbers}
-            updateEditorState={updateEditorState}
-            updateTextCellContent={updateTextCellContent}
-            toggleShowLatex={toggleShowLatex}
-            handleDeleteCell={handleDeleteCell}
-            handleDuplicateCell={handleDuplicateCell}
-            setCellRef={setCellRef}
-            draggingCellId={draggingCellId}
-            dragOverInsertIndex={dragOverInsertIndex}
-            updateDragOver={updateCellDragOver}
-            handleInsertAtIndex={handleInsertAtIndex}
-            handlePointerDown={handlePointerDown}
-            onDropNode={onDropNode}
-            resetZoomSignal={resetZoomSignal}
-            defaultZoom={defaultZoom}
-          />
-        ))}
+    const handleDuplicateCell = useCallback(
+      (id: string) => {
+        const newId = duplicateCell(id);
+        if (newId) {
+          pendingSelectionRef.current = newId; // store it
+        }
+      },
+      [duplicateCell]
+    );
 
-        <InsertCellButtons
-          onInsert={handleInsertAtEnd}
-          handlePointerEnter={() => draggingCellId !== null && updateCellDragOver(visibleCells.length)}
-          isPermanent={true}
-          isDropTarget={dragOverInsertIndex === visibleCells.length}
+    const handleDeleteCell = useCallback(
+      (id: string) => {
+        const prevId = deleteCell(id);
+        if (prevId) {
+          pendingSelectionRef.current = prevId; // store it
+        }
+      },
+      [deleteCell]
+    );
+
+    useEffect(() => {
+      if (pendingSelectionRef.current) {
+        setSelectedCellId(pendingSelectionRef.current);
+        pendingSelectionRef.current = null;
+      }
+    }, [visibleCells]); // run whenever cells update
+
+    const pendingInsertRef = useRef<"math" | "text" | null>(null);
+    const arrowUsedRef = useRef(false);
+
+    useNotebookInsertResolver(pendingInsertRef, arrowUsedRef, handleInsertAtEnd);
+
+    const keyMap = useMemo(
+      () =>
+        createNotebookKeyMap(
+          visibleCells,
+          handleInsertAtIndex,
+          pendingInsertRef,
+          arrowUsedRef,
+          handleDeleteCell,
+          handleDuplicateCell,
+          setSelectedCellId,
+          updateTextCellContent
+        ),
+      [visibleCells, handleInsertAtIndex, handleDeleteCell, handleDuplicateCell, setSelectedCellId, updateTextCellContent]
+    );
+
+    useEffect(() => {
+      const handlerKeyDown = (e: KeyboardEvent) => {
+        const combo = (e.altKey ? "Alt+" : "") + e.code;
+
+        // Allow Alt+1 / Alt+2 (or Numpad equivalents) even if no cell is selected
+        const isInsertShortcut =
+          combo === "Alt+Digit1" ||
+          combo === "Alt+Digit2" ||
+          combo === "Alt+Numpad1" ||
+          combo === "Alt+Numpad2";
+
+        const currentIndex = selectedCellId
+          ? visibleCells.findIndex(c => c.id === selectedCellId)
+          : 0; // fallback index when no cell selected
+
+        // Lookup the handler
+        const handler = keyMap[combo];
+
+        if (handler) {
+          // Only skip selectedCellId check for insert shortcuts
+          if (selectedCellId || isInsertShortcut) {
+            handler(e, selectedCellId ?? undefined, currentIndex);
+          }
+        }
+      };
+
+      // Use the container instead of window for local focus handling
+      // const el = notebookEditorContainerRef.current;
+      // el?.addEventListener("keydown", handlerKeyDown);
+      window.addEventListener("keydown", handlerKeyDown);
+      return () => window.removeEventListener("keydown", handlerKeyDown);
+
+      // return () => el?.removeEventListener("keydown", handlerKeyDown);
+    }, [
+      selectedCellId,
+      visibleCells,
+      keyMap,
+    ]);
+
+    const setCellRef = useCallback((index: number) => (el: HTMLDivElement | null) => {
+      cellRefs.current[index] = el;
+    }, []);
+
+    const blurEditor = useCallback(() => {
+      setSelectedCellId("");
+    }, []);
+
+    return (
+      <main
+        ref={notebookEditorContainerRef}
+        tabIndex={0} // make focusable
+        className={styles.editorLayout}
+        onClick={(e) => {
+          if (!(e.target as HTMLElement).closest(`.${cellStyles.cell}`)) {
+            setSelectedCellId(null);
+          }
+        }}
+        onBlur={blurEditor}
+      >
+        <NoteMetaDataSection
+          metadata={metadata}
+          setMetadata={handleMetadataUpdate}
         />
-      </div>
-    </main >
-  );
-};
+
+        <div className={styles.cellList}>
+          {visibleCells.length === 0 && (
+            <div className={styles.emptyMessage}>
+              {t("editor.emptyMessage")}
+            </div>
+          )}
+
+          {visibleCells.map((cell, index) => (
+            <CellRendererWrapper
+              key={cell.id}
+              cell={cell}
+              index={index}
+              isSelected={selectedCellId === cell.id}
+              setSelectedCellId={setSelectedCellId}
+              editorStates={editorStates}
+              showLatexMap={showLatexMap}
+              displayNumbers={displayNumbers}
+              updateEditorState={updateEditorState}
+              updateTextCellContent={updateTextCellContent}
+              toggleShowLatex={toggleShowLatex}
+              handleDeleteCell={handleDeleteCell}
+              handleDuplicateCell={handleDuplicateCell}
+              setCellRef={setCellRef}
+              draggingCellId={draggingCellId}
+              dragOverInsertIndex={dragOverInsertIndex}
+              updateDragOver={updateCellDragOver}
+              handleInsertAtIndex={handleInsertAtIndex}
+              handlePointerDown={handlePointerDown}
+              onDropNode={onDropNode}
+              resetZoomSignal={resetZoomSignal}
+              defaultZoom={defaultZoom}
+            />
+          ))}
+
+          <InsertCellButtons
+            onInsert={handleInsertAtEnd}
+            handlePointerEnter={() => draggingCellId !== null && updateCellDragOver(visibleCells.length)}
+            isPermanent={true}
+            isDropTarget={dragOverInsertIndex === visibleCells.length}
+          />
+        </div>
+      </main >
+    );
+  });
 
 export default React.memo(NotebookEditor);

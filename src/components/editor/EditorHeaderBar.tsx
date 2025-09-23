@@ -18,7 +18,7 @@ interface EditorHeaderBarProps {
   showZoomDropdown: boolean;
   setShowZoomDropdown: React.Dispatch<React.SetStateAction<boolean>>;
   dropdownRef: React.RefObject<HTMLDivElement | null>;
-  addCellRef: React.RefObject<(type: "math" | "text", index?: number) => void>;
+  addCellRef: React.RefObject<(type: "math" | "text", index?: number) => string>;
 }
 
 const EditorHeaderBar: React.FC<EditorHeaderBarProps> = ({

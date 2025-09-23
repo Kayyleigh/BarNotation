@@ -1,5 +1,5 @@
 // components/layout/EditorWorkspace.tsx
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { forwardRef, useCallback, useEffect, useRef } from "react";
 import EditorPane from "../editor/EditorPane";
 import MathLibrary from "../mathLibrary/MathLibrary";
 import { deleteNodeById, insertNodeAtIndex } from "../../logic/node-manipulation";
@@ -14,6 +14,7 @@ import { createDefaultLibrary, loadLibrary } from "../../utils/mathLibraryUtils"
 import type { DragSource, DropTarget } from "../../models/dragTypes";
 import { CustomCommandProvider } from "../../hooks/customCommands/CustomCommandProvider";
 import { EditorModeProvider } from "../../hooks/editorMode/EditorModeProvider";
+import type { NotebookEditorHandle } from "../editor/NotebookEditor";
 
 interface EditorWorkspaceProps {
   noteId: string | null;
@@ -23,13 +24,15 @@ interface EditorWorkspaceProps {
   setNoteCells: (noteId: string, newCells: CellData[]) => void;
 }
 
-const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({
+const EditorWorkspace = forwardRef<NotebookEditorHandle, EditorWorkspaceProps>(
+// const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({
+ ({
   noteId,
   noteMetadata,
   setNoteMetadata,
   // noteCells,
   setNoteCells,
-}) => {
+}, ref) => {
   const { t } = useI18n(); // use language hook
 
   const { history, updateState } = useEditorHistory();
@@ -218,7 +221,7 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [undo, redo]);
 
-  const editorPaneStyle = React.useMemo(() => ({ width: "100%", height: "100%" }), []);
+  // const editorPaneStyle = React.useMemo(() => ({ width: "100%", height: "100%" }), []);
 
   return (
     <CustomCommandProvider library={library}>
@@ -226,7 +229,8 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({
         {noteId && noteMetadata ? (
           <EditorModeProvider>
             <EditorPane
-              style={editorPaneStyle}
+              ref={ref}
+              // style={editorPaneStyle}
               noteId={noteId}
               onDropNode={onDropNode}
               noteMetadata={noteMetadata}
@@ -252,6 +256,6 @@ const EditorWorkspace: React.FC<EditorWorkspaceProps> = ({
       </div>
     </CustomCommandProvider>
   );
-};
+});
 
 export default React.memo(EditorWorkspace);

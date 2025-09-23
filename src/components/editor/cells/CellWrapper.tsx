@@ -48,7 +48,7 @@ export const CellWrapper: React.FC<CellWrapperProps> = ({
         dragging: isDragging,
         dragOver: isDragOver,
       })}
-      onClick={onSelect}
+      onFocus={onSelect}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >

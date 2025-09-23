@@ -1,5 +1,5 @@
 // components/layout/MainLayout.tsx
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import HeaderBar from "./MainHeaderBar";
 import NotesMenu from "../notesMenu/NotesMenu";
 import EditorWorkspace from "./EditorWorkspace";
@@ -18,6 +18,7 @@ import ResizableSidebar from "./ResizableSidebar";
 import { ResizableProvider } from "../../hooks/resizablePanels/ResizableProvider";
 import { useI18n } from "../../i18n/useI18n";
 import ExportLatexModal from "../modals/ExportLatexModal";
+import type { NotebookEditorHandle } from "../editor/NotebookEditor";
 
 function loadEditorSnapshotForNote(noteId: string): EditorSnapshot {
   const rootNode = createRootWrapper();
@@ -57,6 +58,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   showColorInPreview,
   nerdMode,
 }) => {
+  const editorRef = useRef<NotebookEditorHandle>(null);
+
   const { t } = useI18n(); // use language hook
 
   const { showToast } = useToast();
@@ -83,6 +86,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({
 
   const setSelectedNoteId = useCallback((id: string | null) => {
     setSelectedNoteIdState(id);
+    editorRef.current?.focus();
+
     if (id) {
       localStorage.setItem(SELECTED_NOTE_KEY, id);
     } else {
@@ -276,6 +281,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     };
     setNotes((prev) => [newNote, ...prev]);
     setSelectedNoteId(newId);
+        editorRef.current?.focus();
   }, [authorName, setSelectedNoteId, t]);
 
   // Note archiving logic
@@ -370,6 +376,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
             <EditorHistoryProvider initialSnapshot={initialSnapshot}>
               <DragProvider>
                 <EditorWorkspace
+                  ref={editorRef}
                   noteId={selectedNoteId}
                   noteMetadata={selectedNoteMetadata}
                   setNoteMetadata={updateNoteMetadata}
