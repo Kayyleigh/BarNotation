@@ -50,17 +50,51 @@ const MathCell = forwardRef<MathCellHandle, MathCellProps>(
 
     const containerRef = useRef<HTMLDivElement>(null);
 
+    // useImperativeHandle(ref, () => ({
+    //   focusAndScroll: () => {
+    //     if (containerRef.current) {
+    //       selectCell();
+    //       containerRef.current.scrollIntoView({ block: "center", behavior: "smooth" });
+    //       // optional: focus inner math editor DOM node
+    //       const editorDiv = containerRef.current.querySelector<HTMLDivElement>(
+    //         `[data-math-editor="${id}"]`
+    //       );
+    //       editorDiv?.focus();
+    //       setCursorToEnd()
+    //     }
+    //   },
+    // }));
+
+    const isDroppingRef = useRef(false);
+
+    const handleDropNode = useCallback((from: DragSource, to: DropTarget) => {
+      console.log(`handleDropNode`)
+      isDroppingRef.current = true;
+      onDropNode(from, to);
+
+      // Reset flag after React has applied the state update
+      setTimeout(() => {
+        isDroppingRef.current = false;
+      }, 500);
+    }, [onDropNode]);
+
     useImperativeHandle(ref, () => ({
       focusAndScroll: () => {
+              console.log(`imperativehandle`)
+
         if (containerRef.current) {
           selectCell();
           containerRef.current.scrollIntoView({ block: "center", behavior: "smooth" });
-          // optional: focus inner math editor DOM node
+
           const editorDiv = containerRef.current.querySelector<HTMLDivElement>(
             `[data-math-editor="${id}"]`
           );
           editorDiv?.focus();
-          setCursorToEnd()
+
+          // Skip cursor move if we just dropped
+          if (!isDroppingRef?.current) {
+            setCursorToEnd();
+          }
         }
       },
     }));
@@ -104,7 +138,7 @@ const MathCell = forwardRef<MathCellHandle, MathCellProps>(
               cellId={id}
               editorState={content}
               updateEditorState={onChange}
-              onDropNode={onDropNode}
+              onDropNode={handleDropNode}
               onHoverInfoChange={setHoverInfo}
               onFocus={selectCell}
               isSelected={isSelected}

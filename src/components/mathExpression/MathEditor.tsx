@@ -109,9 +109,34 @@ const MathEditor: React.FC<MathEditorProps> = ({
     }
   };
 
+  // const handleDropNode = useCallback(
+  //   (from: DragSource, to: DropTarget) => {
+  //     if (!to || to.type === "libraryCollection") return;
+
+  //     let adjustedTo = to;
+
+  //     if (to.type === "cell" && to.cellId === cellId && to.containerId === "root") {
+  //       const child = editorState.rootNode.child;
+  //       adjustedTo = { ...to, containerId: child.id, index: child.children.length - 1 };
+  //     }
+
+  //     onDropNode(from, adjustedTo);
+
+  //     //TODO: make sure this is a bit delayed
+  //     editorRef.current?.focus();
+  //     onFocus?.();
+  //   },
+  //   [cellId, editorState.rootNode.child, onDropNode, onFocus]
+  // );
+
+  // At top of MathEditor (or wherever makes sense)
+  const isDroppingRef = useRef(false);
+
   const handleDropNode = useCallback(
     (from: DragSource, to: DropTarget) => {
       if (!to || to.type === "libraryCollection") return;
+
+      isDroppingRef.current = true; // Mark as dropping
 
       let adjustedTo = to;
 
@@ -121,8 +146,13 @@ const MathEditor: React.FC<MathEditorProps> = ({
       }
 
       onDropNode(from, adjustedTo);
-      editorRef.current?.focus();
-      onFocus?.();
+
+      // Ensure blurEditor doesn’t immediately clobber state
+      setTimeout(() => {
+        isDroppingRef.current = false;
+        editorRef.current?.focus();
+        onFocus?.();
+      }, 0);
     },
     [cellId, editorState.rootNode.child, onDropNode, onFocus]
   );
