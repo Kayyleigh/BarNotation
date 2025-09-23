@@ -14,7 +14,7 @@ export const handleCharacterInsertInTextContainer = (state: EditorState, char: s
 
   if (container.type === "multi-digit" || container.type === "command-input") {
     //TODO if command-input still check for sequence match, and transform if match found
-    // console.log(`trying to insert ${char} inside ${container.type}`)
+    // //console.log(`trying to insert ${char} inside ${container.type}`)
 
     const children = container.children
     // Keep node, update content
@@ -63,7 +63,7 @@ export const handleCharacterInsert = (
   // ========== CASE 4-A: Append digit to MultiDigitNode ==========
 
   if (/\d/.test(char) && prevNode?.type === "multi-digit") {
-    // console.log(`Case 4-A reached with ${prevNode.children.map(child => child.content)}, with new ${char}`)
+    // //console.log(`Case 4-A reached with ${prevNode.children.map(child => child.content)}, with new ${char}`)
     const newTextNode = createTextNode(char);
     const updatedPrev = {
       ...prevNode,
@@ -93,7 +93,7 @@ export const handleCharacterInsert = (
   // ========== CASE 4-B: Append to CommandInputNode ==========
 
   if (prevNode?.type === "command-input") {
-    // console.log(`Case 4-B reached with ${prevNode.children.map(child => child.content)}, with new ${char}`)
+    // //console.log(`Case 4-B reached with ${prevNode.children.map(child => child.content)}, with new ${char}`)
 
     const oldSequence = prevNode.children.map(child => child.content).join("");
 
@@ -253,7 +253,7 @@ export const handleCharacterInsert = (
   // ========== CASE 4-C: New CommandInputNode if "\" ==========
 
   if (char === "\\") {
-    // console.log(`Case 4-C reached with new ${char}`)
+    // //console.log(`Case 4-C reached with new ${char}`)
 
     const newCommandNode = createCommandInputNode([createTextNode(char)])
 
@@ -280,7 +280,7 @@ export const handleCharacterInsert = (
   // ========== CASE 4-D: Merge 2 digits ==========
 
   if (/\d/.test(char) && prevNode?.type === "text" && /\d/.test(prevNode.content)) {
-    // console.log(`Case 4-D reached with new ${char}`)
+    // //console.log(`Case 4-D reached with new ${char}`)
 
     const newMultiDigitNode = createMultiDigitNode([prevNode, createTextNode(char)])
 
@@ -380,7 +380,7 @@ export const handleBracketInsert = (
       );
     }
     else {
-      // console.log(`Maybe end of container`)
+      // //console.log(`Maybe end of container`)
       //return handleBracketInsert(updatedState, bracketStyle, "close")
     }
 
@@ -423,7 +423,7 @@ export const handleBracketInsert = (
         "close"
       );
     }
-    // else console.log(`uhm?`)
+    // else //console.log(`uhm?`)
 
     return updatedState;
   }

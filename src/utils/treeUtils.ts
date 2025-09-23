@@ -424,17 +424,17 @@ export function findParentOfInlineContainer(
     }
   }
   else if (root.type !== 'inline-container') {
-    console.warn(`${root.type} but no child matches the id`)
+    //console.warn(`${root.type} but no child matches the id`)
   }
 
   // Recurse into children
   const childNodes = getLogicalChildren(root);
   for (const child of childNodes) {
     // if (child.type === 'inline-container') {
-    //   console.log(`child: inline container`)
+    //   //console.log(`child: inline container`)
     // }
     // else {
-    //   console.log(`child: ${child.type}`)
+    //   //console.log(`child: ${child.type}`)
     // }
     const result = findParentOfInlineContainer(child, inlineContainerId);
     if (result) return result;

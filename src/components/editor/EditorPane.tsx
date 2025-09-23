@@ -143,10 +143,10 @@ const EditorPane = forwardRef<NotebookEditorHandle, EditorPaneProps>(
     (value: React.SetStateAction<typeof editorStates>) => {
       const newStates =
         typeof value === "function" ? value(editorStates) : value;
-      console.log(`setEditorStates EP; before persist; newStates`, newStates)
+      //console.log(`setEditorStates EP; before persist; newStates`, newStates)
 
       persistState({ states: newStates });
-      console.log(`setEditorStates EP; after persist`)
+      //console.log(`setEditorStates EP; after persist`)
     },
     [editorStates, persistState]
   );

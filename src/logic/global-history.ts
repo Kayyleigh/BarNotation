@@ -142,10 +142,6 @@ export function undo(history: HistoryState): HistoryState {
   if (history.past.length === 0) return history;
   const previous = history.past[history.past.length - 1];
 
-  // const numCells = previous.order.length;
-  // const cellIds = previous.order.join(", ");
-  // console.log(`Undoing to state with ${numCells} cells: [${cellIds}]`);
-  
   return {
     past: history.past.slice(0, -1),
     present: previous,

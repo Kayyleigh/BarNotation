@@ -68,7 +68,7 @@ const MathCell = forwardRef<MathCellHandle, MathCellProps>(
     const isDroppingRef = useRef(false);
 
     const handleDropNode = useCallback((from: DragSource, to: DropTarget) => {
-      console.log(`handleDropNode`)
+      //console.log(`handleDropNode`)
       isDroppingRef.current = true;
       onDropNode(from, to);
 
@@ -80,7 +80,7 @@ const MathCell = forwardRef<MathCellHandle, MathCellProps>(
 
     useImperativeHandle(ref, () => ({
       focusAndScroll: () => {
-              console.log(`imperativehandle`)
+              //console.log(`imperativehandle`)
 
         if (containerRef.current) {
           selectCell();

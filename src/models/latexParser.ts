@@ -1,6 +1,6 @@
 import { decorationToLatexCommandInverse, type NodeDecoration } from "../utils/accentUtils";
 import { bracketSymbols, getStyleFromSymbol, isOpeningBracket } from "../utils/bracketUtils";
-import { nodeToLatex } from "./nodeToLatex";
+// import { nodeToLatex } from "./nodeToLatex";
 import { createChildedNode, createCommandInputNode, createDecoratedNode, createFraction, createGroupNode, createInlineContainer, createMatrixNode, createNthRoot, createOverUndersetNode, createStyledNode, createTextNode } from "./nodeFactories";
 import { getBigOpNodeFromAlias, getStyledNodeFromAlias, getSymbolNodeFromAlias, symbolToLatex } from "./specialSequences";
 import type { GroupNode, InlineContainerNode, MathNode, StructureNode } from "./mathNodeTypes";
@@ -17,21 +17,21 @@ type Token =
   | { type: "end_env"; name: string };
 
 
-function debugLog(message: string, color: string = 'dodgerblue') {
-  console.log(`%c[debug] %c${message}`, 'color: gray; font-weight: bold;', `color: ${color}`);
-}
+// function debugLog(message: string, color: string = 'dodgerblue') {
+//   console.log(`%c[debug] %c${message}`, 'color: gray; font-weight: bold;', `color: ${color}`);
+// }
 
-function print_token(token: Token): string {
-  switch (token.type) {
-    case "brace_open": return "brace_open";
-    case "brace_close": return "brace_close";
-    case "char": return `'${token.value}'`;
-    case "command": return `\\${token.name}`;
-    case "whitespace": return `whitespace (${token.value})`;
-    case "begin_env": return `begin_env(${token.name})`;
-    case "end_env": return `end_env(${token.name})`;
-  }
-}
+// function print_token(token: Token): string {
+//   switch (token.type) {
+//     case "brace_open": return "brace_open";
+//     case "brace_close": return "brace_close";
+//     case "char": return `'${token.value}'`;
+//     case "command": return `\\${token.name}`;
+//     case "whitespace": return `whitespace (${token.value})`;
+//     case "begin_env": return `begin_env(${token.name})`;
+//     case "end_env": return `end_env(${token.name})`;
+//   }
+// }
 
 function tokenToString(tok: Token): string {
   switch (tok.type) {
@@ -97,7 +97,7 @@ export function parseLatex(input: string): MathNode {
     const innerTokens = tokens.slice(openIndex + 1, closeIndex); // skip brackets
     const result = parseLatex(` ${tokensToString(innerTokens)} `);
     i = closeIndex + 1; // Advance past closing token
-    debugLog(`res is ${nodeToLatex(result)}, i=${i}, tokens=${tokensToString(tokens)}`)
+    // debugLog(`res is ${nodeToLatex(result)}, i=${i}, tokens=${tokensToString(tokens)}`)
     return result;
   }
 
@@ -136,7 +136,7 @@ export function parseLatex(input: string): MathNode {
   ): number | null {
     let depth = 0;
     const sameBracket = open === close;
-    debugLog(`${sameBracket} that ${tokenToString(open)} === ${tokenToString(close)}. Also, we have ${tokensToString(tokens)}`)
+    // debugLog(`${sameBracket} that ${tokenToString(open)} === ${tokenToString(close)}. Also, we have ${tokensToString(tokens)}`)
 
     for (let j = startIndex; j < tokens.length; j++) {
       const tok = tokens[j];
@@ -175,7 +175,7 @@ export function parseLatex(input: string): MathNode {
           node = getSymbolNodeFromAlias(token.name) || createTextNode(token.name, "\\" + token.name);
         } else {
           node = createTextNode("") //TODO this might be dumb
-          console.log(`Am I dumb?`)
+          //console.log(`Am I dumb?`)
         }
         return createInlineContainer([node]);
       }
@@ -186,8 +186,8 @@ export function parseLatex(input: string): MathNode {
 
   function expect(type: Token["type"]): Token {
     const token = consume();
-    console.log(`Expect ${type}, got ${token.type}`)
-    if (token.type !== type && (token.type === "char" || token.type === "whitespace")) console.log(`Value: ${token.value}`);
+    //console.log(`Expect ${type}, got ${token.type}`)
+    if (token.type !== type && (token.type === "char" || token.type === "whitespace")) //console.log(`Value: ${token.value}`);
     if (token.type !== type) throw new Error(`Expected ${type}, got ${token.type}`);
     return token;
   }
@@ -219,7 +219,7 @@ export function parseLatex(input: string): MathNode {
       } else {
         throw new Error("Expected closing ]");
       }
-      console.log(`Optional Bracket String ${str}`)
+      //console.log(`Optional Bracket String ${str}`)
       return str;
     }
     return undefined;
@@ -248,13 +248,13 @@ export function parseLatex(input: string): MathNode {
 
     // 2. Parse base
     const token = peek();
-    console.log(`Looking at ${token?.type}`)
-    if (token?.type === "char") {
-      console.log(`Since its char: ${token.value}`)
-    }
-    if (token?.type === "command") {
-      console.log(`Since its command: ${token.name}`)
-    }
+    // console.log(`Looking at ${token?.type}`)
+    // if (token?.type === "char") {
+    //   console.log(`Since its char: ${token.value}`)
+    // }
+    // if (token?.type === "command") {
+    //   console.log(`Since its command: ${token.name}`)
+    // }
 
     let base: MathNode;
     // base = createTextNode("");
@@ -281,7 +281,7 @@ export function parseLatex(input: string): MathNode {
             if (t.type === "char" && t.value === "&") {
               consume(); // move to next column
             } else if (t.type === "command") {
-              console.warn(t.name)
+              //console.warn(t.name)
               consume(); // row break
               rows.push(currentRow);
               currentRow = [];
@@ -385,10 +385,10 @@ export function parseLatex(input: string): MathNode {
             if (hadTrailingSpace) {
               const next = peek();
               if (next?.type === "char" && next.value === " ") {
-                console.log(`SWALLOWED A SPACE AFTER \\${name}`);
+                //console.log(`SWALLOWED A SPACE AFTER \\${name}`);
                 consume();
               } else {
-                console.log(`NOPE type is ${next?.type}`);
+                //console.log(`NOPE type is ${next?.type}`);
               }
             }
           }
@@ -451,7 +451,7 @@ export function parseLatex(input: string): MathNode {
         }
 
         else if (name.startsWith("\\")) {
-          console.log(`Escape sequence: ${name}`);
+          //console.log(`Escape sequence: ${name}`);
           if (name === "\\\\") { //TODO maybe remove; this is to allow user to foce backslash if they dont have it on their keyboard
             base = createCommandInputNode([createTextNode("\\")]);
           } 
@@ -465,7 +465,7 @@ export function parseLatex(input: string): MathNode {
 
         else {
           //TODO paste as command-input??
-          console.log(`Name not found: '${name}'. Creating fallback text node`);
+          //console.log(`Name not found: '${name}'. Creating fallback text node`);
           base = createStyledNode(
             createTextNode("\\" + name, "\\" + name),
             { fontStyling: { fontStyle: "upright", fontStyleAlias: "" } }
@@ -476,7 +476,7 @@ export function parseLatex(input: string): MathNode {
       else if (token.type === "brace_open") {
         const group = parseGroup();
         if (group.children.length === 1) {
-          console.log(`Preventing deep nesting: base is now ${nodeToLatex(group.children[0])}`)
+          //console.log(`Preventing deep nesting: base is now ${nodeToLatex(group.children[0])}`)
           base = group.children[0];
         } else {
           base = group;
@@ -491,7 +491,7 @@ export function parseLatex(input: string): MathNode {
             base = parseBracketGroup(open);
           } catch (err) {
             console.warn(`Cannot parse visual bracket group for ${open}: ${err}`);
-            console.log(`${i} back to ${j}. We have ${tokens.slice(j, i).map(t => print_token(t))}`)
+            //console.log(`${i} back to ${j}. We have ${tokens.slice(j, i).map(t => print_token(t))}`)
             i = j;
             //TODO ensure no tokens are thrown away here??!
             base = createTextNode(open);
@@ -508,7 +508,7 @@ export function parseLatex(input: string): MathNode {
       }
       else {
         consume();
-        console.warn(`Unexpected token: ${token} ${token.type}`);
+        //console.warn(`Unexpected token: ${token} ${token.type}`);
       }
     }
     else {
@@ -522,7 +522,6 @@ export function parseLatex(input: string): MathNode {
     while (true) {
       const next = peek();
       if (!next || next.type !== "char") {
-        // console.log(`${next} is not a char (${next?.type})`)
         break;
       }
       if (next.value === "_") {
@@ -593,32 +592,32 @@ function tokenize(input: string): Token[] {
         while (i < input.length && /[a-zA-Z]/.test(input[i])) {
           name += input[i++];
         }
-        console.log(`Push command: ${name}`)
+        //console.log(`Push command: ${name}`)
         tokens.push({ type: "command", name });
       } else {
         // 🔥 Special character escaping
-        console.log(`Push command IN ELSE: \\${next}`)
+        //console.log(`Push command IN ELSE: \\${next}`)
         tokens.push({ type: "command", name: "\\" + next });
         i++; // Advance past the escaped character
       }
     } else if (ch === "{") {
-      console.log(`Push brace_open`)
+      //console.log(`Push brace_open`)
       tokens.push({ type: "brace_open" });
       i++;
     } else if (ch === "}") {
-      console.log(`Push brace_close`)
+      //console.log(`Push brace_close`)
       tokens.push({ type: "brace_close" });
       i++;
     } else if (/\s/.test(ch)) {
       let ws = "";
       while (i < input.length && /\s/.test(input[i])) {
-        console.log(`ws ${input[i]}`)
+        //console.log(`ws ${input[i]}`)
         ws += input[i++];
       }
-      console.log(`Push whitespace`)
+      //console.log(`Push whitespace`)
       tokens.push({ type: "whitespace", value: ws });
     } else {
-      console.log(`Push char ${ch}`)
+      //console.log(`Push char ${ch}`)
       tokens.push({ type: "char", value: ch });
       i++;
     }

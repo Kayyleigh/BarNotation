@@ -283,7 +283,7 @@ const NotebookEditor = forwardRef<NotebookEditorHandle, NotebookEditorProps>(
     }, [noteId, setMetadata]);
 
     const updateEditorState = useCallback((id: string, newState: EditorState) => {
-      console.log('%c updateEditorState NE', 'background: #222; color: #bada55'); //stale newState
+      //console.log('%c updateEditorState NE', 'background: #222; color: #bada55'); //stale newState
 
       setEditorStates((prev) => ({ ...prev, [id]: newState }));
     }, [setEditorStates]);
@@ -365,7 +365,7 @@ const NotebookEditor = forwardRef<NotebookEditorHandle, NotebookEditorProps>(
     useEffect(() => {
       if (pendingSelectionRef.current) {
         setSelectedCellId(pendingSelectionRef.current);
-        console.log(`line 366`)
+        //console.log(`line 366`)
         pendingSelectionRef.current = null;
       }
     }, [visibleCells]); // run whenever cells update
@@ -436,7 +436,7 @@ const NotebookEditor = forwardRef<NotebookEditorHandle, NotebookEditorProps>(
     }, []);
 
     const blurEditor = useCallback(() => {
-      console.log(`BlurEditor, set selected cell to null`);
+      //console.log(`BlurEditor, set selected cell to null`);
       setSelectedCellId(null)
     }, []);
 

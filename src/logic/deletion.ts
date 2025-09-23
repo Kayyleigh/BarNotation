@@ -18,7 +18,7 @@ export const handleBackspace = (state: EditorState): EditorState => {
   if (!container) return state;
 
   if (container.type === "command-input" || container.type === "multi-digit") {
-    // console.log(`You are in ${container.type}`)
+    // //console.log(`You are in ${container.type}`)
 
     // Case: At start of empty node
     if (cursor.index === 0 && container.children.every(isEmptyNode)) { //TODO now if not empty it will disappear cursor
@@ -60,14 +60,14 @@ export const handleBackspace = (state: EditorState): EditorState => {
 
       const updatedRoot = updateNodeById(state.rootNode, container.id, updatedContainer);
 
-      // console.log(`You are at ${cursor.index} in ${container.type} with ${nodeToMathText(container)}`)
+      // //console.log(`You are at ${cursor.index} in ${container.type} with ${nodeToMathText(container)}`)
 
       // If new index is last of text container, move to parent
       if (cursor.index === container.children.length) {
         const parentContainer = findParentContainerAndIndex(state.rootNode, container.id);
 
         if (!parentContainer) {
-          console.warn(`${container.type} with ID ${container.id} has no parent container.`)
+          //console.warn(`${container.type} with ID ${container.id} has no parent container.`)
           return state;
         }
 
@@ -124,7 +124,7 @@ export const handleBackspace = (state: EditorState): EditorState => {
   }
 
   if (prevNode && (prevNode.type === "command-input" || prevNode.type === "multi-digit")) {
-    // console.log(`Delling ${prevNode.children.map(child => child.content).join("")}`)
+    // //console.log(`Delling ${prevNode.children.map(child => child.content).join("")}`)
     return handleBackspace({
       rootNode: state.rootNode,
       cursor: {
@@ -138,7 +138,7 @@ export const handleBackspace = (state: EditorState): EditorState => {
   if (cursor.index === 0 && container.children.length === 0) {
     const parentInfo = findParentOfInlineContainer(state.rootNode, container.id);
     if (!parentInfo) {
-      // console.log(`you do not have IC parent`)
+      // //console.log(`you do not have IC parent`)
       return state;
     }
     const { parent, key } = parentInfo;
@@ -217,7 +217,7 @@ export const handleBackspace = (state: EditorState): EditorState => {
         // Try to extract row and column indices from the key
         const match = key.match(/^rows\[(\d+)\]\[(\d+)\]$/);
         if (!match) {
-          console.warn("Could not parse matrix cell key:", key);
+          //console.warn("Could not parse matrix cell key:", key);
           return state;
         }
 
@@ -226,7 +226,7 @@ export const handleBackspace = (state: EditorState): EditorState => {
         const cell = matrix.rows?.[rowIndex]?.[colIndex];
 
         if (!cell) {
-          console.warn("Matrix cell not found at position:", key);
+          //console.warn("Matrix cell not found at position:", key);
           return state;
         }
 
@@ -333,7 +333,7 @@ export const handleBackspace = (state: EditorState): EditorState => {
         },
       };
     }
-    console.warn(`${replacementChildren}`)
+    //console.warn(`${replacementChildren}`)
     return state;
   }
 
@@ -341,7 +341,7 @@ export const handleBackspace = (state: EditorState): EditorState => {
     const parentInfo = findParentOfInlineContainer(state.rootNode, container.id);
 
     if (!parentInfo) {
-      // console.log(`you do not have IC parent`)
+      // //console.log(`you do not have IC parent`)
       return state;
     }
 
@@ -381,7 +381,7 @@ export const handleBackspace = (state: EditorState): EditorState => {
       };
     }
     else {
-      // console.log(`Trying to backspace at start of non-empty ${container.type}. For now, dealt with by doing arrow left`)
+      // //console.log(`Trying to backspace at start of non-empty ${container.type}. For now, dealt with by doing arrow left`)
       return handleArrowLeft(state);
     }
   }
@@ -392,7 +392,7 @@ export const handleBackspace = (state: EditorState): EditorState => {
     // Either deal with this or make implicit group
   }
 
-  // console.log(`Deleting ${currentToDelete.type}`)
+  // //console.log(`Deleting ${currentToDelete.type}`)
 
   if (currentToDelete.type !== "text"
     && (currentToDelete.type !== "big-operator" || !isEmptyNode(currentToDelete.lower) || !isEmptyNode(currentToDelete.upper))) {
@@ -401,7 +401,7 @@ export const handleBackspace = (state: EditorState): EditorState => {
     // const children = getLogicalChildren(currentToDelete)
     // const lastChild = children[children.length - 1]
 
-    // console.log(lastChild?.type)
+    // //console.log(lastChild?.type)
 
     return handleBackspace(simulatePrevState)
   }

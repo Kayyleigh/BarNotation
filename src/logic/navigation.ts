@@ -22,10 +22,7 @@ export function handleJumpLeft(state: EditorState): EditorState {
   const { cursor, rootNode } = state;
 
   const path = findNodePath(rootNode, cursor.containerId);
-  console.log(path)
   if (!path) return state;
-  console.log(path.map(node => node.type));
-  console.log(cursor)
 
   // Case 1: Move left within the current container
   if (cursor.index > 0) {
