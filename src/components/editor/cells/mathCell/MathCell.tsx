@@ -1,18 +1,19 @@
 // components/editor/cells/MathCell.tsx
 import React, {
   useState,
-  // useCallback,
   forwardRef,
   useImperativeHandle,
   useRef,
+  useCallback,
 } from "react";
 import MathEditor from "../../../mathExpression/MathEditor";
-import type { EditorState } from "../../../../logic/editor-state";
+import { setCursor, type EditorState } from "../../../../logic/editor-state";
 import { HoverProvider } from "../../../../hooks/mathHover/HoverProvider";
 import { useEditorMode } from "../../../../hooks/editorMode/useEditorMode";
 import styles from "../cell.module.css";
 import type { BaseCellProps } from "../../../../models/cellRegistry";
 import type { DragSource, DropTarget } from "../../../../models/dragTypes";
+import type { CursorPosition } from "../../../../logic/cursor";
 
 export interface MathCellHandle {
   focusAndScroll: () => void;
@@ -22,8 +23,6 @@ interface MathCellExtraProps {
   resetZoomSignal: number;
   defaultZoom: number;
   showLatex: boolean;
-  // editorState: EditorState;
-  // updateEditorState: (newState: EditorState) => void;
   isSelected: boolean;
   selectCell: () => void;
   onDropNode: (from: DragSource, to: DropTarget) => void;
@@ -61,19 +60,26 @@ const MathCell = forwardRef<MathCellHandle, MathCellProps>(
             `[data-math-editor="${id}"]`
           );
           editorDiv?.focus();
+          setCursorToEnd()
         }
       },
     }));
+
+    const setCursorToEnd = useCallback(() => {
+      const rootChild = content.rootNode.child;
+      if (!rootChild) return;
+
+      const newCursor: CursorPosition = {
+        containerId: rootChild.id,
+        index: rootChild.children.length, // place cursor at the end
+      };
+      onChange(setCursor(content, newCursor));
+    }, [content, onChange]);
 
     const [hoverInfo, setHoverInfo] = useState({
       hoveredType: "",
       zoomLevel: defaultZoom,
     });
-
-    // const handleEditorFocus = useCallback(
-    //   () => selectCell(),
-    //   [selectCell]
-    // );
 
     return (
       <div
