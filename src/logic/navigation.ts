@@ -1,38 +1,112 @@
 import type { EditorState } from "./editor-state";
 import { flattenCursorPositions, findCursorIndex } from "../utils/navigationUtils";
-import type { MathNode, MatrixNode } from "../models/mathNodeTypes";
+import type { InlineContainerNode, MathNode, MatrixNode, StructureNode } from "../models/mathNodeTypes";
 import { findNodePath } from "../utils/treeUtils";
+import type { CursorPosition } from "./cursor";
 //TODO: textnode nav? if prev is text then in_idx is its len. 
 
-export function handleJumpLeft(state: EditorState): EditorState {
-  const { cursor, rootNode } = state;
-  const path = findNodePath(rootNode, cursor.containerId);
-  if (!path) return state;
-
-  if (cursor.index > 0) {
-    // Normal jump left within container
-    return { ...state, cursor: { containerId: cursor.containerId, index: cursor.index - 1 } };
-  }
-
-  // At start of container → fallback to handleArrowLeft (flattened/tree-aware)
-  return handleArrowLeft(state);
+/**
+ * Find the index of a child `struc` inside an inline container `ic`.
+ * Complexity: O(n) in the size of the grandparent’s children.
+ */
+function findIndexInIC(ic: InlineContainerNode, struc: StructureNode): number {
+  return ic.children.findIndex(child => child.id === struc.id);
 }
 
+/**
+ * Handle a "jump left" key action, which moves the cursor:
+ * - one position left within the same container if possible
+ * - otherwise, out of the current inline container into the parent context
+ */
+export function handleJumpLeft(state: EditorState): EditorState {
+  const { cursor, rootNode } = state;
+
+  const path = findNodePath(rootNode, cursor.containerId);
+  console.log(path)
+  if (!path) return state;
+  console.log(path.map(node => node.type));
+  console.log(cursor)
+
+  // Case 1: Move left within the current container
+  if (cursor.index > 0) {
+    return {
+      ...state,
+      cursor: { containerId: cursor.containerId, index: cursor.index - 1 },
+    };
+  }
+
+  // Case 2: At start of container -> may need to jump out
+  if (path.length < 3) {
+    // not deep enough -> fallback to default arrow behavior
+    return handleArrowLeft(state);
+  }
+
+  const parent = path[path.length - 2] as StructureNode;
+  const grandparent = path[path.length - 3] as InlineContainerNode;
+
+  if (grandparent.type !== "inline-container") {
+    return handleArrowLeft(state);
+  }
+
+  const parentIndex = findIndexInIC(grandparent, parent);
+  if (parentIndex < 0) {
+    // cannot jump further left -> fallback
+    return handleArrowLeft(state);
+  }
+
+  const jumpOutCursor: CursorPosition = {
+    containerId: grandparent.id,
+    index: parentIndex,
+  };
+
+  return { ...state, cursor: jumpOutCursor };
+}
+
+/**
+ * Handle a "jump right" key action, which moves the cursor:
+ * - one position right within the same container if possible
+ * - otherwise, out of the current inline container into the parent context
+ */
 export function handleJumpRight(state: EditorState): EditorState {
   const { cursor, rootNode } = state;
+
   const path = findNodePath(rootNode, cursor.containerId);
   if (!path) return state;
 
   const container = path[path.length - 1];
   const length = "children" in container ? container.children.length : 0;
 
+  // Case 1: Move right within the current container
   if (cursor.index < length) {
-    // Normal jump right within container
-    return { ...state, cursor: { containerId: cursor.containerId, index: cursor.index + 1 } };
+    return {
+      ...state,
+      cursor: { containerId: cursor.containerId, index: cursor.index + 1 },
+    };
   }
 
-  // At end of container → fallback to handleArrowRight
-  return handleArrowRight(state);
+  // Case 2: At end of container -> may need to jump out
+  if (path.length < 3) {
+    return handleArrowRight(state);
+  }
+
+  const parent = path[path.length - 2] as StructureNode;
+  const grandparent = path[path.length - 3] as InlineContainerNode;
+
+  if (grandparent.type !== "inline-container") {
+    return handleArrowRight(state);
+  }
+
+  const parentIndex = findIndexInIC(grandparent, parent);
+  if (parentIndex < 0) {
+    return handleArrowRight(state);
+  }
+
+  const jumpOutCursor: CursorPosition = {
+    containerId: grandparent.id,
+    index: parentIndex + 1, // <-- difference: land *after* the parent
+  };
+
+  return { ...state, cursor: jumpOutCursor };
 }
 
 export function handleArrowLeft(state: EditorState): EditorState {
