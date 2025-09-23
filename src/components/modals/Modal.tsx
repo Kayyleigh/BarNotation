@@ -17,6 +17,10 @@ const Modal: React.FC<ModalProps> = ({ onClose, children, className, showCloseBu
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    contentRef.current?.focus();
+  }, []);
+
+  useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };

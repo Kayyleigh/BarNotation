@@ -60,6 +60,19 @@ const App: React.FC = () => {
     }
   }, [theme]);
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Check for Ctrl (or Cmd on Mac) + /
+      if (e.ctrlKey && e.key === "/") {
+        e.preventDefault();
+        handleOpenHotkeys();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [handleOpenHotkeys]);
+
   return (
     <>
       <ToastProvider>

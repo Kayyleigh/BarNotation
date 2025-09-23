@@ -129,6 +129,7 @@ export type MathToolbarExtrasProps = {
   id: string;
   toggleShowLatex: (id: string) => void;
   showLatex: boolean;
+  t: (key: string) => string;
 };
 
 // Generic cell type definition

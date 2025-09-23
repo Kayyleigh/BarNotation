@@ -396,11 +396,13 @@ const NotebookEditor = forwardRef<NotebookEditorHandle, NotebookEditorProps>(
           combo === "Alt+Digit1" ||
           combo === "Alt+Digit2" ||
           combo === "Alt+Numpad1" ||
-          combo === "Alt+Numpad2";
+          combo === "Alt+Numpad2" ||
+          combo === "Alt+ArrowUp" ||
+          combo === "Alt+ArrowDown";
 
         const currentIndex = selectedCellId
           ? visibleCells.findIndex(c => c.id === selectedCellId)
-          : 0; // fallback index when no cell selected
+          : undefined; // fallback index when no cell selected
 
         // Lookup the handler
         const handler = keyMap[combo];

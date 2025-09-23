@@ -61,7 +61,7 @@ const EditorHeaderBar: React.FC<EditorHeaderBarProps> = ({
   return (
     <div className={styles.editorHeaderBar}>
       <div className={styles.buttonBar}>
-        <Tooltip text={getTooltip(t("editor.addMath"))}>
+        <Tooltip text={getTooltip(t("editor.appendMath"))}>
           <button
             className={styles.button}
             onClick={() => addCellRef.current("math")}
@@ -71,7 +71,7 @@ const EditorHeaderBar: React.FC<EditorHeaderBarProps> = ({
           </button>
         </Tooltip>
 
-        <Tooltip text={getTooltip(t("editor.addText"))}>
+        <Tooltip text={getTooltip(t(".appendText"))}>
           <button
             className={styles.button}
             onClick={() => addCellRef.current("text")}

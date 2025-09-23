@@ -32,12 +32,15 @@ const en = {
     delete: "Delete",
     deleteTooltip: "Delete cell (Alt+Del)",
     duplicate: "Duplicate",
-    duplicateTooltip: "Duplicate cell (Alt+=)"
+    duplicateTooltip: "Duplicate cell (Alt+=)",
+    latexTooltip: "Toggle latex visibility",
   },
 
   editor: {
     addMath: "Add math cell",
     addText: "Add text cell",
+    appendMath: "Add math cell (Alt+1)", //NEW
+    appendText: "Add text cell (Alt+2)", //NEW
     lockedAdd: "Cannot add cells in locked mode",
     cleanup: "Remove empty cells", //UNUSED, I REMOVED THE CLEANUP FEATURE
     cleanupWip: "Cleanup is not yet implemented",
@@ -50,7 +53,7 @@ const en = {
     edit: "Edit",
     lock: "Lock",
     unlock: "Unlock",
-    resetZoom: "Reset all zoom levels",
+    resetZoom: "Reset all zoom levels (Ctrl+0)", //TEMP (?) CHANGE
     changeZoom: "Change default zoom level",
     defaultZoom: "Default Zoom",
     cannotDoInLocked: "Cannot edit in locked mode", //NEW
@@ -91,7 +94,7 @@ const en = {
     header: {
       hotkeys: {
         label: "Hotkeys",
-        tooltip: "Show hotkey overview",
+        tooltip: "Show hotkey overview (Ctrl+/)",
       },
       userGuide: {
         label: "User Guide",
@@ -117,7 +120,7 @@ const en = {
   },
 
   modals: {
-    close: "Close",
+    close: "Close (Esc)",
     save: "save", //NEW
     cancel: "cancel", //NEW
     archiveModal: {

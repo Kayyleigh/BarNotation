@@ -76,27 +76,30 @@ export function createNotebookKeyMap(
     },
 
     "Alt+ArrowUp": (e, _id, currentIndex) => {
-      if (currentIndex === undefined) return;
+      const index = currentIndex ?? visibleCells.length;
       e.preventDefault();
+
       if (pendingInsertRef.current) {
-        const insertIndex = Math.max(0, currentIndex);
+        const insertIndex = Math.max(0, index);
         handleInsertAtIndex(pendingInsertRef.current, insertIndex);
         pendingInsertRef.current = null;
         arrowUsedRef.current = true;
-      } else if (currentIndex > 0) {
-        setSelectedCellId(visibleCells[currentIndex - 1].id);
+      } else if (index > 0) {
+        setSelectedCellId(visibleCells[index - 1].id);
       }
     },
+
     "Alt+ArrowDown": (e, _id, currentIndex) => {
-      if (currentIndex === undefined) return;
+      const index = currentIndex ?? -1; // default to 0 if undefined
       e.preventDefault();
+
       if (pendingInsertRef.current) {
-        const insertIndex = currentIndex + 1;
+        const insertIndex = index + 1;
         handleInsertAtIndex(pendingInsertRef.current, insertIndex);
         pendingInsertRef.current = null;
         arrowUsedRef.current = true;
-      } else if (currentIndex < visibleCells.length - 1) {
-        setSelectedCellId(visibleCells[currentIndex + 1].id);
+      } else if (index < visibleCells.length - 1) {
+        setSelectedCellId(visibleCells[index + 1].id);
       }
     },
 
