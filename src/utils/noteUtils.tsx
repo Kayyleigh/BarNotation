@@ -90,7 +90,7 @@ export function computeDisplayNumbers(
 export function getDisplayDate(metadata: NoteMetadata, lang: string): string {
   const fallbackDate = (date?: string | number) =>
     date
-      ? new Date(date).toLocaleDateString(lang, { month: "short", day: "numeric" })
+      ? new Date(date).toLocaleDateString(lang, { day: "numeric", month: "short", year: "numeric" })
       : "";
 
   return (
