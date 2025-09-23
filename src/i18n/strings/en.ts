@@ -47,12 +47,13 @@ const en = {
     clean: "Clean",
     showLatex: "Show all LaTeX",
     hideLatex: "Hide all LaTeX",
-    enterPreview: "Enter preview mode",
-    returnEdit: "Return to edit mode",
+    enterPreview: "Enter preview mode (Alt+P)",
+    returnEdit: "Return to edit mode (Alt+P)",
     preview: "Preview",
     edit: "Edit",
     lock: "Lock",
     unlock: "Unlock",
+    toggleLockTooltip: "Toggle lock (Alt+L)", //NEW
     resetZoom: "Reset all zoom levels (Ctrl+0)", //TEMP (?) CHANGE
     changeZoom: "Change default zoom level",
     defaultZoom: "Default Zoom",
@@ -129,6 +130,17 @@ const en = {
     },
     hotkeysModal: {
       title: "Keyboard Shortcuts",
+
+      generalShortcuts: "General", //NEW
+      openHotkeyModal: "Open hotkey overlay", //NEW
+      closeOverlay: "Close overlay", //NEW
+
+      notebookShortcuts: "Notebook Shortcuts", //NEW
+      togglePreview: "Toggle preview mode", //NEW
+      toggleLocked: "(In preview mode) Toggle locked mode", //NEW
+      appendMath: "Append new math cell", //NEW
+      appendText: "Append new text cell", //NEW
+
       mathInputShortcuts: "Math Input Shortcuts", //NEW (KEY NAME CHANGE!!)
 
       // Childed/Actuarial

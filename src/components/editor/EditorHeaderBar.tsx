@@ -36,6 +36,28 @@ const EditorHeaderBar: React.FC<EditorHeaderBarProps> = ({
 
   const { editingMode, toggleEditingMode, locked, toggleLocked } = useEditorMode();
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Alt + P: toggle editing mode
+      if (e.altKey && e.key === "p") {
+        e.preventDefault();
+        toggleEditingMode();
+      }
+
+      // Alt + L: toggle locked mode only if in preview mode
+      if (e.altKey && e.key === "l") {
+        e.preventDefault();
+        if (editingMode === "preview") {
+          toggleLocked();
+        }
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [editingMode, toggleEditingMode, toggleLocked]);
+
+
   const disableWhileLocked = locked && editingMode === "preview";
 
   const [editingZoom, setEditingZoom] = useState(false);
@@ -71,7 +93,7 @@ const EditorHeaderBar: React.FC<EditorHeaderBarProps> = ({
           </button>
         </Tooltip>
 
-        <Tooltip text={getTooltip(t(".appendText"))}>
+        <Tooltip text={getTooltip(t("editor.appendText"))}>
           <button
             className={styles.button}
             onClick={() => addCellRef.current("text")}
@@ -114,7 +136,7 @@ const EditorHeaderBar: React.FC<EditorHeaderBarProps> = ({
         </Tooltip>
 
         {(editingMode === "preview") && (
-          <Tooltip text={locked ? t("editor.unlock") : t("editor.lock")}>
+          <Tooltip text={t("editor.toggleLockTooltip")}>
             <button
               className={clsx(styles.button, styles.previewToggleButton)}
               onClick={toggleLocked}
