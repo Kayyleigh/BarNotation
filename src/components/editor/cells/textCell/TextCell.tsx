@@ -33,10 +33,15 @@ const TextCell = forwardRef<
   // Expose focusAndScroll
   useImperativeHandle(ref, () => ({
     focusAndScroll: () => {
-      if (textareaRef.current) {
-        textareaRef.current.focus();
-        textareaRef.current.scrollIntoView({ block: "center", behavior: "smooth" });
-      }
+      const el = textareaRef.current;
+      if (!el) return;
+
+      el.focus();
+      el.scrollIntoView({ block: "center", behavior: "smooth" });
+
+      // Move cursor to the end
+      const length = el.value.length;
+      el.setSelectionRange(length, length);
     },
   }));
 
