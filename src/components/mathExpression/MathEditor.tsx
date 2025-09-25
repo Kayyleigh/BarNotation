@@ -81,8 +81,14 @@ const MathEditor: React.FC<MathEditorProps> = ({
 
   const onCopy = (e: React.ClipboardEvent) => {
     const selectedNode = getSelectedNode(editorState);
+    if (!selectedNode) {
+      console.warn("No node selected on copy");
+      return;
+    }
     if (selectedNode) {
-      e.clipboardData.setData("text/plain", nodeToLatex(selectedNode, false));
+      const latex = nodeToLatex(selectedNode, false);
+      e.clipboardData.setData("text/plain", latex);
+      console.log("Copied LaTeX:", latex);
       e.preventDefault();
     }
   };
@@ -98,14 +104,20 @@ const MathEditor: React.FC<MathEditorProps> = ({
 
   const onPaste = (e: React.ClipboardEvent) => {
     const pastedText = e.clipboardData.getData("text/plain");
-    if (!pastedText) return;
+
+    if (!pastedText) {
+      console.warn("Nothing in clipboard");
+      return;
+    }
 
     try {
       const pastedNode = parseLatex(pastedText);
       updateEditorState(insertNodeAtCursor(editorState, pastedNode));
+      console.log("Pasted LaTeX:", pastedText);
+
       e.preventDefault();
-    } catch {
-      // fail silently
+    } catch (err) {
+      console.error("Error during paste:", err);
     }
   };
 
