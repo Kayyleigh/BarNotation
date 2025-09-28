@@ -16,7 +16,7 @@ import { parseLatex } from "../../models/latexParser";
 import { nodeToLatex } from "../../models/nodeToLatex";
 import { findNodeById } from "../../utils/treeUtils";
 import type { EditorState } from "../../logic/editor-state";
-import type { CursorPosition } from "../../logic/cursor";
+import { getNodeAtCursor, type CursorPosition } from "../../logic/cursor";
 import type { TextStyle } from "../../models/mathNodeTypes";
 import { useHover } from "../../hooks/mathHover/useHover";
 import type { DragSource, DropTarget } from "../../models/dragTypes";
@@ -66,30 +66,35 @@ const MathEditor = forwardRef<MathEditorHandle, MathEditorProps>(({
 
   const scrollCursorIntoView = useCallback(() => {
     if (!scrollInnerRef.current) return;
-    const cursorNodeId = editorState.cursor.containerId;
-    if (!cursorNodeId) return;
+    const cursorContainerNodeId = editorState.cursor.containerId;
+    const cursorContainerNode = findNodeById(editorState.rootNode, cursorContainerNodeId)
+
+    if (!cursorContainerNode || cursorContainerNode.type !== 'inline-container') return;
+    const cursorNode = cursorContainerNode.children[editorState.cursor.index - 1]
+
+    if (!cursorNode) return;
 
     const cursorEl = scrollInnerRef.current.querySelector<HTMLElement>(
-      `[data-nodeid="${cursorNodeId}"]`
+      `[data-nodeid="${cursorNode.id}"]`
     );
     if (!cursorEl) return;
 
     const container = getScrollableParent(scrollInnerRef.current);
-
     if (!container) return;
 
     const elRect = cursorEl.getBoundingClientRect();
     const containerRect = container.getBoundingClientRect();
 
-    // If cursor is left of visible area, scroll left
-    if (elRect.right > containerRect.right) {
-      container.scrollLeft += elRect.right - containerRect.right + 10;
+    // Scroll left if cursor is off the left edge
+    if (elRect.right <= containerRect.left) {
+      container.scrollLeft -= containerRect.left - elRect.left + 5; // small padding
     }
-    // If cursor is right of visible area, scroll right
-    else if (elRect.left > containerRect.left) {
-      container.scrollLeft -= containerRect.left - elRect.left;
+    // Scroll right if cursor is off the right edge
+    else if (elRect.right > containerRect.right) {
+      container.scrollLeft += elRect.right - containerRect.right + 5; // small padding
     }
-  }, [editorState.cursor]);
+
+  }, [editorState.cursor, editorState.rootNode]);
 
   // Expose focusAndScroll
   // Imperative handle
