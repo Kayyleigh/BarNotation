@@ -1,5 +1,5 @@
 import type { EditorState } from "./editor-state";
-import { findNodeById, findParentContainerAndIndex, findParentOfInlineContainer, getLogicalChildren, isEmptyNode, updateNodeById } from "../utils/treeUtils";
+import { findNodeById, findParentContainerAndIndex, findParentOfInlineContainer, isEmptyNode, updateRootNode } from "../utils/treeUtils";
 import {
   type InlineContainerNode,
   type MathNode,
@@ -8,7 +8,18 @@ import { handleArrowLeft } from "./navigation";
 import { getCloseSymbol, getOpenSymbol } from "../utils/bracketUtils";
 import { createTextNode } from "../models/nodeFactories";
 
-//BUG: when deleting subsup that has nonempty other corners, it still deletes whole thing
+
+export const handleBulkBackspace = (state: EditorState): EditorState => {
+  return state //TODO
+}
+
+export const handleDelete = (state: EditorState): EditorState => {
+  return state //TODO
+}
+
+export const handleBulkDelete = (state: EditorState): EditorState => {
+  return state //TODO
+}
 
 export const handleBackspace = (state: EditorState): EditorState => {
   const { cursor } = state;
@@ -35,7 +46,7 @@ export const handleBackspace = (state: EditorState): EditorState => {
         ...parent.children.slice(indexInParent + 1),
       ];
 
-      const updatedRoot = updateNodeById(state.rootNode, parent.id, {
+      const updatedRoot = updateRootNode(state.rootNode, parent.id, {
         ...parent,
         children: newChildren,
       });
@@ -58,7 +69,7 @@ export const handleBackspace = (state: EditorState): EditorState => {
         children: updatedChildren,
       };
 
-      const updatedRoot = updateNodeById(state.rootNode, container.id, updatedContainer);
+      const updatedRoot = updateRootNode(state.rootNode, container.id, updatedContainer);
 
       // //console.log(`You are at ${cursor.index} in ${container.type} with ${nodeToMathText(container)}`)
 
@@ -109,7 +120,7 @@ export const handleBackspace = (state: EditorState): EditorState => {
       ...container.children.slice(indexInParent + 1),
     ];
 
-    const updatedRoot = updateNodeById(state.rootNode, container.id, {
+    const updatedRoot = updateRootNode(state.rootNode, container.id, {
       ...container,
       children: newChildren,
     });
@@ -186,10 +197,8 @@ export const handleBackspace = (state: EditorState): EditorState => {
         break;
       }
       case "childed": {
-        const child = parent[key as keyof typeof parent];
-
         // Gather corners in a consistent order
-        const corners: (typeof child)[] = [
+        const corners = [
           parent.supLeft,
           parent.subLeft,
           parent.subRight,
@@ -201,11 +210,9 @@ export const handleBackspace = (state: EditorState): EditorState => {
 
         if (allChildrenEmpty) {
           replacementChildren = parent.base.children;
-        }
-        else if (key === "base" && isEmptyNode(parent.base)) {
+        } else if (key === "base" && isEmptyNode(parent.base)) {
           replacementChildren = [];
-        }
-        else {
+        } else {
           return handleArrowLeft(state);
         }
 
@@ -256,7 +263,7 @@ export const handleBackspace = (state: EditorState): EditorState => {
           const fallbackCol = Math.min(colIndex, newRow.length - 1);
           const fallbackCell = newRow[fallbackCol];
 
-          const updatedRoot = updateNodeById(state.rootNode, matrix.id, updatedMatrix);
+          const updatedRoot = updateRootNode(state.rootNode, matrix.id, updatedMatrix);
 
           return {
             rootNode: updatedRoot,
@@ -282,7 +289,7 @@ export const handleBackspace = (state: EditorState): EditorState => {
           const fallbackCol = Math.max(0, colIndex - 1);
           const fallbackCell = fallbackRow[fallbackCol];
 
-          const updatedRoot = updateNodeById(state.rootNode, matrix.id, updatedMatrix);
+          const updatedRoot = updateRootNode(state.rootNode, matrix.id, updatedMatrix);
 
           return {
             rootNode: updatedRoot,
@@ -320,7 +327,7 @@ export const handleBackspace = (state: EditorState): EditorState => {
           ? indexInGrandParent + 1 // end of numerator //TODO +0 if there is no empty Textnode at start of IC
           : indexInGrandParent + insertedCount; // start of denominator
 
-      const updatedRoot = updateNodeById(state.rootNode, grandParentContainer.id, {
+      const updatedRoot = updateRootNode(state.rootNode, grandParentContainer.id, {
         ...grandParentContainer,
         children: newChildren,
       });
@@ -345,7 +352,7 @@ export const handleBackspace = (state: EditorState): EditorState => {
       return state;
     }
 
-    const { parent, key } = parentInfo;
+    const { parent, } = parentInfo;
 
     if (parent.type === "group") {
       // revert group to flattened child and right bracket
@@ -367,7 +374,7 @@ export const handleBackspace = (state: EditorState): EditorState => {
         ...parentContainer.children.slice(indexInParentContainer + 1),
       ];
 
-      const updatedRoot = updateNodeById(state.rootNode, parentContainer.id, {
+      const updatedRoot = updateRootNode(state.rootNode, parentContainer.id, {
         ...parentContainer,
         children: newChildren,
       });
@@ -412,7 +419,7 @@ export const handleBackspace = (state: EditorState): EditorState => {
     ...container.children.slice(cursor.index),
   ];
 
-  const updatedRoot = updateNodeById(state.rootNode, container.id, {
+  const updatedRoot = updateRootNode(state.rootNode, container.id, {
     ...container,
     children: updatedChildren,
   });

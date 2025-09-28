@@ -1,7 +1,7 @@
 import type { EditorState } from "./editor-state";
 import { handleArrowDown, handleArrowLeft, handleArrowRight, handleArrowUp, handleJumpLeft, handleJumpRight } from "./navigation";
 import { handleBracketInsert, handleCharacterInsert } from "./insertion";
-import { handleBackspace } from "./deletion";
+import { handleBackspace, handleBulkBackspace, handleBulkDelete, handleDelete } from "./deletion";
 import { transformToActsymbNode, transformToFraction, transformToSubSupNode, transformToOverUnderset } from "./transformations";
 import { getStyleFromSymbol, isClosingBracket, isOpeningBracket } from "../utils/bracketUtils";
 import { handleCtrlArrow } from "./matrix-manipulation";
@@ -47,6 +47,8 @@ const keyMap: Record<
   "Shift+Minus": (state) => transformToSubSupNode(state, "subRight"),
   "Shift+ArrowLeft": (state) => handleJumpLeft(state),
   "Shift+ArrowRight": (state) => handleJumpRight(state),
+  "Shift+Backspace": (state) => handleBulkBackspace(state),
+  "Shift+Delete": (state) => handleBulkDelete(state),
 
   // Single-key events
   "ArrowLeft": (state) => handleArrowLeft(state),
@@ -54,6 +56,7 @@ const keyMap: Record<
   "ArrowUp": (state) => handleArrowUp(state),
   "ArrowDown": (state) => handleArrowDown(state),
   "Backspace": (state) => handleBackspace(state),
+  "Delete": (state) => handleDelete(state),
   "Slash": (state) => transformToFraction(state), // "/"
 };
 

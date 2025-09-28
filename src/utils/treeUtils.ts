@@ -141,6 +141,21 @@ export const isEmptyNode = (node: MathNode | null | undefined): boolean => {
   return children.every(isEmptyNode);
 };
 
+export function updateRootNode(
+  node: RootWrapperNode,
+  targetId: string,
+  replacement: MathNode
+): RootWrapperNode {
+  const updated = updateNodeById(node, targetId, replacement);
+
+  if (updated.type !== "root-wrapper") {
+    throw new Error("updateRootNode must always return a RootWrapperNode");
+  }
+
+  return updated as RootWrapperNode;
+}
+
+
 export function updateNodeById(
   node: MathNode,
   targetId: string,
