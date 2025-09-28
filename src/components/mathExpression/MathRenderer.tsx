@@ -38,7 +38,7 @@ export type CoreRenderProps = {
   showPlaceholder?: boolean;
   updateEditorState: (newState: EditorState) => void;
   editorState: EditorState;
-  editorRef: React.RefObject<HTMLTextAreaElement | null>;
+  focusEditor: () => void
   readOnly?: boolean;
 };
 

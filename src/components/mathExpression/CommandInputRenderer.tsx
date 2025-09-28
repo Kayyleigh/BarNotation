@@ -29,7 +29,7 @@ export const CommandInputRenderer: React.FC<CommandInputRendererProps> = ({ node
     baseProps.updateEditorState(updatedState);
 
     // Return focus to the hidden textarea
-    baseProps.editorRef?.current?.focus();
+    requestAnimationFrame(() => baseProps.focusEditor());
   };
 
   return (

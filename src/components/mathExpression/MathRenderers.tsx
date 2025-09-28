@@ -66,7 +66,7 @@ export function renderContainerChildren(
     showPlaceholder,
     editorState,
     updateEditorState,
-    editorRef,
+    focusEditor,
     readOnly
   } = baseProps;
 
@@ -103,8 +103,12 @@ export function renderContainerChildren(
           key={`clickable-${i}`}
           onClick={(e) => {
             e.stopPropagation();
+
             if (containerId != null) {
               onCursorChange({ containerId, index: i + 1 });
+
+              // Focus after state is applied
+              requestAnimationFrame(() => focusEditor());
             }
           }}
           className={clsx("math-node-wrapper", {
@@ -128,7 +132,7 @@ export function renderContainerChildren(
             showPlaceholder={showPlaceholder}
             editorState={editorState}
             updateEditorState={updateEditorState}
-            editorRef={editorRef}
+            focusEditor={focusEditor}
             readOnly={readOnly}
           />
         </span>
@@ -496,7 +500,7 @@ export function renderOverUndersetNode(
     showPlaceholder: baseProps.showPlaceholder,
     editorState: baseProps.editorState,
     updateEditorState: baseProps.updateEditorState,
-    editorRef: baseProps.editorRef,
+    focusEditor: baseProps.focusEditor,
     readOnly: baseProps.readOnly
   };
 
@@ -516,6 +520,8 @@ export function renderOverUndersetNode(
         e.stopPropagation();
         if (node.base.children.length === 0) {
           baseProps.onCursorChange({ containerId: node.base.id, index: 0 });
+          // defer focus so React has applied the cursor change
+          requestAnimationFrame(() => baseProps.focusEditor());
         }
       }}
       onMouseEnter={() => handleMouseEnter([...baseProps.ancestorIds], baseProps.setHoverPath)}
@@ -580,7 +586,7 @@ export function renderDecoratedNode(
     showPlaceholder: baseProps.showPlaceholder,
     editorState: baseProps.editorState,
     updateEditorState: baseProps.updateEditorState,
-    editorRef: baseProps.editorRef,
+    focusEditor: baseProps.focusEditor,
     readOnly: baseProps.readOnly
   };
 
@@ -601,6 +607,8 @@ export function renderDecoratedNode(
         e.stopPropagation();
         if (node.base.children.length === 0) {
           baseProps.onCursorChange({ containerId: node.base.id, index: 0 });
+          // defer focus so React has applied the cursor change
+          requestAnimationFrame(() => baseProps.focusEditor());
         }
       }}
       onMouseEnter={() => handleMouseEnter([...baseProps.ancestorIds], baseProps.setHoverPath)}

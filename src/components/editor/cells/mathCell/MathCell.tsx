@@ -159,7 +159,7 @@
 // export default React.memo(MathCell);
 
 
-import React, { forwardRef, useImperativeHandle, useRef, useState, useCallback } from "react";
+import React, { forwardRef, useImperativeHandle, useRef, useState, useCallback, useLayoutEffect } from "react";
 import MathEditor, { MathEditorHandle } from "../../../mathExpression/MathEditor";
 import { HoverProvider } from "../../../../hooks/mathHover/HoverProvider";
 import { useEditorMode } from "../../../../hooks/editorMode/useEditorMode";
@@ -167,6 +167,7 @@ import styles from "../cell.module.css";
 import type { BaseCellProps } from "../../../../models/cellRegistry";
 import type { DragSource, DropTarget } from "../../../../models/dragTypes";
 import { EditorState } from "../../../../logic/editor-state";
+import { getScrollableParent } from "../../../../utils/dom";
 
 export interface MathCellHandle {
   focusAndScroll: () => void;
@@ -183,12 +184,85 @@ interface MathCellExtraProps {
 
 type MathCellProps = BaseCellProps<EditorState> & MathCellExtraProps;
 
+// const MathCell = forwardRef<MathCellHandle, MathCellProps>(
+//   ({ id, content, onChange, resetZoomSignal, defaultZoom, showLatex, isSelected, selectCell, onDropNode }, ref) => {
+//     const { editingMode } = useEditorMode();
+//     const isEditMode = editingMode === "edit";
+//     const editorRef = useRef<MathEditorHandle>(null);
+
+//     const [hoverInfo, setHoverInfo] = useState({ hoveredType: "", zoomLevel: defaultZoom });
+
+//     const handleDropNode = useCallback(
+//       (from: DragSource, to: DropTarget) => {
+//         onDropNode(from, to);
+//       },
+//       [onDropNode]
+//     );
+
+//     useImperativeHandle(ref, () => ({
+//       focusAndScroll: () => {
+//         selectCell(); // make sure this cell is selected
+//         editorRef.current?.focusAndScroll(); // let MathEditor handle focus, scroll, and cursor
+//       },
+//     }));
+
+//     useEffect(() => {
+//       if (!isSelected) return;
+
+//       const container = containerRef.current; // containerref doesnt exist
+//       if (!container) return;
+
+//       const rect = container.getBoundingClientRect();
+//       const viewHeight = window.innerHeight || document.documentElement.clientHeight;
+
+//       // If top/bottom of cell is outside the viewport, scroll it into view
+//       if (rect.top < 0 || rect.bottom > viewHeight) {
+//         container.scrollIntoView({ block: "center", behavior: "smooth" });
+//       }
+//     }, [isSelected]);
+
+
+//     return (
+//       <div className={styles.mathCell}>
+//         <div className={styles.mathScrollContainer}>
+//           <HoverProvider>
+//             <MathEditor
+//               ref={editorRef}
+//               resetZoomSignal={resetZoomSignal}
+//               defaultZoom={defaultZoom}
+//               showLatex={showLatex}
+//               cellId={id}
+//               editorState={content}
+//               updateEditorState={onChange}
+//               onDropNode={handleDropNode}
+//               isSelected={isSelected}
+//               onHoverInfoChange={setHoverInfo}
+//               onFocus={selectCell}
+//             />
+//           </HoverProvider>
+//         </div>
+
+//         {isEditMode && (
+//           <div className={styles.hoverTypeInfo}>
+//             {hoverInfo.hoveredType ? `${hoverInfo.hoveredType} • ` : ""}
+//             {Math.round(hoverInfo.zoomLevel * 100)}%
+//           </div>
+//         )}
+//       </div>
+//     );
+//   }
+// );
+
+// MathCell.displayName = "MathCell";
+// export default React.memo(MathCell);
+
 const MathCell = forwardRef<MathCellHandle, MathCellProps>(
   ({ id, content, onChange, resetZoomSignal, defaultZoom, showLatex, isSelected, selectCell, onDropNode }, ref) => {
     const { editingMode } = useEditorMode();
     const isEditMode = editingMode === "edit";
     const editorRef = useRef<MathEditorHandle>(null);
 
+    const containerRef = useRef<HTMLDivElement>(null); // <-- add this
     const [hoverInfo, setHoverInfo] = useState({ hoveredType: "", zoomLevel: defaultZoom });
 
     const handleDropNode = useCallback(
@@ -198,15 +272,38 @@ const MathCell = forwardRef<MathCellHandle, MathCellProps>(
       [onDropNode]
     );
 
+    // expose imperative focusAndScroll
     useImperativeHandle(ref, () => ({
       focusAndScroll: () => {
-        selectCell(); // make sure this cell is selected
-        editorRef.current?.focusAndScroll(); // let MathEditor handle focus, scroll, and cursor
+        selectCell();
+        editorRef.current?.focusAndScroll();
       },
     }));
 
+    useLayoutEffect(() => {
+      if (!isSelected) return;
+      const container = containerRef.current;
+      if (!container) return;
+
+      const scrollParent = getScrollableParent(container);
+      if (!scrollParent) return;
+
+      const ro = new ResizeObserver(() => {
+        container.scrollIntoView({ block: "center", behavior: "smooth" });
+      });
+
+      ro.observe(container);
+
+      // Also scroll once immediately (in case size is stable)
+      requestAnimationFrame(() => {
+        container.scrollIntoView({ block: "center", behavior: "smooth" });
+      });
+
+      return () => ro.disconnect();
+    }, [isSelected]);
+
     return (
-      <div className={styles.mathCell}>
+      <div className={styles.mathCell} ref={containerRef}>
         <div className={styles.mathScrollContainer}>
           <HoverProvider>
             <MathEditor

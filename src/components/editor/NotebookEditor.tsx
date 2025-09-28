@@ -16,7 +16,7 @@ import NoteMetaDataSection from "./noteMetadata/NoteMetadataSection";
 import type { CellData, NoteMetadata, TextCellContent } from "../../models/noteTypes";
 import type { EditorState } from "../../logic/editor-state";
 import { useEditorMode } from "../../hooks/editorMode/useEditorMode";
-import cellStyles from "./cells/cell.module.css";
+// import cellStyles from "./cells/cell.module.css";
 import { useI18n } from "../../i18n/useI18n";
 import type { DragSource, DropTarget } from "../../models/dragTypes";
 import { CellRenderer } from "./cells/CellRenderer";
@@ -459,32 +459,36 @@ const NotebookEditor = forwardRef<NotebookEditorHandle, NotebookEditorProps>(
             </div>
           )}
 
-          {visibleCells.map((cell, index) => (
-            <CellRendererWrapper
-              key={cell.id}
-              cell={cell}
-              index={index}
-              isSelected={selectedCellId === cell.id}
-              setSelectedCellId={setSelectedCellId}
-              editorStates={editorStates}
-              showLatexMap={showLatexMap}
-              displayNumbers={displayNumbers}
-              updateEditorState={updateEditorState}
-              updateTextCellContent={updateTextCellContent}
-              toggleShowLatex={toggleShowLatex}
-              handleDeleteCell={handleDeleteCell}
-              handleDuplicateCell={handleDuplicateCell}
-              setCellRef={setCellRef}
-              draggingCellId={draggingCellId}
-              dragOverInsertIndex={dragOverInsertIndex}
-              updateDragOver={updateCellDragOver}
-              handleInsertAtIndex={handleInsertAtIndex}
-              handlePointerDown={handlePointerDown}
-              onDropNode={onDropNode}
-              resetZoomSignal={resetZoomSignal}
-              defaultZoom={defaultZoom}
-            />
-          ))}
+          {visibleCells.map((cell, index) => {
+            const isSelected = selectedCellId === cell.id; // compute once per iteration
+
+            return (
+              <CellRendererWrapper
+                key={cell.id}
+                cell={cell}
+                index={index}
+                isSelected={isSelected}
+                setSelectedCellId={setSelectedCellId}
+                editorStates={editorStates}
+                showLatexMap={showLatexMap}
+                displayNumbers={displayNumbers}
+                updateEditorState={updateEditorState}
+                updateTextCellContent={updateTextCellContent}
+                toggleShowLatex={toggleShowLatex}
+                handleDeleteCell={handleDeleteCell}
+                handleDuplicateCell={handleDuplicateCell}
+                setCellRef={setCellRef}
+                draggingCellId={draggingCellId}
+                dragOverInsertIndex={dragOverInsertIndex}
+                updateDragOver={updateCellDragOver}
+                handleInsertAtIndex={handleInsertAtIndex}
+                handlePointerDown={handlePointerDown}
+                onDropNode={onDropNode}
+                resetZoomSignal={resetZoomSignal}
+                defaultZoom={defaultZoom}
+              />
+            );
+          })}
 
           <InsertCellButtons
             onInsert={handleInsertAtEnd}

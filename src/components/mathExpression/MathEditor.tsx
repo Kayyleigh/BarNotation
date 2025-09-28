@@ -21,6 +21,7 @@ import type { TextStyle } from "../../models/mathNodeTypes";
 import { useHover } from "../../hooks/mathHover/useHover";
 import type { DragSource, DropTarget } from "../../models/dragTypes";
 import { useCustomCommands } from "../../hooks/customCommands/useCustomCommands";
+import { getScrollableParent } from "../../utils/dom";
 
 export interface MathEditorHandle {
   focusAndScroll: () => void;
@@ -56,12 +57,42 @@ const MathEditor = forwardRef<MathEditorHandle, MathEditorProps>(({
   const hiddenTextareaRef = useRef<HTMLTextAreaElement>(null);
   const zoomLevel = useZoom(editorRef, resetZoomSignal, defaultZoom);
 
+  const scrollInnerRef = useRef<HTMLDivElement>(null);
+
   const hoveredNode = hoverPath[hoverPath.length - 1]
     ? findNodeById(editorState.rootNode, hoverPath[hoverPath.length - 1])
     : null;
   const hoveredType = hoveredNode?.type ?? "";
 
+  const scrollCursorIntoView = useCallback(() => {
+    if (!scrollInnerRef.current) return;
+    const cursorNodeId = editorState.cursor.containerId;
+    if (!cursorNodeId) return;
+
+    const cursorEl = scrollInnerRef.current.querySelector<HTMLElement>(
+      `[data-nodeid="${cursorNodeId}"]`
+    );
+    if (!cursorEl) return;
+
+    const container = getScrollableParent(scrollInnerRef.current);
+
+    if (!container) return;
+
+    const elRect = cursorEl.getBoundingClientRect();
+    const containerRect = container.getBoundingClientRect();
+
+    // If cursor is left of visible area, scroll left
+    if (elRect.right > containerRect.right) {
+      container.scrollLeft += elRect.right - containerRect.right + 10;
+    }
+    // If cursor is right of visible area, scroll right
+    else if (elRect.left > containerRect.left) {
+      container.scrollLeft -= containerRect.left - elRect.left;
+    }
+  }, [editorState.cursor]);
+
   // Expose focusAndScroll
+  // Imperative handle
   useImperativeHandle(ref, () => ({
     focusAndScroll: () => {
       if (!isSelected) return;
@@ -69,7 +100,6 @@ const MathEditor = forwardRef<MathEditorHandle, MathEditorProps>(({
       editorRef.current?.focus();
 
       if (!isDroppingRef.current) {
-        // Move cursor to end
         const rootChild = editorState.rootNode.child;
         if (rootChild) {
           const newCursor: CursorPosition = {
@@ -79,9 +109,16 @@ const MathEditor = forwardRef<MathEditorHandle, MathEditorProps>(({
           updateEditorState(setCursor(editorState, newCursor));
         }
       }
+
       onFocus?.();
+      scrollCursorIntoView();
     },
-  }), [editorState, isSelected, onFocus, updateEditorState]);
+  }), [editorState, isSelected, onFocus, scrollCursorIntoView, updateEditorState]);
+
+  // Effect to scroll on cursor change
+  useEffect(() => {
+    scrollCursorIntoView();
+  }, [scrollCursorIntoView]);
 
   // Update hover info
   useEffect(() => {
@@ -172,20 +209,58 @@ const MathEditor = forwardRef<MathEditorHandle, MathEditorProps>(({
   );
   const emptyAncestorIds = useMemo<string[]>(() => [], []);
 
-  const handleEditorFocus = useCallback(() => {
-    const selectedNode = getSelectedNode(editorState);
-    if (!selectedNode || selectedNode.type !== "command-input") {
-      hiddenTextareaRef.current?.focus();
+  const focusEditor = () => {
+    hiddenTextareaRef.current?.focus();
+    onFocus?.();
+  };
+
+  // handle click: ignore MathRenderer nodes
+  const handleClick = useCallback((e: React.MouseEvent) => {
+    console.log(`click`)
+
+    let el = e.target as HTMLElement | null;
+    while (el && el !== editorRef.current) {
+      if (el.dataset.dataNodeid) return; // clicked on MathRenderer node
+      el = el.parentElement;
     }
-  }, [editorState]);
+
+    // Not a MathRenderer → move cursor & call onFocus
+    onFocus?.();
+    if (!isDroppingRef.current) {
+      const rootChild = editorState.rootNode.child;
+      if (rootChild) {
+        const newCursor: CursorPosition = {
+          containerId: rootChild.id,
+          index: rootChild.children.length,
+        };
+        updateEditorState(setCursor(editorState, newCursor));
+      }
+    }
+
+    // Also focus textarea
+    hiddenTextareaRef.current?.focus();
+  }, [editorState, isDroppingRef, onFocus, updateEditorState]);
+
+  // handle native focus event safely
+  const handleFocus = useCallback(() => {
+    // Only call the parent onFocus, DO NOT call editorRef.current.focus() again
+    console.log(`focus`)
+    onFocus?.();
+  }, [onFocus]);
+
+
+  useEffect(() => {
+    scrollCursorIntoView();
+  }, [editorState.cursor, scrollCursorIntoView]); //React Hook useEffect has a missing dependency: 'scrollCursorIntoView'. Either include it or remove the dependency array.eslintreact-hooks/exhaustive-deps
 
   return (
     <div
       ref={editorRef}
       className="math-editor"
-      tabIndex={0}
+      tabIndex={-1}
       onKeyDown={onKeyDown}
-      onFocus={handleEditorFocus}
+      onClick={handleClick}
+      onFocus={handleFocus}
       onMouseLeave={() => setHoverPath([])}
     >
       {/* Hidden textarea for clipboard */}
@@ -200,7 +275,7 @@ const MathEditor = forwardRef<MathEditorHandle, MathEditorProps>(({
         }}
       />
 
-      <div className="math-editor-scroll-inner">
+      <div className="math-editor-scroll-inner" ref={scrollInnerRef}>
         <MathRenderer
           cellId={cellId}
           node={editorState.rootNode}
@@ -217,7 +292,7 @@ const MathEditor = forwardRef<MathEditorHandle, MathEditorProps>(({
           showPlaceholder={false}
           editorState={editorState}
           updateEditorState={updateEditorState}
-          editorRef={hiddenTextareaRef}
+          focusEditor={focusEditor}
         />
       </div>
     </div>
