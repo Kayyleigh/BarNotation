@@ -58,7 +58,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   showColorInPreview,
   nerdMode,
 }) => {
-  const editorRef = useRef<NotebookEditorHandle>(null);
+  const workspaceRef = useRef<NotebookEditorHandle>(null);
 
   const { t } = useI18n(); // use language hook
 
@@ -86,7 +86,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
 
   const setSelectedNoteId = useCallback((id: string | null) => {
     setSelectedNoteIdState(id);
-    editorRef.current?.focus();
+    workspaceRef.current?.focus();
 
     if (id) {
       localStorage.setItem(SELECTED_NOTE_KEY, id);
@@ -203,7 +203,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   }, []);
 
   const handleUnarchiveNote = useCallback((id: string) => {
-    let noteTitle = null;
+    let noteTitle = "";
 
     setNotes(prev => {
       const note = prev.find(n => n.id === id);
@@ -281,7 +281,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     };
     setNotes((prev) => [newNote, ...prev]);
     setSelectedNoteId(newId);
-        editorRef.current?.focus();
+    workspaceRef.current?.focus();
   }, [authorName, setSelectedNoteId, t]);
 
   // Note archiving logic
@@ -376,7 +376,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
             <EditorHistoryProvider initialSnapshot={initialSnapshot}>
               <DragProvider>
                 <EditorWorkspace
-                  ref={editorRef}
+                  ref={workspaceRef}
                   noteId={selectedNoteId}
                   noteMetadata={selectedNoteMetadata}
                   setNoteMetadata={updateNoteMetadata}

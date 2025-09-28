@@ -178,19 +178,44 @@ export function CommandInputNodeComponent({
     }
   }, [isSelected, isCursorJustAfter]);
 
+  // const handleKeyDown = (e: React.KeyboardEvent) => {
+  //   if (matching.length === 0) return;
+
+  //   if (e.key === "ArrowDown") {
+  //     e.preventDefault();
+  //     setHighlight(i => (i + 1) % matching.length);
+  //   } else if (e.key === "ArrowUp") {
+  //     e.preventDefault();
+  //     setHighlight(i => (i - 1 + matching.length) % matching.length);
+  //   } else if (e.key === "Enter" || e.key === "Tab") {
+  //     e.preventDefault();
+  //     onSelectSuggestion(matching[highlight]);
+  //     setShowDropdown(false);
+  //   }
+  // };
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (matching.length === 0) return;
 
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      setHighlight(i => (i + 1) % matching.length);
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      setHighlight(i => (i - 1 + matching.length) % matching.length);
-    } else if (e.key === "Enter" || e.key === "Tab") {
-      e.preventDefault();
-      onSelectSuggestion(matching[highlight]);
-      setShowDropdown(false);
+    if (["ArrowDown", "ArrowUp", "Enter", "Tab"].includes(e.key)) {
+      
+      // Steal focus
+
+      e.preventDefault();  // prevent MathEditor from using it
+      // e.stopPropagation(); // stop bubbling
+    }
+
+    switch (e.key) {
+      case "ArrowDown":
+        setHighlight(i => (i + 1) % matching.length);
+        break;
+      case "ArrowUp":
+        setHighlight(i => (i - 1 + matching.length) % matching.length);
+        break;
+      case "Enter":
+      case "Tab":
+        onSelectSuggestion(matching[highlight]);
+        setShowDropdown(false);
+        break;
     }
   };
 

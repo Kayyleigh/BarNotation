@@ -74,7 +74,6 @@ export const CellRenderer = React.memo(
       }
     }, [isSelected]);
 
-
     const typeLabel = useMemo(
       () => registryEntry.getLabel?.(cell.content as ContentType) ?? registryEntry.label,
       [registryEntry, cell.content]

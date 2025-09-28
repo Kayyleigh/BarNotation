@@ -28,9 +28,8 @@ export const CommandInputRenderer: React.FC<CommandInputRendererProps> = ({ node
     const updatedState = replaceCommandWithNode(baseProps.editorState, node.id, transformedNode);
     baseProps.updateEditorState(updatedState);
 
-    setTimeout(() => {
-      baseProps.editorRef?.current?.focus();
-    }, 0);
+    // Return focus to the hidden textarea
+    baseProps.editorRef?.current?.focus();
   };
 
   return (

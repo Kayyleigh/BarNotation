@@ -27,7 +27,7 @@ export const CellWrapper: React.FC<CellWrapperProps> = ({
   isSelected,
   isDragging,
   isDragOver,
-  onSelect,
+  onSelect, // onSelect is responsible for the visibility of the turquoise line and the math cursor
   onDelete,
   onDuplicate,
   draggableProps,
@@ -48,7 +48,7 @@ export const CellWrapper: React.FC<CellWrapperProps> = ({
         dragging: isDragging,
         dragOver: isDragOver,
       })}
-      onFocus={onSelect}
+      onSelect={onSelect}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
