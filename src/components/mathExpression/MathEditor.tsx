@@ -250,6 +250,7 @@ const MathEditor = forwardRef<MathEditorHandle, MathEditorProps>(({
   const handleFocus = useCallback(() => {
     // Only call the parent onFocus, DO NOT call editorRef.current.focus() again
     console.log(`focus`)
+    hiddenTextareaRef.current?.focus();
     onFocus?.();
   }, [onFocus]);
 
