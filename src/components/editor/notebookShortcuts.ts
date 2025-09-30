@@ -20,7 +20,7 @@ export function createNotebookKeyMap(
   arrowUsedRef: React.RefObject<boolean>,
   handleDeleteCell: (id: string) => void,
   handleDuplicateCell: (id: string) => void,
-  setSelectedCellId: React.Dispatch<React.SetStateAction<string | null>>,
+  selectCell: (id: string, opts?: { focus?: boolean; moveCursorToEnd?: boolean }) => void,
   updateTextCellContent: (id: string, partialContent: Partial<TextCellContent>) => void
 ): Record<string, KeyHandler> {
   const TEXT_CELL_TYPES_ORDER: TextCellType[] = [
@@ -85,7 +85,7 @@ export function createNotebookKeyMap(
         pendingInsertRef.current = null;
         arrowUsedRef.current = true;
       } else if (index > 0) {
-        setSelectedCellId(visibleCells[index - 1].id);
+        selectCell(visibleCells[index - 1].id, { focus: true, moveCursorToEnd: true });
       }
     },
 
@@ -99,7 +99,7 @@ export function createNotebookKeyMap(
         pendingInsertRef.current = null;
         arrowUsedRef.current = true;
       } else if (index < visibleCells.length - 1) {
-        setSelectedCellId(visibleCells[index + 1].id);
+        selectCell(visibleCells[index + 1].id, { focus: true, moveCursorToEnd: true });
       }
     },
 

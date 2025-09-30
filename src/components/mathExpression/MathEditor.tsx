@@ -16,16 +16,14 @@ import { parseLatex } from "../../models/latexParser";
 import { nodeToLatex } from "../../models/nodeToLatex";
 import { findNodeById } from "../../utils/treeUtils";
 import type { EditorState } from "../../logic/editor-state";
-import { getNodeAtCursor, type CursorPosition } from "../../logic/cursor";
+import type { CursorPosition } from "../../logic/cursor";
 import type { TextStyle } from "../../models/mathNodeTypes";
 import { useHover } from "../../hooks/mathHover/useHover";
 import type { DragSource, DropTarget } from "../../models/dragTypes";
 import { useCustomCommands } from "../../hooks/customCommands/useCustomCommands";
 import { getScrollableParent } from "../../utils/dom";
-
-export interface MathEditorHandle {
-  focusAndScroll: () => void;
-}
+import type { CellEditorHandle } from "../editor/NotebookEditor";
+import { useDragReader, useDragWriter } from "../../hooks/mathDrag/useDragContext";
 
 interface MathEditorProps {
   resetZoomSignal: number;
@@ -40,43 +38,40 @@ interface MathEditorProps {
   isSelected: boolean;
 }
 
-const MathEditor = forwardRef<MathEditorHandle, MathEditorProps>(({
-  resetZoomSignal,
-  defaultZoom,
-  cellId,
-  editorState,
-  updateEditorState,
-  onDropNode,
-  onHoverInfoChange,
-  onFocus,
-  isSelected,
-}, ref) => {
+const MathEditor = forwardRef<CellEditorHandle, MathEditorProps>((props, ref) => {
+  const {
+    resetZoomSignal,
+    defaultZoom,
+    cellId,
+    editorState,
+    updateEditorState,
+    onDropNode,
+    onHoverInfoChange,
+    onFocus,
+    isSelected,
+  } = props;
+
   const { commandMap } = useCustomCommands();
   const { hoverPath, setHoverPath } = useHover();
   const editorRef = useRef<HTMLDivElement>(null);
   const hiddenTextareaRef = useRef<HTMLTextAreaElement>(null);
-  const zoomLevel = useZoom(editorRef, resetZoomSignal, defaultZoom);
-
   const scrollInnerRef = useRef<HTMLDivElement>(null);
+  const zoomLevel = useZoom(editorRef, resetZoomSignal, defaultZoom);
+  const isDroppingRef = useRef(false);
 
-  const hoveredNode = hoverPath[hoverPath.length - 1]
-    ? findNodeById(editorState.rootNode, hoverPath[hoverPath.length - 1])
-    : null;
+  const hoveredNode = hoverPath.length ? findNodeById(editorState.rootNode, hoverPath[hoverPath.length - 1]) : null;
   const hoveredType = hoveredNode?.type ?? "";
 
+  // ----- Cursor scrolling -----
   const scrollCursorIntoView = useCallback(() => {
     if (!scrollInnerRef.current) return;
-    const cursorContainerNodeId = editorState.cursor.containerId;
-    const cursorContainerNode = findNodeById(editorState.rootNode, cursorContainerNodeId)
+    const cursorContainerNode = findNodeById(editorState.rootNode, editorState.cursor.containerId);
+    if (!cursorContainerNode || cursorContainerNode.type !== "inline-container") return;
 
-    if (!cursorContainerNode || cursorContainerNode.type !== 'inline-container') return;
-    const cursorNode = cursorContainerNode.children[editorState.cursor.index - 1]
-
+    const cursorNode = cursorContainerNode.children[editorState.cursor.index - 1];
     if (!cursorNode) return;
 
-    const cursorEl = scrollInnerRef.current.querySelector<HTMLElement>(
-      `[data-nodeid="${cursorNode.id}"]`
-    );
+    const cursorEl = scrollInnerRef.current.querySelector<HTMLElement>(`[data-nodeid="${cursorNode.id}"]`);
     if (!cursorEl) return;
 
     const container = getScrollableParent(scrollInnerRef.current);
@@ -85,70 +80,49 @@ const MathEditor = forwardRef<MathEditorHandle, MathEditorProps>(({
     const elRect = cursorEl.getBoundingClientRect();
     const containerRect = container.getBoundingClientRect();
 
-    // Scroll left if cursor is off the left edge
     if (elRect.right <= containerRect.left) {
-      container.scrollLeft -= containerRect.left - elRect.left + 5; // small padding
+      container.scrollLeft -= containerRect.left - elRect.left + 5;
+    } else if (elRect.right > containerRect.right) {
+      container.scrollLeft += elRect.right - containerRect.right + 5;
     }
-    // Scroll right if cursor is off the right edge
-    else if (elRect.right > containerRect.right) {
-      container.scrollLeft += elRect.right - containerRect.right + 5; // small padding
-    }
-
   }, [editorState.cursor, editorState.rootNode]);
 
-  // Expose focusAndScroll
-  // Imperative handle
+  // ----- Imperative methods -----
   useImperativeHandle(ref, () => ({
-    focusAndScroll: () => {
-      if (!isSelected) return;
-      editorRef.current?.scrollIntoView({ block: "center", behavior: "smooth" });
-      editorRef.current?.focus();
-
-      if (!isDroppingRef.current) {
-        const rootChild = editorState.rootNode.child;
-        if (rootChild) {
-          const newCursor: CursorPosition = {
-            containerId: rootChild.id,
-            index: rootChild.children.length,
-          };
-          updateEditorState(setCursor(editorState, newCursor));
-        }
-      }
-
-      onFocus?.();
+    focus: () => hiddenTextareaRef.current?.focus(),
+    moveCursorToEnd: () => {
+      const rootChild = editorState.rootNode.child;
+      if (!rootChild) return;
+      const newCursor: CursorPosition = { containerId: rootChild.id, index: rootChild.children.length };
+      updateEditorState(setCursor(editorState, newCursor));
       scrollCursorIntoView();
     },
-  }), [editorState, isSelected, onFocus, scrollCursorIntoView, updateEditorState]);
+    ensureCursorInView: () => scrollCursorIntoView(),
+    focusAndScroll: () => {
+      onFocus?.();
+      editorRef.current?.scrollIntoView({ block: "center", behavior: "smooth" });
+      hiddenTextareaRef.current?.focus();
+      const rootChild = editorState.rootNode.child;
+      if (!rootChild) return;
+      const newCursor: CursorPosition = { containerId: rootChild.id, index: rootChild.children.length };
+      updateEditorState(setCursor(editorState, newCursor));
+      scrollCursorIntoView();
+    },
+  }), [editorState, scrollCursorIntoView, onFocus, updateEditorState]);
 
-  // Effect to scroll on cursor change
+  // ----- Hover info update -----
   useEffect(() => {
-    scrollCursorIntoView();
-  }, [scrollCursorIntoView]);
-
-  // Update hover info
-  useEffect(() => {
-    if (onHoverInfoChange) onHoverInfoChange({ hoveredType, zoomLevel });
+    onHoverInfoChange?.({ hoveredType, zoomLevel });
   }, [hoveredType, zoomLevel, onHoverInfoChange]);
 
-  const onKeyDown = (e: React.KeyboardEvent) => {
-    const prevNode = getSelectedNode(editorState);
-    const updated = handleKeyDown(e, editorState, commandMap);
+  // ----- Scroll on cursor change -----
+  useEffect(() => {
+    scrollCursorIntoView();
+  }, [editorState.cursor, scrollCursorIntoView]);
 
-    if (updated) {
-      updateEditorState(updated);
-
-      const newNode = getSelectedNode(updated);
-
-      // Return focus after manual completion
-      if (prevNode?.type === 'command-input' && newNode?.type !== "command-input") {
-        hiddenTextareaRef.current?.focus();
-      }
-    }
-  };
-
-  // Clipboard handling via hidden textarea
+  // ----- Clipboard handling -----
   const editorStateRef = useRef(editorState);
-  editorStateRef.current = editorState; // always latest
+  editorStateRef.current = editorState;
 
   useEffect(() => {
     const textarea = hiddenTextareaRef.current;
@@ -157,7 +131,6 @@ const MathEditor = forwardRef<MathEditorHandle, MathEditorProps>(({
     const handlePaste = (e: ClipboardEvent) => {
       const pastedText = e.clipboardData?.getData("text/plain");
       if (!pastedText) return;
-
       try {
         const pastedNode = parseLatex(pastedText);
         updateEditorState(insertNodeAtCursor(editorStateRef.current, pastedNode));
@@ -170,7 +143,6 @@ const MathEditor = forwardRef<MathEditorHandle, MathEditorProps>(({
     const handleCopyCut = (e: ClipboardEvent, isCut: boolean) => {
       const selectedNode = getSelectedNode(editorStateRef.current);
       if (!selectedNode) return;
-
       e.clipboardData?.setData("text/plain", nodeToLatex(selectedNode, false));
       if (isCut) updateEditorState(deleteSelectedNode(editorStateRef.current));
       e.preventDefault();
@@ -187,77 +159,90 @@ const MathEditor = forwardRef<MathEditorHandle, MathEditorProps>(({
     };
   }, [updateEditorState]);
 
-  const isDroppingRef = useRef(false);
-
-  const handleDropNode = useCallback((from: DragSource, to: DropTarget) => {
+  // ----- Drag handling -----
+  const handleDrop = useCallback((from: DragSource, to: DropTarget) => {
     if (!to || to.type === "libraryCollection") return;
+
     isDroppingRef.current = true;
+
     let adjustedTo = to;
     if (to.type === "cell" && to.cellId === cellId && to.containerId === "root") {
       const child = editorState.rootNode.child;
       adjustedTo = { ...to, containerId: child.id, index: child.children.length - 1 };
     }
     onDropNode(from, adjustedTo);
-    editorRef.current?.focus();
     onFocus?.();
-    setTimeout(() => {
-      isDroppingRef.current = false;
-    }, 0);
-  }, [cellId, editorState.rootNode.child, onDropNode, onFocus]);
+    setTimeout(() => { isDroppingRef.current = false; }, 0);
+  }, [cellId, editorState.rootNode, onDropNode, onFocus]);
 
+  // ----- Cursor change -----
   const onCursorChange = useCallback((cursor: CursorPosition) => {
     updateEditorState(setCursor(editorState, cursor));
   }, [editorState, updateEditorState]);
 
-  const defaultInheritedStyle = useMemo<TextStyle>(
-    () => ({ fontStyling: { fontStyle: "normal", fontStyleAlias: "" } }), []
-  );
-  const emptyAncestorIds = useMemo<string[]>(() => [], []);
-
-  const focusEditor = () => {
-    hiddenTextareaRef.current?.focus();
-    onFocus?.();
-  };
-
-  // handle click: ignore MathRenderer nodes
-  const handleClick = useCallback((e: React.MouseEvent) => {
-    console.log(`click`)
-
-    let el = e.target as HTMLElement | null;
-    while (el && el !== editorRef.current) {
-      if (el.dataset.dataNodeid) return; // clicked on MathRenderer node
-      el = el.parentElement;
-    }
-
-    // Not a MathRenderer → move cursor & call onFocus
-    onFocus?.();
-    if (!isDroppingRef.current) {
-      const rootChild = editorState.rootNode.child;
-      if (rootChild) {
-        const newCursor: CursorPosition = {
-          containerId: rootChild.id,
-          index: rootChild.children.length,
-        };
-        updateEditorState(setCursor(editorState, newCursor));
+  // ----- Key handling -----
+  const onKeyDown = useCallback((e: React.KeyboardEvent) => {
+    const prevNode = getSelectedNode(editorState);
+    const updated = handleKeyDown(e, editorState, commandMap);
+    if (updated) {
+      updateEditorState(updated);
+      const newNode = getSelectedNode(updated);
+      if (prevNode?.type === "command-input" && newNode?.type !== "command-input") {
+        hiddenTextareaRef.current?.focus();
       }
     }
+  }, [editorState, commandMap, updateEditorState]);
 
-    // Also focus textarea
-    hiddenTextareaRef.current?.focus();
-  }, [editorState, isDroppingRef, onFocus, updateEditorState]);
-
-  // handle native focus event safely
-  const handleFocus = useCallback(() => {
-    // Only call the parent onFocus, DO NOT call editorRef.current.focus() again
-    console.log(`focus`)
-    hiddenTextareaRef.current?.focus();
+  // ----- Click handling (sloppy selection) -----
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    let el = e.target as HTMLElement | null;
+    while (el && el !== editorRef.current) {
+      if (el.dataset.nodeid || el.className === "draggable-node-wrapper") return;
+      el = el.parentElement;
+    }
     onFocus?.();
+    const rootChild = editorState.rootNode.child;
+    if (!rootChild) return;
+    const newCursor: CursorPosition = { containerId: rootChild.id, index: rootChild.children.length };
+    if (!isDroppingRef.current) updateEditorState(setCursor(editorState, newCursor));
+    hiddenTextareaRef.current?.focus();
+  }, [editorState, onFocus, updateEditorState]);
+
+  // ----- DragOver handling (sloppy drop) -----
+  const { setDraggingSource, setDropTarget } = useDragWriter();
+  const { draggingSource } = useDragReader();
+
+  const handleDragOver = React.useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setDropTarget({
+      type: "cell",
+      cellId: props.cellId,
+      containerId: props.editorState.rootNode.child.id,
+      index: props.editorState.rootNode.child.children.length - 1,
+    });
+  }, [props.cellId, props.editorState.rootNode.child.children.length, props.editorState.rootNode.child.id, setDropTarget]);
+
+  const handleSloppyDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    if (!draggingSource) return;
+    props.onDropNode(draggingSource, {
+      type: "cell",
+      cellId: props.cellId,
+      containerId: props.editorState.rootNode.child.id,
+      index: props.editorState.rootNode.child.children.length - 1,
+    });
+    onFocus?.();
+    setDraggingSource(null);
+    setDropTarget(null);
+  };
+
+  const defaultInheritedStyle = useMemo<TextStyle>(() => ({ fontStyling: { fontStyle: "normal", fontStyleAlias: "" } }), []);
+  const emptyAncestorIds = useMemo<string[]>(() => [], []);
+
+  const focusEditor = useCallback(() => {
+    onFocus?.();
+    hiddenTextareaRef.current?.focus();
   }, [onFocus]);
-
-
-  useEffect(() => {
-    scrollCursorIntoView();
-  }, [editorState.cursor, scrollCursorIntoView]); //React Hook useEffect has a missing dependency: 'scrollCursorIntoView'. Either include it or remove the dependency array.eslintreact-hooks/exhaustive-deps
 
   return (
     <div
@@ -265,22 +250,15 @@ const MathEditor = forwardRef<MathEditorHandle, MathEditorProps>(({
       className="math-editor"
       tabIndex={-1}
       onKeyDown={onKeyDown}
-      onClick={handleClick}
-      onFocus={handleFocus}
+      onClick={handleMouseDown}
       onMouseLeave={() => setHoverPath([])}
+      onDragOver={handleDragOver}
+      onDrop={handleSloppyDrop}
     >
-      {/* Hidden textarea for clipboard */}
       <textarea
         ref={hiddenTextareaRef}
-        style={{
-          position: "absolute",
-          opacity: 0,
-          pointerEvents: "none",
-          width: 0,
-          height: 0,
-        }}
+        style={{ position: "absolute", opacity: 0, pointerEvents: "none", width: 0, height: 0 }}
       />
-
       <div className="math-editor-scroll-inner" ref={scrollInnerRef}>
         <MathRenderer
           cellId={cellId}
@@ -294,7 +272,7 @@ const MathEditor = forwardRef<MathEditorHandle, MathEditorProps>(({
           onCursorChange={onCursorChange}
           isActive={isSelected}
           ancestorIds={emptyAncestorIds}
-          onDropNode={handleDropNode}
+          onDropNode={handleDrop}
           showPlaceholder={false}
           editorState={editorState}
           updateEditorState={updateEditorState}
@@ -305,4 +283,5 @@ const MathEditor = forwardRef<MathEditorHandle, MathEditorProps>(({
   );
 });
 
+MathEditor.displayName = "MathEditor";
 export default React.memo(MathEditor);

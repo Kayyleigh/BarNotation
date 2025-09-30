@@ -12,9 +12,9 @@ import styles from "./CommandInputNodeComponent.module.css";
 import { specialSequences } from "../../models/specialSequences";
 import { type TextNode, type CommandInputNode, type MathNode } from "../../models/mathNodeTypes";
 import MathView from "./MathView";
-import { renderContainerChildren } from "./MathRenderers";
 import type { CoreRenderProps } from "./MathRenderer";
 import { useCustomCommands } from "../../hooks/customCommands/useCustomCommands";
+import { renderContainerChildren } from "./shared/renderContainerChildren";
 
 function getHighlightedSequence(seq: string, input: string): JSX.Element {
   const seqBody = seq.startsWith("\\") ? seq.slice(1) : seq;

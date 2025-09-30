@@ -60,8 +60,6 @@ const EditorWorkspace = forwardRef<NotebookEditorHandle, EditorWorkspaceProps>(
     const syncNoteCellsWithOrder = useCallback(
       (order: string[], states: typeof editorStates, textContentsParam: typeof textContents) => {
         const newCells: CellData[] = order.map((id) => {
-          // //console.log(`const newCells in syncnotecellswithorder in editorworkspace`)
-
           if (states[id]) {
             return {
               id,
@@ -102,7 +100,6 @@ const EditorWorkspace = forwardRef<NotebookEditorHandle, EditorWorkspaceProps>(
     const syncNoteCellsWithOrderRef = useRef(syncNoteCellsWithOrder);
 
     useEffect(() => {
-      //console.log(`useEffect EW`)
       editorStatesRef.current = editorStates;
     }, [editorStates]);
 
@@ -204,9 +201,7 @@ const EditorWorkspace = forwardRef<NotebookEditorHandle, EditorWorkspaceProps>(
       editorStatesRef.current = updatedEditorStates; // sync ref
 
       if (noteId) {
-        //console.log(`End of onDropNode in EW; before sync`, updatedEditorStates)
         syncNoteCellsWithOrder(order, updatedEditorStates, textContents);
-        //console.log(`End of onDropNode in EW; after sync`)
       }
     }, [syncNoteCellsWithOrder, updateState]);
 

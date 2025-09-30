@@ -117,10 +117,10 @@
   height: 80%;
 }
 
-.decoration-underbrace {
+.math-node.decoration-underbrace {
   position: relative;
   display: inline-block;
-  padding-bottom: 1.2em;
+  padding-bottom: 1.2em; 
   /* space for the brace */
   color: var(--math-text-color);
 }

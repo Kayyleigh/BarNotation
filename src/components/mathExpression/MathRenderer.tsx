@@ -1,29 +1,26 @@
 // components/mathExpression/MathRenderer.tsx
 import React from "react";
-import type { MathNode, TextStyle } from "../../models/mathNodeTypes";
-import {
-  renderTextNode,
-  renderInlineContainerNode,
-  renderFractionNode,
-  renderGroupNode,
-  renderChildedNode,
-  renderStyledNode,
-  renderMultiDigitNode,
-  renderBigOperatorNode,
-  renderRootWrapperNode,
-  renderNthRootNode,
-  renderDecoratedNode,
-  renderOverUndersetNode,
-  renderMatrixNode,
-} from "./MathRenderers";
+import type { BigOperatorNode, ChildedNode, DecoratedNode, FractionNode, GroupNode, InlineContainerNode, MathNode, MatrixNode, MultiDigitNode, NthRootNode, OverUndersetNode, RootWrapperNode, StyledNode, TextNode, TextStyle } from "../../models/mathNodeTypes";
 import type { CursorPosition } from "../../logic/cursor";
 import type { EditorState } from "../../logic/editor-state";
 import type { DragSource, DropTarget } from "../../models/dragTypes";
 import { CommandInputRenderer } from "./CommandInputRenderer";
-import { useDragReader, useDragWriter } from "../../hooks/mathDrag/useDragContext";
+import { TextNodeRenderer } from "./mathRenderers/TextNoderenderer";
+import { FractionNodeRenderer } from "./mathRenderers/FractionNoderenderer";
+import { MultiDigitNodeRenderer } from "./mathRenderers/MultiDigitNodeRenderer";
+import { RootWrapperNodeRenderer } from "./mathRenderers/RootWrapperNodeRenderer";
+import { BigOperatorNodeRenderer } from "./mathRenderers/BigOperatorNodeRenderer";
+import { GroupNodeRenderer } from "./mathRenderers/GroupNodeRenderer";
+import { NthRootNodeRenderer } from "./mathRenderers/NthRootNodeRenderer";
+import { ChildedNodeRenderer } from "./mathRenderers/ChildedNodeRenderer";
+import { DecoratedNodeRenderer } from "./mathRenderers/DecoratedNodeRenderer";
+import { StyledNodeRenderer } from "./mathRenderers/StyledNodeRenderer";
+import { OverUndersetNodeRenderer } from "./mathRenderers/OverUndersetNodeRenderer";
+import { MatrixNodeRenderer } from "./mathRenderers/MatrixNodeRenderer";
+import { InlineContainerNodeRenderer } from "./mathRenderers/InlineContainerNodeRenderer";
 
-export type CoreRenderProps = {
-  node: MathNode;
+export interface CoreRenderProps<TNode extends MathNode = MathNode> {
+  node: TNode;
   cellId: string;
   isActive: boolean;
   containerId: string;
@@ -42,122 +39,56 @@ export type CoreRenderProps = {
   readOnly?: boolean;
 };
 
-function renderNode(node: MathNode, props: CoreRenderProps): React.ReactNode {
-  const baseProps = { ...props, ancestorIds: [...props.ancestorIds, node.id] };
+function renderNode<T extends MathNode>(
+  node: T,
+  props: CoreRenderProps<T>
+): React.ReactNode {
+  const updatedAncestors = [...(props.ancestorIds ?? []), node.id];
 
-  // Decide which recursive renderer to use
-  const Renderer = props.readOnly ? ReadOnlyMathRenderer : MathRenderer;
+  const updatedProps = { ...props, ancestorIds: updatedAncestors }; // override ancestorIds
 
+  //TODO efficiently pass updated ancestorIds instead of old one, with props
   switch (node.type) {
     case "text":
-      return renderTextNode(node, baseProps);
+      return <TextNodeRenderer {...(updatedProps as CoreRenderProps<TextNode>)} />;
     case "multi-digit":
-      return renderMultiDigitNode(node, baseProps, Renderer);
+      return <MultiDigitNodeRenderer {...(updatedProps as CoreRenderProps<MultiDigitNode>)} />;
     case "command-input":
-      return <CommandInputRenderer node={node} baseProps={baseProps} Renderer={Renderer} />;
+      return <CommandInputRenderer node={node} baseProps={updatedProps} Renderer={MathRenderer} />;
     case "inline-container":
-      return renderInlineContainerNode(node, baseProps, Renderer);
+      return <InlineContainerNodeRenderer {...(updatedProps as CoreRenderProps<InlineContainerNode>)} />;
     case "group":
-      return renderGroupNode(node, baseProps, Renderer);
+      return <GroupNodeRenderer {...(updatedProps as CoreRenderProps<GroupNode>)} />;
     case "fraction":
-      return renderFractionNode(node, baseProps, Renderer);
+      return <FractionNodeRenderer {...(updatedProps as CoreRenderProps<FractionNode>)} />;
     case "nth-root":
-      return renderNthRootNode(node, baseProps, Renderer);
+      return <NthRootNodeRenderer {...(updatedProps as CoreRenderProps<NthRootNode>)} />;
     case "big-operator":
-      return renderBigOperatorNode(node, baseProps, Renderer);
+      return <BigOperatorNodeRenderer {...(updatedProps as CoreRenderProps<BigOperatorNode>)} />;
     case "childed":
-      return renderChildedNode(node, baseProps, Renderer);
+      return <ChildedNodeRenderer {...(updatedProps as CoreRenderProps<ChildedNode>)} />;
     case "decorated":
-      return renderDecoratedNode(node, baseProps, Renderer);
+      return <DecoratedNodeRenderer {...(updatedProps as CoreRenderProps<DecoratedNode>)} />;
     case "overunderset":
-      return renderOverUndersetNode(node, baseProps, Renderer);
+      return <OverUndersetNodeRenderer {...(updatedProps as CoreRenderProps<OverUndersetNode>)} />;
     case "styled":
-      return renderStyledNode(node, baseProps, Renderer);
+      return <StyledNodeRenderer {...(updatedProps as CoreRenderProps<StyledNode>)} />;
     case "matrix":
-      return renderMatrixNode(node, baseProps, Renderer);
+      return <MatrixNodeRenderer {...(updatedProps as CoreRenderProps<MatrixNode>)} />;
     case "root-wrapper":
-      return renderRootWrapperNode(node, baseProps, Renderer);
+      return <RootWrapperNodeRenderer {...(updatedProps as CoreRenderProps<RootWrapperNode>)} />;
     default:
       return <span className="math-node unsupported">Unsupported node: {node.id}</span>;
   }
 }
 
 const InnerMathRenderer: React.FC<CoreRenderProps> = (props) => {
-  const { draggingSource, dropTarget } = useDragReader();
-  const { setDraggingSource, setDropTarget } = useDragWriter();
-
-  const handleDragStart = (e: React.DragEvent) => {
-    e.stopPropagation();
-    setDraggingSource({
-      type: "cell",
-      cellId: props.cellId,
-      containerId: props.containerId,
-      index: props.index,
-      node: props.node,
-    });
-  };
-  const handleDragEnd = () => {
-    setDraggingSource(null);
-    setDropTarget(null);
-  };
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDropTarget({
-      type: "cell",
-      cellId: props.cellId,
-      containerId: props.containerId,
-      index: props.index,
-    });
-  };
-  const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDropTarget(null);
-  };
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (!draggingSource) return;
-    props.onDropNode(draggingSource, {
-      type: "cell",
-      cellId: props.cellId,
-      containerId: props.containerId,
-      index: props.index,
-    });
-    setDraggingSource(null);
-    setDropTarget(null);
-  };
-
-  const isDraggable = props.cellId !== "readonly" && props.node.type !== "root-wrapper";
-  const isDropTarget =
-    props.node.type !== "inline-container" &&
-    dropTarget?.type === "cell" &&
-    dropTarget.cellId === props.cellId &&
-    dropTarget.containerId === props.containerId &&
-    dropTarget.index === props.index;
-
-  return (
-    <span
-      className="draggable-node-wrapper"
-      draggable={isDraggable}
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
-      onDragOver={handleDragOver}
-      onDragLeave={handleDragLeave}
-      onDrop={handleDrop}
-      data-nodeid={props.node.id}
-    >
-      {renderNode(props.node, props)}
-      {isDropTarget && <span className="drop-target-cursor" />}
-    </span>
-  );
+  return renderNode(props.node, props)
 };
 
 export const MathRenderer = React.memo(InnerMathRenderer, areEqual);
 
 function areEqual(prev: CoreRenderProps, next: CoreRenderProps) {
-  //TODO AVOID UNNECESSARY RERENDERS DUE TO EDITORSTATE CHANGING
   const nodeId = prev.node.id;
 
   const prevHoverPath = prev.hoverPath;
@@ -186,7 +117,7 @@ function areEqual(prev: CoreRenderProps, next: CoreRenderProps) {
   // Should rerender if hover moved within this node's subtree
   const hoverMovedWithinSubtree = deepestHoveredChanged && (wasAncestorOfPrev || isAncestorOfNext);
 
-  const ancestorIdChanged = prev.ancestorIds[prev.ancestorIds.length - 1] !== next.ancestorIds[next.ancestorIds.length - 1];
+  const ancestorIdChanged = prev.ancestorIds[prev.ancestorIds.length - 2] !== next.ancestorIds[next.ancestorIds.length - 2];
 
   // const cursorChangedHere = (prev.cursor.containerId === prev.containerId && prev.cursor.index === prev.index)
   //   || (next.cursor.containerId === next.containerId && next.cursor.index === next.index);

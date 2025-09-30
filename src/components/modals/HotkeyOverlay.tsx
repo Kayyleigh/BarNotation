@@ -44,6 +44,8 @@ const HotkeyOverlay: React.FC<HotkeyOverlayProps> = ({ onClose }) => {
       keys: [
         [["Arrow Keys"], t("modals.hotkeysModal.navigate")],
         [["Shift", "←/→"], t("modals.hotkeysModal.fastNavigate")],
+        [["Home"], t("modals.hotkeysModal.jumpToCellStart")],
+        [["End"], t("modals.hotkeysModal.jumpToCellEnd")],
         [["Backspace"], t("modals.hotkeysModal.delete")],
         [["Ctrl", "C"], t("modals.hotkeysModal.copy")],
         [["Ctrl", "X"], t("modals.hotkeysModal.cut")],

@@ -1,5 +1,5 @@
 // components/editor/cells/CellRenderer.tsx
-import React, { useMemo, useCallback, useRef, useEffect, useLayoutEffect } from "react";
+import React, { useMemo, useCallback, useRef, useLayoutEffect, useEffect } from "react";
 import type { CellData, TextCellContent } from "../../../models/noteTypes";
 import type { EditorState } from "../../../logic/editor-state";
 import InsertCellButtons from "./InsertCellButtons";
@@ -8,13 +8,20 @@ import { CellWrapper } from "./CellWrapper";
 import type { DragSource, DropTarget } from "../../../models/dragTypes";
 import { useI18n } from "../../../i18n/useI18n";
 import LatexViewer from "../../mathExpression/LatexViewer";
-import type { TextCellType } from "../../../models/textTypes";
+import type { CellEditorHandle } from "../NotebookEditor";
+import { TextCellType } from "../../../models/textTypes";
+
+export interface SelectCellOptions {
+  focus?: boolean;
+  moveCursorToEnd?: boolean;
+}
 
 export interface CellRendererProps {
   cell: CellData;
   index: number;
   isSelected: boolean;
-  selectCell: () => void;
+  onRequestSelect: (opts: SelectCellOptions) => void;
+
   handleInsertAtIndex: (type: CellType, idx: number) => void;
   handlePointerDown: (e: React.PointerEvent, id: string, index: number) => void;
   deleteCell: () => void;
@@ -23,14 +30,19 @@ export interface CellRendererProps {
   toggleShowLatex: () => void;
   showLatex: boolean;
   onDropNode: (from: DragSource, to: DropTarget) => void;
+  onDeselect: () => void;
+
   resetZoomSignal: number;
   defaultZoom: number;
   editorState: EditorState;
   updateEditorState: (newState: EditorState) => void;
+
   draggingCellId: string | null;
   dragOverInsertIndex: number | null;
   updateDragOver: (index: number) => void;
   displayNumber: string;
+
+  editorRef: React.RefObject<CellEditorHandle | null>;
 }
 
 export const CellRenderer = React.memo(
@@ -39,7 +51,8 @@ export const CellRenderer = React.memo(
       cell,
       index,
       isSelected,
-      selectCell,
+      onRequestSelect,
+      onDeselect,
       handleInsertAtIndex,
       handlePointerDown,
       deleteCell,
@@ -64,95 +77,73 @@ export const CellRenderer = React.memo(
     type ContentType = CellContent<typeof cell.type>;
     const Component = registryEntry.component as React.FC<any>;
 
-    // Create a ref to hold the child's focusAndScroll
-    const cellHandleRef = useRef<{ focusAndScroll: () => void } | null>(null);
+    // Ref to access editor focus/scroll
+    const cellHandleRef = useRef<CellEditorHandle | null>(null);
 
-    // Whenever selection changes, call it
+    // Auto-focus/scroll when selection changes
     useLayoutEffect(() => {
       if (isSelected) {
-        cellHandleRef.current?.focusAndScroll();
+        cellHandleRef.current?.focus?.();
+        // TODO: // BUG: if math is clicked then this should not happen. If by other means, YES: 
+        // cellHandleRef.current?.moveCursorToEnd?.();
+        cellHandleRef.current?.ensureCursorInView?.();
       }
     }, [isSelected]);
 
+    // Toolbar extras memoized
     const typeLabel = useMemo(
       () => registryEntry.getLabel?.(cell.content as ContentType) ?? registryEntry.label,
       [registryEntry, cell.content]
-    );
-
-    const updateTextRole = useCallback(
-      (newRole: TextCellType) => {
-        updateTextCellContent({ type: newRole });
-      },
-      [updateTextCellContent]
     );
 
     const toolbarExtras = useMemo(() => {
       return registryEntry.getToolbarExtras?.({
         id: cell.id,
         role: (cell.content as TextCellContent).type,
-        updateRole: updateTextRole, // pass stable callback
+        updateRole: (role: TextCellType) => updateTextCellContent({ type: role }),
         toggleShowLatex,
         showLatex,
         t,
       });
-    }, [registryEntry, cell.id, cell.content, showLatex, t, toggleShowLatex, updateTextRole]);
+    }, [registryEntry, cell.id, cell.content, showLatex, t, toggleShowLatex, updateTextCellContent]);
 
     const handlePointerDownLocal = useCallback(
-      (e: React.PointerEvent) => handlePointerDown(e, cell.id, index),
+      (e: React.PointerEvent) => {
+        handlePointerDown(e, cell.id, index);
+      },
       [handlePointerDown, cell.id, index]
     );
 
-    const latexVersionMapRef = useRef<Map<string, number>>(new Map());
-
-    const markLatexOutdated = useCallback((cellId: string) => {
-      const current = latexVersionMapRef.current.get(cellId) ?? 0;
-      latexVersionMapRef.current.set(cellId, current + 1);
-    }, []);
-
-    // --- inside CellRenderer ---
+    // Keep latest change function in ref to avoid re-renders
     const handleChangeRef = useRef<((value: any) => void) | null>(null);
-
-    // always update the ref to point to the latest logic
     useEffect(() => {
       if (cell.type === "text") {
-        handleChangeRef.current = (newContent: TextCellContent) => {
-          updateTextCellContent(newContent);
-          markLatexOutdated(cell.id);
-        };
+        handleChangeRef.current = (newContent: TextCellContent) => updateTextCellContent(newContent);
       } else if (cell.type === "math") {
-        handleChangeRef.current = (newState: EditorState) => {
-          const oldState = editorState;
-          updateEditorState(newState);
-          if (oldState.rootNode !== newState.rootNode) {
-            markLatexOutdated(cell.id);
-          }
-        };
+        handleChangeRef.current = (newState: EditorState) => updateEditorState(newState);
       }
-    }, [cell.type, cell.id, updateTextRole, updateEditorState, editorState, markLatexOutdated, updateTextCellContent]);
+    }, [cell.type, updateTextCellContent, updateEditorState]);
 
-    // provide a stable callback to children
     const cellOnChange = useCallback((value: any) => {
       handleChangeRef.current?.(value);
     }, []);
 
+    // Component props memoized
     const componentProps = useMemo(() => {
       const baseProps: Record<string, unknown> = {
         id: cell.id,
         content: cell.content as ContentType,
+        selectCell: (opts: SelectCellOptions) => onRequestSelect(opts),
         onChange: cellOnChange,
+        displayNumber,
+        // onSloppyClick: () => onRequestSelect({ focus: true, moveCursorToEnd: true }),
       };
-
-      if (cell.type === "text") {
-        Object.assign(baseProps, {
-          displayNumber: displayNumber,
-        });
-      }
 
       if (cell.type === "math") {
         Object.assign(baseProps, {
           editorState,
           isSelected,
-          selectCell,
+          selectCell: (opts: SelectCellOptions) => onRequestSelect(opts),
           defaultZoom,
           resetZoomSignal,
           showLatex,
@@ -169,26 +160,27 @@ export const CellRenderer = React.memo(
       displayNumber,
       editorState,
       isSelected,
-      selectCell,
+      onRequestSelect,
       defaultZoom,
       resetZoomSignal,
       showLatex,
-      onDropNode
+      onDropNode,
     ]);
 
     const isDragging = draggingCellId === cell.id;
     const isDragOver = dragOverInsertIndex === index;
 
-    const getLatexRef = useRef<() => string>(() => "");
-    getLatexRef.current = () =>
-      registryEntry.getLatex?.(cell.content as CellContent<typeof cell.type>) ?? "";
-    const stableGetLatex = useCallback(() => getLatexRef.current(), []);
+    // Handlers for InsertCellButtons
+    const handleInsertAbove = useCallback(() => handleInsertAtIndex("text", index), [handleInsertAtIndex, index]);
+    const handleDragEnter = useCallback(() => {
+      if (draggingCellId !== null) updateDragOver(index);
+    }, [draggingCellId, updateDragOver, index]);
 
     return (
       <div ref={ref}>
         <InsertCellButtons
-          onInsert={(type) => handleInsertAtIndex(type, index)}
-          handlePointerEnter={() => draggingCellId !== null && updateDragOver(index)}
+          onInsert={handleInsertAbove}
+          handlePointerEnter={handleDragEnter}
           isDropTarget={isDragOver}
         />
 
@@ -197,23 +189,22 @@ export const CellRenderer = React.memo(
           isSelected={isSelected}
           isDragging={isDragging}
           isDragOver={isDragOver}
-          onSelect={selectCell}
+          onSelect={() => onRequestSelect({ focus: true, moveCursorToEnd: true })}
+          onDeselect={onDeselect}
           onDelete={deleteCell}
           onDuplicate={duplicateCell}
           draggableProps={{ onPointerDown: handlePointerDownLocal }}
           typeLabel={typeLabel}
           toolbarExtras={toolbarExtras}
         >
-          {/* <Component {...componentProps} /> */}
           <Component {...componentProps} ref={cellHandleRef} />
-
         </CellWrapper>
 
         {registryEntry.hasLatex && (
           <LatexViewer
             showLatex={showLatex}
-            getLatex={stableGetLatex}
-            contentVersion={latexVersionMapRef.current.get(cell.id) ?? 0}
+            getLatex={() => registryEntry.getLatex?.(cell.content as CellContent<typeof cell.type>) ?? ""}
+            contentVersion={0}
           />
         )}
       </div>

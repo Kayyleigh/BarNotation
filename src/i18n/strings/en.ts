@@ -174,6 +174,8 @@ const en = {
       cellListEditingAndNavigation: "Notebook Editing & Navigation",//NEW(KEY NAME CHANGE)
       navigate: "Navigate between nodes within a math expression", //CHANGED; MORE SPECIFIC
       fastNavigate: "Fast navigate within current math container", //NEW
+      jumpToCellStart: "Jump to start of cell", //NEW
+      jumpToCellEnd: "Jump to end of cell", //NEW
       delete: "Delete node",
       copy: "Copy previous node as LaTeX",
       cut: "Cut previous node as LaTeX",

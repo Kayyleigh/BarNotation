@@ -14,6 +14,26 @@ function findIndexInIC(ic: InlineContainerNode, struc: StructureNode): number {
 }
 
 /**
+ * Jump to the end of the math expression.
+ */
+export function handleJumpToEnd(state: EditorState): EditorState {
+  return {
+    ...state, 
+    cursor: { containerId: state.rootNode.child.id, index: state.rootNode.child.children.length }
+  };
+}
+
+/**
+ * Jump to the end of the math expression.
+ */
+export function handleJumpToStart(state: EditorState): EditorState {
+  return {
+    ...state, 
+    cursor: { containerId: state.rootNode.child.id, index: 0 }
+  };
+}
+
+/**
  * Handle a "jump left" key action, which moves the cursor:
  * - one position left within the same container if possible
  * - otherwise, out of the current inline container into the parent context

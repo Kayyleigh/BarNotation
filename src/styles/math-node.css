@@ -4,7 +4,6 @@
 
 .math-editor .math-node {
   font-size: var(--local-math-font-size-base);
-
 }
 
 .math-node {
@@ -36,10 +35,18 @@
   cursor: text;
 }
 
+/* Make interaction point not have an extra color.
+   This assumes that start-interaction-point is always a direct child of inline-container (IC).
+   The parent IC should be highlighted instead */
+.math-node.type-inline-container .start-interaction-point.hovered {
+  background-color: transparent;
+}
+
 .math-node-wrapper:empty.hovered::before {
   content: "•";
   width: var(--empty-math-inline-container-width);
   display: inline-block;
+  outline: 10px solid greenyellow;
   color: #87878733;
 }
 
@@ -130,7 +137,7 @@
 .placeholder-square {
   opacity: 0.2;
   pointer-events: none;
-  /* optional: prevents interaction */
+  /* prevents interaction */
 }
 
 /* ============================================= */
@@ -140,7 +147,6 @@
 .type-inline-container {
   display: inline-flex;
   min-width: var(--empty-math-inline-container-width);
-  ;
   min-height: 1em;
   justify-content: flex-end;
   flex-wrap: nowrap;
@@ -258,9 +264,6 @@
 
 .type-fraction {
   display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   vertical-align: middle;
 }
 
@@ -281,7 +284,7 @@
 /* =============== BINOMIAL ==================== */
 
 /* Binomial variant only */
-.type-fraction.is-binom {
+.type-fraction.binom {
   flex-direction: row;
   /* Lay out horizontally: ( content ) */
   align-items: stretch;
@@ -446,6 +449,23 @@
       transparent 3px,
       transparent 6px);
   background-color: transparent;
+}
+
+.math-node.drop-target::after {
+  content: "";
+  position: absolute;
+  align-self: center;
+  right: 0;
+  height: 1em;
+  width: 3px;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    var(--math-drop-cursor-color),
+    var(--math-drop-cursor-color) 3px,
+    transparent 3px,
+    transparent 6px
+  );
+  pointer-events: none; /* don’t block pointer events */
 }
 
 .type-nth-root {

@@ -14,13 +14,14 @@ import textStyles from "../../../../styles/textStyles.module.css";
 import type { TextCellContent } from "../../../../models/noteTypes";
 import type { BaseCellProps } from "../../../../models/cellRegistry";
 import { useEditorMode } from "../../../../hooks/editorMode/useEditorMode";
+import { CellEditorHandle } from "../../NotebookEditor";
 
 export interface TextCellHandle {
   focusAndScroll: () => void;
 }
 
 const TextCell = forwardRef<
-  TextCellHandle,
+  CellEditorHandle,
   BaseCellProps<TextCellContent> & { displayNumber?: string }
 >(({ content, onChange, displayNumber }, ref) => {
   const { editingMode } = useEditorMode();
@@ -30,18 +31,26 @@ const TextCell = forwardRef<
   const [inputValue, setInputValue] = useState(content.text);
   const prevValueTextRef = useRef(content.text);
 
-  // Expose focusAndScroll
   useImperativeHandle(ref, () => ({
+    focus: () => textareaRef.current?.focus(),
+    moveCursorToEnd: () => {
+      const el = textareaRef.current;
+      if (!el) return;
+      const length = el.value.length;
+      el.setSelectionRange(length, length);
+    },
+    ensureCursorInView: () => {
+      const el = textareaRef.current;
+      if (!el) return;
+      el.scrollIntoView({ block: "center", behavior: "smooth" });
+    },
     focusAndScroll: () => {
       const el = textareaRef.current;
       if (!el) return;
-
       el.focus();
-      el.scrollIntoView({ block: "center", behavior: "smooth" });
-
-      // Move cursor to the end
       const length = el.value.length;
       el.setSelectionRange(length, length);
+      el.scrollIntoView({ block: "center", behavior: "smooth" });
     },
   }));
 
@@ -87,12 +96,6 @@ const TextCell = forwardRef<
     [content, onChange]
   );
 
-  // const handleBlur = useCallback(() => {
-  //   if (inputValue !== content.text) {
-  //     onChange({ ...content, text: inputValue });
-  //   }
-  // }, [inputValue, content, onChange]);
-
   const textareaClass = useMemo(
     () => clsx({ [styles.preview]: !isEditMode }, textStyles[content.type]),
     [isEditMode, content.type]
@@ -109,7 +112,6 @@ const TextCell = forwardRef<
         ref={textareaRef}
         value={inputValue}
         onChange={handleChange}
-        // onBlur={handleBlur}
         spellCheck={isEditMode}
         className={clsx(styles.textCellInput, textareaClass)}
         rows={1}
