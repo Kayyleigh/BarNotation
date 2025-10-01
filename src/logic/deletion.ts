@@ -4,7 +4,7 @@ import {
   type InlineContainerNode,
   type MathNode,
 } from "../models/mathNodeTypes";
-import { handleArrowLeft } from "./navigation";
+import { handleArrowLeft, handleArrowRight } from "./navigation";
 import { getCloseSymbol, getOpenSymbol } from "../utils/bracketUtils";
 import { createTextNode } from "../models/nodeFactories";
 
@@ -14,7 +14,17 @@ export const handleBulkBackspace = (state: EditorState): EditorState => {
 }
 
 export const handleDelete = (state: EditorState): EditorState => {
-  return state //TODO
+  const simulatedNext = handleArrowRight(state);
+  if (simulatedNext.cursor === state.cursor) {
+    // There is no right position anymore -> Do nothing
+    return state;
+  }
+  const simulatedNextBackspace = handleBackspace(simulatedNext);
+  if (simulatedNextBackspace.rootNode === state.rootNode) {
+    // Right+Backspace wouldn't do anything -> go one further
+    return handleBackspace(handleArrowRight(simulatedNext));
+  }
+  return handleBackspace(simulatedNext)
 }
 
 export const handleBulkDelete = (state: EditorState): EditorState => {
@@ -405,16 +415,13 @@ export const handleBackspace = (state: EditorState): EditorState => {
 
   // //console.log(`Deleting ${currentToDelete.type}`)
 
-  if (currentToDelete.type !== "text"
-    && (currentToDelete.type !== "big-operator" || !isEmptyNode(currentToDelete.lower) || !isEmptyNode(currentToDelete.upper))) {
+  if (
+    currentToDelete.type !== "text" && 
+    (currentToDelete.type !== "big-operator" || !isEmptyNode(currentToDelete.lower) || !isEmptyNode(currentToDelete.upper))) {
     const simulatePrevState = handleArrowLeft(state)
-
-    // const children = getLogicalChildren(currentToDelete)
-    // const lastChild = children[children.length - 1]
-
-    // //console.log(lastChild?.type)
-
-    return handleBackspace(simulatePrevState)
+    
+    // return handleBackspace(simulatePrevState)
+    return simulatePrevState;
   }
 
   // Standard deletion

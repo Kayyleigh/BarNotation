@@ -176,10 +176,11 @@ const en = {
       fastNavigate: "Fast navigate within current math container", //NEW
       jumpToCellStart: "Jump to start of cell", //NEW
       jumpToCellEnd: "Jump to end of cell", //NEW
-      delete: "Delete node",
-      copy: "Copy previous node as LaTeX",
-      cut: "Cut previous node as LaTeX",
-      paste: "Paste LaTeX as node",
+      backspace: "Delete previous math node", //CHANGED!! THIS IS NOW BACKSPACE
+      delete: "Delete next math node", //CHANGED!! THIS IS NOW BACKSPACE
+      copy: "Copy previous math node as LaTeX",
+      cut: "Cut previous math node as LaTeX",
+      paste: "Paste LaTeX as math node",
       undo: "Undo",
       redo: "Redo",
       viewControls: "View Controls",

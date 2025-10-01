@@ -13,50 +13,6 @@ const HotkeyOverlay: React.FC<HotkeyOverlayProps> = ({ onClose }) => {
 
   const groupedHotkeys = [
     {
-      title: t("modals.hotkeysModal.generalShortcuts"),
-      keys: [
-        [["Ctrl", "/"], t("modals.hotkeysModal.openHotkeyModal")],
-        [["Esc"], t("modals.hotkeysModal.closeOverlay")],
-      ],
-    },
-    {
-      title: t("modals.hotkeysModal.notebookShortcuts"),
-      keys: [
-        [["Alt", "P"], t("modals.hotkeysModal.togglePreview")],
-        [["Alt", "L"], t("modals.hotkeysModal.toggleLocked")],
-        [["Alt", "1"], t("modals.hotkeysModal.appendMath")],
-        [["Alt", "2"], t("modals.hotkeysModal.appendText")],
-      ],
-    },
-    {
-      title: t("modals.hotkeysModal.cellListEditingAndNavigation"),
-      keys: [
-        [["Alt", "↑"], t("modals.hotkeysModal.navigateCellUp")],
-        [["Alt", "↓"], t("modals.hotkeysModal.navigateCellDown")],
-        [["Alt", "Del"], t("modals.hotkeysModal.deleteCurrCell")],
-        [["Alt", "="], t("modals.hotkeysModal.duplicateCurrCell")],
-        [["Alt", "Digit", "↑"], t("modals.hotkeysModal.insertCellAbove")],
-        [["Alt", "Digit", "↓"], t("modals.hotkeysModal.insertCellBelow")],
-      ],
-    },
-    {
-      title: t("modals.hotkeysModal.cellContentEditingAndNavigation"),
-      keys: [
-        [["Arrow Keys"], t("modals.hotkeysModal.navigate")],
-        [["Shift", "←/→"], t("modals.hotkeysModal.fastNavigate")],
-        [["Home"], t("modals.hotkeysModal.jumpToCellStart")],
-        [["End"], t("modals.hotkeysModal.jumpToCellEnd")],
-        [["Backspace"], t("modals.hotkeysModal.delete")],
-        [["Ctrl", "C"], t("modals.hotkeysModal.copy")],
-        [["Ctrl", "X"], t("modals.hotkeysModal.cut")],
-        [["Ctrl", "V"], t("modals.hotkeysModal.paste")],
-        [["Ctrl", "Z"], t("modals.hotkeysModal.undo")],
-        [["Ctrl", "Y"], t("modals.hotkeysModal.redo")],
-        [["Drag & Drop"], t("modals.hotkeysModal.rearrangeNodes")],
-        [["Alt", ",/."], t("modals.hotkeysModal.cycleTextTypes")],
-      ],
-    },
-    {
       title: t("modals.hotkeysModal.mathInputShortcuts"),
       keys: [
         [["Shift", "-"], t("modals.hotkeysModal.subscript")],
@@ -79,11 +35,51 @@ const HotkeyOverlay: React.FC<HotkeyOverlayProps> = ({ onClose }) => {
         [["\\"], t("modals.hotkeysModal.command")],
       ],
     },
-    // {
-    //   title: t("modals.hotkeysModal.structuralShortcuts"),
-    //   keys: [[["Drag & Drop"], t("modals.hotkeysModal.rearrangeNodes")]],
-    // },
-
+    {
+      title: t("modals.hotkeysModal.cellContentEditingAndNavigation"),
+      keys: [
+        [["Arrow Keys"], t("modals.hotkeysModal.navigate")],
+        [["Shift", "←/→"], t("modals.hotkeysModal.fastNavigate")],
+        [["Home"], t("modals.hotkeysModal.jumpToCellStart")],
+        [["End"], t("modals.hotkeysModal.jumpToCellEnd")],
+        [["Backspace"], t("modals.hotkeysModal.backspace")],
+        [["Delete"], t("modals.hotkeysModal.delete")],
+        [["Ctrl", "C"], t("modals.hotkeysModal.copy")],
+        [["Ctrl", "X"], t("modals.hotkeysModal.cut")],
+        [["Ctrl", "V"], t("modals.hotkeysModal.paste")],
+        [["Ctrl", "Z"], t("modals.hotkeysModal.undo")],
+        [["Ctrl", "Y"], t("modals.hotkeysModal.redo")],
+        [["Drag & Drop"], t("modals.hotkeysModal.rearrangeNodes")],
+        [["Alt", ",/."], t("modals.hotkeysModal.cycleTextTypes")],
+      ],
+    },
+    {
+      title: t("modals.hotkeysModal.cellListEditingAndNavigation"),
+      keys: [
+        [["Alt", "↑"], t("modals.hotkeysModal.navigateCellUp")],
+        [["Alt", "↓"], t("modals.hotkeysModal.navigateCellDown")],
+        [["Alt", "Del"], t("modals.hotkeysModal.deleteCurrCell")],
+        [["Alt", "="], t("modals.hotkeysModal.duplicateCurrCell")],
+        [["Alt", "Digit", "↑"], t("modals.hotkeysModal.insertCellAbove")],
+        [["Alt", "Digit", "↓"], t("modals.hotkeysModal.insertCellBelow")],
+      ],
+    },
+    {
+      title: t("modals.hotkeysModal.notebookShortcuts"),
+      keys: [
+        [["Alt", "P"], t("modals.hotkeysModal.togglePreview")],
+        [["Alt", "L"], t("modals.hotkeysModal.toggleLocked")],
+        [["Alt", "1"], t("modals.hotkeysModal.appendMath")],
+        [["Alt", "2"], t("modals.hotkeysModal.appendText")],
+      ],
+    },
+    {
+      title: t("modals.hotkeysModal.generalShortcuts"),
+      keys: [
+        [["Ctrl", "/"], t("modals.hotkeysModal.openHotkeyModal")],
+        [["Esc"], t("modals.hotkeysModal.closeOverlay")],
+      ],
+    },
     {
       title: t("modals.hotkeysModal.viewControls"),
       keys: [
