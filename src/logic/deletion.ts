@@ -29,10 +29,12 @@ export const handleBackspace = (state: EditorState): EditorState => {
   if (!container) return state;
 
   if (container.type === "command-input" || container.type === "multi-digit") {
-    // //console.log(`You are in ${container.type}`)
 
     // Case: At start of empty node
-    if (cursor.index === 0 && container.children.every(isEmptyNode)) { //TODO now if not empty it will disappear cursor
+    if (
+      cursor.index === 1 && // Delete prematurely (as soon as empty; not if already empty)
+      Array.from(container.children).slice(1).every(isEmptyNode) // all other nodes must be empty
+    ) {
       // We're at the start → remove the whole node
       const parentContainer = findParentContainerAndIndex(state.rootNode, container.id);
       if (!parentContainer || parentContainer.container.type !== "inline-container") return state;
@@ -60,7 +62,7 @@ export const handleBackspace = (state: EditorState): EditorState => {
       };
     }
 
-    if (cursor.index > 0) {
+    if (cursor.index > 0) { // If not at start, delete current
       // Delete last character in the custom container
       const childNodes = container.children;
       const updatedChildren = [...childNodes.slice(0, cursor.index - 1), ...childNodes.slice(cursor.index)];
@@ -97,6 +99,9 @@ export const handleBackspace = (state: EditorState): EditorState => {
           index: cursor.index - 1,
         },
       };
+    }
+    else { // If at start, simulate arrow left
+      return handleArrowLeft(state);
     }
   }
 
@@ -135,7 +140,6 @@ export const handleBackspace = (state: EditorState): EditorState => {
   }
 
   if (prevNode && (prevNode.type === "command-input" || prevNode.type === "multi-digit")) {
-    // //console.log(`Delling ${prevNode.children.map(child => child.content).join("")}`)
     return handleBackspace({
       rootNode: state.rootNode,
       cursor: {
