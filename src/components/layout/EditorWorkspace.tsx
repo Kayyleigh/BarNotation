@@ -209,19 +209,22 @@ const EditorWorkspace = forwardRef<NotebookEditorHandle, EditorWorkspaceProps>(
 
     useEffect(() => {
       const handleKeyDown = (e: KeyboardEvent) => {
-        if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key === "z") {
+        const key = e.key.toLowerCase(); // normalize regardless of Caps Lock
+
+        if ((e.ctrlKey || e.metaKey) && !e.shiftKey && key === "z") {
+          // Undo if Ctrl+Z without shift
           e.preventDefault();
           undo();
-        } else if ((e.ctrlKey || e.metaKey) && (e.key === "y" || (e.shiftKey && e.key === "Z"))) {
+        } else if ((e.ctrlKey || e.metaKey) && (key === "y" || (e.shiftKey && key === "z"))) {
+          // Redo if Ctrl+Z with shift, or Ctrl+y
           e.preventDefault();
           redo();
         }
       };
+
       window.addEventListener("keydown", handleKeyDown);
       return () => window.removeEventListener("keydown", handleKeyDown);
     }, [undo, redo]);
-
-    // const editorPaneStyle = React.useMemo(() => ({ width: "100%", height: "100%" }), []);
 
     return (
       <CustomCommandProvider library={library}>
@@ -230,7 +233,6 @@ const EditorWorkspace = forwardRef<NotebookEditorHandle, EditorWorkspaceProps>(
             <EditorModeProvider>
               <EditorPane
                 ref={ref}
-                // style={editorPaneStyle}
                 noteId={noteId}
                 onDropNode={onDropNode}
                 noteMetadata={noteMetadata}
