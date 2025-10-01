@@ -142,14 +142,17 @@ const en = {
       appendText: "Append new text cell", //NEW
 
       mathInputShortcuts: "Math Input Shortcuts", //NEW (KEY NAME CHANGE!!)
+      mathInputChildedShortcuts: "Sup/Superscripted & Actuarial", //NEW
+      mathInputOverUndersetShortcuts: "Over/Underset", //NEW
+      mathInputMatrixShortcuts: "Matrix", //NEW
 
       // Childed/Actuarial
       subscript: "Make subscript",
-      superscript: "Make superscript (exponent)",
-      actuarialBL: "Make actuarial (bottom-left focus)",
-      actuarialTL: "Make actuarial (top-left focus)",
-      actuarialBR: "Make actuarial (bottom-right focus)",
-      actuarialTR: "Make actuarial (top-right focus)",
+      superscript: "Make superscript",
+      actuarialBL: "Make actuarial, jump bottom-left",
+      actuarialTL: "Make actuarial, jump top-left",
+      actuarialBR: "Make actuarial, jump bottom-right",
+      actuarialTR: "Make actuarial, jump top-right",
 
       // Overset/Underset
       underset: "Make underset",
@@ -160,13 +163,13 @@ const en = {
       nthtop: "Add precedence above (Actuarial)", //TODO NEW; ADD TO OTHER LANGUAGES 
 
       // Matrix
-      insertMatrixRowBelow: "(Inside matrix) Insert row below", //TODO NEW; ADD TO OTHER LANGUAGES 
-      insertMatrixRowAbove: "(Inside matrix) Insert row above", //TODO NEW; ADD TO OTHER LANGUAGES 
-      insertMatrixColumnLeft: "(Inside matrix) Insert column left", //TODO NEW; ADD TO OTHER LANGUAGES 
-      insertMatrixColumnRight: "(Inside matrix) Insert column right", //TODO NEW; ADD TO OTHER LANGUAGES 
+      insertMatrixRowBelow: "Insert row below", //TODO NEW; ADD TO OTHER LANGUAGES 
+      insertMatrixRowAbove: "Insert row above", //TODO NEW; ADD TO OTHER LANGUAGES 
+      insertMatrixColumnLeft: "Insert column left", //TODO NEW; ADD TO OTHER LANGUAGES 
+      insertMatrixColumnRight: "Insert column right", //TODO NEW; ADD TO OTHER LANGUAGES 
 
       fraction: "Turn node into numerator of new fraction",
-      command: "Insert command node", //NEW
+      command: "Insert command", //NEW
 
       structuralShortcuts: "Structural Shortcuts",
       rearrangeNodes: "Rearrange nodes",
