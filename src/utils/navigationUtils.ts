@@ -8,7 +8,7 @@ export const directionalChildOrder: Record<
 > = {
   "fraction": ["numerator", "denominator"],
   "nth-root": ["index", "base"],
-  "childed": ["base", "supLeft", "subLeft", "subRight", "supRight"],
+  "childed": ["base", "supLeft", "subLeft", "supRight", "subRight"],
   "big-operator": ["lower", "upper"],
   "group": ["child"],
   "decorated": ["base"],
