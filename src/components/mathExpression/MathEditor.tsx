@@ -184,6 +184,7 @@ const MathEditor = forwardRef<CellEditorHandle, MathEditorProps>((props, ref) =>
   const onKeyDown = useCallback((e: React.KeyboardEvent) => {
     const prevNode = getSelectedNode(editorState);
     const updated = handleKeyDown(e, editorState, commandMap);
+
     if (updated) {
       updateEditorState(updated);
       const newNode = getSelectedNode(updated);

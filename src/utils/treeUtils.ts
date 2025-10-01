@@ -152,7 +152,7 @@ export function updateRootNode(
     throw new Error("updateRootNode must always return a RootWrapperNode");
   }
 
-  return updated as RootWrapperNode;
+  return updated;
 }
 
 

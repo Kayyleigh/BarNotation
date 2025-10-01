@@ -1,7 +1,6 @@
 import type { EditorState } from "./editor-state";
 import type { MathNode } from "../models/mathNodeTypes";
-import { findNodeById, findParentContainerAndIndex, updateNodeById } from "../utils/treeUtils";
-import { nodeToLatex } from "../models/nodeToLatex";
+import { findNodeById, findParentContainerAndIndex, updateRootNode } from "../utils/treeUtils";
 
 export function moveNodeByDrag(
   state: EditorState,
@@ -50,7 +49,7 @@ export function insertNodeAtIndex(
   newChildren.splice(index, 0, newNode);
 
   const updatedContainer = { ...container, children: newChildren };
-  const newRoot = updateNodeById(state.rootNode, container.id, updatedContainer);
+  const newRoot = updateRootNode(state.rootNode, container.id, updatedContainer);
 
   return {
     ...state,
@@ -75,7 +74,7 @@ export function deleteNodeById(state: EditorState, nodeId: string): EditorState 
     children: newChildren,
   };
 
-  const newRoot = updateNodeById(state.rootNode, container.id, updatedContainer);
+  const newRoot = updateRootNode(state.rootNode, container.id, updatedContainer);
   return {
     ...state,
     rootNode: newRoot,
@@ -105,7 +104,7 @@ export function insertNodeAtCursor(state: EditorState, newNode: MathNode): Edito
     newChildren.splice(newIndex, 0, newNode);
 
     const updatedContainer = { ...container, children: newChildren };
-    newRoot = updateNodeById(state.rootNode, container.id, updatedContainer);
+    newRoot = updateRootNode(state.rootNode, container.id, updatedContainer);
 
     // Update cursor index to be after the inserted node
     newIndex = newIndex + 1;
@@ -133,7 +132,7 @@ export function deleteSelectedNode(state: EditorState): EditorState {
   newChildren.splice(state.cursor.index - 1, 1);
 
   const updatedContainer = { ...container, children: newChildren };
-  const newRoot = updateNodeById(state.rootNode, container.id, updatedContainer);
+  const newRoot = updateRootNode(state.rootNode, container.id, updatedContainer);
 
   return {
     ...state,

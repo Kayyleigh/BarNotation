@@ -232,8 +232,18 @@ const NotebookEditor = forwardRef<NotebookEditorHandle, NotebookEditorProps>(({
     if (noteId) setMetadata(noteId, partial);
   }, [noteId, setMetadata]);
 
+  // const updateEditorState = useCallback((id: string, newState: EditorState) => {
+  //   setEditorStates(prev => ({ ...prev, [id]: newState }));
+  // }, [setEditorStates]);
+
   const updateEditorState = useCallback((id: string, newState: EditorState) => {
-    setEditorStates(prev => ({ ...prev, [id]: newState }));
+    setEditorStates(prev => {
+      const prevState = prev[id];
+      // No change? Return same object, React won't re-render
+      if (prevState === newState) return prev;
+
+      return { ...prev, [id]: newState };
+    });
   }, [setEditorStates]);
 
   const handlePointerDown = useCallback((e: React.PointerEvent, id: string, index: number) => {

@@ -18,39 +18,45 @@ export const EditorHistoryProvider: React.FC<{
     createInitialHistory(initialSnapshot)
   );
 
-//   const updateState = useCallback((newSnapshot: EditorSnapshot) => {
-//     setHistory(prev => applyUpdate(prev, newSnapshot));
-//   }, []);
-
-const updateState = useCallback((newSnapshot: EditorSnapshot) => {
+  const updateState = useCallback((newSnapshot: EditorSnapshot) => {
     setHistory(prev => {
       const prevSnapshot = prev.present;
-  
-      // Check if structure (order or rootNodes) changed, ignoring cursor
+
       const didStructureChange =
         prevSnapshot.order.length !== newSnapshot.order.length ||
         prevSnapshot.order.some((id, i) => newSnapshot.order[i] !== id) ||
         prevSnapshot.order.some((id) => {
-          const prevEditor = prevSnapshot.states[id];
-          const newEditor = newSnapshot.states[id];
-          if (!prevEditor || !newEditor) return true;
-  
-          // Only compare rootNode, ignore cursor
-          return prevEditor.rootNode !== newEditor.rootNode;
+          const prevMath = prevSnapshot.states[id];
+          const newMath = newSnapshot.states[id];
+          const prevText = prevSnapshot.textContents[id];
+          const newText = newSnapshot.textContents[id];
+
+          if (prevMath && newMath) {
+            // Math cell: ignore cursor
+            return prevMath.rootNode !== newMath.rootNode;
+          }
+
+          if (prevText && newText) {
+            // Text cell: compare content
+            return prevText.text !== newText.text || prevText.type !== newText.type;
+          }
+
+          // If cell exists in one snapshot but not the other, it changed
+          return true;
         });
-  
+
       if (!didStructureChange) {
-        // Structure did NOT change, just update present WITHOUT pushing to past
+        // Only cursor changed, no need to push to past
         return {
           ...prev,
           present: newSnapshot,
         };
       }
-  
-      // Structure changed — push current present to past and update present
+
       return applyUpdate(prev, newSnapshot);
     });
   }, []);
+
 
   const handleUndo = useCallback(() => {
     setHistory(prev => undo(prev));

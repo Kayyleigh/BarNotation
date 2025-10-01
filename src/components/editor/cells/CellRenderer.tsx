@@ -116,13 +116,21 @@ export const CellRenderer = React.memo(
 
     // Keep latest change function in ref to avoid re-renders
     const handleChangeRef = useRef<((value: any) => void) | null>(null);
+    // useEffect(() => {
+    //   if (cell.type === "text") {
+    //     handleChangeRef.current = (newContent: TextCellContent) => updateTextCellContent(newContent);
+    //   } else if (cell.type === "math") {
+    //     handleChangeRef.current = (newState: EditorState) => updateEditorState(newState);
+    //   }
+    // }, [cell.type, updateTextCellContent, updateEditorState]);
     useEffect(() => {
       if (cell.type === "text") {
-        handleChangeRef.current = (newContent: TextCellContent) => updateTextCellContent(newContent);
+        handleChangeRef.current = updateTextCellContent;
       } else if (cell.type === "math") {
-        handleChangeRef.current = (newState: EditorState) => updateEditorState(newState);
+        handleChangeRef.current = updateEditorState;
       }
     }, [cell.type, updateTextCellContent, updateEditorState]);
+
 
     const cellOnChange = useCallback((value: any) => {
       handleChangeRef.current?.(value);

@@ -1,9 +1,9 @@
 import { type EditorState } from "./editor-state";
-import { findNodeById, updateNodeById } from "../utils/treeUtils";
+import { findNodeById, updateRootNode } from "../utils/treeUtils";
 import { transformToFractionNode, transformtoOverUndersetNode } from "../models/transformations";
 import { type BracketStyle } from "../utils/bracketUtils";
 import { createChildedNode, createGroupNode, createInlineContainer, generateId } from "../models/nodeFactories";
-import type { InlineContainerNode, MathNode, MatrixNode, OverUndersetVariant, RootWrapperNode, StructureNode } from "../models/mathNodeTypes";
+import type { InlineContainerNode, MathNode, MatrixNode, OverUndersetVariant, StructureNode } from "../models/mathNodeTypes";
 import type { CornerPosition } from "../utils/subsupUtils";
 import { normalizedOperatorLikeMap } from "../models/specialSequences";
 
@@ -82,13 +82,13 @@ function transformPreviousNode<T extends StructureNode>(
     ...container.children.slice(end),
   ];
 
-  const updatedRoot = updateNodeById(state.rootNode, container.id, {
+  const updatedRoot = updateRootNode(state.rootNode, container.id, {
     ...container,
     children: newChildren, 
     });
 
   return {
-    rootNode: updatedRoot as RootWrapperNode, //TODO clean
+    rootNode: updatedRoot,
     cursor: getCursor(newNode),
   };
 }
@@ -174,14 +174,14 @@ export function transformToGroupNode(
     ...children.slice(endIndex + 1),  // all nodes after the closing bracket
   ];
 
-  const updatedRoot = updateNodeById(state.rootNode, container.id, {
+  const updatedRoot = updateRootNode(state.rootNode, container.id, {
     ...container,
     children: newChildren,
   });
 
   return {
     ...state,
-    rootNode: updatedRoot as RootWrapperNode, //TODO clean
+    rootNode: updatedRoot,
     cursor: {
       containerId: (side === 'open') ? groupNode.child.id : container.id, // inline container inside the GroupNode
       index: (side === 'open') ? 0 : startIndex + 1, //TODO: ideally know if should jump to end for after close is made

@@ -11,7 +11,12 @@ export const createEditorState = (root: RootWrapperNode): EditorState => ({
   cursor: createInitialCursor(root),
 });
 
-export const setCursor = (state: EditorState, newCursor: CursorPosition): EditorState => ({
-  ...state,
-  cursor: newCursor,
-});
+export const setCursor = (state: EditorState, newCursor: CursorPosition): EditorState => {
+  if (
+    state.cursor.containerId === newCursor.containerId &&
+    state.cursor.index === newCursor.index
+  ) {
+    return state; // no change, keep same reference
+  }
+  return { ...state, cursor: newCursor };
+};
