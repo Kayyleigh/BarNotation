@@ -1,8 +1,11 @@
 .libraryContainer {
+  display: grid;
+  grid-template-rows: auto auto 1fr;
   height: 100%;
 }
 
 .tabRowWrapper {
+  grid-row: 1;
   position: relative;
   overflow: hidden;
   /* hide native scrollbar */
@@ -181,7 +184,8 @@
   gap: 8px;
   justify-content: space-between;
   align-items: baseline;
-  margin: 0.5em 0.25em 1em 0.25em;
+  margin: 0.5em 0.25em 0.5em 0.25em;
+  grid-row: 2;
 }
 
 .controls select {
@@ -189,15 +193,14 @@
 }
 
 .libraryDropZone {
+  grid-row: 3;
   flex: 1;
-  height: calc(83.71%);
-  /* Quick and dirty; TODO actually calculate what's left after headers */
   align-content: flex-start;
   overflow-y: auto;
-  padding: 8px;
+  padding: 0.5rem 0.5rem 2rem 0.5rem;
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 0.5rem;
 }
 
 .libraryEntry {
