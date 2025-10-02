@@ -135,11 +135,11 @@ const en = {
       openHotkeyModal: "Open hotkey overlay", //NEW
       closeOverlay: "Close overlay", //NEW
 
-      notebookShortcuts: "Notebook Shortcuts", //NEW
+      workspaceShortcuts: "Workspace Shortcuts", //NEW
       togglePreview: "Toggle preview mode", //NEW
       toggleLocked: "(In preview mode) Toggle locked mode", //NEW
-      appendMath: "Append new math cell", //NEW
-      appendText: "Append new text cell", //NEW
+      appendMath: "Append new math cell to end of current notebook", //NEW
+      appendText: "Append new text cell to end of current notebook", //NEW
 
       mathInputShortcuts: "Math Input Shortcuts", //NEW (KEY NAME CHANGE!!)
       mathInputChildedShortcuts: "Sup/Superscripted & Actuarial", //NEW
@@ -174,16 +174,22 @@ const en = {
       structuralShortcuts: "Structural Shortcuts",
       rearrangeNodes: "Rearrange nodes",
       cellContentEditingAndNavigation: "Cell Content Editing & Navigation",//NEW(KEY NAME CHANGE)
-      cellListEditingAndNavigation: "Notebook Editing & Navigation",//NEW(KEY NAME CHANGE)
-      navigate: "Navigate between nodes within a math expression", //CHANGED; MORE SPECIFIC
-      fastNavigate: "Fast navigate within current math container", //NEW
+      cellListEditingAndNavigation: "Notebook Cells Navigation & Management",//NEW(KEY NAME CHANGE)
+      mathCellContentEditing: "Math Cell Content", //NEW
+      textCellContentEditing: "Text Cell Content", //NEW
+
+      navigate: "Navigate cell content", //CHANGED; 
+      fastNavigateMath: "Fast navigate math", //NEW
       jumpToCellStart: "Jump to start of cell", //NEW
       jumpToCellEnd: "Jump to end of cell", //NEW
-      backspace: "Delete previous math node", //CHANGED!! THIS IS NOW BACKSPACE
-      delete: "Delete next math node", //CHANGED!! THIS IS NOW BACKSPACE
-      copy: "Copy previous math node as LaTeX",
-      cut: "Cut previous math node as LaTeX",
-      paste: "Paste LaTeX as math node",
+      backspace: "Delete previous item", //CHANGED!! THIS IS NOW BACKSPACE
+      delete: "Delete next item", //CHANGED!! THIS IS NOW BACKSPACE
+      copyMath: "Copy previous math node (to LaTeX)", //CHANGED KEY
+      cutMath: "Cut previous math node (to LaTeX)",//CHANGED KEY
+      pasteMath: "Paste (LaTeX as) math node",//CHANGED KEY
+      copyText: "Copy selected content", // NEW 
+      cutText: "Cut selected content",// NEW 
+      pasteText: "Paste as text",// NEW 
       undo: "Undo",
       redo: "Redo",
       viewControls: "View Controls",
@@ -194,8 +200,11 @@ const en = {
       navigateCellDown: "Jump to next cell", //NEW
       deleteCurrCell: "Delete current cell", //NEW
       duplicateCurrCell: "Duplicate current cell", //NEW
-      insertCellAbove: "Insert cell (1 → Math, 2 → Text) above", //NEW
-      insertCellBelow: "Insert cell (1 → Math, 2 → Text) below", //NEW
+      insertMathCellAbove: "Insert math cell above", //NEW
+      insertMathCellBelow: "Insert math cell below", //NEW
+      insertTextCellAbove: "Insert text cell above", //NEW
+      insertTextCellBelow: "Insert text cell below", //NEW
+
       cycleTextTypes: "Change text cell type (plain text, header, etc.)", //NEW
     },
     collectionArchive: {

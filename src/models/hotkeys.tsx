@@ -98,8 +98,31 @@ const mathHotkeySubgroups: HotkeySubgroup[] = [
       { combo: ["Ctrl", "←"], descriptionId: "modals.hotkeysModal.insertMatrixColumnLeft", preview: <MathView className={styles.tallPreview} node={matrixColLNode} showPlaceHolder={true} /> },
     ],
   },
+];
 
-]
+const cellHotkeySubgroups: HotkeySubgroup[] = [
+  {
+    id: "cellEditing-math",
+    titleId: "modals.hotkeysModal.mathCellContentEditing",
+    keys: [
+      { combo: ["Shift", "←/→"], descriptionId: "modals.hotkeysModal.fastNavigateMath" },
+      { combo: ["Ctrl", "C"], descriptionId: "modals.hotkeysModal.copyMath" },
+      { combo: ["Ctrl", "X"], descriptionId: "modals.hotkeysModal.cutMath" },
+      { combo: ["Ctrl", "V"], descriptionId: "modals.hotkeysModal.pasteMath" },
+      { combo: ["Drag & Drop"], descriptionId: "modals.hotkeysModal.rearrangeNodes" },
+    ],
+  },
+    {
+    id: "cellEditing-text",
+    titleId: "modals.hotkeysModal.textCellContentEditing",
+    keys: [
+      { combo: ["Ctrl", "C"], descriptionId: "modals.hotkeysModal.copyText" },
+      { combo: ["Ctrl", "X"], descriptionId: "modals.hotkeysModal.cutText" },
+      { combo: ["Ctrl", "V"], descriptionId: "modals.hotkeysModal.pasteText" },
+      { combo: ["Alt", ",/."], descriptionId: "modals.hotkeysModal.cycleTextTypes" },
+    ],
+  },
+];
 
 export const hotkeyGroups: HotkeyGroup[] = [
   {
@@ -116,19 +139,12 @@ export const hotkeyGroups: HotkeyGroup[] = [
     titleId: "modals.hotkeysModal.cellContentEditingAndNavigation",
     keys: [
       { combo: ["Arrow Keys"], descriptionId: "modals.hotkeysModal.navigate" },
-      { combo: ["Shift", "←/→"], descriptionId: "modals.hotkeysModal.fastNavigate" },
       { combo: ["Home"], descriptionId: "modals.hotkeysModal.jumpToCellStart" },
       { combo: ["End"], descriptionId: "modals.hotkeysModal.jumpToCellEnd" },
       { combo: ["Backspace"], descriptionId: "modals.hotkeysModal.backspace" },
       { combo: ["Delete"], descriptionId: "modals.hotkeysModal.delete" },
-      { combo: ["Ctrl", "C"], descriptionId: "modals.hotkeysModal.copy" },
-      { combo: ["Ctrl", "X"], descriptionId: "modals.hotkeysModal.cut" },
-      { combo: ["Ctrl", "V"], descriptionId: "modals.hotkeysModal.paste" },
-      { combo: ["Ctrl", "Z"], descriptionId: "modals.hotkeysModal.undo" },
-      { combo: ["Ctrl", "Y"], descriptionId: "modals.hotkeysModal.redo" },
-      { combo: ["Drag & Drop"], descriptionId: "modals.hotkeysModal.rearrangeNodes" },
-      { combo: ["Alt", ",/."], descriptionId: "modals.hotkeysModal.cycleTextTypes" },
     ],
+    subGroups: cellHotkeySubgroups,
   },
   {
     id: "cellList",
@@ -138,14 +154,19 @@ export const hotkeyGroups: HotkeyGroup[] = [
       { combo: ["Alt", "↓"], descriptionId: "modals.hotkeysModal.navigateCellDown" },
       { combo: ["Alt", "Del"], descriptionId: "modals.hotkeysModal.deleteCurrCell" },
       { combo: ["Alt", "="], descriptionId: "modals.hotkeysModal.duplicateCurrCell" },
-      { combo: ["Alt", "Digit", "↑"], descriptionId: "modals.hotkeysModal.insertCellAbove" },
-      { combo: ["Alt", "Digit", "↓"], descriptionId: "modals.hotkeysModal.insertCellBelow" },
+      { combo: ["Alt", "1", "↑"], descriptionId: "modals.hotkeysModal.insertMathCellAbove" },
+      { combo: ["Alt", "1", "↓"], descriptionId: "modals.hotkeysModal.insertMathCellBelow" },
+      { combo: ["Alt", "2", "↑"], descriptionId: "modals.hotkeysModal.insertTextCellAbove" },
+      { combo: ["Alt", "2", "↓"], descriptionId: "modals.hotkeysModal.insertTextCellBelow" },
     ],
   },
   {
-    id: "notebook",
-    titleId: "modals.hotkeysModal.notebookShortcuts",
+    id: "workspace",
+    titleId: "modals.hotkeysModal.workspaceShortcuts",
     keys: [
+      { combo: ["Ctrl", "Z"], descriptionId: "modals.hotkeysModal.undo" },
+      { combo: ["Ctrl", "Y"], descriptionId: "modals.hotkeysModal.redo" },
+      { combo: ["Ctrl", "Shift", "Z"], descriptionId: "modals.hotkeysModal.redo" },
       { combo: ["Alt", "P"], descriptionId: "modals.hotkeysModal.togglePreview" },
       { combo: ["Alt", "L"], descriptionId: "modals.hotkeysModal.toggleLocked" },
       { combo: ["Alt", "1"], descriptionId: "modals.hotkeysModal.appendMath" },

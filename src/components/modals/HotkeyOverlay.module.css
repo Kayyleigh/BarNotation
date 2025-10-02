@@ -92,10 +92,9 @@
   align-items: center;
   justify-self: flex-end;
   justify-content: center;
-  background: var(--background-color);
-  border-radius: 4px;
-  padding: 0.2em 0.2em 0.1em 0.2em;
-  /* margin-left: auto; */
+  /* background: var(--background-color); */
+  /* border-radius: 4px; */
+  padding: 0.2em;
 }
 
 .smallPreview {
