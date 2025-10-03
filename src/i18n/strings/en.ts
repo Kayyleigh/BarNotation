@@ -182,8 +182,8 @@ const en = {
       fastNavigateMath: "Fast navigate math", //NEW
       jumpToCellStart: "Jump to start of cell", //NEW
       jumpToCellEnd: "Jump to end of cell", //NEW
-      backspace: "Delete previous item", //CHANGED!! THIS IS NOW BACKSPACE
-      delete: "Delete next item", //CHANGED!! THIS IS NOW BACKSPACE
+      backspace: "Delete previous unit", //CHANGED!! THIS IS NOW BACKSPACE
+      delete: "Delete next unit", //CHANGED!! THIS IS NOW BACKSPACE
       copyMath: "Copy previous math node (to LaTeX)", //CHANGED KEY
       cutMath: "Cut previous math node (to LaTeX)",//CHANGED KEY
       pasteMath: "Paste (LaTeX as) math node",//CHANGED KEY
