@@ -27,6 +27,7 @@
   --editor-font-size: 2.4em;
 
   --main-text-color: #000000;
+  --main-text-color-alpha2: rgba(0, 0, 0, 0.1);
 
   --background-color: #f3f3f4;
   --app-background: var(--background-color);
@@ -206,6 +207,7 @@
   --command-color-trans: #dcdcaa20;
 
   --main-text-color: #ffffff;
+  --main-text-color-alpha2: rgba(255, 255, 255, 0.1);
 
   --background-color: #1e1e1e;
   --app-background: var(--background-color);
@@ -216,7 +218,7 @@
   --math-cursor-color: white;
   --math-drop-cursor-color: white;
 
-  --math-text-color: white;
+  --math-text-color: #ffffff;
   --math-selection-bg: rgba(255, 255, 255, 0.1);
   /* --math-hover-bg: #1ba0ff2c; */
   --math-hover-bg: #1b9fff2c;

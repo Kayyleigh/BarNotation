@@ -28,6 +28,10 @@
   background: var(--command-autocomplete-highlight-bg);
 }
 
+.autocompleteBox .autocompleteItem:not(:last-child) {
+  border-bottom: 1px solid var(--main-text-color-alpha2);
+}
+
 /* New row layout */
 .autocompleteRow {
   display: flex;
