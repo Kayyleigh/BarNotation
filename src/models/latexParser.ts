@@ -318,12 +318,12 @@ export function parseLatex(input: string): MathNode {
           const supRight = parseLatex(" " + (supRightStr ?? "") + " ");
 
           return createChildedNode(
-            base as InlineContainerNode,
+            base,
             'actsymb',
-            subLeft as InlineContainerNode,
-            supLeft as InlineContainerNode,
-            subRight as InlineContainerNode,
-            supRight as InlineContainerNode,
+            ensureInContainerNode(subLeft),
+            ensureInContainerNode(supLeft),
+            subRight,
+            ensureInContainerNode(supRight),
           );
         }
 
