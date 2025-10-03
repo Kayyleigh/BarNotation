@@ -308,17 +308,18 @@ export function parseLatex(input: string): MathNode {
           const subLeftStr = parseOptionalBracketString();
           const supLeftStr = parseOptionalBracketString();
 
-          const subLeft = parseLatex(" " + (subLeftStr ?? "") + " ");
-          const supLeft = parseLatex(" " + (supLeftStr ?? "") + " ");
+          const subLeft = parseLatex(subLeftStr ? ` ${subLeftStr} ` : " ");
+          const supLeft = parseLatex(supLeftStr ? ` ${supLeftStr} ` : " ");
 
-          const base = parseGroup();
+          const actBase = parseGroup();
           const subRight = parseGroup();
 
           const supRightStr = parseOptionalBracketString();
-          const supRight = parseLatex(" " + (supRightStr ?? "") + " ");
+          const supRight = parseLatex(supRightStr ? ` ${supRightStr} ` : " ");
 
-          return createChildedNode(
-            base,
+
+          base = createChildedNode(
+            actBase,
             'actsymb',
             ensureInContainerNode(subLeft),
             ensureInContainerNode(supLeft),
