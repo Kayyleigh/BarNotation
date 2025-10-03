@@ -2,62 +2,69 @@
 
 .type-accented::before {
   position: absolute;
-  top: -0.1em;
+  /* top: -0.05em; */
+  top: -1px;
   /* left: calc(50% + 0.5 * var(--empty-math-inline-container-width)); */
   /* transform: calc(translateX(-50%) + var(--empty-math-inline-container-width)); Shift by width of dummy */
   font-size: 0.7em;
   pointer-events: none;
+
+  left: 50%;
+  transform: translateX(-50%);
+
 }
 
 .decoration-hat::before {
-  left: calc(50% + 0.5 * var(--empty-math-inline-container-width));
+  /* left: 50%; */
   content: 'ˆ';
   /* Unicode hat accent */
 }
 
 .decoration-bar::before {
-  left: calc(50% + 0.5 * var(--empty-math-inline-container-width));
+  /* left: 50%; */
   content: '‾';
   /* Overline */
 }
 
 .decoration-tilde::before {
-  left: calc(50% + 0.5 * var(--empty-math-inline-container-width));
+  /* left: 50%; */
   content: '˜';
 }
 
 .decoration-widehat::before {
-  left: calc(50% + 0.5 * var(--empty-math-inline-container-width));
+  /* left: 50%; */
   content: '⌢';
+    top: -0.2em;
+
   /* wide hat approximation */
 }
 
 .decoration-dot::before {
-  left: calc(50% + 0.5 * var(--empty-math-inline-container-width));
+  /* left: 50%; */
   content: '˙';
   /* umlaut */
 }
 
 .decoration-ddot::before {
-  left: calc(50% + 0.5 * var(--empty-math-inline-container-width));
+  /* left: 50%; */
   content: '¨';
   /* umlaut */
 }
 
 .decoration-dddot::before {
-  left: calc(50% + 0.5 * var(--empty-math-inline-container-width));
+  /* left: 50%; */
   content: '˙˙˙';
   /* umlaut */
 }
 
 .decoration-ddddot::before {
-  left: calc(50% + 0.5 * var(--empty-math-inline-container-width));
+  /* left: 50%; */
   content: '¨¨';
   /* umlaut */
 }
 
 .decoration-mathring::before {
-  left: calc(50% + 0.5 * var(--empty-math-inline-container-width));
+  /* left: 50%; */
   content: '˚';
   /* ring */
 }
@@ -78,20 +85,12 @@
 .decoration-overline::before {
   content: '';
   position: absolute;
-  top: -0.2em;
+  top: 0.2em;
   right: 0;
   height: 1px;
   width: 100%;
   background-color: currentColor;
   pointer-events: none;
-}
-
-.decoration-angl {
-  padding-right: 0.2em;
-}
-
-.decoration-angl::before {
-  left: calc(0%);
 }
 
 .decoration-angl::before,
@@ -147,7 +146,7 @@
 .decoration-vec::before {
   position: absolute;
   top: -0.3em;
-  left: calc(35% + 0.35 * var(--empty-math-inline-container-width));
+  /* left: calc(35% + 0.35 * var(--empty-math-inline-container-width)); */
   font-size: 0.7em;
   content: '→';
   /* Vector arrow */
@@ -168,8 +167,7 @@
 .decoration-group::before {
   content: "";
   position: absolute;
-  left: 0;
-  right: 0;
+  right: -50%;
   top: var(--dg-top, -0.32em);
   height: var(--dg-height, 1.05em);
   pointer-events: none;

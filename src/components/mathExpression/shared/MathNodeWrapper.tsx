@@ -23,15 +23,32 @@ export function MathNodeWrapper<TNode extends MathNode>({
   const styleClass = getStyleClass(baseProps.inheritedStyle);
   const isHovered = getIsHovered(node, baseProps.hoverPath);
 
+  // const handleClick = (e: React.MouseEvent) => {
+  //   e.stopPropagation();
+  //   // Only set cursor if the node is inside an active container
+  //   const { containerId, index, onCursorChange, focusEditor } = baseProps;
+  //   if (containerId != null && onCursorChange) {
+  //     onCursorChange({ containerId, index: index + 1 });
+  //     requestAnimationFrame(() => focusEditor());
+  //   }
+  // };
+
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    // Only set cursor if the node is inside an active container
     const { containerId, index, onCursorChange, focusEditor } = baseProps;
     if (containerId != null && onCursorChange) {
-      onCursorChange({ containerId, index: index + 1 });
+      const target = e.currentTarget as HTMLElement;
+      const { left, width } = target.getBoundingClientRect();
+      const clickX = e.clientX;
+      const isRightHalf = clickX > left + width / 2;
+
+      const newIndex = isRightHalf ? index + 1 : index;
+      onCursorChange({ containerId, index: newIndex });
+
       requestAnimationFrame(() => focusEditor());
     }
   };
+
 
   return (
     <>

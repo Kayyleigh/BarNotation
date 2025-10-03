@@ -18,16 +18,35 @@
   position: relative;
 }
 
+/* ----------------- HOVER HANDLING ----------------------------- */
+
+/* TODO: DO NOT DO ONLY THIS; INSTEAD/ALSO HAVE IT DO THIS ON "IS CURSOR INSIDE? (INSIDE THE PARENT STRUCTE??)" */
+.math-node:not(.type-inline-container):hover 
+  .type-inline-container:not(:has(.math-node))::after {
+  content: "⬚";                         /* the dot */
+  opacity: 0.2;; /* dot color */
+  font-size: var(--empty-math-inline-container-width);
+  position: absolute;                   
+  top: 50%;                             /* vertical center (adjust if needed) */
+  left: 50%;                            /* horizontal center */
+  transform: translate(-50%, -50%);    /* center exactly */
+  pointer-events: none;                 /* don't block mouse */
+}
+
+
+/* ---------------------------------------------- */
+
 .math-node-wrapper {
   /* line-height: var(--math-line-height); */
   display: inline-block;
-  min-width: var(--empty-math-inline-container-width);
+  /* min-width: var(--empty-math-inline-container-width); */
   min-height: 1em;
   vertical-align: middle;
   cursor: pointer;
   position: relative;
 }
 
+/* TODO REMOVE?? */
 .start-interaction-point {
   display: inline-block;
   width: var(--empty-math-inline-container-width);
@@ -40,14 +59,6 @@
    The parent IC should be highlighted instead */
 .math-node.type-inline-container .start-interaction-point.hovered {
   background-color: transparent;
-}
-
-.math-node-wrapper:empty.hovered::before {
-  content: "•";
-  width: var(--empty-math-inline-container-width);
-  display: inline-block;
-  outline: 10px solid greenyellow;
-  color: #87878733;
 }
 
 .type-command-input .math-node,
@@ -146,13 +157,12 @@
 
 .type-inline-container {
   display: inline-flex;
-  min-width: var(--empty-math-inline-container-width);
+  /* min-width: var(--empty-math-inline-container-width); */
   min-height: 1em;
-  justify-content: flex-end;
+  /* justify-content: flex-end; */
   flex-wrap: nowrap;
   align-items: center;
-  /* padding: 0.1em 0em 0.1em 0.1em; */
-  padding: 0;
+  padding: 0em 0.1em;
 }
 
 .type-multi-digit {

@@ -365,8 +365,8 @@ export const PREMADE_COLLECTIONS_RAW = [
       { id: "actsymb-45", latex: `\\actsymb[][]{A}{x}[(m)]` },
       { id: "actsymb-46", latex: `\\actsymb[][]{\\bar{A}}{x}[\\text{PR}]` },
       { id: "actsymb-47", latex: `\\actsymb[][]{A}{\\nthtop{1}{x}:\\angl{n}}[]` },
-      { id: "actsymb-48", latex: `\\actsymb[][]{A}{\\nthtop{}{x}:\\angl{n}}[]` }, // Page 16 of the actuarialsymbol user guide
-      { id: "actsymb-49", latex: `\\actsymb[][]{\\bar{A}}{\\nthtop{}{x}:\\angl{n}}[]` },
+      { id: "actsymb-48", latex: `\\actsymb[][]{A}{x:\\angl{n}}[]` }, // Page 16 of the actuarialsymbol user guide
+      { id: "actsymb-49", latex: `\\actsymb[][]{\\bar{A}}{x:\\angl{n}}[]` },
       { id: "actsymb-50", latex: `\\actsymb[][]{A}{x:\\nthtop{1}{\\angl{n}}}[]` },
       { id: "actsymb-51", latex: `\\actsymb[j][]{A}{x}[]` },
       { id: "actsymb-52", latex: `\\actsymb[*][]{A}{x}[]` },
@@ -522,7 +522,7 @@ export const PREMADE_COLLECTIONS_RAW = [
       { id: "actsymb-202", latex: `\\actsymb[][]{\\bar{P}}{}[](\\actsymb[][]{\\bar{A}}{x:\\angl{n}}[])` },
       { id: "actsymb-203", latex: `\\actsymb[][]{\\bar{P}}{}[](\\actsymb[][]{\\bar{A}}{\\nthtop{1}{x}:\\angl{n}}[])` },
       { id: "actsymb-204", latex: `\\actsymb[][]{\\bar{P}}{}[](\\actsymb[][]{\\bar{A}}{x:\\nthtop{1}{\\angl{n}}}[])` },
-      { id: "actsymb-205", latex: `\\actsymb[][]{P}{}[(m)](\\actsymb[][]{\\bar{A}}{\\nthtop{}{x}:\\angl{n}}[])` },
+      { id: "actsymb-205", latex: `\\actsymb[][]{P}{}[(m)](\\actsymb[][]{\\bar{A}}{x:\\angl{n}}[])` },
       { id: "actsymb-206", latex: `\\actsymb[][]{P}{}[(m)](\\actsymb[][]{\\bar{A}}{\\nthtop{1}{x}:\\angl{n}}[])        ` },
       { id: "actsymb-207", latex: `\\actsymb[h][]{\\bar{P}}{}[](\\actsymb[][]{\\bar{A}}{x}[])` },
       { id: "actsymb-208", latex: `\\actsymb[h][]{\\bar{P}}{}[](\\actsymb[][]{\\bar{A}}{x:\\angl{n}}[])` },

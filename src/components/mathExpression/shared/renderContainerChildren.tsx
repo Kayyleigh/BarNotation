@@ -15,14 +15,25 @@ export function renderContainerChildren(
   const {
     cursor,
     containerId,
-    cellId,
     isActive,
     readOnly,
+    cellId
   } = baseProps;
 
   const nodes: React.ReactNode[] = [];
 
-  if (!readOnly) {
+  // if (!readOnly) {
+  //   nodes.push(
+  //     <DummyStartNodeRenderer
+  //       key={`start-point-${containerId}`}
+  //       {...baseProps}
+  //       containerId={containerId}
+  //       cellId={cellId}
+  //     />
+  //   );
+  // }
+
+    if (!readOnly && children.length === 0) {
     nodes.push(
       <DummyStartNodeRenderer
         key={`start-point-${containerId}`}

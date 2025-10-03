@@ -207,7 +207,7 @@
   /* Content in MathEditor should not shrink */
   .math-editor-scroll-inner > * {
     display: inline-block;
-    min-width: 100%;
+    /* min-width: 100%; */
   }
   
   /* Make zoom/type info fixed in top-right */

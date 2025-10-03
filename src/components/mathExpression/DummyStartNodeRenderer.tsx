@@ -16,6 +16,7 @@ type Props = {
   setHoverPath: (path: string[]) => void;
   onDropNode: (from: DragSource, to: DropTarget) => void;
   ancestorIds: string[];
+  focusEditor: () => void
 };
 
 const DummyStartNodeRenderer: React.FC<Props> = ({
@@ -26,6 +27,7 @@ const DummyStartNodeRenderer: React.FC<Props> = ({
   setHoverPath,
   onDropNode,
   ancestorIds,
+  focusEditor,
 }) => {
   const { draggingSource, dropTarget } = useDragReader();
   const { setDraggingSource, setDropTarget } = useDragWriter();
@@ -36,16 +38,23 @@ const DummyStartNodeRenderer: React.FC<Props> = ({
     dropTarget?.containerId === containerId &&
     dropTarget?.index === -1;
 
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    // Only set cursor if the node is inside an active container
+    if (containerId != null && onCursorChange) {
+      onCursorChange({ containerId, index: 0 });
+      requestAnimationFrame(() => focusEditor());
+    }
+  };
+
   return (
     <span>
       <span
         className={clsx("start-interaction-point", {
           hovered: hoverPath[hoverPath.length - 1] === containerId,
         })}
-        onClick={(e) => {
-          e.stopPropagation();
-          onCursorChange({ containerId, index: 0 });
-        }}
+        onClick={handleClick}
         onMouseEnter={() => handleMouseEnter([...ancestorIds], setHoverPath)}
         onMouseLeave={(e) => handleMouseLeave(e, ancestorIds, setHoverPath)}
         onDragOver={(e) => {
