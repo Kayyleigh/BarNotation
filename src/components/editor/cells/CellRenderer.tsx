@@ -179,7 +179,11 @@ export const CellRenderer = React.memo(
     const isDragOver = dragOverInsertIndex === index;
 
     // Handlers for InsertCellButtons
-    const handleInsertAbove = useCallback(() => handleInsertAtIndex("text", index), [handleInsertAtIndex, index]);
+    const handleInsertAbove = useCallback(
+      (type: "text" | "math") => handleInsertAtIndex(type, index),
+      [handleInsertAtIndex, index]
+    );
+
     const handleDragEnter = useCallback(() => {
       if (draggingCellId !== null) updateDragOver(index);
     }, [draggingCellId, updateDragOver, index]);
