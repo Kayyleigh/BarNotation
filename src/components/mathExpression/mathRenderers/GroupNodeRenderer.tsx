@@ -17,9 +17,7 @@ export const GroupNodeRenderer: React.FC<CoreRenderProps<GroupNode>> = (props) =
   return (
     <MathNodeWrapper node={node} {...baseProps} className="type-group">
       <span className="bracket bracket-open">{getOpenSymbol(node.bracketStyle)}</span>
-      <span className="group-contents">
-        <MathRenderer {...childProps} />
-      </span>
+      <MathRenderer {...childProps} />
       <span className="bracket bracket-close">{getCloseSymbol(node.bracketStyle)}</span>
     </MathNodeWrapper>
   );

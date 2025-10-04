@@ -158,11 +158,6 @@ body {
   margin: 0 0.1em;
 }
 
-.group-content {
-  display: inline-flex;
-  align-items: center;
-}
-
 .accent-symbol {
   position: absolute;
   top: -0.8em;

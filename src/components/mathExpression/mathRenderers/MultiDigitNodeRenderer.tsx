@@ -9,7 +9,7 @@ export const MultiDigitNodeRenderer: React.FC<CoreRenderProps<MultiDigitNode>> =
   ...baseProps
 }) => {
   return (
-    <MathNodeWrapper node={node} {...baseProps} className="type-multidigit">
+    <MathNodeWrapper node={node} {...baseProps} className="type-multi-digit">
       {renderContainerChildren(
         node.children,
         {

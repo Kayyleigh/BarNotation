@@ -23,9 +23,8 @@
 /* TODO: DO NOT DO ONLY THIS; INSTEAD/ALSO HAVE IT DO THIS ON "IS CURSOR INSIDE? (INSIDE THE PARENT STRUCTE??)" */
 .math-node:not(.type-inline-container):hover 
   .type-inline-container:not(:has(.math-node))::after {
-  content: "⬚";                         /* the dot */
-  opacity: 0.2;; /* dot color */
-  font-size: var(--empty-math-inline-container-width);
+  content: "·";                         /* the dot (could be replaced w. ⬚) */
+  opacity: 0.1; /* dot color */
   position: absolute;                   
   top: 50%;                             /* vertical center (adjust if needed) */
   left: 50%;                            /* horizontal center */
@@ -63,7 +62,7 @@
 
 .type-command-input .math-node,
 .type-multi-digit .math-node {
-  padding: 0;
+  padding: 0em 0.08em;
 }
 
 .root-wrapper {
@@ -90,6 +89,27 @@
 
 .math-node.hovered {
   background-color: var(--math-hover-bg);
+  border-radius: 4px;
+}
+
+/* .math-node.type-inline-container.hovered > .math-node {
+  outline: 1px solid var(--math-cursor-color);
+  border-radius: 4px;
+} */
+
+/* .math-node.type-inline-container.hovered > .math-node {
+  box-shadow: inset 0 0 0 1px var(--math-cursor-color);
+  border-radius: 4px;
+} */
+.math-node.type-inline-container.hovered {
+  background-color: var(--math-container-hover-bg); /* subtle light overlay */
+  outline: 2px dashed var(--math-hover-bg);
+  outline-offset: -2px;
+  border-radius: 4px;
+}
+
+.math-node.type-inline-container.hovered > .math-node {
+  background-color: var(--math-container-children-hover-bg); /* subtle light overlay */
   border-radius: 4px;
 }
 
@@ -162,23 +182,33 @@
   /* justify-content: flex-end; */
   flex-wrap: nowrap;
   align-items: center;
-  padding: 0em 0.1em;
+  padding: 0em 0.15em;
 }
 
-.type-multi-digit {
-  display: inline-flex;
-  flex-wrap: nowrap;
-  align-items: center;
-  gap: 0em;
-  padding: 0.15em;
+/* Case A: exactly one child, and it's a .math-node
+.type-inline-container:has(> .math-node:only-child) {
+  padding: 0;
+  border-top: 1px dashed rgb(255, 255, 0);
+} */
+
+/* Special case: exactly one .math-node child (ignore .cursor) */
+.type-inline-container:has(> .math-node):not(:has(> .math-node ~ .math-node)) {
+  padding: 0;
 }
 
+
+/* Case: no non-cursor children at all */
+.type-inline-container:not(:has(> .math-node)) {
+  padding: 0;
+}
+
+.type-multi-digit,
 .type-command-input {
   display: inline-flex;
   flex-wrap: nowrap;
   align-items: center;
   gap: 0em;
-  padding: 0.15em;
+  padding: 0em 0.2rem;
 }
 
 .type-group {

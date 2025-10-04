@@ -56,7 +56,13 @@
   --math-cursor-color: black;
   --math-drop-cursor-color: black;
   --math-selection-bg: rgba(0, 0, 0, 0.07);
-  --math-hover-bg: #1ba0ff1a;
+
+  /* base color in RGB (or HSL) */
+  --math-hover-base-rgb: 27, 160, 255; /* RGB for #1BA0FF */
+
+  --math-hover-bg: rgba(var(--math-hover-base-rgb), 0.27);
+  --math-container-hover-bg: rgba(var(--math-hover-base-rgb), 0.15);
+  --math-container-children-hover-bg: rgba(var(--math-hover-base-rgb), 0.09);
 
   /* ===== Sub/Sup Alignment ===== */
   --math-sub-overlap-x: 0.1em;
