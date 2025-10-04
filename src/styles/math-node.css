@@ -21,7 +21,7 @@
 /* ----------------- HOVER HANDLING ----------------------------- */
 
 /* TODO: DO NOT DO ONLY THIS; INSTEAD/ALSO HAVE IT DO THIS ON "IS CURSOR INSIDE? (INSIDE THE PARENT STRUCTE??)" */
-.math-node:not(.type-inline-container):hover 
+.math-node:not(.type-inline-container).hovered 
   .type-inline-container:not(:has(.math-node))::after {
   content: "·";                         /* the dot (could be replaced w. ⬚) */
   opacity: 0.1; /* dot color */
@@ -103,13 +103,13 @@
 } */
 .math-node.type-inline-container.hovered {
   background-color: var(--math-container-hover-bg); /* subtle light overlay */
-  outline: 2px dashed var(--math-hover-bg);
-  outline-offset: -2px;
-  border-radius: 4px;
+  /* outline: 2px dashed var(--math-hover-bg);
+  outline-offset: -2px; */
+  /* border-radius: 4px; */
 }
 
 .math-node.type-inline-container.hovered > .math-node {
-  background-color: var(--math-container-children-hover-bg); /* subtle light overlay */
+  background-color: var(--math-hover-bg); /* subtle light overlay */
   border-radius: 4px;
 }
 
@@ -527,6 +527,7 @@
   width: 0.5em;
   margin-right: 0.1em;
   position: relative;
+  pointer-events: none;
 }
 
 .radical-symbol::before {
@@ -535,12 +536,12 @@
   left: 0;
   bottom: 0;
   width: 0.5em;
-  height: 100%;
+  height: 75%;
   background-color: transparent;
   border-right: 0.1em solid var(--math-color-nth-root-symbol);
   border-bottom: 0.3em solid var(--math-color-nth-root-symbol);
   left: 0.2em;
-  bottom: 0.02em;
+  bottom: 25%;
   transform-origin: top;
   transform: rotate(30deg) skew(15deg, 38deg);
 }

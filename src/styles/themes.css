@@ -61,7 +61,7 @@
   --math-hover-base-rgb: 27, 160, 255; /* RGB for #1BA0FF */
 
   --math-hover-bg: rgba(var(--math-hover-base-rgb), 0.27);
-  --math-container-hover-bg: rgba(var(--math-hover-base-rgb), 0.15);
+  --math-container-hover-bg: rgba(154, 164, 168, 0.2);
   --math-container-children-hover-bg: rgba(var(--math-hover-base-rgb), 0.09);
 
   /* ===== Sub/Sup Alignment ===== */

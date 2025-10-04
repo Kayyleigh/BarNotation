@@ -49,7 +49,7 @@ const DummyStartNodeRenderer: React.FC<Props> = ({
   };
 
   return (
-    <span>
+    <>
       <span
         className={clsx("start-interaction-point", {
           hovered: hoverPath[hoverPath.length - 1] === containerId,
@@ -72,7 +72,7 @@ const DummyStartNodeRenderer: React.FC<Props> = ({
         }}
       />
       {isDropTarget && <span className="drop-target-cursor" />}
-    </span>
+    </>
   );
 };
 
