@@ -2,7 +2,7 @@ import type { EditorState } from "./editor-state";
 import { createCommandInputNode, createMultiDigitNode, createTextNode } from "../models/nodeFactories";
 import { cloneTreeWithNewIds, findNodeById, findParentContainerAndIndex, updateNodeById } from "../utils/treeUtils";
 import { specialSequences } from "../models/specialSequences";
-import { type InlineContainerNode, type MathNode, type TextNode } from "../models/mathNodeTypes";
+import { MultiDigitNode, type InlineContainerNode, type MathNode, type TextNode } from "../models/mathNodeTypes";
 import { getCloseSymbol, getOpenSymbol, getStyleFromSymbol, isClosingBracket, isOpeningBracket, type BracketStyle } from "../utils/bracketUtils";
 import { transformToGroupNode } from "./transformations";
 import type { LibraryEntry } from "../models/libraryTypes";
@@ -62,7 +62,9 @@ export const handleCharacterInsert = (
 
   // ========== CASE 4-A: Append digit to MultiDigitNode ==========
 
-  if (/\d/.test(char) && prevNode?.type === "multi-digit") {
+  if ((/\d/.test(char) && prevNode?.type === "multi-digit")
+    || (/[.,]/.test(char) && prevNode?.type === "multi-digit" && /\d/.test(prevNode.children[prevNode.children.length - 1].content))) {
+
     // //console.log(`Case 4-A reached with ${prevNode.children.map(child => child.content)}, with new ${char}`)
     const newTextNode = createTextNode(char);
     const updatedPrev = {
@@ -89,6 +91,48 @@ export const handleCharacterInsert = (
       },
     };
   }
+
+  //TODO maybe I should instead always have digit nodes and keep track of token types to make up valid vs invalid multi-digited numbers
+  else if (prevNode?.type === "multi-digit" && /[.,]/.test(prevNode.children[prevNode.children.length - 1].content)) {
+    // 1️⃣ Split off the last character
+    const lastChild = prevNode.children[prevNode.children.length - 1];
+    const remainingChildren = prevNode.children.slice(0, -1);
+
+    const updatedPrevNode: MultiDigitNode = {
+      ...prevNode,
+      children: remainingChildren,
+    };
+
+    // 2️⃣ Create a new TextNode for the last char
+    const newTextNode = createTextNode(lastChild.content);
+
+    // 3️⃣ Replace prevNode in children with updatedPrevNode + newTextNode
+    const updatedChildren = [
+      ...children.slice(0, index - 1),
+      updatedPrevNode,
+      newTextNode,
+      ...children.slice(index),
+    ];
+
+    const updatedRoot = updateNodeById(state.rootNode, container.id, {
+      ...container,
+      children: updatedChildren,
+    });
+
+    // 4️⃣ Simulate cursor right after the new TextNode
+    const simulatedState: EditorState = {
+      ...state,
+      rootNode: updatedRoot,
+      cursor: {
+        containerId: container.id,
+        index: index + 1,
+      },
+    };
+
+    // 5️⃣ Call handleCharacterInsert recursively with the new char
+    return handleCharacterInsert(simulatedState, char, commandMap);
+  }
+
 
   // ========== CASE 4-B: Append to CommandInputNode ==========
 
@@ -279,7 +323,9 @@ export const handleCharacterInsert = (
 
   // ========== CASE 4-D: Merge 2 digits ==========
 
-  if (/\d/.test(char) && prevNode?.type === "text" && /\d/.test(prevNode.content)) {
+  // if (/\d/.test(char) && prevNode?.type === "text" && /\d/.test(prevNode.content)) {
+  if (/[0-9.,]/.test(char) && prevNode?.type === "text" && /[0-9]/.test(prevNode.content)) {
+
     // //console.log(`Case 4-D reached with new ${char}`)
 
     const newMultiDigitNode = createMultiDigitNode([prevNode, createTextNode(char)])
